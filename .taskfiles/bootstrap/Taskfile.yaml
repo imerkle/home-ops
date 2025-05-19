@@ -9,11 +9,44 @@ tasks:
     summary: |
       IMPORTANT: ROOK_DISK must be set to the disk model used across all the nodes (e.g. Micron_7450_MTFDKBA800TFS)
     cmd: bash {{.SCRIPTS_DIR}}/bootstrap-cluster.sh
-    env:
-      ROOK_DISK: '{{.ROOK_DISK}}'
-    requires:
-      vars: [ROOK_DISK]
+    # env:
+    #   ROOK_DISK: '{{.ROOK_DISK}}'
+    # requires:
+    #   vars: [ROOK_DISK]
     preconditions:
-      - talosctl config info
-      - test -f {{.ROOT_DIR}}/talosconfig
+      # - talosctl config info
+      # - test -f {{.ROOT_DIR}}/talosconfig
       - test -f {{.SCRIPTS_DIR}}/bootstrap-cluster.sh
+  reset-k3s-etcd:
+    desc: Stop K3s, remove data, recreate etcd container, and restart K3s
+    cmds:
+      - echo "Stopping K3s..."
+      - sc stop k3s || true
+      - sudo rm -rf /var/lib/rancher/k3s
+      - echo "Removing existing etcd container if any..."
+      - |
+        if docker ps -a --format '{{.Names}}' | grep -q '^etcd$'; then
+          docker rm -f etcd
+        fi
+      - echo "Starting new etcd container..."
+      - |
+        docker run -d \
+          --name etcd \
+          -p 2379:2379 \
+          -p 2380:2380 \
+          --restart unless-stopped \
+          quay.io/coreos/etcd:v3.5.12 \
+          /usr/local/bin/etcd \
+            --name k3s-etcd \
+            --data-dir /etcd-data \
+            --listen-client-urls http://0.0.0.0:2379 \
+            --advertise-client-urls http://127.0.0.1:2379 \
+            --listen-peer-urls http://0.0.0.0:2380 \
+            --initial-advertise-peer-urls http://127.0.0.1:2380 \
+            --initial-cluster k3s-etcd=http://127.0.0.1:2380 \
+            --initial-cluster-token k3s-cluster \
+            --initial-cluster-state new
+      - echo "Starting K3s..."
+      - sc start k3s
+      - echo "Copying kubeconfig..."
+      - sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config

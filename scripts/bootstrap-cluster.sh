@@ -5,6 +5,7 @@ source "$(dirname "${0}")/lib/common.sh"
 
 export LOG_LEVEL="debug"
 export ROOT_DIR="$(git rev-parse --show-toplevel)"
+export KUBECONFIG="$HOME/.kube/config"
 
 # Apply the Talos configuration to all the nodes
 function apply_talos_config() {
@@ -213,25 +214,46 @@ function apply_helm_releases() {
     log info "Helm releases applied successfully"
 }
 
-function main() {
-    check_env KUBECONFIG KUBERNETES_VERSION ROOK_DISK TALOS_VERSION
-    check_cli helmfile jq kubectl kustomize minijinja-cli op talosctl yq
+function kapply_sops() {
+  local file="age.sops.yaml"  # <-- hardcoded path to your encrypted file
 
-    if ! op whoami --format=json &>/dev/null; then
-        log error "Failed to authenticate with 1Password CLI"
-    fi
+  if ! command -v sops >/dev/null 2>&1; then
+    echo "sops not installed"
+    return 1
+  fi
+
+  if ! command -v kubectl >/dev/null 2>&1; then
+    echo "kubectl not installed"
+    return 1
+  fi
+
+  sops -d "$file" | kubectl apply -f -
+}
+
+
+function main() {
+    # check_env KUBECONFIG KUBERNETES_VERSION ROOK_DISK TALOS_VERSION
+    check_env KUBECONFIG
+    #op = onepassword
+    # check_cli helmfile jq kubectl kustomize minijinja-cli op talosctl yq
+    check_cli helmfile jq kubectl kustomize minijinja-cli yq
+
+    # if ! op whoami --format=json &>/dev/null; then
+    #     log error "Failed to authenticate with 1Password CLI"
+    # fi
 
     # Bootstrap the Talos node configuration
-    apply_talos_config
-    bootstrap_talos
-    fetch_kubeconfig
+    # apply_talos_config
+    # bootstrap_talos
+    # fetch_kubeconfig
 
-    # Apply resources and Helm releases
-    wait_for_nodes
-    wipe_rook_disks
+    # # Apply resources and Helm releases
+    # wait_for_nodes
+    # wipe_rook_disks
     apply_crds
-    apply_resources
+    # apply_resources
     apply_helm_releases
+    kapply_sops
 
     log info "Congrats! The cluster is bootstrapped and Flux is syncing the Git repository"
 }
