@@ -215,7 +215,7 @@ function apply_helm_releases() {
 }
 
 function kapply_sops() {
-  local file="age.sops.yaml"  # <-- hardcoded path to your encrypted file
+  local file="${ROOT_DIR}/scripts/age.sops.yaml"  # <-- hardcoded path to your encrypted file
 
   if ! command -v sops >/dev/null 2>&1; then
     echo "sops not installed"
