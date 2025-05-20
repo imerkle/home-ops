@@ -6,6 +6,7 @@ source "$(dirname "${0}")/lib/common.sh"
 export LOG_LEVEL="debug"
 export ROOT_DIR="$(git rev-parse --show-toplevel)"
 export KUBECONFIG="$HOME/.kube/config"
+export SOPS_AGE_KEY_FILE="$HOME/.config/sops/age/keys.txt"
 
 # Apply the Talos configuration to all the nodes
 function apply_talos_config() {
