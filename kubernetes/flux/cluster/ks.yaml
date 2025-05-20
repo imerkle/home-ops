@@ -6,12 +6,12 @@ metadata:
   name: cluster-apps
   namespace: flux-system
 spec:
-  # decryption:
-  #   provider: sops
-  #   secretRef:
-  #     name: sops-age
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
   interval: 1h
-  path: ./kubernetes/appsnew
+  path: ./kubernetesapps/appsnew
   prune: true
   retryInterval: 2m
   sourceRef:
