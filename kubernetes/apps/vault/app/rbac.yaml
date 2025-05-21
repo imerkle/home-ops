@@ -8,9 +8,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: &app vault
 rules:
-  - apiGroups: ["cert-manager.io"]
-    resources: ["clusterissuer"]
-    verbs: ["*"]
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["*"]
