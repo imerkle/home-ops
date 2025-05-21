@@ -1,347 +1,347 @@
 apiVersion: vault.banzaicloud.com/v1alpha1
 kind: Vault
 metadata:
-  name: vault
-  namespace: vault
-spec:
-  size: 1
-  image: hashicorp/vault:1.16.1
-  # Specify the ServiceAccount where the Vault Pod and the Bank-Vaults configurer/unsealer is running
-  serviceAccount: vault
-  serviceType: ClusterIP
-  ingress:
-    annotations:
-      # cert-manager.io/cluster-issuer: "${CLUSTER_ISSUER}"
-      #kubernetes.io/ingress.class: haproxy
-      #   cert-manager.io/cluster-issuer: letsencrypt-prod
-      #   hajimari.io/appName: Vault
-      #   hajimari.io/icon: database-lock
-      external-dns.alpha.kubernetes.io/target: ${DNS_MAIN}
-      external-dns/is-public: "true"
-    spec:
-      ingressClassName: ${INGRESS1}
-      rules:
-        - host: vault.${DNS_MAIN}
-          http:
-            paths:
-              - backend:
-                  service:
-                    name: vault
-                    port:
-                      number: 8200
-                path: /
-                pathType: Prefix
-      tls:
-        - hosts:
-            - vault.${DNS_MAIN}
-      #       - vault
-      #       - vault.vault
-      #       - vault.vault.svc
-      #       - vault.vault.svc.cluster.local
-      #     secretName: long-domain-tls
-  # Use local disk to store Vault file data, see config section.
-  volumes:
-    - name: vault-file
-      persistentVolumeClaim:
-        claimName: vault-file
-  volumeMounts:
-    - name: vault-file
-      mountPath: /vault/file
-  # a subpath called credentials, in order for it to be mounted correctly.
-  # credentialsConfig:
-  #   env: GOOGLE_APPLICATION_CREDENTIALS
-  #   path: "/etc/gcp/service-account.json"
-  #   secretName: "kms-vault-unseal"
-  # Describe where you would like to store the Vault unseal keys and root token.
-  unsealConfig:
-    # google:
-    #   kmsKeyRing: "vault"
-    #   kmsCryptoKey: "vault-unsealer"
-    #   kmsLocation: "global"
-    #   kmsProject: "continual-air-196513"
-    #   storageBucket: "vault-ha"
-    options:
-      # The preFlightChecks flag enables unseal and root token storage tests
-      # This is true by default
-      preFlightChecks: true
-      # The storeRootToken flag enables storing of root token in chosen storage
-      # This is true by default
-      storeRootToken: true
-    kubernetes:
-      secretNamespace: vault
-  # A YAML representation of a final vault config file.
-  # See https://www.vaultproject.io/docs/configuration/ for more information.
-  config:
-    storage:
-      file:
-        path: /vault/file
-        #"${ .Env.VAULT_STORAGE_FILE }" # An example how Vault config environment interpolation can be used
-    listener:
-      tcp:
-        address: '[::]:8200'
-        cluster_address: '[::]:8201'
-        # TODO enable TLS?
-        tls_disable: true
-        # tls_cert_file: /vault/tls/server.crt
-        # tls_key_file: /vault/tls/server.key
-    # telemetry:
-    #   statsd_address: localhost:9125
-    # seal:
-    #   gcpckms:
-    #     project: "future-mystery-383416"
-    #     region: "global"
-    #     key_ring: "sops"
-    #     crypto_key: "sops-key"
-    ui: true
-  # See: https://banzaicloud.com/docs/bank-vaults/cli-tool/#example-external-vault-configuration
-  # The repository also contains a lot examples in the deploy/ and operator/deploy directories.
-  externalConfig:
-    policies:
-      - name: allow_secrets
-        rules: path "secret/*" { capabilities = ["create", "read", "update", "delete", "list"] }
-      - name: allow_pki
-        rules: path "pki/*" { capabilities = ["create", "read", "update", "delete", "list"] }
-    groups:
-      - name: admin1
-        policies:
-          - allow_secrets
-        metadata:
-          privileged: true
-        type: external
-      - name: admin2
-        policies:
-          - allow_secrets
-        metadata:
-          privileged: true
-        type: external
-    group-aliases:
-      - name: admin1
-        mountpath: token
-        group: admin1
-    auth:
-      - type: kubernetes
-        roles:
-          # Allow every pod in the default namespace to use the secret kv store
-          - name: default
-            bound_service_account_names:
-              - '*'
-            bound_service_account_namespaces:
-              - '*'
-            policies:
-              - allow_secrets
-              - allow_pki
-            ttl: 1h
-          - name: secretsmutation
-            bound_service_account_names:
-              - vault-secrets-webhook
-            bound_service_account_namespaces:
-              - vault-secrets-webhook
-            policies:
-              - allow_secrets
-            ttl: 1h
-      - type: approle
-        roles:
-          - name: default
-            policies: allow_secrets
-            secret_id_ttl: 10m
-            token_num_uses: 10
-            token_ttl: 20m
-            token_max_ttl: 30m
-            secret_id_num_uses: 40
-    secrets:
-      - path: secret
-        type: kv
-        description: General secrets.
-        options:
-          version: 2
-      - type: pki
-        description: Vault PKI Backend
-        config:
-          default_lease_ttl: 168h
-          max_lease_ttl: 720h
-        configuration:
-          config:
-            - name: urls
-              issuing_certificates: https://vault.vault:8200/v1/pki/ca
-              crl_distribution_points: https://vault.vault:8200/v1/pki/crl
-          root/generate:
-            - name: ${INGRESS1}
-              common_name: vault.default
-          roles:
-            - name: default
-              allowed_domains: localhost,pod,svc,default,grafana,vault,authentik
-              allow_subdomains: true
-              generate_lease: true
-              ttl: 1m
-    # Allows writing some secrets to Vault (useful for development purposes).
-    # See https://www.vaultproject.io/docs/secrets/kv/index.html for more information.
-    startupSecrets:
-      - type: kv
-        path: secret/data/radarr
-        data:
-          data:
-            API_KEY: ENC[AES256_GCM,data:3YR2DU1gD8eOfCGZNTxm476u,iv:yyaz0aeXAH6TnA+5wnykt0svDfB7yNLOH1z5CFHmlog=,tag:loKi8jKCwnoWAWjtU8m7bg==,type:str]
-      - type: kv
-        path: secret/data/sonarr
-        data:
-          data:
-            API_KEY: ENC[AES256_GCM,data:oSm012J7qlCV31fWn66cFmz4,iv:dNYkMOJhyubWKkgjJnw5RJlNGlZTUY5KcsFIjaiulm8=,tag:g5LmEfcWbqyqAcXRVy7fXA==,type:str]
-      - type: kv
-        path: secret/data/bazarr
-        data:
-          data:
-            API_KEY: ENC[AES256_GCM,data:osWp10wuKw0wpO5P7coKl0XH,iv:ZP+Oa4eK8s68l3aNcMf1er+BHxyKCXFamO1chFs7iBw=,tag:QjfMXYDgGy3V3WNLqTMJhw==,type:str]
-      - type: kv
-        path: secret/data/prowlarr
-        data:
-          data:
-            API_KEY: ENC[AES256_GCM,data:CjZjQKtVy0V/lQQodY1a6iOU,iv:wgszGht///nkarzXKBoJPbjHAiT+JEcgHBKL2owztqI=,tag:gz85l+/sX4J2EgJam7QtYA==,type:str]
-      - type: kv
-        path: secret/data/minio
-        data:
-          data:
-            MINIO_ROOT_USER: ENC[AES256_GCM,data:JN0V6l6asobFsg==,iv:CqgfRPySNwTjz+Fma1SYiO/aoqRZhTPnm5uZIoWHjmI=,tag:U54sfF1QS9eExn1sw4un2A==,type:str]
-            MINIO_ROOT_PASSWORD: ENC[AES256_GCM,data:WwZFJTaheVOVog==,iv:03D+xvG3+JR6waUXJmrdPdqaMS45llQ5CbsFpSgx794=,tag:ju2kJIWREWdaM/O5eYRdcg==,type:str]
-            MINIO_PROMETHEUS_TOKEN: null
-      - type: kv
-        path: secret/data/openid
-        data:
-          data:
-            CLIENT_ID: ENC[AES256_GCM,data:BtD1vkVHNo/AtUH9YFVeYIhRapzWO95E+0Ce5PO3WtskxySLYRBcAT5/HV3LWaVgUDsyXQ9y1jsq/+8QFHnYTiKcTMiFbsmi,iv:5YaWGtF5sKakYLQc6M/+g7/ku3/ZT+j/ziEhT+34Pe4=,tag:5l+Qsd0BS6Rcs3C6734RuQ==,type:str]
-            CLIENT_SECRET: ENC[AES256_GCM,data:glVv+BD5iuokFQ7Kj/bNZSxXaGD3VUHI,iv:EoRCa+npMkQxzrwb4ExSFNuFgBJBJwBPAKPgAgYXLpQ=,tag:hErfyWV+lk7/ppVN/FfHDw==,type:str]
-            SCOPES: ENC[AES256_GCM,data:4nTwMD+DNMEcYh+8ZfDEi3TpPmw=,iv:bWa+Aei3EZ7tO5U8iw+LzKMZSGvVATkrA8KZDjNKKjY=,tag:7TtUeEa82B9wxQnlcstC8g==,type:str]
-      - type: kv
-        path: secret/data/redis
-        data:
-          data:
-            PASSWORD: ENC[AES256_GCM,data:NiCpl9VcNnMg,iv:LppRHcc3Uf7XYkUH/e2dYPeriYF6UiVscLIxg+6Xxaw=,tag:DfwyivVFqRpKenUHqE8T6Q==,type:str]
-            USERNAME: ENC[AES256_GCM,data:7dWvN3lRsA==,iv:OIimTgi/3XS+7byZop8rd6KidYsVOVzPpbvrHAsQrk4=,tag:ngv0wwa42sYKUs2PxD25QA==,type:str]
-      - type: kv
-        path: secret/data/pg_default
-        data:
-          data:
-            USER: ENC[AES256_GCM,data:mFFPOVSphss=,iv:DEbGfNfisTzcPjqO0QuEdCEU29WXwPAGTAuK3Ene7DM=,tag:7q5SfLyXd+a8iWDauha6XQ==,type:str]
-            PASSWORD: ENC[AES256_GCM,data:bdnkAP8oHlneQBlBQgo=,iv:95YI9kpFxcVo2PUDiyXl41F3gt6BvJ7JULctAtuXJDY=,tag:h2jQUl/XmGhj8IA/y7+AWg==,type:str]
-            HOST: ENC[AES256_GCM,data:AmUfqFZS8+El3C1robJUK3a/oQw+QLHhTAcXInp9LDKmfw==,iv:ACwzdn50bs8WHDlYDaBDBTUbMOpLVIjTaookX68J1uo=,tag:d8vE80rz/NFiTokP+D/Oqw==,type:str]
-            DB_URI: ENC[AES256_GCM,data:NdEla4oxYmvoWc2otGdldJ2tlG6sMEP5D0yqCxQy4U4wPJbZTpbSmZSGVgbiW1dr+DgX29lgE8mE5IB4WANFZpCjpqZPLnMMjkg=,iv:ru7j87FgbGVdLKmt6dsrtrlpJ1emDusscP987cvZ+j8=,tag:VxJ7N/PRbpfVy0Gb0TjUFQ==,type:str]
-      - type: kv
-        path: secret/data/zitadel
-        data:
-          data:
-            MASTERKEY: ENC[AES256_GCM,data:Pvtr0DEsrpl6+o15QFe83ozZDg6cwhYi7L1zC7iJbX8=,iv:vHjM7Pm9h5l9Bmoy9a9+S6TB4HKCa0Qw94FiCVOsZsg=,tag:q/p6iJCmB2Ofiud/NRhivQ==,type:str]
-      - type: kv
-        path: secret/data/cloudflare
-        data:
-          data:
-            DNS_TOKEN: ENC[AES256_GCM,data:qsl81HL7VO/0HilC4slOCS/5qakMMHVxFGFExVIgcIEcJzSKLArS6g==,iv:As5IXZigJ9doHhU7tOrmcyEAv44S/W/L00PzQOUui0s=,tag:fHaytnTmducOQhxlExxsUw==,type:str]
-            CERT_TOKEN: ENC[AES256_GCM,data:UONaApFRR9iPC1iZWWWTiXyyTNSJX1dWYDt8B/HqRZ/L1ucD7TPu2g==,iv:BcXNHzqb1o4Ho0A9j2lSRO2caaIb+Q8oGA9l4xuzDBU=,tag:OjE5GCnYlReUp0zmOSCoqw==,type:str]
-      - type: kv
-        path: secret/data/atuin
-        data:
-          data:
-            DBNAME: ENC[AES256_GCM,data:LX0LqAHZfYM=,iv:769IgxULEgWS91MRCYzH/sxU6ggeu+/QZUL2O6VjOAU=,tag:F0MqWALBe/D5uhbktaYXEg==,type:str]
-            PG_USER: ENC[AES256_GCM,data:lQEUdiIBQniSmg==,iv:mc3NDQ1n29e4u1vJnpokNFZP5swY7WQR8kwW4tzqZvc=,tag:xXXryzp0O2frEA2sMJhGkA==,type:str]
-            PG_PASS: ENC[AES256_GCM,data:fM2C/2FytRifLg==,iv:9gRAsOSTQSY3sK5riD8GlrZ2D/wIlZaT6d/p+IDDbsY=,tag:MHHSQPcal2EZMLC2r5AuOw==,type:str]
-            DB_URI: ENC[AES256_GCM,data:LtQHq2heR07Q+ut93Qm52r2Nm02i4OVtcicufxjR25LpvGlev9LwggPEke+5HY38X6ICFzm9/KQvOXGeP91HdAM18AguYmiJ0BhWikVcuhPH,iv:Uk+Me1LjdNco2oXKzqDt/tEssKI+/rbIvW15ciUHCU8=,tag:eYlxd/+iL7R5E5jJ20OgQg==,type:str]
-      - type: kv
-        path: secret/data/calcom
-        data:
-          data:
-            DBNAME: ENC[AES256_GCM,data:fakQUi0mAxYA,iv:LY+ueYxuPs9GhPrEVOPppqMp7xmu108aITRFKPMEjLc=,tag:4oD8Sx5mvE0lSjlQwQUPLw==,type:str]
-            PG_USER: ENC[AES256_GCM,data:EQoz8puA+2LyFPE=,iv:bJRlA1gC7PZHctU8c1kEDxZVfati0/EZCGFrMY06Wn8=,tag:9NuPAYENZQqyvkiaeaE3qg==,type:str]
-            PG_PASS: ENC[AES256_GCM,data:pGSglvwK57s/n8k=,iv:lJsJGTAe2lEFl2ldSqcnECCxC/ab9osch88jw5SfUCc=,tag:RKU0tRQr3QF+7JToBkm3Xg==,type:str]
-            CALENDSO_ENCRYPTION_KEY: ENC[AES256_GCM,data:5FP7vzDi2vu0f/GfmbQEq8jxPzILRPHmOkHsGPyQ+D0=,iv:ai/xK+oK5LV1eJXDWA6ZFfKRnMTLSj9PeK1z4Z/MtEU=,tag:wUYh8Ycd1v2raZyfcJILyA==,type:str]
-            NEXTAUTH_SECRET: ENC[AES256_GCM,data:eUF0zeIXfs6cUtZkcnI9T3rIPF6lFqKRIp71m2x7wF0=,iv:nAxqZlwQD/yhjIqBvIrQHk5Qe5oL55ZJ7QJq63bHBCw=,tag:tnpyY5U4oL8lYSICLJL7Jw==,type:str]
-            DB_URI: ENC[AES256_GCM,data:mosdPwqaVhrKGEKpCNMHURTGZr0pa4droLX8l8dtJ+G/M4JMeAH7PtFKNhBnX4WpmFz0bUwDZ4rbK/J6M6AavEH3cR4gT2IQGGGmEhKkvedJyuow,iv:ncVM0lT42qr+e6/Igrj8nTguEBufZ4A7dzHwZlOefTs=,tag:hrcUmbqc3eGXXPF4vlMYCg==,type:str]
-      - type: kv
-        path: secret/data/ssh
-        data:
-          data:
-            priv: ENC[AES256_GCM,data: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,iv:y75I67ac5SEMUPPPRYSfp1i0VKnviAhKArNez5VZApg=,tag:BsJrnV1GXc5yEcnaWC856g==,type:str]
-            pub: ENC[AES256_GCM,data:sKqM4wyjo1no9KboKebIND4PWsDXQ2grKuxJAnMXqHg0TfmWdV7CKJfMyBUAB8HHUFVeZ1YL1zFLGTECwdcRfy+WQOGNZnp45wSsfK00dFU6ddIpkdKJO8wyG9A/wHcOGcY67Lq9EaOUCfwMhgFssge07MZ735bZf9Sn091jx1wMFB5yCrO85LDv8EwPE5kJC7mP5asSRGy0hcrSdm8dRSZ/AQcrXxXmElynZHjlx6h2Mc8p5idvBybh8MAU5D/LK5EKSbvhGXTaTkmQW8l6oCwtv8B+Ah6d334U/OViz+ngX1lu3o3wM1VnUqNm+tT1W4UlBsL/xWJGG9tiqZnN2vjKsf2GKyk1Q8JHQo9o9/xDEEsmI5g84fTcXOQ9QJxcskpIk/OYglmmVzBNrLSCm3fhQFJ+BxyZ9FaiYAJawRafF6JS54B1Xo51zTACTXNBlfQQMRu7+n1Tgl+SKrNr6IlS3tTHuSiyr0SbhxFfdHboc6QUlB0TfaE1ZLmr5gqSfkXltIlE3y03y/mx9Dma0vSbTaHXxAXE4E/FkTty3ZM4Vi7cLeCxBGQoi4ZvFFdrolNj+wQ3r6fTiRTGiH27pdGcPDjZ9HNwsju3o1aZh56MewZhvVg1O09G3pwyH+PTeuQosSg1Zv4kEGAtsrelj+8G+H/82FDUta8NdSoB2vVYI0ftWweq1cuk1wTlWQAYGJklwOB+Weu0Bn3feSZMgHECnZXPfum0KAQUkC31eGIvel8va0i4m2p+OyhaoIV5fwz6BYP5n53KzYSW6yMXxHs+qv3mJUWdtNIThvrW6pSYwI+IRgu+VtkcyFJUtgt5l+Q+VzUM+/LxlgT4RkC4abKsTNR35ToLhovSLjePWSuoZGwmKODqHs5Xa6SIfqNkRoZHRxIN6JWZ92zg0YfraCzifNBdNIqTowt52cGqK+Y75sDf4lS6WDTpHHvLMUrJCCg+ksxcgr/KLNU6Yc/pL7JtlRhTKqaozu5S,iv:s+DYYo+YVcNGr1M3rIwn2Y3npROzIbpi/dokUfPrp1M=,tag:GPy9SXNQYE+nV2+iq6Yung==,type:str]
-      - type: kv
-        path: secret/data/softserve
-        data:
-          data:
-            DBNAME: ENC[AES256_GCM,data:2TS5pYM0MahKUbvZ,iv:QHootMw2YoKhTL1eKEpZCfjFdDwQs31XlpeHqteP9+4=,tag:bLrR0wdJObSgv5SM0wgcRQ==,type:str]
-            PG_USER: ENC[AES256_GCM,data:/STzFa9w5zJ18QchvIU=,iv:YRdx7iLtPRYJ95VBzOOKYWN2k3vmap0kIpqDv3rV9t0=,tag:seQvm3bT+Fp707Xkjd72Gg==,type:str]
-            PG_PASS: ENC[AES256_GCM,data:H/DA/kveEgnWYVJdonQ=,iv:lhDHkAJJPj7PIYf1NxAEBEePIKcpTSB2AwHSBkpswe8=,tag:+8ULW4Cm44Pkq95BvZgMJw==,type:str]
-            SOFT_SERVE_DB_DATA_SOURCE: ENC[AES256_GCM,data:FmV/EDqgb4RLy95l0VTxnMOda393UbGT8lCejIj5GXmExnwnzgQsPd8d8N15SzoAoKVECxo9XwpIqFHqNx3Tvpfn71KtOxvVmcekBddrdyXbbG9LeR5oen0jsSwL,iv:l0oKB22KGytn0wlGL8NpIOJ7/P5LvYvYJv3zyH6aUHs=,tag:YnrdZcWWPX5HgH6/8MRluw==,type:str]
-      - type: kv
-        path: secret/data/harbor
-        data:
-          data:
-            ADMIN_PASSWORD: ENC[AES256_GCM,data:NK1BRdBxaGBivOw=,iv:R70vrJqFAgl2qugcks2YFnAxmBMPxCLXbNSNAifhQpI=,tag:8lZ4MQMxH2v9I/P/2Tqv5A==,type:str]
-      - type: kv
-        path: secret/data/immich
-        data:
-          data:
-            CLIENT_ID: ENC[AES256_GCM,data:C3COaDqgM19MqIOuzM+QahoXKXAipKu/AOjsTj5Y5B0HI/1M,iv:GGmNSPGNNUChSclcW8C4PlKmxeO3UiowcPmF9fFGUFw=,tag:tC1qejfpR4IEtFttk2USaA==,type:str]
-            CLIENT_SECRET: ENC[AES256_GCM,data:WYXvr4j7NL91GMps9HKcYLKf3Q+7HCMu7EM=,iv:2+GC78Yd47YqVK/x8UlWkSP7bkB7rtCD0dSXXVhb0mo=,tag:P67GyRs9T3qwA7Bmt3o6Aw==,type:str]
-      - type: kv
-        path: secret/data/ory
-        data:
-          data:
-            SECRETS_SYSTEM: ENC[AES256_GCM,data:uo7KcUsTVOg=,iv:XostsMYy/Cai8oKi/eVC/eFJF9VCdqLw7uhuPZTnNgk=,tag:o2lJEc9NOqAIabHVBRBN7w==,type:str]
-            DB_URI_HYDRA: ENC[AES256_GCM,data:bdciG7+Ih8+7O/wOa+SbYvD7WdPPrvHfgZDxBnvvYCiaPYA7YIn2KsAMTA00PQb168PrIEztW4XoFIjmLyurlHG1C0DIhQUVWi1m+VPW5XE=,iv:9++jihmGHTgPosMkhrfn/sl+77DdmQPqHK9tNmSOg9I=,tag:MgujPyu5lv+GFBN/sjlBjw==,type:str]
-            DB_URI_KRATOS: ENC[AES256_GCM,data:XIvceGq7HvLfVpMQH327K3oKRV+yKeDJdH97rtk7m5ARUxoGNSGXe2vEhy6+HrU1W8u7MsWFzqpHKiH01x9GTAcxKRmTGzoquFYtZa6W8fPP,iv:S4tHJONAfuybA7ngdlz+ynbOjpae4SMRIRCfgmO2Kmc=,tag:VcjLym8MWsZ/tqYBokkuFQ==,type:str]
-      - type: kv
-        path: secret/data/recaptcha
-        data:
-          data:
-            PUB: ENC[AES256_GCM,data:gpIEqmIYcuomN7zRvYA84JCHhgppT0Uu81QACchdL1c0a9xZaBCFJQ==,iv:7gkK6wuSyKq1kGk9rQEF7x2Xub8K1dFzzbKSZ98/Qu4=,tag:vpGb/Sfl38g0jbfc1lubdQ==,type:str]
-            PRIV: ENC[AES256_GCM,data:oHjAnFAqsQpCadMIbfuMT8KjwBwmBrXRiSvxBrq/TUGnR7HnmY4fwA==,iv:EQyEle3Da2um5+V/+ZxEF9022m+S9vWTkYrn5bdp490=,tag:K7H6xnLfmsmIztN1eSFSjw==,type:str]
-      - type: kv
-        path: secret/data/binance_report
-        data:
-          data:
-            API_KEY: ENC[AES256_GCM,data:B+0Nh4P+0d931ZDIPS65iVN04VSfZLvvjwAr7AQg8mPIqniHQKpj6b7DwMkJeFsJJcWB59lFZcsAzehAXaG0Qw==,iv:s/lvdjM5fDS+UKOSnwrtDn/wobF9suDhA4ODIeR8TDw=,tag:cwg3rouI+iG8pI0l8SWngg==,type:str]
-            SECRET_KEY: ENC[AES256_GCM,data:8dmT09I7NGcBVr2Xpo8jXu8MQEH0iy20PJktRJBlnxpHg03KY4NWj+ygdfpr+nugXs0/gKaUL6xdfYFHF1EnUQ==,iv:z+p9Ijxr1nNK1kCv5Z+MTG3TmVKRpOfqxCjKnTtCTX0=,tag:i3Uaepp9/RHK4fTcS9ZQew==,type:str]
-      - type: kv
-        path: secret/data/s3
-        data:
-          data:
-            ID: ENC[AES256_GCM,data:X53jUJAAfCBwCkGELdN1+TB4Zj9+ZvX/Vw==,iv:D/iDhFYXF7w5xR85k0wTNBpAw/0JxYueE5h1QNC80p4=,tag:gNUXagFV6G3EfEbcysLhAg==,type:str]
-            SECRET: ENC[AES256_GCM,data:+3dUabu6XSm9gm9wUM8nPcpU0VZ8Kakxi8AolOXuIg==,iv:zxv4xECju/A94mUBWgeQ+pmC/k2ksqaSXl9z7PBMMXI=,tag:ZjdERW0jvX+vv8mDMZxjsw==,type:str]
-  vaultEnvsConfig:
-    - name: VAULT_LOG_LEVEL
-      value: debug
-    - name: VAULT_STORAGE_FILE
-      value: /vault/file
-      # - name: VAULT_ADDR
-      #   value: http://127.0.0.1:8200
-  # If you are using a custom certificate and are setting the hostname in a custom way
-  # sidecarEnvsConfig:
-  #   - name: VAULT_ADDR
-  #     value: http://vault.vault:8200
-  # # https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
-  # vaultPodSpec:
-  #   hostAliases:
-  #   - ip: "127.0.0.1"
-  #     hostnames:
-  #     - "vault.local"
-  # It is possible to override the Vault container directly:
-  vaultContainerSpec:
     name: vault
-    readinessProbe:
-      httpGet:
-        path: /v1/sys/health
-        port: 8200
-  # Marks presence of Istio, which influences things like port namings
-  istioEnabled: false
+    namespace: vault
+spec:
+    size: 1
+    image: hashicorp/vault:1.16.1
+    # Specify the ServiceAccount where the Vault Pod and the Bank-Vaults configurer/unsealer is running
+    serviceAccount: vault
+    serviceType: ClusterIP
+    ingress:
+        annotations:
+            # cert-manager.io/cluster-issuer: "${CLUSTER_ISSUER}"
+            #kubernetes.io/ingress.class: haproxy
+            #   cert-manager.io/cluster-issuer: letsencrypt-prod
+            #   hajimari.io/appName: Vault
+            #   hajimari.io/icon: database-lock
+            # external-dns.alpha.kubernetes.io/target: ${DNS_MAIN}
+            external-dns/is-public: "true"
+        spec:
+            ingressClassName: ${INGRESS1}
+            rules:
+                - host: vault.${DNS_MAIN}
+                  http:
+                    paths:
+                        - backend:
+                            service:
+                                name: vault
+                                port:
+                                    number: 8200
+                          path: /
+                          pathType: Prefix
+            tls:
+                - hosts:
+                    - vault.${DNS_MAIN}
+                    #       - vault
+                    #       - vault.vault
+                    #       - vault.vault.svc
+                    #       - vault.vault.svc.cluster.local
+                    #     secretName: long-domain-tls
+    # Use local disk to store Vault file data, see config section.
+    volumes:
+        - name: vault-file
+          persistentVolumeClaim:
+            claimName: vault-file
+    volumeMounts:
+        - name: vault-file
+          mountPath: /vault/file
+    # a subpath called credentials, in order for it to be mounted correctly.
+    # credentialsConfig:
+    #   env: GOOGLE_APPLICATION_CREDENTIALS
+    #   path: "/etc/gcp/service-account.json"
+    #   secretName: "kms-vault-unseal"
+    # Describe where you would like to store the Vault unseal keys and root token.
+    unsealConfig:
+        # google:
+        #   kmsKeyRing: "vault"
+        #   kmsCryptoKey: "vault-unsealer"
+        #   kmsLocation: "global"
+        #   kmsProject: "continual-air-196513"
+        #   storageBucket: "vault-ha"
+        options:
+            # The preFlightChecks flag enables unseal and root token storage tests
+            # This is true by default
+            preFlightChecks: true
+            # The storeRootToken flag enables storing of root token in chosen storage
+            # This is true by default
+            storeRootToken: true
+        kubernetes:
+            secretNamespace: vault
+    # A YAML representation of a final vault config file.
+    # See https://www.vaultproject.io/docs/configuration/ for more information.
+    config:
+        storage:
+            file:
+                path: /vault/file
+                #"${ .Env.VAULT_STORAGE_FILE }" # An example how Vault config environment interpolation can be used
+        listener:
+            tcp:
+                address: '[::]:8200'
+                cluster_address: '[::]:8201'
+                # TODO enable TLS?
+                tls_disable: true
+                # tls_cert_file: /vault/tls/server.crt
+                # tls_key_file: /vault/tls/server.key
+        # telemetry:
+        #   statsd_address: localhost:9125
+        # seal:
+        #   gcpckms:
+        #     project: "future-mystery-383416"
+        #     region: "global"
+        #     key_ring: "sops"
+        #     crypto_key: "sops-key"
+        ui: true
+    # See: https://banzaicloud.com/docs/bank-vaults/cli-tool/#example-external-vault-configuration
+    # The repository also contains a lot examples in the deploy/ and operator/deploy directories.
+    externalConfig:
+        policies:
+            - name: allow_secrets
+              rules: path "secret/*" { capabilities = ["create", "read", "update", "delete", "list"] }
+            - name: allow_pki
+              rules: path "pki/*" { capabilities = ["create", "read", "update", "delete", "list"] }
+        groups:
+            - name: admin1
+              policies:
+                - allow_secrets
+              metadata:
+                privileged: true
+              type: external
+            - name: admin2
+              policies:
+                - allow_secrets
+              metadata:
+                privileged: true
+              type: external
+        group-aliases:
+            - name: admin1
+              mountpath: token
+              group: admin1
+        auth:
+            - type: kubernetes
+              roles:
+                # Allow every pod in the default namespace to use the secret kv store
+                - name: default
+                  bound_service_account_names:
+                    - '*'
+                  bound_service_account_namespaces:
+                    - '*'
+                  policies:
+                    - allow_secrets
+                    - allow_pki
+                  ttl: 1h
+                - name: secretsmutation
+                  bound_service_account_names:
+                    - vault-secrets-webhook
+                  bound_service_account_namespaces:
+                    - vault-secrets-webhook
+                  policies:
+                    - allow_secrets
+                  ttl: 1h
+            - type: approle
+              roles:
+                - name: default
+                  policies: allow_secrets
+                  secret_id_ttl: 10m
+                  token_num_uses: 10
+                  token_ttl: 20m
+                  token_max_ttl: 30m
+                  secret_id_num_uses: 40
+        secrets:
+            - path: secret
+              type: kv
+              description: General secrets.
+              options:
+                version: 2
+            - type: pki
+              description: Vault PKI Backend
+              config:
+                default_lease_ttl: 168h
+                max_lease_ttl: 720h
+              configuration:
+                config:
+                    - name: urls
+                      issuing_certificates: https://vault.vault:8200/v1/pki/ca
+                      crl_distribution_points: https://vault.vault:8200/v1/pki/crl
+                root/generate:
+                    - name: ${INGRESS1}
+                      common_name: vault.default
+                roles:
+                    - name: default
+                      allowed_domains: localhost,pod,svc,default,grafana,vault,authentik
+                      allow_subdomains: true
+                      generate_lease: true
+                      ttl: 1m
+        # Allows writing some secrets to Vault (useful for development purposes).
+        # See https://www.vaultproject.io/docs/secrets/kv/index.html for more information.
+        startupSecrets:
+            - type: kv
+              path: secret/data/radarr
+              data:
+                data:
+                    API_KEY: ENC[AES256_GCM,data:3YR2DU1gD8eOfCGZNTxm476u,iv:yyaz0aeXAH6TnA+5wnykt0svDfB7yNLOH1z5CFHmlog=,tag:loKi8jKCwnoWAWjtU8m7bg==,type:str]
+            - type: kv
+              path: secret/data/sonarr
+              data:
+                data:
+                    API_KEY: ENC[AES256_GCM,data:CjZjQKtVy0V/lQQodY1a6iOU,iv:wgszGht///nkarzXKBoJPbjHAiT+JEcgHBKL2owztqI=,tag:gz85l+/sX4J2EgJam7QtYA==,type:str]
+            - type: kv
+              path: secret/data/bazarr
+              data:
+                data:
+                    API_KEY: ENC[AES256_GCM,data:CjZjQKtVy0V/lQQodY1a6iOU,iv:wgszGht///nkarzXKBoJPbjHAiT+JEcgHBKL2owztqI=,tag:gz85l+/sX4J2EgJam7QtYA==,type:str]
+            - type: kv
+              path: secret/data/prowlarr
+              data:
+                data:
+                    API_KEY: ENC[AES256_GCM,data:CjZjQKtVy0V/lQQodY1a6iOU,iv:wgszGht///nkarzXKBoJPbjHAiT+JEcgHBKL2owztqI=,tag:gz85l+/sX4J2EgJam7QtYA==,type:str]
+            - type: kv
+              path: secret/data/minio
+              data:
+                data:
+                    MINIO_ROOT_USER: ENC[AES256_GCM,data:JN0V6l6asobFsg==,iv:CqgfRPySNwTjz+Fma1SYiO/aoqRZhTPnm5uZIoWHjmI=,tag:U54sfF1QS9eExn1sw4un2A==,type:str]
+                    MINIO_ROOT_PASSWORD: ENC[AES256_GCM,data:WwZFJTaheVOVog==,iv:03D+xvG3+JR6waUXJmrdPdqaMS45llQ5CbsFpSgx794=,tag:ju2kJIWREWdaM/O5eYRdcg==,type:str]
+                    MINIO_PROMETHEUS_TOKEN: null
+            - type: kv
+              path: secret/data/openid
+              data:
+                data:
+                    CLIENT_ID: ENC[AES256_GCM,data:BtD1vkVHNo/AtUH9YFVeYIhRapzWO95E+0Ce5PO3WtskxySLYRBcAT5/HV3LWaVgUDsyXQ9y1jsq/+8QFHnYTiKcTMiFbsmi,iv:5YaWGtF5sKakYLQc6M/+g7/ku3/ZT+j/ziEhT+34Pe4=,tag:5l+Qsd0BS6Rcs3C6734RuQ==,type:str]
+                    CLIENT_SECRET: ENC[AES256_GCM,data:glVv+BD5iuokFQ7Kj/bNZSxXaGD3VUHI,iv:EoRCa+npMkQxzrwb4ExSFNuFgBJBJwBPAKPgAgYXLpQ=,tag:hErfyWV+lk7/ppVN/FfHDw==,type:str]
+                    SCOPES: ENC[AES256_GCM,data:4nTwMD+DNMEcYh+8ZfDEi3TpPmw=,iv:bWa+Aei3EZ7tO5U8iw+LzKMZSGvVATkrA8KZDjNKKjY=,tag:7TtUeEa82B9wxQnlcstC8g==,type:str]
+            - type: kv
+              path: secret/data/redis
+              data:
+                data:
+                    PASSWORD: ENC[AES256_GCM,data:NiCpl9VcNnMg,iv:LppRHcc3Uf7XYkUH/e2dYPeriYF6UiVscLIxg+6Xxaw=,tag:DfwyivVFqRpKenUHqE8T6Q==,type:str]
+                    USERNAME: ENC[AES256_GCM,data:7dWvN3lRsA==,iv:OIimTgi/3XS+7byZop8rd6KidYsVOVzPpbvrHAsQrk4=,tag:ngv0wwa42sYKUs2PxD25QA==,type:str]
+            - type: kv
+              path: secret/data/pg_default
+              data:
+                data:
+                    USER: ENC[AES256_GCM,data:mFFPOVSphss=,iv:DEbGfNfisTzcPjqO0QuEdCEU29WXwPAGTAuK3Ene7DM=,tag:7q5SfLyXd+a8iWDauha6XQ==,type:str]
+                    PASSWORD: ENC[AES256_GCM,data:bdnkAP8oHlneQBlBQgo=,iv:95YI9kpFxcVo2PUDiyXl41F3gt6BvJ7JULctAtuXJDY=,tag:h2jQUl/XmGhj8IA/y7+AWg==,type:str]
+                    HOST: ENC[AES256_GCM,data:AmUfqFZS8+El3C1robJUK3a/oQw+QLHhTAcXInp9LDKmfw==,iv:ACwzdn50bs8WHDlYDaBDBTUbMOpLVIjTaookX68J1uo=,tag:d8vE80rz/NFiTokP+D/Oqw==,type:str]
+                    DB_URI: ENC[AES256_GCM,data:NdEla4oxYmvoWc2otGdldJ2tlG6sMEP5D0yqCxQy4U4wPJbZTpbSmZSGVgbiW1dr+DgX29lgE8mE5IB4WANFZpCjpqZPLnMMjkg=,iv:ru7j87FgbGVdLKmt6dsrtrlpJ1emDusscP987cvZ+j8=,tag:VxJ7N/PRbpfVy0Gb0TjUFQ==,type:str]
+            - type: kv
+              path: secret/data/zitadel
+              data:
+                data:
+                    MASTERKEY: ENC[AES256_GCM,data:Pvtr0DEsrpl6+o15QFe83ozZDg6cwhYi7L1zC7iJbX8=,iv:vHjM7Pm9h5l9Bmoy9a9+S6TB4HKCa0Qw94FiCVOsZsg=,tag:q/p6iJCmB2Ofiud/NRhivQ==,type:str]
+            - type: kv
+              path: secret/data/cloudflare
+              data:
+                data:
+                    DNS_TOKEN: ENC[AES256_GCM,data:qsl81HL7VO/0HilC4slOCS/5qakMMHVxFGFExVIgcIEcJzSKLArS6g==,iv:As5IXZigJ9doHhU7tOrmcyEAv44S/W/L00PzQOUui0s=,tag:fHaytnTmducOQhxlExxsUw==,type:str]
+                    CERT_TOKEN: ENC[AES256_GCM,data:UONaApFRR9iPC1iZWWWTiXyyTNSJX1dWYDt8B/HqRZ/L1ucD7TPu2g==,iv:BcXNHzqb1o4Ho0A9j2lSRO2caaIb+Q8oGA9l4xuzDBU=,tag:OjE5GCnYlReUp0zmOSCoqw==,type:str]
+            - type: kv
+              path: secret/data/atuin
+              data:
+                data:
+                    DBNAME: ENC[AES256_GCM,data:LX0LqAHZfYM=,iv:769IgxULEgWS91MRCYzH/sxU6ggeu+/QZUL2O6VjOAU=,tag:F0MqWALBe/D5uhbktaYXEg==,type:str]
+                    PG_USER: ENC[AES256_GCM,data:lQEUdiIBQniSmg==,iv:mc3NDQ1n29e4u1vJnpokNFZP5swY7WQR8kwW4tzqZvc=,tag:xXXryzp0O2frEA2sMJhGkA==,type:str]
+                    PG_PASS: ENC[AES256_GCM,data:fM2C/2FytRifLg==,iv:9gRAsOSTQSY3sK5riD8GlrZ2D/wIlZaT6d/p+IDDbsY=,tag:MHHSQPcal2EZMLC2r5AuOw==,type:str]
+                    DB_URI: ENC[AES256_GCM,data:LtQHq2heR07Q+ut93Qm52r2Nm02i4OVtcicufxjR25LpvGlev9LwggPEke+5HY38X6ICFzm9/KQvOXGeP91HdAM18AguYmiJ0BhWikVcuhPH,iv:Uk+Me1LjdNco2oXKzqDt/tEssKI+/rbIvW15ciUHCU8=,tag:eYlxd/+iL7R5E5jJ20OgQg==,type:str]
+            - type: kv
+              path: secret/data/calcom
+              data:
+                data:
+                    DBNAME: ENC[AES256_GCM,data:fakQUi0mAxYA,iv:LY+ueYxuPs9GhPrEVOPppqMp7xmu108aITRFKPMEjLc=,tag:4oD8Sx5mvE0lSjlQwQUPLw==,type:str]
+                    PG_USER: ENC[AES256_GCM,data:EQoz8puA+2LyFPE=,iv:bJRlA1gC7PZHctU8c1kEDxZVfati0/EZCGFrMY06Wn8=,tag:9NuPAYENZQqyvkiaeaE3qg==,type:str]
+                    PG_PASS: ENC[AES256_GCM,data:pGSglvwK57s/n8k=,iv:lJsJGTAe2lEFl2ldSqcnECCxC/ab9osch88jw5SfUCc=,tag:RKU0tRQr3QF+7JToBkm3Xg==,type:str]
+                    CALENDSO_ENCRYPTION_KEY: ENC[AES256_GCM,data:5FP7vzDi2vu0f/GfmbQEq8jxPzILRPHmOkHsGPyQ+D0=,iv:ai/xK+oK5LV1eJXDWA6ZFfKRnMTLSj9PeK1z4Z/MtEU=,tag:wUYh8Ycd1v2raZyfcJILyA==,type:str]
+                    NEXTAUTH_SECRET: ENC[AES256_GCM,data:eUF0zeIXfs6cUtZkcnI9T3rIPF6lFqKRIp71m2x7wF0=,iv:nAxqZlwQD/yhjIqBvIrQHk5Qe5oL55ZJ7QJq63bHBCw=,tag:tnpyY5U4oL8lYSICLJL7Jw==,type:str]
+                    DB_URI: ENC[AES256_GCM,data:mosdPwqaVhrKGEKpCNMHURTGZr0pa4droLX8l8dtJ+G/M4JMeAH7PtFKNhBnX4WpmFz0bUwDZ4rbK/J6M6AavEH3cR4gT2IQGGGmEhKkvedJyuow,iv:ncVM0lT42qr+e6/Igrj8nTguEBufZ4A7dzHwZlOefTs=,tag:hrcUmbqc3eGXXPF4vlMYCg==,type:str]
+            - type: kv
+              path: secret/data/ssh
+              data:
+                data:
+                    priv: ENC[AES256_GCM,data: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,iv:y75I67ac5SEMUPPPRYSfp1i0VKnviAhKArNez5VZApg=,tag:BsJrnV1GXc5yEcnaWC856g==,type:str]
+                    pub: ENC[AES256_GCM,data:sKqM4wyjo1no9KboKebIND4PWsDXQ2grKuxJAnMXqHg0TfmWdV7CKJfMyBUAB8HHUFVeZ1YL1zFLGTECwdcRfy+WQOGNZnp45wSsfK00dFU6ddIpkdKJO8wyG9A/wHcOGcY67Lq9EaOUCfwMhgFssge07MZ735bZf9Sn091jx1wMFB5yCrO85LDv8EwPE5kJC7mP5asSRGy0hcrSdm8dRSZ/AQcrXxXmElynZHjlx6h2Mc8p5idvBybh8MAU5D/LK5EKSbvhGXTaTkmQW8l6oCwtv8B+Ah6d334U/OViz+ngX1lu3o3wM1VnUqNm+tT1W4UlBsL/xWJGG9tiqZnN2vjKsf2GKyk1Q8JHQo9o9/xDEEsmI5g84fTcXOQ9QJxcskpIk/OYglmmVzBNrLSCm3fhQFJ+BxyZ9FaiYAJawRafF6JS54B1Xo51zTACTXNBlfQQMRu7+n1Tgl+SKrNr6IlS3tTHuSiyr0SbhxFfdHboc6QUlB0TfaE1ZLmr5gqSfkXltIlE3y03y/mx9Dma0vSbTaHXxAXE4E/FkTty3ZM4Vi7cLeCxBGQoi4ZvFFdrolNj+wQ3r6fTiRTGiH27pdGcPDjZ9HNwsju3o1aZh56MewZhvVg1O09G3pwyH+PTeuQosSg1Zv4kEGAtsrelj+8G+H/82FDUta8NdSoB2vVYI0ftWweq1cuk1wTlWQAYGJklwOB+Weu0Bn3feSZMgHECnZXPfum0KAQUkC31eGIvel8va0i4m2p+OyhaoIV5fwz6BYP5n53KzYSW6yMXxHs+qv3mJUWdtNIThvrW6pSYwI+IRgu+VtkcyFJUtgt5l+Q+VzUM+/LxlgT4RkC4abKsTNR35ToLhovSLjePWSuoZGwmKODqHs5Xa6SIfqNkRoZHRxIN6JWZ92zg0YfraCzifNBdNIqTowt52cGqK+Y75sDf4lS6WDTpHHvLMUrJCCg+ksxcgr/KLNU6Yc/pL7JtlRhTKqaozu5S,iv:s+DYYo+YVcNGr1M3rIwn2Y3npROzIbpi/dokUfPrp1M=,tag:GPy9SXNQYE+nV2+iq6Yung==,type:str]
+            - type: kv
+              path: secret/data/softserve
+              data:
+                data:
+                    DBNAME: ENC[AES256_GCM,data:2TS5pYM0MahKUbvZ,iv:QHootMw2YoKhTL1eKEpZCfjFdDwQs31XlpeHqteP9+4=,tag:bLrR0wdJObSgv5SM0wgcRQ==,type:str]
+                    PG_USER: ENC[AES256_GCM,data:/STzFa9w5zJ18QchvIU=,iv:YRdx7iLtPRYJ95VBzOOKYWN2k3vmap0kIpqDv3rV9t0=,tag:seQvm3bT+Fp707Xkjd72Gg==,type:str]
+                    PG_PASS: ENC[AES256_GCM,data:H/DA/kveEgnWYVJdonQ=,iv:lhDHkAJJPj7PIYf1NxAEBEePIKcpTSB2AwHSBkpswe8=,tag:+8ULW4Cm44Pkq95BvZgMJw==,type:str]
+                    SOFT_SERVE_DB_DATA_SOURCE: ENC[AES256_GCM,data:FmV/EDqgb4RLy95l0VTxnMOda393UbGT8lCejIj5GXmExnwnzgQsPd8d8N15SzoAoKVECxo9XwpIqFHqNx3Tvpfn71KtOxvVmcekBddrdyXbbG9LeR5oen0jsSwL,iv:l0oKB22KGytn0wlGL8NpIOJ7/P5LvYvYJv3zyH6aUHs=,tag:YnrdZcWWPX5HgH6/8MRluw==,type:str]
+            - type: kv
+              path: secret/data/harbor
+              data:
+                data:
+                    ADMIN_PASSWORD: ENC[AES256_GCM,data:NK1BRdBxaGBivOw=,iv:R70vrJqFAgl2qugcks2YFnAxmBMPxCLXbNSNAifhQpI=,tag:8lZ4MQMxH2v9I/P/2Tqv5A==,type:str]
+            - type: kv
+              path: secret/data/immich
+              data:
+                data:
+                    CLIENT_ID: ENC[AES256_GCM,data:C3COaDqgM19MqIOuzM+QahoXKXAipKu/AOjsTj5Y5B0HI/1M,iv:GGmNSPGNNUChSclcW8C4PlKmxeO3UiowcPmF9fFGUFw=,tag:tC1qejfpR4IEtFttk2USaA==,type:str]
+                    CLIENT_SECRET: ENC[AES256_GCM,data:WYXvr4j7NL91GMps9HKcYLKf3Q+7HCMu7EM=,iv:2+GC78Yd47YqVK/x8UlWkSP7bkB7rtCD0dSXXVhb0mo=,tag:P67GyRs9T3qwA7Bmt3o6Aw==,type:str]
+            - type: kv
+              path: secret/data/ory
+              data:
+                data:
+                    SECRETS_SYSTEM: ENC[AES256_GCM,data:uo7KcUsTVOg=,iv:XostsMYy/Cai8oKi/eVC/eFJF9VCdqLw7uhuPZTnNgk=,tag:o2lJEc9NOqAIabHVBRBN7w==,type:str]
+                    DB_URI_HYDRA: ENC[AES256_GCM,data:bdciG7+Ih8+7O/wOa+SbYvD7WdPPrvHfgZDxBnvvYCiaPYA7YIn2KsAMTA00PQb168PrIEztW4XoFIjmLyurlHG1C0DIhQUVWi1m+VPW5XE=,iv:9++jihmGHTgPosMkhrfn/sl+77DdmQPqHK9tNmSOg9I=,tag:MgujPyu5lv+GFBN/sjlBjw==,type:str]
+                    DB_URI_KRATOS: ENC[AES256_GCM,data:XIvceGq7HvLfVpMQH327K3oKRV+yKeDJdH97rtk7m5ARUxoGNSGXe2vEhy6+HrU1W8u7MsWFzqpHKiH01x9GTAcxKRmTGzoquFYtZa6W8fPP,iv:S4tHJONAfuybA7ngdlz+ynbOjpae4SMRIRCfgmO2Kmc=,tag:VcjLym8MWsZ/tqYBokkuFQ==,type:str]
+            - type: kv
+              path: secret/data/recaptcha
+              data:
+                data:
+                    PUB: ENC[AES256_GCM,data:gpIEqmIYcuomN7zRvYA84JCHhgppT0Uu81QACchdL1c0a9xZaBCFJQ==,iv:7gkK6wuSyKq1kGk9rQEF7x2Xub8K1dFzzbKSZ98/Qu4=,tag:vpGb/Sfl38g0jbfc1lubdQ==,type:str]
+                    PRIV: ENC[AES256_GCM,data:oHjAnFAqsQpCadMIbfuMT8KjwBwmBrXRiSvxBrq/TUGnR7HnmY4fwA==,iv:EQyEle3Da2um5+V/+ZxEF9022m+S9vWTkYrn5bdp490=,tag:K7H6xnLfmsmIztN1eSFSjw==,type:str]
+            - type: kv
+              path: secret/data/binance_report
+              data:
+                data:
+                    API_KEY: ENC[AES256_GCM,data:B+0Nh4P+0d931ZDIPS65iVN04VSfZLvvjwAr7AQg8mPIqniHQKpj6b7DwMkJeFsJJcWB59lFZcsAzehAXaG0Qw==,iv:s/lvdjM5fDS+UKOSnwrtDn/wobF9suDhA4ODIeR8TDw=,tag:cwg3rouI+iG8pI0l8SWngg==,type:str]
+                    SECRET_KEY: ENC[AES256_GCM,data:8dmT09I7NGcBVr2Xpo8jXu8MQEH0iy20PJktRJBlnxpHg03KY4NWj+ygdfpr+nugXs0/gKaUL6xdfYFHF1EnUQ==,iv:z+p9Ijxr1nNK1kCv5Z+MTG3TmVKRpOfqxCjKnTtCTX0=,tag:i3Uaepp9/RHK4fTcS9ZQew==,type:str]
+            - type: kv
+              path: secret/data/s3
+              data:
+                data:
+                    ID: ENC[AES256_GCM,data:X53jUJAAfCBwCkGELdN1+TB4Zj9+ZvX/Vw==,iv:D/iDhFYXF7w5xR85k0wTNBpAw/0JxYueE5h1QNC80p4=,tag:gNUXagFV6G3EfEbcysLhAg==,type:str]
+                    SECRET: ENC[AES256_GCM,data:+3dUabu6XSm9gm9wUM8nPcpU0VZ8Kakxi8AolOXuIg==,iv:zxv4xECju/A94mUBWgeQ+pmC/k2ksqaSXl9z7PBMMXI=,tag:ZjdERW0jvX+vv8mDMZxjsw==,type:str]
+    vaultEnvsConfig:
+        - name: VAULT_LOG_LEVEL
+          value: debug
+        - name: VAULT_STORAGE_FILE
+          value: /vault/file
+          # - name: VAULT_ADDR
+          #   value: http://127.0.0.1:8200
+    # If you are using a custom certificate and are setting the hostname in a custom way
+    # sidecarEnvsConfig:
+    #   - name: VAULT_ADDR
+    #     value: http://vault.vault:8200
+    # # https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+    # vaultPodSpec:
+    #   hostAliases:
+    #   - ip: "127.0.0.1"
+    #     hostnames:
+    #     - "vault.local"
+    # It is possible to override the Vault container directly:
+    vaultContainerSpec:
+        name: vault
+        readinessProbe:
+            httpGet:
+                path: /v1/sys/health
+                port: 8200
+    # Marks presence of Istio, which influences things like port namings
+    istioEnabled: false
 sops:
-  age:
-    - recipient: age1yvl77vcj6cthafxqnjezrme4ntktjgd2j4xpgkcfutws83zrtdesk93cll
-      enc: |
-        -----BEGIN AGE ENCRYPTED FILE-----
-        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBBUklnYmhISVRyS1Zid3JV
-        UEpkdUVUejV0TWI2eWxXeUc2c0ZJdCtibG1zCnMrTmVsaXNSZWJEZy9CSW1PWlBC
-        b0ZJSzlxRzRoTU0vMjJWaTI5MXAxazQKLS0tIFhjQkEzaUtacjBHb2JFQjVmcENp
-        cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
-        4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
-        -----END AGE ENCRYPTED FILE-----
-  lastmodified: "2025-05-21T16:24:27Z"
-  mac: ENC[AES256_GCM,data:ycmwE2SaZ7K/n6s7C2uu+xNsPi+WNClQhvQHdtHvjKAaa6EzzqmJQK4mjRI4NnT0BQStQY053PeN8wKaWGq6GsTW55cuU8i2b9RTfN/7tkEkkEwd35xyW7yZxn4yFm2UYV2pXq5cII/t2Qb7+Y2PPZSoDoZw0ijQwj7TiITYWs8=,iv:oe8qLDYyfhT6SUF8JJu+f6CN4hpgrMa3kEO7YY3gktw=,tag:lW7yioGHU3oXY9+D9XAfxg==,type:str]
-  encrypted_regex: ^(data|stringData)$
-  mac_only_encrypted: true
-  version: 3.10.2
+    age:
+        - recipient: age1yvl77vcj6cthafxqnjezrme4ntktjgd2j4xpgkcfutws83zrtdesk93cll
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBBUklnYmhISVRyS1Zid3JV
+            UEpkdUVUejV0TWI2eWxXeUc2c0ZJdCtibG1zCnMrTmVsaXNSZWJEZy9CSW1PWlBC
+            b0ZJSzlxRzRoTU0vMjJWaTI5MXAxazQKLS0tIFhjQkEzaUtacjBHb2JFQjVmcENp
+            cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
+            4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2025-05-21T16:49:20Z"
+    mac: ENC[AES256_GCM,data:UrbPcU7fzmmohZGuduCBXXW5xPtzrEylGQkjFOw45qZunksFsU6E7cAnO8MoKT210UcJr929vLs9/bhxcgCY8JglkxLWHKffqD2ZKKINcfi/PfkFj9lBQ7lza0mvOkf8GYacWtKG4ujsYTzGs+OitkW7Phtz5tNokYOAxZKKHC8=,iv:2QU+2gbGb8CBIx72ysEzCdGTQHazqOk1M8BnSBH/Xkw=,tag:JCyjrxIUVJmHLzWg9OXHRw==,type:str]
+    encrypted_regex: ^(data|stringData)$
+    mac_only_encrypted: true
+    version: 3.10.2
