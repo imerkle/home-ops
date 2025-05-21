@@ -10,7 +10,7 @@ spec:
   gatewayClassName: cilium
   addresses:
     - type: IPAddress
-      value: 10.100.1.110
+      value: 10.100.1.101
     - type: IPAddress
       value: ::ffff:10.100.1.101
   infrastructure:
