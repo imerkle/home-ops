@@ -9,7 +9,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 1h
-  path: ./kubernetes/appsnew/vault/operator
+  path: ./kubernetes/apps/vault/operator
   prune: true
   sourceRef:
     kind: GitRepository
@@ -32,7 +32,7 @@ spec:
   dependsOn:
     - name: banzai-operator
   interval: 1h
-  path: ./kubernetes/appsnew/vault/app
+  path: ./kubernetes/apps/vault/app
   prune: true
   sourceRef:
     kind: GitRepository

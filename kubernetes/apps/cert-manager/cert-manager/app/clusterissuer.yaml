@@ -3,17 +3,29 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-production
+  name: ${CLUSTER_ISSUER}
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
+    email: "vault:secret/data/cloudflare#EMAIL"
     privateKeySecretRef:
-      name: letsencrypt-production
+      name: ${CLUSTER_ISSUER}
     solvers:
       - dns01:
           cloudflare:
+            email: "vault:secret/data/cloudflare#EMAIL"
             apiTokenSecretRef:
-              name: cloudflare-issuer-secret
-              key: CLOUDFLARE_DNS_TOKEN
+              name: dns01-api
+              key: cloudflare
         selector:
-          dnsZones: ["devbu.io"]
+          dnsZones:
+           - ${DNS_MAIN}
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+    name: dns01-api
+    namespace: cert-manager
+stringData:
+    cloudflare: "vault:secret/data/cloudflare#CERT_TOKEN"

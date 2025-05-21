@@ -14,7 +14,7 @@ spec:
       name: *app
       namespace: *namespace
   interval: 1h
-  path: ./kubernetes/appsnew/democratic-csi/local-hostpath/app
+  path: ./kubernetes/apps/democratic-csi/local-hostpath/app
   prune: true
   retryInterval: 2m
   sourceRef:

@@ -235,6 +235,7 @@ spec:
                 data:
                     DNS_TOKEN: ENC[AES256_GCM,data:qsl81HL7VO/0HilC4slOCS/5qakMMHVxFGFExVIgcIEcJzSKLArS6g==,iv:As5IXZigJ9doHhU7tOrmcyEAv44S/W/L00PzQOUui0s=,tag:fHaytnTmducOQhxlExxsUw==,type:str]
                     CERT_TOKEN: ENC[AES256_GCM,data:UONaApFRR9iPC1iZWWWTiXyyTNSJX1dWYDt8B/HqRZ/L1ucD7TPu2g==,iv:BcXNHzqb1o4Ho0A9j2lSRO2caaIb+Q8oGA9l4xuzDBU=,tag:OjE5GCnYlReUp0zmOSCoqw==,type:str]
+                    EMAIL: ENC[AES256_GCM,data:6JNZszfSXuz8NPvSLYxjou+kyFbDPg==,iv:MFQtbMh0Xui9Bs7hPMG1MpHDTuSh7IjpnZ2qfjBaf4A=,tag:xW0ednprN7ced0Idbo6OFg==,type:str]
             - type: kv
               path: secret/data/atuin
               data:
@@ -340,8 +341,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-05-21T16:49:20Z"
-    mac: ENC[AES256_GCM,data:UrbPcU7fzmmohZGuduCBXXW5xPtzrEylGQkjFOw45qZunksFsU6E7cAnO8MoKT210UcJr929vLs9/bhxcgCY8JglkxLWHKffqD2ZKKINcfi/PfkFj9lBQ7lza0mvOkf8GYacWtKG4ujsYTzGs+OitkW7Phtz5tNokYOAxZKKHC8=,iv:2QU+2gbGb8CBIx72ysEzCdGTQHazqOk1M8BnSBH/Xkw=,tag:JCyjrxIUVJmHLzWg9OXHRw==,type:str]
+    lastmodified: "2025-05-21T19:59:22Z"
+    mac: ENC[AES256_GCM,data:OBuVAxJs047K1bhIbhGT1FkohG3fA+XcgqOJQePHCtIcZZ7w1WAgX+wLOJZ538N2/RdS/HywbWPF4883Rw9vzys2Vwku8taXWfcj8CD8xxB4TEoaePsEk1AIxovUgeWNvauKDacsR03J0UupZd1SIncbX4R47AHlc6ch2E2JirU=,iv:hUMcAiJbr1saRwgKKl+V8HhR+FQdm5jwi8W1abmf0Gc=,tag:6CjHEVO6EsIG1k76nJYC0A==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.10.2
