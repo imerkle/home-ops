@@ -3,11 +3,11 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: devbu-io
+  name: ${LONG_DOMAIN}
 spec:
-  secretName: devbu-io-tls
+  secretName: "${LONG_DOMAIN}-tls"
   issuerRef:
-    name: letsencrypt-production
+    name: ${CLUSTER_ISSUER}
     kind: ClusterIssuer
-  commonName: devbu.io
-  dnsNames: ["devbu.io", "*.devbu.io"]
+  commonName: ${DNS_MAIN}
+  dnsNames: ["${DNS_MAIN}", "*.${DNS_MAIN}"]
