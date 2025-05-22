@@ -31,7 +31,7 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
-      # tls:
-      #   certificateRefs:
-      #     - kind: Secret
-      #       name: devbu-io-tls
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: "${LONG_DOMAIN}-tls"
