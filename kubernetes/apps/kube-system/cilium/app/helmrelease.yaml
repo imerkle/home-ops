@@ -60,10 +60,20 @@ spec:
         rollOutPods: true
     operator:
       tolerations: []
-    extraHostPathMounts:
-      - name: lib-modules
-        mountPath: /lib/modules
-        hostPath: /run/current-system/kernel-modules/lib/modules
-        hostPathType: Directory
+    extraVolumeMounts:
+      # - name: kmod-static
+      #   mountPath: /usr/local/sbin/modprobe
+      #   readOnly: true
+      - name: kernel-modules
+        mountPath: /lib/modules/
         readOnly: true
-        mountPropagation: HostToContainer
+
+    extraVolumes:
+      # - name: kmod-static
+      #   hostPath:
+      #     path: /usr/bin/kmod
+      #   type: File
+      - name: kernel-modules
+        hostPath:
+          path: /run/current-system/kernel-modules/lib/modules
+
