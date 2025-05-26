@@ -60,3 +60,10 @@ spec:
         rollOutPods: true
     operator:
       tolerations: []
+    extraHostPathMounts:
+      - name: host-mnt-data
+        mountPath: /lib/modules
+        hostPath: /run/current-system/kernel-modules/lib/modules
+        hostPathType: Directory
+        readOnly: true
+        mountPropagation: HostToContainer
