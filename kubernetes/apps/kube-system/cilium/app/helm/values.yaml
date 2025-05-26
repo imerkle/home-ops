@@ -10,7 +10,6 @@ bpf:
   preallocateMaps: true
   # tproxy: true
   hostLegacyRouting: true
-enableIPv6BIGTCP: false
 bpfClockProbe: true
 bgpControlPlane:
   enabled: true
@@ -23,7 +22,7 @@ cni:
 dashboards:
   enabled: true
 devices: enp+
-enableIPv4BIGTCP: true
+# enableIPv4BIGTCP: true
 endpointRoutes:
   enabled: true
 envoy:
