@@ -23,8 +23,8 @@ dashboards:
   enabled: true
 devices: enp+
 # enableIPv4BIGTCP: true
-## endpointRoutes:
-##  enabled: true
+endpointRoutes:
+ enabled: true
 envoy:
   rollOutPods: true
   prometheus:
@@ -34,8 +34,8 @@ envoy:
     defaultLevel: "trace"
 gatewayAPI:
   enabled: true
-  # enableAlpn: true
-  # xffNumTrustedHops: 1
+  enableAlpn: true
+  xffNumTrustedHops: 1
 hubble:
   enabled: false
 ipam:
