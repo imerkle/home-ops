@@ -17,8 +17,8 @@ cgroup:
   automount:
     enabled: false
   hostRoot: /sys/fs/cgroup
-## cni:
-#   exclusive: false
+cni:
+  exclusive: false
 dashboards:
   enabled: true
 devices: enp+
@@ -38,8 +38,8 @@ gatewayAPI:
   # xffNumTrustedHops: 1
 hubble:
   enabled: false
-## ipam:
-##  mode: kubernetes
+ipam:
+ mode: kubernetes
 ipv4NativeRoutingCIDR: 10.42.0.0/16
 k8sServiceHost: 10.0.0.10
 k8sServicePort: 6443
