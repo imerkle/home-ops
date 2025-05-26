@@ -10,6 +10,7 @@ bpf:
   preallocateMaps: true
   # tproxy: true
   hostLegacyRouting: true
+enableIPv6BIGTCP: false
 bpfClockProbe: true
 bgpControlPlane:
   enabled: true
