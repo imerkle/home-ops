@@ -27,12 +27,12 @@ releases:
     values: ['../kubernetes/apps/kube-system/spegel/app/helm/values.yaml']
     needs: ['kube-system/coredns']
 
-  # - name: cert-manager
-  #   namespace: cert-manager
-  #   chart: oci://quay.io/jetstack/charts/cert-manager
-  #   version: v1.17.2
-  #   values: ['../kubernetes/apps/cert-manager/cert-manager/app/helm/values.yaml']
-  #   needs: ['kube-system/spegel']
+  - name: cert-manager
+    namespace: cert-manager
+    chart: oci://quay.io/jetstack/charts/cert-manager
+    version: v1.17.2
+    values: ['../kubernetes/apps/cert-manager/cert-manager/app/helm/values.yaml']
+    needs: ['kube-system/spegel']
 
   # - name: external-secrets
   #   namespace: external-secrets
