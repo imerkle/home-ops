@@ -30,6 +30,8 @@ envoy:
   prometheus:
      serviceMonitor:
        enabled: true
+  log:
+    defaultLevel: "trace"
 gatewayAPI:
   enabled: true
   enableAlpn: true
