@@ -10,9 +10,9 @@ autoDirectNodeRoutes: true
 #   preallocateMaps: true
 #   # tproxy: true
 #   hostLegacyRouting: true
-bpfClockProbe: true
-bgpControlPlane:
-  enabled: true
+# bpfClockProbe: true
+# bgpControlPlane:
+#   enabled: true
 cgroup:
   automount:
     enabled: false
