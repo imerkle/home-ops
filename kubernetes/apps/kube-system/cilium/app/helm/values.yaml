@@ -1,5 +1,5 @@
 ---
-## autoDirectNodeRoutes: true
+autoDirectNodeRoutes: true
 # bandwidthManager:
 #   enabled: true
 #   bbr: true
