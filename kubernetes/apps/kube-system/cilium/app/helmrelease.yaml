@@ -75,5 +75,5 @@ spec:
       #   type: File
       - name: kernel-modules
         hostPath:
-          path: /run/current-system/kernel-modules/lib/modules
-
+          # path: realpath /run/current-system/kernel-modules/lib/modules
+          path: /nix/store/cccrjk79smxpyxc06yi7wlx1zqqffmgq-linux-6.6.90-modules/lib/modules
