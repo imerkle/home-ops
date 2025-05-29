@@ -3,13 +3,13 @@ autoDirectNodeRoutes: true
 # bandwidthManager:
 #   enabled: true
 #   bbr: true
-bpf:
+# bpf:
 #   # datapathMode: netkit
   # masquerade: false
-  masquerade: true
+  # masquerade: true
 #   preallocateMaps: true
 #   # tproxy: true
-  hostLegacyRouting: false
+  # hostLegacyRouting: false
 # bpfClockProbe: true
 # bgpControlPlane:
 #   enabled: true
@@ -68,8 +68,8 @@ prometheus:
     enabled: true
     trustCRDsExist: true
 rollOutCiliumPods: true
-# routingMode: native
-tunnelProtocol: "geneve"
+routingMode: native
+# tunnelProtocol: "geneve"
 securityContext:
   capabilities:
     ciliumAgent:

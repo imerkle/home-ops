@@ -21,13 +21,10 @@ tasks:
     desc: Stop K3s, remove data, recreate etcd container, and restart K3s
     cmds:
       - echo "Stopping K3s..."
-      - sc stop k3s || true
-      - sudo rm -rf /var/lib/rancher/k3s
+      - doas systemctl stop k3s || true
+      - doas rm -rf /var/lib/rancher/k3s
       - echo "Removing existing etcd container if any..."
-      - |
-        if docker ps -a --format '{{.Names}}' | grep -q '^etcd$'; then
-          docker rm -f etcd
-        fi
+      - docker stop etcd && docker rm etcd
       - echo "Starting new etcd container..."
       - |
         docker run -d \
@@ -47,6 +44,6 @@ tasks:
             --initial-cluster-token k3s-cluster \
             --initial-cluster-state new
       - echo "Starting K3s..."
-      - sc start k3s
+      - systemctl start k3s
       - echo "Copying kubeconfig..."
-      - sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+      - doas cp /etc/rancher/k3s/k3s.yaml {{ .HOME }}/.kube/config
