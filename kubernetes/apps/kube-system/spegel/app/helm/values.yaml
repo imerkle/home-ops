@@ -1,6 +1,6 @@
 ---
 spegel:
-  containerdSock: /run/containerd/containerd.sock
+  containerdSock: ""
   containerdRegistryConfigPath: /etc/cri/conf.d/hosts
 service:
   registry:
