@@ -36,8 +36,8 @@ gatewayAPI:
   enabled: true
   enableAlpn: true
   xffNumTrustedHops: 1
-  hostNetwork:
-    enabled: true
+  # hostNetwork:
+  #   enabled: true
 hubble:
   enabled: false
 ipam:
