@@ -8,8 +8,9 @@ spec:
   allowFirstLastIPs: "No"
   blocks:
     # - cidr: ${IP_LB_CIDR}
-    - cidr: 10.0.0.0/24
+    # - cidr: 10.0.0.0/24
     # - cidr: ::ffff:192.168.42.0/120 # IPv4-mapped IPv6
+    - cidr: 192.168.122.10/24
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cilium.io/ciliuml2announcementpolicy_v2alpha1.json
 apiVersion: cilium.io/v2alpha1
@@ -19,7 +20,8 @@ metadata:
 spec:
   loadBalancerIPs: true
   interfaces:
-    - "^enp.*"
+    # - "^enp.*"
+    - "^eth.*"
     # - "wg0"
   nodeSelector:
     matchLabels:
