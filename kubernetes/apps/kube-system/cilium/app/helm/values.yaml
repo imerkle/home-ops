@@ -3,10 +3,10 @@ autoDirectNodeRoutes: true
 # bandwidthManager:
 #   enabled: true
 #   bbr: true
-# bpf:
+bpf:
 #   # datapathMode: netkit
   # masquerade: false
-  # masquerade: true
+  masquerade: true
 #   preallocateMaps: true
 #   # tproxy: true
   # hostLegacyRouting: false
