@@ -8,7 +8,7 @@ serviceAccount:
   create: true
 service:
   name: kube-dns
-  clusterIP: ${SERVICE_IP}
+  clusterIP: 10.96.0.10
 servers:
   - zones:
       - zone: .
@@ -29,7 +29,7 @@ servers:
       - name: autopath
         parameters: "@kubernetes"
       - name: forward
-        parameters: . /etc/resolv.conf
+        parameters: . 1.1.1.1
       - name: cache
         configBlock: |-
           prefetch 20

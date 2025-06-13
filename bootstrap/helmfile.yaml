@@ -23,9 +23,9 @@ releases:
     version: 1.42.1
     values: ['../kubernetes/apps/kube-system/coredns/app/helm/values.yaml']
     needs: ['kube-system/cilium']
-    set:
-      - name: service.clusterIP
-        value: ref+sops://../kubernetes/components/common/sops/vars.sops.yaml#/SERVICE_IP
+    # set:
+    #   - name: service.clusterIP
+    #     value: ref+sops://../kubernetes/components/common/sops/vars.sops.yaml#/SERVICE_IP
 
   - name: spegel
     namespace: kube-system
