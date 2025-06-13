@@ -14,7 +14,7 @@ stringData:
     IP_CLUSTER_VIP: ENC[AES256_GCM,data:BmzzNaYeQTGMAe8OB1GW,iv:7WcrK0ZTDxc7VCUzKXlFb6ubjvZ+hjJa51YmF+JkJuw=,tag:eCLfMZvtk/1o9AECcSybFA==,type:str]
     #ENC[AES256_GCM,data:KkpgGkEYAY9BT8/VpHWiFpkntK3TVk6sDLM=,iv:qg+s0smxZY6GS+0tDQYZFdju70vtEtPdCAIUHs4hrqw=,tag:qk0FVGpGBXRx8wtGTYIP1A==,type:comment]
     IP_LB_CIDR: ENC[AES256_GCM,data:Ttn7fdt4lSAH7CSleFxlfIog,iv:SArng8Qbon9Tq7UVDoWWAGeXB4zl9HTTZvEQVKx66zM=,tag:HhOuhKn60NN8t/I4+gnI2Q==,type:str]
-    SERVICE_IP: ENC[AES256_GCM,data:FgE2SfpIFppG4A==,iv:dV0GoKwPupwh934CyrjjoN2EIwJRzL3R/7OAv0lP93Q=,tag:mZFbnQ+PgAH5oZy+8xiNLg==,type:str]
+    SERVICE_IP: ENC[AES256_GCM,data:EjGRZo5c0jNi,iv:/sT2/wtLyyqjVjQK9StGdBD0BXgIoeN7tYgKSOTiqBQ=,tag:KZ3k1JiHf1upSvpp0c92vQ==,type:str]
     IP_LOCAL_LB_CIDR: ENC[AES256_GCM,data:LbQ/wpj2eFZnUVo=,iv:8cl2JxbIlZrmuDecGhGJH+sLIKZXYN+2QagtQL1YFdc=,tag:p5vLmqgxUaOpR7bVjTEa/g==,type:str]
     IP_LB_DNS_CIDR: ENC[AES256_GCM,data:xUoQno9S9AAzOoc=,iv:bDj2T5/L4vgwsx9cxEjtK37QcpU/m+FOQDi9m4e5Xjs=,tag:6ycLWyQq5NSpN+O7AoSbaw==,type:str]
     IP_HOME_DNS: ENC[AES256_GCM,data:DHcy2wDnmTQ=,iv:q6HqyuHGwhw2SpLy7RcwmmxBGNk8lxBSWOnilSljLgo=,tag:/9xfVI05xa7ZXeL1M1ZChA==,type:str]
@@ -86,8 +86,8 @@ sops:
             c1FKQWtWVWVndjcya3p3UzdrcmlHaW8KN53wg1PnGl2m038KxZiJf42p0WtMTrUq
             GjGXG2J/3thTOldLIiVl+dx84vLPAvsjpf/fpIMTya3oWMr2W44JjQ==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-06-13T21:35:22Z"
-    mac: ENC[AES256_GCM,data:gOQgiI4raapMfNklZTWRFTN+aq5yvK9eCg+YyA3aqGyTiZuWaLgE7B/sQkJsPYWO5rBLNtukQKGOyRZ95AMzM/HVK46OqN8nCzG2/doc3S6Ds7oQQ6BhqShCrGnUPgVrJLjKAkl5K6i2xqsP9FfaXIkIOG2dJQqB2iUPWFEYy+k=,iv:3+ByUEZUq7B8kqgjmqh4L6hv+AAQBuV/e6WosVOOMLM=,tag:MhiKR8aQBxdABlQEcXrr5Q==,type:str]
+    lastmodified: "2025-06-13T22:23:04Z"
+    mac: ENC[AES256_GCM,data:3MFUXV9K/cZmlXNVjzQ78SRYw67WDhM7Nxu7WLpAdFJLaQk/biFjwCaEpFGGXavPtVUFPxpThS8rx9WCNZMox5ZooOSwshYFdQ6GecwV6qaBRX1Pzbq+nfmtfE4uVzeaSrCcf6j4X8SoB+KNfRDMtA1KzEAST/bNFo76tHUm9SU=,iv:qyChbjCPxFj9f+vKYAQjS2S79GeJQumYg56rQzt7eE0=,tag:uQwSwvV7fduUPUIrxGaJBQ==,type:str]
     pgp: []
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
