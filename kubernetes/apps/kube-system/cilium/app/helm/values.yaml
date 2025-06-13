@@ -29,8 +29,8 @@ envoy:
   prometheus:
      serviceMonitor:
        enabled: true
-  log:
-    defaultLevel: "trace"
+  # log:
+  #   defaultLevel: "trace"
 gatewayAPI:
   enabled: true
   enableAlpn: true
@@ -42,8 +42,8 @@ hubble:
 ipam:
  mode: kubernetes
 ipv4NativeRoutingCIDR: 10.42.0.0/16
-devices: eth0
-k8sServiceHost: 192.168.122.103
+devices: ${CILIUM_DEVICE}
+k8sServiceHost: ${IP_CLUSTER_VIP}
 k8sServicePort: 6443
 kubeProxyReplacement: true
 kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
