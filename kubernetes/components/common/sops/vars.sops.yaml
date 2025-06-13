@@ -14,6 +14,7 @@ stringData:
     IP_CLUSTER_VIP: ENC[AES256_GCM,data:BmzzNaYeQTGMAe8OB1GW,iv:7WcrK0ZTDxc7VCUzKXlFb6ubjvZ+hjJa51YmF+JkJuw=,tag:eCLfMZvtk/1o9AECcSybFA==,type:str]
     #ENC[AES256_GCM,data:KkpgGkEYAY9BT8/VpHWiFpkntK3TVk6sDLM=,iv:qg+s0smxZY6GS+0tDQYZFdju70vtEtPdCAIUHs4hrqw=,tag:qk0FVGpGBXRx8wtGTYIP1A==,type:comment]
     IP_LB_CIDR: ENC[AES256_GCM,data:Ttn7fdt4lSAH7CSleFxlfIog,iv:SArng8Qbon9Tq7UVDoWWAGeXB4zl9HTTZvEQVKx66zM=,tag:HhOuhKn60NN8t/I4+gnI2Q==,type:str]
+    SERVICE_IP: ENC[AES256_GCM,data:FgE2SfpIFppG4A==,iv:dV0GoKwPupwh934CyrjjoN2EIwJRzL3R/7OAv0lP93Q=,tag:mZFbnQ+PgAH5oZy+8xiNLg==,type:str]
     IP_LOCAL_LB_CIDR: ENC[AES256_GCM,data:LbQ/wpj2eFZnUVo=,iv:8cl2JxbIlZrmuDecGhGJH+sLIKZXYN+2QagtQL1YFdc=,tag:p5vLmqgxUaOpR7bVjTEa/g==,type:str]
     IP_LB_DNS_CIDR: ENC[AES256_GCM,data:xUoQno9S9AAzOoc=,iv:bDj2T5/L4vgwsx9cxEjtK37QcpU/m+FOQDi9m4e5Xjs=,tag:6ycLWyQq5NSpN+O7AoSbaw==,type:str]
     IP_HOME_DNS: ENC[AES256_GCM,data:DHcy2wDnmTQ=,iv:q6HqyuHGwhw2SpLy7RcwmmxBGNk8lxBSWOnilSljLgo=,tag:/9xfVI05xa7ZXeL1M1ZChA==,type:str]
@@ -33,7 +34,6 @@ stringData:
     LONGHORN_DATA_PATH: ENC[AES256_GCM,data:HSYgOH6bj1XnXzqy9Vl8+LJWx3M=,iv:Et3jGahQUGm10mDNNTkxZ28ji/M2eVl8y1KNYDfMG3w=,tag:y/sEfgsogZ5M7jKMp/slNA==,type:str]
     CLUSTER_ISSUER: ENC[AES256_GCM,data:Wptag6A2/ZCdy9u6eGODuZBM,iv:hXzvIftbw+jyJcMxnxSxUQEOcf5DJBe53DIgEWOZHdk=,tag:PVPiVono4HSsd3HGIFzxug==,type:str]
     LONG_DOMAIN: ENC[AES256_GCM,data:z4jfrWCSmTF/w4vKRA==,iv:vFEmtRE3LCguNTsZNrQCg5mR3Knonp57Oj4fnrMF7LQ=,tag:P48z9iM3Kq7v+Mu1L1ij2Q==,type:str]
-    SERVICE_IP: ENC[AES256_GCM,data:LRUQW8Scbuzy8Q==,iv:gtu6GAeyPYE30VGleWvFARkjPE9WmZRHQZ02vjANc/I=,tag:h1llhT/tIIUsgYl1BzTXSg==,type:str]
     IMMICH_CLIENT_ID: ENC[AES256_GCM,data:nOlkqt6FlTDLtQrOioYlE+yZ963rlDLg8Ux5oZsHj3XIk3pj,iv:i1Jzzz4x69gxOMmIf/vVSGot3lFnpoHbLnjSA9KOkrU=,tag:OeM+ISo1hFAKjMgqWj4FEw==,type:str]
     IMMICH_CLIENT_SECRET: ENC[AES256_GCM,data:dD6JF9HSCVHeD1cX9XjO+eS0eHrzRV1PFw==,iv:4w/MVFokTet7V30npqxMXmruEGJzN6ipd4gpFqE+v7A=,tag:xL5ehsDtYTYrg0IH/I7tmg==,type:str]
     S3_ENDPOINT: ENC[AES256_GCM,data:c79A6lhPS1MF9rvbRBNjh4lB4H5+zK6jdoHnycgbCkpIKa3Umvg=,iv:cgbH4aicZF1Gnbhhxe9AC9GEiQNjZmOEvNgzCBZMLGg=,tag:miJTv1NUu1rEQAfO53M6kQ==,type:str]
@@ -86,8 +86,8 @@ sops:
             c1FKQWtWVWVndjcya3p3UzdrcmlHaW8KN53wg1PnGl2m038KxZiJf42p0WtMTrUq
             GjGXG2J/3thTOldLIiVl+dx84vLPAvsjpf/fpIMTya3oWMr2W44JjQ==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-06-13T21:32:33Z"
-    mac: ENC[AES256_GCM,data:ldtfSpkcYuhYhtew1PVEeHEMTLJaJbH6Y4sFiu3aqQsAlMO45Fv4t6vHrFhJyyVMqrUlh0GF3BMchRIbVG1DlApsVnyDu7amYtetMtiaEdtoJ8r9DbfL/dcSNLcC9RuxuDrpDOwoUt4es7sJ2tT00VO/4YL8EQ9E6TLsvlBOGKM=,iv:G64KAuvqEZuICRs978R1pyBuk18OACQ4C/bSyoKAvgc=,tag:mWxv2tKrAbv3bHCBG118Vw==,type:str]
+    lastmodified: "2025-06-13T21:35:22Z"
+    mac: ENC[AES256_GCM,data:gOQgiI4raapMfNklZTWRFTN+aq5yvK9eCg+YyA3aqGyTiZuWaLgE7B/sQkJsPYWO5rBLNtukQKGOyRZ95AMzM/HVK46OqN8nCzG2/doc3S6Ds7oQQ6BhqShCrGnUPgVrJLjKAkl5K6i2xqsP9FfaXIkIOG2dJQqB2iUPWFEYy+k=,iv:3+ByUEZUq7B8kqgjmqh4L6hv+AAQBuV/e6WosVOOMLM=,tag:MhiKR8aQBxdABlQEcXrr5Q==,type:str]
     pgp: []
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
