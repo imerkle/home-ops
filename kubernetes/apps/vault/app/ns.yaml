@@ -1,0 +1,7 @@
+# democratic-csi-namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vault
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
