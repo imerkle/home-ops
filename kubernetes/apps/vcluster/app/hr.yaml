@@ -1,0 +1,42 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/helmrepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: loft
+spec:
+  interval: 1h
+  timeout: 3m0s
+  url: https://charts.loft.sh
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app vcluster
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: vcluster
+      version: 0.26.0-beta.3
+      sourceRef:
+        kind: HelmRepository
+        name: loft
+        namespace: vcluster
+  maxHistory: 2
+  install:
+    timeout: 10m
+    replace: true
+    crds: CreateReplace
+    createNamespace: true
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  driftDetection:
+    mode: enabled
