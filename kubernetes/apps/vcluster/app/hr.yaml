@@ -44,10 +44,10 @@ spec:
     # Control plane configuration
     controlPlane:
       # Configure the backing store for vCluster's data
-      backingStore: # Enterprise feature - requires license
-        etcd:
-          embedded:
-            enabled: true  # Run etcd inside the vCluster pod
+      # backingStore: # Enterprise feature - requires license
+        # etcd:
+          # embedded:
+            # enabled: true  # Run etcd inside the vCluster pod
 
       # Expose the API server via ingress
       ingress:
