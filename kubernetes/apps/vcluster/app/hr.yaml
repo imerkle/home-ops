@@ -40,3 +40,36 @@ spec:
     keepHistory: false
   driftDetection:
     mode: enabled
+  values:
+    # Control plane configuration
+    controlPlane:
+      # Configure the backing store for vCluster's data
+      backingStore: # Enterprise feature - requires license
+        etcd:
+          embedded:
+            enabled: true  # Run etcd inside the vCluster pod
+
+      # Expose the API server via ingress
+      ingress:
+        enabled: true
+        host: vcluster-k8s-api.example.com  # Your API server hostname
+
+    # Resource synchronization settings when using host cluster's worker nodes
+    sync:
+      # Resources that sync from virtual cluster to host
+      toHost:
+        serviceAccounts:
+          enabled: true  # Sync ServiceAccounts for operators/controllers
+
+      # Resources that sync from host to virtual cluster
+      fromHost:
+        nodes:
+          enabled: true  # Sync real nodes instead of fake nodes
+          clearImageStatus: true  # Remove image data to save resources
+
+    # Kubeconfig export configuration
+    exportKubeConfig:
+      context: my-vcluster-context  # Name in the kubeconfig file
+      server: https://vcluster-k8s-api.example.com  # API server URL
+      secret:
+        name: my-vcluster-kubeconfig  # Secret name for storing kubeconfig
