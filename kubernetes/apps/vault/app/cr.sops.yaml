@@ -9,37 +9,37 @@ spec:
     # Specify the ServiceAccount where the Vault Pod and the Bank-Vaults configurer/unsealer is running
     serviceAccount: vault
     serviceType: ClusterIP
-    ingress:
-        annotations:
-            # cert-manager.io/cluster-issuer: "${CLUSTER_ISSUER}"
-            #kubernetes.io/ingress.class: haproxy
-            #   cert-manager.io/cluster-issuer: letsencrypt-prod
-            #   hajimari.io/appName: Vault
-            #   hajimari.io/icon: database-lock
-            # external-dns.alpha.kubernetes.io/target: ${DNS_MAIN}
-            external-dns/is-public: "true"
-        spec:
-            ingressClassName: ${INGRESS1}
-            rules:
-                - host: vault.${DNS_MAIN}
-                  http:
-                    paths:
-                        - backend:
-                            service:
-                                name: vault
-                                port:
-                                    number: 8200
-                          path: /
-                          pathType: Prefix
-            tls:
-                - hosts:
-                    - vault.${DNS_MAIN}
-                    #       - vault
-                    #       - vault.vault
-                    #       - vault.vault.svc
-                    #       - vault.vault.svc.cluster.local
-                    #     secretName: long-domain-tls
-    # Use local disk to store Vault file data, see config section.
+    # ingress:
+    #     annotations:
+    #         # cert-manager.io/cluster-issuer: "${CLUSTER_ISSUER}"
+    #         #kubernetes.io/ingress.class: haproxy
+    #         #   cert-manager.io/cluster-issuer: letsencrypt-prod
+    #         #   hajimari.io/appName: Vault
+    #         #   hajimari.io/icon: database-lock
+    #         # external-dns.alpha.kubernetes.io/target: ${DNS_MAIN}
+    #         external-dns/is-public: "true"
+    #     spec:
+    #         ingressClassName: ${INGRESS1}
+    #         rules:
+    #             - host: vault.${DNS_MAIN}
+    #               http:
+    #                 paths:
+    #                     - backend:
+    #                         service:
+    #                             name: vault
+    #                             port:
+    #                                 number: 8200
+    #                       path: /
+    #                       pathType: Prefix
+    #         tls:
+    #             - hosts:
+    #                 - vault.${DNS_MAIN}
+    #                 #       - vault
+    #                 #       - vault.vault
+    #                 #       - vault.vault.svc
+    #                 #       - vault.vault.svc.cluster.local
+    #                 #     secretName: long-domain-tls
+    # # Use local disk to store Vault file data, see config section.
     volumes:
         - name: vault-file
           persistentVolumeClaim:
@@ -341,8 +341,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-05-21T19:59:22Z"
-    mac: ENC[AES256_GCM,data:OBuVAxJs047K1bhIbhGT1FkohG3fA+XcgqOJQePHCtIcZZ7w1WAgX+wLOJZ538N2/RdS/HywbWPF4883Rw9vzys2Vwku8taXWfcj8CD8xxB4TEoaePsEk1AIxovUgeWNvauKDacsR03J0UupZd1SIncbX4R47AHlc6ch2E2JirU=,iv:hUMcAiJbr1saRwgKKl+V8HhR+FQdm5jwi8W1abmf0Gc=,tag:6CjHEVO6EsIG1k76nJYC0A==,type:str]
+    lastmodified: "2025-11-08T10:33:57Z"
+    mac: ENC[AES256_GCM,data:kWqxWrqJOZw73dKaK6oW+YoKUUwJ65CXHLXVrdt5nuduYB4dRc46OM3K82BqV+3gN+mezpo7v9YjUbdmERp13Y0SR0SR4RL20Rf9xY/fiNeOYjNLugSjpLJFgjhbiEMyS10qMH3EvXz2JaXvvf21jljqM9f1/j2KeLbEzOhkagI=,iv:syx0pJoWML/JjMMM8/x3NZAeTFPH01nQ4oVG76QTtyo=,tag:Oo7ls/Tkl+YhZZwXv+3Duw==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
-    version: 3.10.2
+    version: 3.11.0
