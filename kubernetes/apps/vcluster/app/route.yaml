@@ -1,4 +1,4 @@
-apiVersion: gateway.networking.k8s.io/v1
+apiVersion: gateway.networking.k8s.io/v1alpha3
 kind: TLSRoute
 metadata:
   name: vcluster-route
@@ -9,10 +9,10 @@ spec:
     - name: internal
       namespace: kube-system
   rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
+    # - matches:
+    #     - path:
+    #         type: PathPrefix
+    #         value: /
       backendRefs:
         - name: vcluster
           port: 443
