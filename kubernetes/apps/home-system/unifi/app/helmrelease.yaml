@@ -53,8 +53,8 @@ spec:
       main:
         controller: main
         type: LoadBalancer
-        loadBalancerIP: "${UNIFI_ADDR:=1.1.1.1}"
-        externalTrafficPolicy: Local
+        # loadBalancerIP: "${UNIFI_ADDR:=1.1.1.1}"
+        # externalTrafficPolicy: Local
         # annotations:
           # traefik.ingress.kubernetes.io/service.serversscheme: https
         ports:
