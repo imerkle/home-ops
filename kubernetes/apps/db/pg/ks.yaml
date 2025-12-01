@@ -1,0 +1,94 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: 1-core-db-pg-app
+  namespace: flux-system
+  labels:
+    kustomization.flux.fast/default: "false"
+spec:
+  interval: 5m
+  path: ./kubernetes/core/db/pg/app
+  dependsOn: []
+  healthChecks:
+    - name: cloudnative-pg
+      namespace: cnpg
+      kind: HelmRelease
+      apiVersion: helm.toolkit.fluxcd.io/v2
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: 1-core-db-pg-clusters-default
+  namespace: flux-system
+  labels:
+    kustomization.flux.fast/default: "false"
+    wait.flux.home.arpa/disabled: "true"
+spec:
+  interval: 5m
+  path: ./kubernetes/core/db/pg/clusters/default
+  dependsOn:
+    - name: 1-core-db-pg-app
+  healthChecks:
+    - name: pg-default
+      namespace: pg
+      kind: Cluster
+      apiVersion: postgresql.cnpg.io/v1
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: 1-core-db-pg-clusters-replica
+  namespace: flux-system
+spec:
+  path: ./kubernetes/core/db/pg/clusters/replica
+  dependsOn:
+    - name: 1-core-db-pg-app
+    # - name: 1-core-storage-minio-app
+  healthChecks:
+    - name: pg-replica
+      namespace: pg
+      kind: Cluster
+      apiVersion: postgresql.cnpg.io/v1
+
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: 1-core-db-pg-clusters-vector
+  namespace: flux-system
+  labels:
+    wait.flux.home.arpa/disabled: "true"
+spec:
+  path: ./kubernetes/core/db/pg/clusters/vector
+  dependsOn:
+    - name: 1-core-db-pg-app
+    # - name: 1-core-storage-minio-app
+  healthChecks:
+    - name: pg-vector
+      namespace: pg
+      kind: Cluster
+      apiVersion: postgresql.cnpg.io/v1
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1
+# kind: Kustomization
+# metadata:
+#   name: 1-core-db-pg-clusters-enc
+#   namespace: flux-system
+# spec:
+#   path: ./kubernetes/core/db/pg/clusters/enc
+#   dependsOn:
+#     - name: 1-core-db-pg-app
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: pgadmin-app
+  namespace: flux-system
+  labels:
+    wait.flux.home.arpa/disabled: "true"
+spec:
+  targetNamespace: pg
+  path: ./kubernetes/core/db/pg/pgadmin
+  dependsOn:
+    - name: 1-core-db-pg-app

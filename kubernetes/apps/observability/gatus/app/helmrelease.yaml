@@ -5,50 +5,44 @@ kind: HelmRelease
 metadata:
   name: gatus
 spec:
-  interval: 1h
   chartRef:
     kind: OCIRepository
-    name: app-template
-  install:
-    remediation:
-      retries: -1
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
+    name: gatus
+  interval: 1h
   values:
     controllers:
       gatus:
+        type: statefulset
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:
-          init-config:
+          gatus-sidecar:
             image:
-              repository: ghcr.io/home-operations/k8s-sidecar
-              tag: 1.30.3@sha256:39cca7abcad8f1621b9462d95f7d0e60301b92fcb0ff4de0ad4561859011cddf
-            env:
-              FOLDER: /config
-              LABEL: gatus.io/enabled
-              NAMESPACE: ALL
-              RESOURCE: both
-              UNIQUE_FILENAMES: true
-              METHOD: WATCH
-            restartPolicy: Always
+              repository: ghcr.io/home-operations/gatus-sidecar
+              tag: 0.0.12@sha256:83bf82d422e9b0529a8076cb584d557a12158d9d8a4c373b4d27afcb87a17569
+            args:
+              - --auto-httproute
+              - --enable-httproute
+              - --enable-service
             resources:
               requests:
                 cpu: 10m
               limits:
-                memory: 128Mi
+                memory: 64Mi
+            restartPolicy: Always
         containers:
           app:
             image:
               repository: ghcr.io/twin/gatus
-              tag: v5.17.0@sha256:a8c53f9e9f1a3876cd00e44a42c80fc984e118d5ba0bdbaf08980cb627d61512
+              tag: v5.33.0@sha256:bf249f4d7cf69e825457ade2ebc3d11168d73527ef1657a653119a0d9da97a4a
             env:
-              TZ: America/New_York
-              GATUS_CONFIG_PATH: /config
               GATUS_DELAY_START_SECONDS: 5
-              WEB_PORT: &port 80
+              GATUS_CONFIG_PATH: /config
+              GATUS_WEB_PORT: &port 80
+              TZ: America/New_York
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
             probes:
               liveness: &probes
                 enabled: true
@@ -65,14 +59,18 @@ spec:
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
+              capabilities: {drop: ["ALL"]}
             resources:
               requests:
                 cpu: 100m
               limits:
                 memory: 256Mi
-        serviceAccount:
-          identifier: gatus
+        statefulset:
+          volumeClaimTemplates:
+            - name: config
+              storageClass: ${STORE1}
+              accessMode: ReadWriteOnce
+              size: 5Gi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -82,37 +80,60 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
     service:
       app:
-        controller: gatus
         ports:
           http:
             port: *port
     serviceMonitor:
       app:
-        serviceName: gatus
         endpoints:
           - port: http
     route:
       app:
+        annotations:
+          gatus.home-operations.com/enabled: "false"
         hostnames:
           - "{{ .Release.Name }}.${DNS_MAIN}"
           - status.${DNS_MAIN}
         parentRefs:
-          - name: external
-            namespace: kube-system
-            sectionName: https
-        rules:
-          - backendRefs:
-              - identifier: app
-                port: *port
+          - name: envoy-external
+            namespace: network
+    rbac:
+      roles:
+        gatus:
+          type: ClusterRole
+          rules:
+            - apiGroups:
+                - ""
+              resources:
+                - services
+              verbs:
+                - get
+                - watch
+                - list
+            - apiGroups:
+                - gateway.networking.k8s.io
+              resources:
+                - gateways
+                - httproutes
+              verbs:
+                - get
+                - watch
+                - list
+      bindings:
+        gatus:
+          type: ClusterRoleBinding
+          roleRef:
+            identifier: gatus
+          subjects:
+            - identifier: gatus
     serviceAccount:
       gatus: {}
     persistence:
-      config:
-        existingClaim: gatus
       config-file:
         type: configMap
-        name: gatus-configmap
+        name: "{{ .Release.Name }}-configmap"
         globalMounts:
+          - path: /config/buddy.yaml
+            subPath: buddy.yaml
           - path: /config/config.yaml
             subPath: config.yaml
-            readOnly: true

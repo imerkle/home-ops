@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pg-vector-rw
+  namespace: pg
+spec:
+  ingressClassName: ${INGRESS1}
+  rules:
+  - host: &host "pg-vector-rw.${DNS_MAIN}"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: pg-vector-rw
+            port: 
+              number: 5432
+  tls:
+    - hosts:
+        - *host

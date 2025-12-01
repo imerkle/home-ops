@@ -5,21 +5,13 @@ kind: HelmRelease
 metadata:
   name: kromgo
 spec:
-  interval: 1h
   chartRef:
     kind: OCIRepository
-    name: app-template
-  install:
-    remediation:
-      retries: -1
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
+    name: kromgo
+  interval: 1h
   values:
     controllers:
       kromgo:
-        replicas: 2
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
@@ -27,7 +19,7 @@ spec:
           app:
             image:
               repository: ghcr.io/kashalls/kromgo
-              tag: v0.6.0@sha256:4b908ea0be5acd61e67ce38d8f1342d0731296b00b8ca2c35533aa519d804cc6
+              tag: v0.7.4@sha256:464dfa398fc0d032cffbd8396a1993f2690917b847f6628159c6d9fe3cba9055
             env:
               PROMETHEUS_URL: http://prometheus-operated.observability.svc.cluster.local:9090
               SERVER_PORT: &port 80
@@ -48,7 +40,7 @@ spec:
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
+              capabilities: {drop: ["ALL"]}
             resources:
               requests:
                 cpu: 10m
@@ -61,20 +53,21 @@ spec:
         runAsGroup: 1000
     service:
       app:
-        controller: kromgo
         ports:
           http:
-            primary: true
             port: *port
           health:
             port: *healthPort
     route:
       app:
-        hostnames: ["{{ .Release.Name }}.${DNS_MAIN}"]
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            conditions: ["[STATUS] == 404"]
+        hostnames:
+          - "{{ .Release.Name }}.${DNS_MAIN}"
         parentRefs:
-          - name: external
-            namespace: kube-system
-            sectionName: https
+          - name: envoy-external
+            namespace: network
         rules:
           - backendRefs:
               - identifier: app
@@ -86,4 +79,3 @@ spec:
         globalMounts:
           - path: /kromgo/config.yaml
             subPath: config.yaml
-            readOnly: true

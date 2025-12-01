@@ -1,0 +1,97 @@
+##
+## backup servername aka folder name should be different than restore
+## when restoring it should use previous backup servername the new backup servername should change or it wont restore
+##
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: pg-default
+  namespace: pg
+  # annotations:
+  #   cnpg.io/skipEmptyWalArchiveCheck: "enabled"
+spec:
+  # inheritedMetadata:
+  #   annotations:
+  #     vault.security.banzaicloud.io/vault-addr: "http://vault.vault:8200"
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:15.2-11
+  primaryUpdateStrategy: unsupervised # let k8s handle upgrades
+  primaryUpdateMethod: restart # prefer downtime of image download from registry instead of switching primary instance (promote a standby instance to primary) when current primary pod is updated
+  storage:
+    size: 5Gi
+    storageClass: "${STORE1}"
+  walStorage:
+    storageClass: "${STORE1}"
+    size: 5Gi    
+  superuserSecret:
+    name: pg-default-superuser
+  enableSuperuserAccess: true
+  postgresql:
+    parameters:
+      max_connections: "600"
+      shared_buffers: 512MB # amount of RAM to use for data caching, https://postgresqlco.nf/doc/en/param/shared_buffers/
+  monitoring:
+    enablePodMonitor: true
+  backup:
+    target: "primary"
+    retentionPolicy: 30d
+    volumeSnapshot:
+       className: "${VSNAP1}"  
+    barmanObjectStore:
+      serverName: "${PG_S3_FOLDER_CURR}"
+      wal:
+        compression: bzip2
+        maxParallel: 8
+      destinationPath: s3://pg-default
+      # endpointURL: http://minio.minio:9000
+      endpointURL: ${S3_ENDPOINT}
+      # serverName: pg-default-v1
+      s3Credentials:
+        accessKeyId:
+          name: &secret pg-default-s3
+          key: AWS_ACCESS_KEY_ID
+        secretAccessKey:
+          name: *secret
+          key: AWS_SECRET_ACCESS_KEY
+#  # RECOVERY
+  bootstrap:
+    # initdb:
+    #   postInitTemplateSQL:
+    #     - CREATE DATABASE synapse;
+    #     - CREATE DATABASE matrix_whatsapp;
+    #     - CREATE DATABASE matrix_slack;
+    #     - CREATE DATABASE immich;
+    #     - CREATE DATABASE prowlarr_main;
+    #     - CREATE DATABASE prowlarr_log;
+    #     - CREATE DATABASE radarr_main;
+    #     - CREATE DATABASE radarr_log;
+    #     - CREATE DATABASE sonarr_main;
+    #     - CREATE DATABASE sonarr_log;
+    #     - CREATE DATABASE bazarr_main;
+    #     # - CREATE DATABASE midarr;
+    #     - CREATE DATABASE kratos;
+    #     - CREATE DATABASE hydra;
+    #     - CREATE DATABASE paperless;
+
+    #     #harbor
+    #     - CREATE DATABASE registry;
+    recovery:
+      source: &previous-cluster pg-default-restore
+    # Note: externalClusters is needed when recovering from an existing cnpg cluster
+  externalClusters:
+    - name: *previous-cluster
+      barmanObjectStore:
+        serverName: "${PG_S3_FOLDER_PREV}"
+        wal:
+          compression: bzip2
+          maxParallel: 8
+        destinationPath: s3://pg-default
+        endpointURL: ${S3_ENDPOINT}
+        s3Credentials:
+          accessKeyId:
+            name: &secret pg-default-s3
+            key: AWS_ACCESS_KEY_ID
+          secretAccessKey:
+            name: *secret
+            key: AWS_SECRET_ACCESS_KEY

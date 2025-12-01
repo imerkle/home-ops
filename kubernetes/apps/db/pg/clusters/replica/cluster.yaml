@@ -1,0 +1,90 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: pg-default-replica
+  namespace: pg
+  # annotations:
+  #   cnpg.io/skipEmptyWalArchiveCheck: "enabled"
+spec:
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    nodeSelector:   
+      pgreplica: "true"
+    podAntiAffinityType: "required"
+    # tolerations:
+    #   - key: "key"
+    #     operator: "Equal"
+    #     value: "value"
+    #     effect: "NoSchedule"
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:15.2-11
+  primaryUpdateStrategy: unsupervised # let k8s handle upgrades
+  primaryUpdateMethod: restart # prefer downtime of image download from registry instead of switching primary instance (promote a standby instance to primary) when current primary pod is updated
+  storage:
+    size: 5Gi
+    storageClass: "${STORE1}"
+  superuserSecret:
+    name: pg-default-superuser
+  postgresql:
+    parameters:
+      max_connections: "600"
+      shared_buffers: 512MB # amount of RAM to use for data caching, https://postgresqlco.nf/doc/en/param/shared_buffers/
+  monitoring:
+    enablePodMonitor: true
+  # backup:
+  #   retentionPolicy: 30d
+  #   barmanObjectStore:
+  #     wal:
+  #       compression: bzip2
+  #       # maxParallel: 8
+  #     destinationPath: s3://pg-default/?region=de
+  #     # endpointURL: http://minio.minio:9000
+  #     endpointURL:  https://s3.tebi.io
+  #     # serverName: pg-default-v1
+  #     s3Credentials:
+  #       accessKeyId:
+  #         name: &secret pg-default-s3
+  #         key: AWS_ACCESS_KEY_ID
+  #       secretAccessKey:
+  #         name: *secret
+  #         key: AWS_SECRET_ACCESS_KEY
+#  # RECOVERY
+  bootstrap:
+  #   initdb:
+  #     postInitTemplateSQL:
+  #       - CREATE DATABASE synapse;
+  #       - CREATE DATABASE matrix_whatsapp;
+  #       - CREATE DATABASE matrix_slack;
+  #       - CREATE DATABASE immich;
+  #       - CREATE DATABASE prowlarr_main;
+  #       - CREATE DATABASE prowlarr_log;
+  #       - CREATE DATABASE radarr_main;
+  #       - CREATE DATABASE radarr_log;
+  #       - CREATE DATABASE sonarr_main;
+  #       - CREATE DATABASE sonarr_log;
+  #       - CREATE DATABASE midarr;
+
+    recovery:
+      source: &previous-cluster pg-default-replica
+#   ## Note: externalClusters is needed when recovering from an existing cnpg cluster
+
+  replica:
+    enabled: true
+    source: *previous-cluster
+  externalClusters:
+    - name: *previous-cluster
+      barmanObjectStore:
+        wal:
+          compression: bzip2
+          maxParallel: 8
+        destinationPath: s3://pg-default-replica/
+        endpointURL: https://s3.tebi.io
+        s3Credentials:
+          accessKeyId:
+            name: &secret pg-default-s3
+            key: AWS_ACCESS_KEY_ID
+          secretAccessKey:
+            name: *secret
+            key: AWS_SECRET_ACCESS_KEY

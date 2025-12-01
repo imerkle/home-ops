@@ -1,0 +1,25 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oathkeeper-proxy-home
+  namespace: ory
+  # annotations:
+    # external-dns.alpha.kubernetes.io/target: "ingress.${SECRET_DOMAIN}"
+    # external-dns.home.arpa/enabled: "true"
+spec:
+  ingressClassName: ${INGRESS1}
+  rules:
+    - host: &host proxy-home.${DNS_MAIN}   
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: oathkeeper-proxy
+                port:
+                  number: 4455
+  # tls:
+  #   - hosts:
+  #       - *host              

@@ -1,0 +1,96 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: pg-vector
+  namespace: pg
+  # annotations:
+  #   cnpg.io/skipEmptyWalArchiveCheck: "enabled"
+spec:
+  # inheritedMetadata:
+  #   annotations:
+  #     vault.security.banzaicloud.io/vault-addr: "http://vault.vault:8200"
+  instances: 1
+  # imageName: harbor.${DNS_MAIN}/pgvector/pgvector:15.0.0
+  imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:16-v0.3.0
+  primaryUpdateStrategy: unsupervised # let k8s handle upgrades
+  primaryUpdateMethod: restart # prefer downtime of image download from registry instead of switching primary instance (promote a standby instance to primary) when current primary pod is updated
+  storage:
+    size: 5Gi
+    storageClass: "${STORE1}"
+  superuserSecret:
+    name: pg-default-superuser
+  enableSuperuserAccess: true
+  postgresql:
+    parameters:
+      max_connections: "600"
+      shared_buffers: 512MB # amount of RAM to use for data caching, https://postgresqlco.nf/doc/en/param/shared_buffers/
+    shared_preload_libraries:
+      - "vectors.so"
+  monitoring:
+    enablePodMonitor: true
+  backup:
+    target: "primary"
+    retentionPolicy: 30d
+    volumeSnapshot:
+      className: "${VSNAP1}"
+    barmanObjectStore:
+      serverName: "${PG_S3_FOLDER_CURR}"
+      wal:
+        compression: bzip2
+        maxParallel: 8
+      destinationPath: s3://pg-vector
+      # endpointURL: http://minio.minio:9000
+      endpointURL: ${S3_ENDPOINT}
+      # serverName: pg-default-v1
+      s3Credentials:
+        accessKeyId:
+          name: &secret pg-default-s3
+          key: AWS_ACCESS_KEY_ID
+        secretAccessKey:
+          name: *secret
+          key: AWS_SECRET_ACCESS_KEY
+  #  # RECOVERY
+  bootstrap:
+    # initdb:
+    #   postInitTemplateSQL:
+    #     - CREATE DATABASE immich;
+
+    #     recovery:
+    #       source: &previous-cluster pg-default
+    #   ## Note: externalClusters is needed when recovering from an existing cnpg cluster
+    # externalClusters:
+    #   - name: *previous-cluster
+    #     barmanObjectStore:
+    #       serverName: "${PG_S3_FOLDER_PREV}"
+    #       wal:
+    #         compression: bzip2
+    #         maxParallel: 8
+    #       destinationPath: s3://pg-default
+    #       endpointURL: ${S3_ENDPOINT}
+    #       s3Credentials:
+    #         accessKeyId:
+    #           name: &secret pg-default-s3
+    #           key: AWS_ACCESS_KEY_ID
+    #         secretAccessKey:
+    #           name: *secret
+    #           key: AWS_SECRET_ACCESS_KEY
+    recovery:
+      source: &previous-cluster pg-default-restore
+    # Note: externalClusters is needed when recovering from an existing cnpg cluster
+  externalClusters:
+    - name: *previous-cluster
+      barmanObjectStore:
+        serverName: "${PG_S3_FOLDER_PREV}"
+        wal:
+          compression: bzip2
+          maxParallel: 8
+        destinationPath: s3://pg-vector
+        endpointURL: ${S3_ENDPOINT}
+        s3Credentials:
+          accessKeyId:
+            name: &secret pg-default-s3
+            key: AWS_ACCESS_KEY_ID
+          secretAccessKey:
+            name: *secret
+            key: AWS_SECRET_ACCESS_KEY

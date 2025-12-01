@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: pg-default-superuser
+    namespace: pg
+type: Opaque
+stringData:
+    #ENC[AES256_GCM,data:yQvhMELwqhjVhwipfNOkPWtlG9fjk+0ZqJKcF/Q=,iv:0cM8peZ+C1Qw7DA24MTFhoWyj+27CfR/Yjqusr61PAE=,tag:YJXx5QFlZ8iyzAwfsf0KNA==,type:comment]
+    username: ENC[AES256_GCM,data:Jwqksh5nuN3NsYCXLIZrB5gvrGKSSjBfBXlYyHou3tIq,iv:pEFyQZqme4ttdKnqNI5bzC3Njza7RJDjA356HJC4H5w=,tag:1FyvyTUXEdIb4hwUxzb1+A==,type:str]
+    password: ENC[AES256_GCM,data:ZJap7RpXnygNogCavtXEuBNtwOusm9sT9MofdHZsTWaV+o51uQ==,iv:SSdZ8NwRbCSbfJ6E8vCAmcGOb0/JQJElsxX9yPgs7qc=,tag:puIrPW71mQo/uDZvk04zWw==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age1yvl77vcj6cthafxqnjezrme4ntktjgd2j4xpgkcfutws83zrtdesk93cll
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBWVXI2eGlpdG16RWs5NURG
+            Wm9qb0FvUlh1NmZrcW5uTWVDZEVGUms2M0NJCnVuTytINTNwT2JCdERrM01rV05x
+            SFl6R0JiVHZ4b0JKT3BmS0xhRng2MlkKLS0tIDM2WjlnZXhGTTZxNURXTndBMzRN
+            dWVzemo1MEVrdnNTYnhkQzRXNlZaeFEKG1IR+F+epGXVW5Xl4ljGeLrHw6riS4+M
+            DyzPuW9vaLQq9xXjMvqoV2JnaTuEXib7hlBIyCKMmA0Y6nHnvdE3RA==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2024-07-14T20:49:14Z"
+    mac: ENC[AES256_GCM,data:lNpqxz9TMytTilC/AKw00+/PWlRX1512xXroCJZ7AmbP4+fqsyI42B6iGgwAA2WrEp1WWW8lILCc1zzMrCR4oB+EDyXMqKUS/Rs7kXM4l6DjnSrWSxOZmktUo7aLOYtqI8JEF1rWdTO5M98qqBowVQpXMPv3LVsaVUsvKWPr3MY=,iv:Td6uAzl2W+l8IpFnutE+uhdohmlSBTHeLhCgiCdrhWM=,tag:CnAEqXqd1yAR/GmS9HmXSw==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.8.1
