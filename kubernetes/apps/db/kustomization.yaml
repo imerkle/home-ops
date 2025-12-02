@@ -4,5 +4,5 @@ namespace: home-system
 # components:
   # - ../../components/common
 resources:
-  - pg/kustomization.yaml
+  - pg
 
