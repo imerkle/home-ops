@@ -23,7 +23,7 @@ spec:
     storageClass: "${STORE1}"
   walStorage:
     storageClass: "${STORE1}"
-    size: 5Gi    
+    size: 5Gi
   superuserSecret:
     name: pg-default-superuser
   enableSuperuserAccess: true
@@ -37,7 +37,7 @@ spec:
     target: "primary"
     retentionPolicy: 30d
     volumeSnapshot:
-       className: "${VSNAP1}"  
+       className: "${VSNAP1}"
     barmanObjectStore:
       serverName: "${PG_S3_FOLDER_CURR}"
       wal:
