@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -26,8 +25,11 @@ spec:
         name: flux-vars
         optional: false
   patches:
-    - # Add Sops decryption to child Kustomizations
-      patch: |-
+    # -------------------------------------------------------------
+    # PATCH 1: Common defaults (Intervals, SOPS, HelmRelease defaults)
+    # Applied to: ALL Kustomizations (Target selector has no labels)
+    # -------------------------------------------------------------
+    - patch: |-
         apiVersion: kustomize.toolkit.fluxcd.io/v1
         kind: Kustomization
         metadata:
@@ -40,11 +42,6 @@ spec:
             provider: sops
             secretRef:
               name: sops-age
-          postBuild:
-            substituteFrom:
-              - kind: Secret
-                name: flux-vars
-                optional: false
           patches:
             - patch: |-
                 apiVersion: helm.toolkit.fluxcd.io/v2
@@ -73,3 +70,23 @@ spec:
       target:
         group: kustomize.toolkit.fluxcd.io
         kind: Kustomization
+
+    # -------------------------------------------------------------
+    # PATCH 2: Variable Substitution (postBuild)
+    # Applied to: ONLY Kustomizations with specific label
+    # -------------------------------------------------------------
+    - patch: |-
+        apiVersion: kustomize.toolkit.fluxcd.io/v1
+        kind: Kustomization
+        metadata:
+          name: not-used
+        spec:
+          postBuild:
+            substituteFrom:
+              - kind: Secret
+                name: flux-vars
+                optional: false
+      target:
+        group: kustomize.toolkit.fluxcd.io
+        kind: Kustomization
+        labelSelector: helm.flux.home.fluxvars in (true)
