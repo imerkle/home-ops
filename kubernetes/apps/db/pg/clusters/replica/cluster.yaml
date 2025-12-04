@@ -10,7 +10,7 @@ spec:
   affinity:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
-    nodeSelector:   
+    nodeSelector:
       pgreplica: "true"
     podAntiAffinityType: "required"
     # tolerations:
@@ -24,7 +24,7 @@ spec:
   primaryUpdateMethod: restart # prefer downtime of image download from registry instead of switching primary instance (promote a standby instance to primary) when current primary pod is updated
   storage:
     size: 5Gi
-    storageClass: "${STORE1}"
+    storageClass: "local-path"
   superuserSecret:
     name: pg-default-superuser
   postgresql:

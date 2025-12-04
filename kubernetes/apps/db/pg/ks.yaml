@@ -29,6 +29,11 @@ spec:
   path: ./kubernetes/apps/db/pg/clusters/default
   dependsOn:
     - name: 1-core-db-pg-app
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: pg-vars
+        optional: false
   healthChecks:
     - name: pg-default
       namespace: pg
@@ -45,6 +50,11 @@ spec:
   dependsOn:
     - name: 1-core-db-pg-app
     # - name: 1-core-storage-minio-app
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: pg-vars
+        optional: false
   healthChecks:
     - name: pg-replica
       namespace: pg
@@ -64,6 +74,11 @@ spec:
   dependsOn:
     - name: 1-core-db-pg-app
     # - name: 1-core-storage-minio-app
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: pg-vars
+        optional: false
   healthChecks:
     - name: pg-vector
       namespace: pg
@@ -87,6 +102,11 @@ metadata:
   namespace: flux-system
   labels:
     wait.flux.home.arpa/disabled: "true"
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: pg-vars
+        optional: false
 spec:
   targetNamespace: pg
   path: ./kubernetes/apps/db/pg/pgadmin

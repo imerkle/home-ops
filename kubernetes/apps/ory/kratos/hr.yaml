@@ -36,20 +36,20 @@ spec:
           url: http://hydra-admin.ory:4445
         serve:
           public:
-            base_url: https://kratos.${DNS_MAIN}
+            base_url: https://kratos.x3y.space
         cookies:
           same_site: None
-          domain: ${DNS_MAIN}
+          domain: x3y.space
         session:
           cookie:
             same_site: None
-            domain: ${DNS_MAIN}
+            domain: x3y.space
           # same_site_legacy_workaround: true
         courier:
           smtp:
             connection_uri: smtps://auth:mail@smtp-relay.mail.svc.cluster.local:2525/?skip_ssl_verify=true
         selfservice:
-          default_browser_return_url: https://uikratos.${DNS_MAIN}
+          default_browser_return_url: https://uikratos.x3y.space
           allowed_return_urls:
             - http://localhost:3000
           methods:
@@ -77,20 +77,20 @@ spec:
                           essential: true
           flows:
             login:
-              ui_url: https://uikratos.${DNS_MAIN}/login
+              ui_url: https://uikratos.x3y.space/login
             registration:
-              ui_url: https://uikratos.${DNS_MAIN}/registration
+              ui_url: https://uikratos.x3y.space/registration
               after:
                 oidc:
                   hooks:
                     - hook: session
             verification:
               enabled: true
-              ui_url: https://uikratos.${DNS_MAIN}/verification
+              ui_url: https://uikratos.x3y.space/verification
             settings:
-              ui_url: https://uikratos.${DNS_MAIN}/settings
+              ui_url: https://uikratos.x3y.space/settings
             error:
-              ui_url: https://uikratos.${DNS_MAIN}/error
+              ui_url: https://uikratos.x3y.space/error
         dsn: vault:secret/data/ory#DB_URI_KRATOS
         secrets:
           default:
@@ -106,7 +106,7 @@ spec:
         enabled: true
         className: "internal"
         hosts:
-          - host: &public "kratos.${DNS_MAIN}"
+          - host: &public "kratos.x3y.space"
             paths:
               - path: /
                 pathType: ImplementationSpecific
@@ -117,7 +117,7 @@ spec:
         enabled: true
         className: "internal"
         hosts:
-          - host: &admin "kratosadmin.${DNS_MAIN}"
+          - host: &admin "kratosadmin.x3y.space"
             paths:
               - path: /
                 pathType: ImplementationSpecific

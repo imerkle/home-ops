@@ -156,7 +156,7 @@ spec:
         enabled: true
         className: "internal"
         hosts:
-          - host: &host "oathkeeper.${DNS_MAIN}"
+          - host: &host "oathkeeper.x3y.space"
             paths:
               - path: /
                 pathType: Prefix
@@ -167,7 +167,7 @@ spec:
         enabled: true
         className: "internal"
         hosts:
-          - host: &hostapi "oathkeeperapi.${DNS_MAIN}"
+          - host: &hostapi "oathkeeperapi.x3y.space"
             paths:
               - path: /
                 pathType: Prefix

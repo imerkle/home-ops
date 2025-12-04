@@ -16,12 +16,12 @@ spec:
     #         #   cert-manager.io/cluster-issuer: letsencrypt-prod
     #         #   hajimari.io/appName: Vault
     #         #   hajimari.io/icon: database-lock
-    #         # external-dns.alpha.kubernetes.io/target: ${DNS_MAIN}
+    #         # external-dns.alpha.kubernetes.io/target: x3y.space
     #         external-dns/is-public: "true"
     #     spec:
     #         ingressClassName: ${INGRESS1}
     #         rules:
-    #             - host: vault.${DNS_MAIN}
+    #             - host: vault.x3y.space
     #               http:
     #                 paths:
     #                     - backend:
@@ -33,7 +33,7 @@ spec:
     #                       pathType: Prefix
     #         tls:
     #             - hosts:
-    #                 - vault.${DNS_MAIN}
+    #                 - vault.x3y.space
     #                 #       - vault
     #                 #       - vault.vault
     #                 #       - vault.vault.svc

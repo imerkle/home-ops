@@ -4,7 +4,7 @@ metadata:
   name: vcluster-route
 spec:
   hostnames:
-  - "vcluster.${DNS_MAIN}"
+  - "vcluster.x3y.space"
   parentRefs:
     - name: internal
       namespace: kube-system

@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: ${INGRESS1}
   rules:
-    - host: &host proxy-home.${DNS_MAIN}   
+    - host: &host proxy-home.x3y.space
       http:
         paths:
           - pathType: Prefix
@@ -22,4 +22,4 @@ spec:
                   number: 4455
   # tls:
   #   - hosts:
-  #       - *host              
+  #       - *host

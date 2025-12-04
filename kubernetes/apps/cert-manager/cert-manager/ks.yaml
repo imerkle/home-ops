@@ -16,7 +16,7 @@ spec:
       namespace: *namespace
     - apiVersion: cert-manager.io/v1
       kind: ClusterIssuer
-      name: ${CLUSTER_ISSUER}
+      name: letsencrypt-prodxs
   healthCheckExprs:
     - apiVersion: cert-manager.io/v1
       kind: ClusterIssuer

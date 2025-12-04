@@ -4,7 +4,7 @@ metadata:
   name: unifi-route
 spec:
   hostnames:
-  - "unifi.${DNS_MAIN}"
+  - "unifi.x3y.space"
   parentRefs:
     - name: internal
       namespace: kube-system

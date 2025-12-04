@@ -37,9 +37,9 @@ spec:
     persistence:
       data:
         enabled: true
-        storageClass: "${STORE1}"
+        storageClass: "local-path"
         accessMode: ReadWriteOnce
-        size: 2Gi  
+        size: 2Gi
     service:
       main:
         ports:

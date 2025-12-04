@@ -20,24 +20,24 @@ spec:
         - name: COOKIE_SECRET
           value: asdasd123
         - name: CSRF_COOKIE_NAME
-          value: "__HOST-${DNS_MAIN}-x-csrf-token"
+          value: "__HOST-x3y.space-x-csrf-token"
         - name: CSRF_COOKIE_SECRET
           value: asdasd123
         - name: HYDRA_ADMIN_URL
-          value: "https://hydraadmin.${DNS_MAIN}"
+          value: "https://hydraadmin.x3y.space"
     kratosAdminUrl: "http://kratos-admin.ory"
 
     # -- Set this to ORY Kratos's public URL
     kratosPublicUrl: "http://kratos-public.ory"
 
     # -- Set this to ORY Kratos's public URL accessible from the outside world.
-    kratosBrowserUrl: "https://kratos.${DNS_MAIN}"
+    kratosBrowserUrl: "https://kratos.x3y.space"
 
     ingress:
       enabled: true
       className: "internal"
       hosts:
-        - host: &host "uikratos.${DNS_MAIN}"
+        - host: &host "uikratos.x3y.space"
           paths:
             - path: /
               pathType: ImplementationSpecific

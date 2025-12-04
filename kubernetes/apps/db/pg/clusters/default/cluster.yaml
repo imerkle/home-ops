@@ -20,9 +20,9 @@ spec:
   primaryUpdateMethod: restart # prefer downtime of image download from registry instead of switching primary instance (promote a standby instance to primary) when current primary pod is updated
   storage:
     size: 5Gi
-    storageClass: "${STORE1}"
+    storageClass: "local-path"
   walStorage:
-    storageClass: "${STORE1}"
+    storageClass: "local-path"
     size: 5Gi
   superuserSecret:
     name: pg-default-superuser
@@ -37,7 +37,7 @@ spec:
     target: "primary"
     retentionPolicy: 30d
     volumeSnapshot:
-       className: "${VSNAP1}"
+       className: democratic-csi-local-hostpath
     barmanObjectStore:
       serverName: "${PG_S3_FOLDER_CURR}"
       wal:

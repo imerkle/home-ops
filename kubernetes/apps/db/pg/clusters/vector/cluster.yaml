@@ -11,13 +11,13 @@ spec:
   #   annotations:
   #     vault.security.banzaicloud.io/vault-addr: "http://vault.vault:8200"
   instances: 1
-  # imageName: harbor.${DNS_MAIN}/pgvector/pgvector:15.0.0
+  # imageName: harbor.x3y.space/pgvector/pgvector:15.0.0
   imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:16-v0.3.0
   primaryUpdateStrategy: unsupervised # let k8s handle upgrades
   primaryUpdateMethod: restart # prefer downtime of image download from registry instead of switching primary instance (promote a standby instance to primary) when current primary pod is updated
   storage:
     size: 5Gi
-    storageClass: "${STORE1}"
+    storageClass: "local-path"
   superuserSecret:
     name: pg-default-superuser
   enableSuperuserAccess: true
@@ -33,7 +33,7 @@ spec:
     target: "primary"
     retentionPolicy: 30d
     volumeSnapshot:
-      className: "${VSNAP1}"
+      className: democratic-csi-local-hostpath
     barmanObjectStore:
       serverName: "${PG_S3_FOLDER_CURR}"
       wal:

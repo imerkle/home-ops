@@ -4,7 +4,7 @@ metadata:
   name: vault-route
 spec:
   hostnames:
-  - "vault.${DNS_MAIN}"
+  - "vault.x3y.space"
   parentRefs:
     - name: internal
       namespace: kube-system

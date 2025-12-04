@@ -1,21 +1,38 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: pg-default-rw
+#   namespace: pg
+# spec:
+#   ingressClassName: ${INGRESS1}
+#   rules:
+#   - host: &host "pg-default-rw.x3y.space"
+#     http:
+#       paths:
+#       - pathType: Prefix
+#         path: "/"
+#         backend:
+#           service:
+#             name: pg-default-rw
+#             port:
+#               number: 5432
+#   tls:
+#     - hosts:
+#         - *host
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: TCPRoute
 metadata:
   name: pg-default-rw
-  namespace: pg
+  # namespace: pg
 spec:
-  ingressClassName: ${INGRESS1}
+  parentRefs:
+    - name: internal
+      namespace: kube-system
+  hostnames:
+    - "pg-default-rw.x3y.space"
   rules:
-  - host: &host "pg-default-rw.${DNS_MAIN}"
-    http:
-      paths:
-      - pathType: Prefix
-        path: "/"
-        backend:
-          service:
-            name: pg-default-rw
-            port: 
-              number: 5432
-  tls:
-    - hosts:
-        - *host
+    - backendRefs:
+        - name: pg-default-rw
+          port: 5432

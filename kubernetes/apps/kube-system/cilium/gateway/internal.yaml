@@ -5,7 +5,7 @@ kind: Gateway
 metadata:
   name: internal
   annotations:
-    external-dns.alpha.kubernetes.io/target: &hostname internal.${DNS_MAIN}
+    external-dns.alpha.kubernetes.io/target: &hostname internal.x3y.space
     cilium.io/use-original-source-address: false
 spec:
   gatewayClassName: cilium
@@ -19,18 +19,18 @@ spec:
     - name: http
       protocol: HTTP
       port: 80
-      hostname: "*.${DNS_MAIN}"
+      hostname: "*.x3y.space"
       allowedRoutes:
         namespaces:
           from: Same
     - name: https
       protocol: HTTPS
       port: 443
-      hostname: "*.${DNS_MAIN}"
+      hostname: "*.x3y.space"
       allowedRoutes:
         namespaces:
           from: All
       tls:
         certificateRefs:
           - kind: Secret
-            name: "${LONG_DOMAIN}-tls"
+            name: "long-domained-tls"

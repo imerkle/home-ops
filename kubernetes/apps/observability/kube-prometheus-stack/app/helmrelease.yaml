@@ -16,18 +16,18 @@ spec:
         main:
           enabled: true
           hostnames:
-            - alertmanager.${DNS_MAIN}
+            - alertmanager.x3y.space
           parentRefs:
             - name: envoy-internal
               namespace: network
       alertmanagerSpec:
         alertmanagerConfiguration:
           name: alertmanager
-        externalUrl: https://alertmanager.${DNS_MAIN}
+        externalUrl: https://alertmanager.x3y.space
         storage:
           volumeClaimTemplate:
             spec:
-              storageClassName: ${STORE1}
+              storageClassName: local-path
               resources:
                 requests:
                   storage: 1Gi
@@ -42,12 +42,12 @@ spec:
         main:
           enabled: true
           hostnames:
-            - prometheus.${DNS_MAIN}
+            - prometheus.x3y.space
           parentRefs:
             - name: envoy-internal
               namespace: network
       prometheusSpec:
-        externalUrl: https://prometheus.${DNS_MAIN}
+        externalUrl: https://prometheus.x3y.space
         version: v2.55.1 # override 'unsupported Prometheus version' error
         image:
           registry: docker.io
@@ -73,7 +73,7 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              storageClassName: ${STORE1}
+              storageClassName: local-path
               resources:
                 requests:
                   storage: 50Gi

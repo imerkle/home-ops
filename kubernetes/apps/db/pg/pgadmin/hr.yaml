@@ -53,7 +53,7 @@ spec:
         enabled: true
         className: internal
         hosts:
-          - host: "{{ .Release.Name }}.${DNS_MAIN}"
+          - host: "{{ .Release.Name }}.x3y.space"
             paths:
               - path: /
                 pathType: Prefix
@@ -64,7 +64,7 @@ spec:
     persistence:
       config:
         enabled: true
-        storageClass: ${STORE1}
+        storageClass: local-path
         accessMode: ReadWriteOnce
         size: 1Gi
         advancedMounts:

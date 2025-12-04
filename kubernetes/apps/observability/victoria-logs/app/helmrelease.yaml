@@ -14,13 +14,13 @@ spec:
     server:
       persistentVolume:
         enabled: true
-        storageClassName: ${STORE1}
+        storageClassName: local-path
         size: 20Gi
       retentionPeriod: 14d
       route:
         enabled: true
         hostnames:
-          - victoria-logs.${DNS_MAIN}
+          - victoria-logs.x3y.space
         parentRefs:
           - name: envoy-internal
             namespace: network

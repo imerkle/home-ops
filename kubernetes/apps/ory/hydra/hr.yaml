@@ -27,16 +27,16 @@ spec:
           level: trace
         dsn: vault:secret/data/ory#DB_URI_HYDRA
         urls:
-          login: "https://uikratos.${DNS_MAIN}/login"
-          consent: "https://uikratos.${DNS_MAIN}/consent"
-          logout: "https://uikratos.${DNS_MAIN}/logout"
-          error: "https://uikratos.${DNS_MAIN}/error"
+          login: "https://uikratos.x3y.space/login"
+          consent: "https://uikratos.x3y.space/consent"
+          logout: "https://uikratos.x3y.space/logout"
+          error: "https://uikratos.x3y.space/error"
           # identity_provider:
-          #   publicUrl: "https://kratos.${DNS_MAIN}"
-          #   url: "https://admin.kratos.${DNS_MAIN}"
+          #   publicUrl: "https://kratos.x3y.space"
+          #   url: "https://admin.kratos.x3y.space"
 
           self:
-            issuer: "https://hydra.${DNS_MAIN}"
+            issuer: "https://hydra.x3y.space"
 
         tracing:
           service_name: Ory Hydra
@@ -52,7 +52,7 @@ spec:
         enabled: true
         className: "internal"
         hosts:
-          - host: &host "hydra.${DNS_MAIN}"
+          - host: &host "hydra.x3y.space"
             paths:
               - path: /
                 pathType: ImplementationSpecific
@@ -64,7 +64,7 @@ spec:
         enabled: true
         className: "internal"
         hosts:
-          - host: &hostadmin "hydraadmin.${DNS_MAIN}"
+          - host: &hostadmin "hydraadmin.x3y.space"
             paths:
               - path: /
                 pathType: ImplementationSpecific

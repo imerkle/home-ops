@@ -18,15 +18,15 @@ spec:
       internal: "http://hydra.ory"
     kratos:
       internal: "http://kratos.ory"
-      external: "https://kratos.${DNS_MAIN}"
+      external: "https://kratos.x3y.space"
     ingress:
       enabled: true
       className: ${INGRESS1}
       hosts:
-        - host: &host "mirage.${DNS_MAIN}"
+        - host: &host "mirage.x3y.space"
           paths:
             - path: /
               pathType: ImplementationSpecific
       tls:
         hosts:
-          - *host        
+          - *host

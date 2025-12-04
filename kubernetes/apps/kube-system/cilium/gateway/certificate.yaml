@@ -3,11 +3,11 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: ${LONG_DOMAIN}
+  name: long-domained
 spec:
-  secretName: "${LONG_DOMAIN}-tls"
+  secretName: "long-domained-tls"
   issuerRef:
-    name: ${CLUSTER_ISSUER}
+    name: letsencrypt-prodxs
     kind: ClusterIssuer
-  commonName: ${DNS_MAIN}
-  dnsNames: ["${DNS_MAIN}", "*.${DNS_MAIN}"]
+  commonName: x3y.space
+  dnsNames: ["x3y.space", "*.x3y.space"]
