@@ -8,6 +8,8 @@ spec:
   path: ./kubernetes/apps/ory/hydra
   dependsOn:
     - name: 1-core-db-pg-clusters-default
+  targetNamespace: ory
+
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -18,6 +20,7 @@ spec:
   path: ./kubernetes/apps/ory/kratos
   dependsOn:
     - name: 1-core-db-pg-clusters-default
+  targetNamespace: ory
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -29,6 +32,7 @@ spec:
   dependsOn:
     # - name: oathkeeper-maester
     - name: 1-core-db-pg-clusters-default
+  targetNamespace: ory
 # ---
 # apiVersion: kustomize.toolkit.fluxcd.io/v1
 # kind: Kustomization
@@ -49,3 +53,4 @@ metadata:
 spec:
   path: ./kubernetes/apps/ory/oathkeeper-maester
   dependsOn: []
+  targetNamespace: ory

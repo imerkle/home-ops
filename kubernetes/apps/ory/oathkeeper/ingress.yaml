@@ -3,7 +3,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: oathkeeper-proxy-home
-  namespace: ory
   # annotations:
     # external-dns.alpha.kubernetes.io/target: "ingress.${SECRET_DOMAIN}"
     # external-dns.home.arpa/enabled: "true"

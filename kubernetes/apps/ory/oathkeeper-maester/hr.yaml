@@ -3,7 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: oathkeeper-maester
-  namespace: ory
 spec:
   chart:
     spec:
