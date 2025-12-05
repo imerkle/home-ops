@@ -8,7 +8,7 @@ components:
   - ../../components/alerts
 resources:
   - ./namespace.yaml
-  # - ./vars.sops.yaml
+  - ./vars.sops.yaml
   - ./cilium/ks.yaml
   - ./coredns/ks.yaml
   # - ./csi-driver-nfs/ks.yaml
