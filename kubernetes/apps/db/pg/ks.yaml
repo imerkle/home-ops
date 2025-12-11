@@ -25,6 +25,7 @@ metadata:
   labels:
     kustomization.flux.fast/default: "false"
     wait.flux.home.arpa/disabled: "true"
+    helm.flux.home.fluxvars: "true"
 spec:
   targetNamespace: *namespace
   interval: 5m
