@@ -5,6 +5,8 @@ kind: Kustomization
 metadata:
   name: &app cilium
   namespace: &namespace kube-system
+  labels:
+    helm.flux.home.fluxvars: "true"
 spec:
   commonMetadata:
     labels:

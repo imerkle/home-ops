@@ -80,18 +80,18 @@ spec:
     # PATCH 2: Variable Substitution (postBuild)
     # Applied to: ONLY Kustomizations with specific label
     # -------------------------------------------------------------
-    # - patch: |-
-    #     apiVersion: kustomize.toolkit.fluxcd.io/v1
-    #     kind: Kustomization
-    #     metadata:
-    #       name: _
-    #     spec:
-    #       postBuild:
-    #         substituteFrom:
-    #           - kind: Secret
-    #             name: flux-vars
-    #             optional: false
-    #   target:
-    #     group: kustomize.toolkit.fluxcd.io
-    #     kind: Kustomization
-    #     labelSelector: helm.flux.home.fluxvars in (true)
+    - patch: |-
+        apiVersion: kustomize.toolkit.fluxcd.io/v1
+        kind: Kustomization
+        metadata:
+          name: _
+        spec:
+          postBuild:
+            substituteFrom:
+              - kind: Secret
+                name: flux-vars
+                optional: false
+      target:
+        group: kustomize.toolkit.fluxcd.io
+        kind: Kustomization
+        labelSelector: helm.flux.home.fluxvars in (true)
