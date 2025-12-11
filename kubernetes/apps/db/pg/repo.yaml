@@ -7,13 +7,13 @@ spec:
   interval: 1h0s
   timeout: 3m0s
   url: https://cloudnative-pg.github.io/charts
----
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
-metadata:
-  name: crunchydata
-spec:
-  interval: 1h0s
-  timeout: 3m0s
-  type: oci
-  url: oci://registry.developers.crunchydata.com/crunchydata
+# ---
+# apiVersion: source.toolkit.fluxcd.io/v1
+# kind: HelmRepository
+# metadata:
+#   name: crunchydata
+# spec:
+#   interval: 1h0s
+#   timeout: 3m0s
+#   type: oci
+#   url: oci://registry.developers.crunchydata.com/crunchydata
