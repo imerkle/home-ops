@@ -27,7 +27,7 @@ spec:
         # namespace: flux-system
   values:
     csiDriver:
-      name: "local-hostpath.democratic-csi.homelab.home.arpa"
+      name: "local-hostpath.democratic-csi.biohazard.home.arpa"
       storageCapacity: true # With storage capacity tracking, the scheduler filters out nodes which do not have enough capacity.
       fsGroupPolicy: File # fsGroupChangePolicy
 
