@@ -77,7 +77,7 @@ securityContext:
       - KILL
       - NET_ADMIN
       - NET_RAW
-      - IPC_LOCK
+      # - IPC_LOCK
       - SYS_ADMIN
       - SYS_RESOURCE
       - PERFMON
