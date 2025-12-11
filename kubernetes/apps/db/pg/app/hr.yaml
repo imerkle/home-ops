@@ -13,7 +13,7 @@ spec:
       sourceRef:
         name: cloudnative-pg
         kind: HelmRepository
-        namespace: flux-system
+        namespace: pg
   values:
     crds:
       create: true

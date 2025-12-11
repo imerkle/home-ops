@@ -3,7 +3,6 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: cloudnative-pg
-  namespace: flux-system
 spec:
   interval: 1h0s
   timeout: 3m0s
@@ -13,7 +12,6 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: crunchydata
-  namespace: flux-system
 spec:
   interval: 1h0s
   timeout: 3m0s

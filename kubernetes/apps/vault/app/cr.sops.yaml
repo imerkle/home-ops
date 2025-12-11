@@ -164,9 +164,9 @@ spec:
                     - name: urls
                       issuing_certificates: https://vault.vault:8200/v1/pki/ca
                       crl_distribution_points: https://vault.vault:8200/v1/pki/crl
-                root/generate:
-                    - name: ${INGRESS1}
-                      common_name: vault.default
+                # root/generate:
+                #     - name: ${INGRESS1}
+                #       common_name: vault.default
                 roles:
                     - name: default
                       allowed_domains: localhost,pod,svc,default,grafana,vault,authentik
