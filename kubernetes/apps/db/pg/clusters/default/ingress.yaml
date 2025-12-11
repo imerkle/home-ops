@@ -22,7 +22,7 @@
 
 ---
 apiVersion: gateway.networking.k8s.io/v1
-kind: TCPRoute
+kind: HTTPRoute
 metadata:
   name: pg-default-rw
   # namespace: pg
