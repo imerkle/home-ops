@@ -2,7 +2,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pg-default-rw
-  namespace: pg
 spec:
   ingressClassName: ${INGRESS1}
   rules:
