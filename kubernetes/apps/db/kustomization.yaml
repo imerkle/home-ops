@@ -6,5 +6,6 @@ components:
 resources:
   - pg/repo.yaml
   - pg/ns.yaml
+  - pg/pg.sops.yaml
   - pg/ks.yaml
 
