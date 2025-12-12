@@ -26,7 +26,7 @@ spec:
         TLS:
           Enabled: false
       secretConfig:
-        ExternalDomain: &host sso.${DNS_MAIN}
+        ExternalDomain: &host "zitadel.x3y.space"
         ExternalSecure: true
         ExternalPort: 443
         Database:
