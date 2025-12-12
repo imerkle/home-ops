@@ -41,7 +41,7 @@ spec:
     barmanObjectStore:
       serverName: "${PG_S3_FOLDER_CURR}"
       wal:
-        compression: bzip2
+        compression: zstd
         maxParallel: 8
       destinationPath: s3://pg-default
       # endpointURL: http://minio.minio:9000

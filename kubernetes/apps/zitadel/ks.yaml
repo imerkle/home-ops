@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://kubernetes-schemas.devbu.io/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: zitadel-app
+  namespace: &namespace zitadel
+spec:
+  targetNamespace: *namespace
+  path: ./kube/deploy/apps/zitadel/app
+  dependsOn: []
