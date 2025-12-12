@@ -6,5 +6,5 @@ metadata:
   namespace: &namespace zitadel
 spec:
   targetNamespace: *namespace
-  path: ./kube/deploy/apps/zitadel/app
+  path: ./kubernetes/apps/zitadel/app
   dependsOn: []
