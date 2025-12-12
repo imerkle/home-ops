@@ -42,20 +42,14 @@ spec:
         ports:
           http:
             port: 80
-
-    ingress:
-      main:
-        enabled: true
-        className: internal
-        hosts:
-          - host: "{{ .Release.Name }}.x3y.space"
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  identifier: main
-                  port: http
-
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.x3y.space"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
     persistence:
       config:
         enabled: true
