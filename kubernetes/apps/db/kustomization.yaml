@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: pg
 components:
   - ../../components/alerts
+  - ../../components/repos
 resources:
   - pg/repo.yaml
   - pg/ns.yaml
