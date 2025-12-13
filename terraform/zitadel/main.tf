@@ -7,10 +7,10 @@ terraform {
   }
 }
 
-variable "zitadel_token" {
-  type      = string
-  sensitive = true
-}
+# variable "zitadel_token" {
+#   type      = string
+#   sensitive = true
+# }
 
 variable "zitadel_domain" {
   type    = string
