@@ -22,11 +22,12 @@ spec:
     zitadel:
       masterkey: vault:secret/data/zitadel#MASTERKEY
       configmapConfig:
+        ExternalDomain: &host "zitadel.x3y.space"
         ExternalSecure: false
         TLS:
           Enabled: false
       secretConfig:
-        ExternalDomain: &host "zitadel.x3y.space"
+        ExternalDomain: *host
         ExternalSecure: true
         ExternalPort: 443
         Database:
