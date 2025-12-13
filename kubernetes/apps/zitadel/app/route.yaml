@@ -16,3 +16,22 @@ spec:
       backendRefs:
         - name: zitadel
           port: 8080
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: zitadel-login-route
+spec:
+  hostnames:
+  - "zitadel-login.x3y.space"
+  parentRefs:
+    - name: internal
+      namespace: kube-system
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: zitadel-login
+          port: 3000
