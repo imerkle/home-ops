@@ -11,10 +11,10 @@ spec:
   path: ./terraform
 
   # # Reference the GitRepository created above
-  # sourceRef:
-  #   kind: GitRepository
-  #   name: infra-repo
-  #   namespace: flux-system
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
 
   # Inject the secret token as a Terraform Variable
   vars:
