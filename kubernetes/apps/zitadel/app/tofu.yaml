@@ -1,0 +1,33 @@
+---
+# 3. The Terraform Controller CRD
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: zitadel-vault-oidc
+  # namespace: flux-system
+spec:
+  interval: 1h
+  approvePlan: auto  # Automatically apply changes (GitOps mode)
+  path: ./terraform
+
+  # # Reference the GitRepository created above
+  # sourceRef:
+  #   kind: GitRepository
+  #   name: infra-repo
+  #   namespace: flux-system
+
+  # Inject the secret token as a Terraform Variable
+  vars:
+    - name: zitadel_token
+      valueFrom:
+        secretKeyRef:
+          name: iam-admin-pat
+          key: pat
+
+  # Optional: Write the Vault Client ID/Secret back to a K8s Secret
+  # so you can mount them into Vault directly
+  writeOutputsToSecret:
+    name: vault-oidc-client-creds
+    outputs:
+      - vault_client_id
+      - vault_client_secret
