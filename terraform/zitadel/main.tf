@@ -10,7 +10,7 @@ variable "zitadel_domain" {
 
 provider "zitadel" {
   domain = var.zitadel_domain
-  token  = var.zitadel_token
+  token  = "eb0f4sQyyNY8YSbcuE3MYqTZi2R9l6vNjdieqfsIoockW0-IzfQM0devxx616ZvqRCh-HLw"
 }
 
 # ... (rest of the resources from the previous step) ...
