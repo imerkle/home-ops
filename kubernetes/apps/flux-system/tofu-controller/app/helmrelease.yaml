@@ -25,6 +25,7 @@ spec:
   dependsOn: []
   interval: 15m
   values:
+    allowCrossNamespaceRefs: true
     runner:
       image:
         repository: ghcr.io/joryirving/opentofu-runner
