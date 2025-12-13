@@ -1,7 +1,7 @@
 ---
 # 3. The Terraform Controller CRD
 apiVersion: infra.contrib.fluxcd.io/v1alpha2
-kind: Terraform/
+kind: Terraform
 metadata:
   name: zitadel-vault-oidc
   # namespace: flux-system
