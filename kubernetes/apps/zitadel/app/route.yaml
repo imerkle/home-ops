@@ -12,7 +12,7 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /ui/v2/login*
+            value: /ui/v2/login
       backendRefs:
         - name: zitadel-login
           port: 3000
