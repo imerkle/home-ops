@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    zitadel = {
+      source = "zitadel/zitadel"
+      version = "2.3.0"
+    }
+  }
+}
+
 variable "zitadel_token" {
   type      = string
   sensitive = true
@@ -17,6 +26,7 @@ provider "zitadel" {
 data "zitadel_project" "default" {
   name   = "General" # Or your specific project name
   org_id = "YOUR_ORG_ID"
+  project_id = "YOUR_PROJ_ID"
 }
 
 # 2. Create the OIDC Application for Vault
