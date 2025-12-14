@@ -14,19 +14,18 @@ terraform {
 
 variable "zitadel_domain" {
   type    = string
-  default = "http://zitadel.x3y.space"
+  default = "zitadel.x3y.space"
 }
 
 provider "zitadel" {
   domain = var.zitadel_domain
-  token  = "eb0f4sQyyNY8YSbcuE3MYqTZi2R9l6vNjdieqfsIoockW0-IzfQM0devxx616ZvqRCh-HLw"
+  jwt_profile_file  = "jwt.json"
 }
 
 # 1. Get the Project (or create a new one)
 data "zitadel_project" "default" {
-  name   = "General" # Or your specific project name
-  org_id = "YOUR_ORG_ID"
-  project_id = "YOUR_PROJ_ID"
+  org_id = "350837510680674408"
+  project_id = "350837510680739944"
 }
 
 # 2. Create the OIDC Application for Vault
@@ -47,7 +46,7 @@ resource "zitadel_application_oidc" "vault" {
   # Redirect URIs for your Vault instance
   # Replace with your actual Vault address
   redirect_uris = [
-    "http://localhost:8200/ui/vault/auth/oidc/oidc/callback",
+    "http://localhost:8210/ui/vault/auth/oidc/oidc/callback",
     "http://localhost:8250/oidc/callback" # For CLI login
   ]
 
@@ -57,6 +56,7 @@ resource "zitadel_application_oidc" "vault" {
 # 3. Output credentials for Vault
 output "vault_client_id" {
   value = zitadel_application_oidc.vault.client_id
+  sensitive = true
 }
 
 output "vault_client_secret" {

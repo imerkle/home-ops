@@ -10,3 +10,7 @@ Thumbs.db
 kubeconfig
 onepassword.env
 talosconfig
+**/.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
