@@ -123,7 +123,7 @@ spec:
               # Configure the connection to Zitadel
               config:
                 oidc_discovery_url: https://zitadel.x3y.space
-                oidc_client_id: '{{ .Env.OIDC_CLIENT_ID }}'
+                oidc_client_id: '{{ .Env.yy }}'
                 oidc_client_secret: '{{ .Env.OIDC_CLIENT_SECRET }}'
                 default_role: reader
                 # Create the Role that maps Zitadel users to Vault policies
@@ -346,6 +346,35 @@ spec:
     #     hostnames:
     #     - "vault.local"
     # It is possible to override the Vault container directly:
+    # 1. Inject Env Vars into BOTH containers
+    vaultPodSpec:
+        containers:
+            # (Optional) Main Vault container - keeps it for reference if needed
+            - name: vault
+              env:
+                - name: OIDC_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                        name: vault-oidc-client-creds
+                        key: vault_client_id
+                - name: OIDC_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                        name: vault-oidc-client-creds
+                        key: vault_client_secret
+            # (CRITICAL) The Configurer Sidecar - this process applies the externalConfig!
+            - name: vault-configurer
+              env:
+                - name: OIDC_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                        name: vault-oidc-client-creds
+                        key: vault_client_id
+                - name: OIDC_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                        name: vault-oidc-client-creds
+                        key: vault_client_secret
     vaultContainerSpec:
         name: vault
         readinessProbe:
@@ -376,8 +405,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-15T16:03:04Z"
-    mac: ENC[AES256_GCM,data:0/oa9UrZgYwSvgJ2BPQ3ahm1qbglexwjxjEdQ/ICL2dfCrngBZX2FtP/VxD5PtUo7hncy8xsfjPkghGbLr+jUxZsrneo6tAGPsnWdUclVLzyuBrewaVBM8NmpKYCVJnayfzWkLpmoHdzk9pMp8VH2z/Eh2FbhWISaKGZUGe4Ms0=,iv:ZA54zaNwZEODfQ+FWGVrDQp55blfyRerBQO034TwrEY=,tag:kMaCP+hJwizya25XbS89cA==,type:str]
+    lastmodified: "2025-12-15T16:30:35Z"
+    mac: ENC[AES256_GCM,data:AcrPeV+55gn2/w23KXgd1K9BXMoKTO1Td4E9yFsYDLuVlzjNkgoyqMXOuiZLOkpIjXUfBVgxUVpdpv8ifFwtxyG44SN6Z8uRUURj3QC+3DlXcuvJGqjjplqw4otKtLFLiQbGkNvhKZGs0w/Vw2d3S0D8nVVoWibXkqRDFszJf30=,iv:ZAYEhYvE1WeY/7cC4lWYBh/QEyJ9FPrad3zqmY+8Xs0=,tag:XCPFchx10kbElAZD92kuPA==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
