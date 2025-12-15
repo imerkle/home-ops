@@ -46,8 +46,8 @@ resource "zitadel_application_oidc" "vault" {
   # Redirect URIs for your Vault instance
   # Replace with your actual Vault address
   redirect_uris = [
-    "http://localhost:8200/ui/vault/auth/oidc/oidc/callback",
-    "http://localhost:8150/oidc/callback" # For CLI login
+    "http://vault.x3y.space/ui/vault/auth/oidc/oidc/callback",
+    # "http://localhost:8150/oidc/callback" # For CLI login
   ]
 
   dev_mode = true # Set to false in production with HTTPS
