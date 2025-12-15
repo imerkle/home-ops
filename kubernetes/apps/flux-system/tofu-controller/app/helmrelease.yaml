@@ -34,6 +34,7 @@ spec:
         allowedNamespaces:
           - flux-system
           - zitadel
+          - vault
 
     metrics:
       enabled: true
