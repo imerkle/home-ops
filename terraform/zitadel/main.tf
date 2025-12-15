@@ -24,8 +24,8 @@ provider "zitadel" {
 
 # 1. Get the Project (or create a new one)
 data "zitadel_project" "default" {
-  org_id = "350837510680674408"
-  project_id = "350837510680739944"
+  # org_id = "350837510680674408"
+  project_id = "351115276617646240"
 }
 
 # 2. Create the OIDC Application for Vault
