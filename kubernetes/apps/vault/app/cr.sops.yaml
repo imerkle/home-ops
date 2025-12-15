@@ -119,6 +119,30 @@ spec:
               mountpath: token
               group: admin1
         auth:
+            - type: oidc
+              # Configure the connection to Zitadel
+              config:
+                oidc_discovery_url: https://zitadel.x3y.space
+                oidc_client_id: ${env "OIDC_CLIENT_ID"}
+                oidc_client_secret: ${env "OIDC_CLIENT_SECRET"}
+                default_role: reader
+                # Create the Role that maps Zitadel users to Vault policies
+              roles:
+                - name: reader
+                  # Check your Zitadel Project -> Token Settings for the correct claim
+                  # "sub" is standard, but you might want "email" or "preferred_username"
+                  user_claim: email
+                  # This must match one of the redirect URIs you set in Zitadel
+                  allowed_redirect_uris:
+                    - https://<YOUR_VAULT_ADDR>/ui/vault/auth/oidc/oidc/callback
+                    - http://localhost:8250/oidc/callback
+                  # IMPORTANT: Zitadel uses the client_id as the audience
+                  bound_audiences:
+                    - ${env "OIDC_CLIENT_ID"}
+                  # Map this login to a Vault policy (e.g., 'reader' or 'default')
+                  policies:
+                    - reader
+                  ttl: 1h
             - type: kubernetes
               roles:
                 # Allow every pod in the default namespace to use the secret kv store
@@ -328,6 +352,17 @@ spec:
             httpGet:
                 path: /v1/sys/health
                 port: 8200
+        env:
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                    name: vault-oidc-client-creds
+                    key: vault_client_id
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                    name: vault-oidc-client-creds
+                    key: vault_client_secret
     # Marks presence of Istio, which influences things like port namings
     istioEnabled: false
 sops:
@@ -341,8 +376,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-11-08T10:33:57Z"
-    mac: ENC[AES256_GCM,data:kWqxWrqJOZw73dKaK6oW+YoKUUwJ65CXHLXVrdt5nuduYB4dRc46OM3K82BqV+3gN+mezpo7v9YjUbdmERp13Y0SR0SR4RL20Rf9xY/fiNeOYjNLugSjpLJFgjhbiEMyS10qMH3EvXz2JaXvvf21jljqM9f1/j2KeLbEzOhkagI=,iv:syx0pJoWML/JjMMM8/x3NZAeTFPH01nQ4oVG76QTtyo=,tag:Oo7ls/Tkl+YhZZwXv+3Duw==,type:str]
+    lastmodified: "2025-12-15T15:18:14Z"
+    mac: ENC[AES256_GCM,data:RMtqqg2inZhllMan+cn6G8QQmHDpqmS625bHlPCszJKXb0OvTvCyeiRXnXrIOTbXmFhsLZns92A+kaBs/BNhzq8B2SqDKTcGhCXJ2uriuBJbEG9jMQTn2j8hP+yFxQaWT/3ivjFd6D12DiN9KpzXsVe6ioUV//Iqp+YRvjWuH74=,iv:VRhgRlaUNx1Q/W+UdVxbIFUpKdk9wl8AY1g5lYoXKnI=,tag:/rhO72o3oDL447W2JGPxiA==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
