@@ -92,8 +92,8 @@ spec:
               # Configure the connection to Zitadel
               config:
                 oidc_discovery_url: https://zitadel.x3y.space
-                oidc_client_id: ${OIDC_CLIENT_ID}
-                oidc_client_secret: ${OIDC_CLIENT_SECRET}
+                oidc_client_id: ${vault_client_id}
+                oidc_client_secret: ${vault_client_secret}
                 default_role: reader
                 # Create the Role that maps Zitadel users to Vault policies
               roles:
@@ -107,7 +107,7 @@ spec:
                     # - http://vault:8250/oidc/callback
                   # IMPORTANT: Zitadel uses the client_id as the audience
                   bound_audiences:
-                    - ${OIDC_CLIENT_ID}
+                    - ${vault_client_id}
                   # Map this login to a Vault policy (e.g., 'reader' or 'default')
                   policies:
                     - reader
@@ -297,17 +297,17 @@ spec:
                 data:
                     ID: ENC[AES256_GCM,data:X53jUJAAfCBwCkGELdN1+TB4Zj9+ZvX/Vw==,iv:D/iDhFYXF7w5xR85k0wTNBpAw/0JxYueE5h1QNC80p4=,tag:gNUXagFV6G3EfEbcysLhAg==,type:str]
                     SECRET: ENC[AES256_GCM,data:+3dUabu6XSm9gm9wUM8nPcpU0VZ8Kakxi8AolOXuIg==,iv:zxv4xECju/A94mUBWgeQ+pmC/k2ksqaSXl9z7PBMMXI=,tag:ZjdERW0jvX+vv8mDMZxjsw==,type:str]
-    envsConfig:
-        - name: OIDC_CLIENT_ID
-          valueFrom:
-            secretKeyRef:
-                name: vault-oidc-client-creds
-                key: vault_client_id
-        - name: OIDC_CLIENT_SECRET
-          valueFrom:
-            secretKeyRef:
-                name: vault-oidc-client-creds
-                key: vault_client_secret
+    # envsConfig:
+    #     - name: OIDC_CLIENT_ID
+    #       valueFrom:
+    #         secretKeyRef:
+    #             name: vault-oidc-client-creds
+    #             key: vault_client_id
+    #     - name: OIDC_CLIENT_SECRET
+    #       valueFrom:
+    #         secretKeyRef:
+    #             name: vault-oidc-client-creds
+    #             key: vault_client_secret
     vaultEnvsConfig:
         - name: VAULT_LOG_LEVEL
           value: debug
@@ -385,8 +385,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-16T07:58:28Z"
-    mac: ENC[AES256_GCM,data:4BhtaOwhSKTXrNtR2vYu5roiA0e7Q06ACvf1LiisMXia0MK6jPzgZOw7eL6UTrpmt828C3KF5jXKNYiwAiAlueJuRwR9McHHwW/waZ6mDD2yN+WxV+OzPxKN2ZtEdLvEtqTzlz0oUk9z/Ir/81vuDj8BClS22wwA9/rmBtJXHkc=,iv:NmtbKqQiN/FENYET6GSJ8m5rHtKqkaTcDNyJepP3K1U=,tag:Ga1Iymf4adNxVjgQkxcyWA==,type:str]
+    lastmodified: "2025-12-16T08:52:39Z"
+    mac: ENC[AES256_GCM,data:f2m+lWqm9aze+xiUVkuQKpbTGfcC8P3e0c/GEKhQKRzVNtiJRrtzAhfJvO1raa5gqldlphgIbpEXlqt9gcbr9tR9Nqh6s9CQwZmPzi1yEubw9AioGCO9NSzi/lqWAv1saVMIPdXKowG8rXlTRKrcG8HU/s1LF7jI77wuOH3gZsI=,iv:dC5c7zmP+8t+YP2ew1O7mdrFAozFneWn3bYf2L6XDDU=,tag:Fmur7wpF16s+aa6Tp25T1g==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
