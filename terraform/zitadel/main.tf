@@ -25,13 +25,13 @@ provider "zitadel" {
 # 1. Get the Project (or create a new one)
 data "zitadel_project" "default" {
   # org_id = "350837510680674408"
-  project_id = "351115276617646240"
+  project_id = "351291229247373498"
 }
 
 # 2. Create the OIDC Application for Vault
 resource "zitadel_application_oidc" "vault" {
   project_id = data.zitadel_project.default.id
-  org_id     = data.zitadel_project.default.org_id
+  # org_id     = data.zitadel_project.default.org_id
   name       = "vault-oidc"
 
   # Vault uses "Code" flow for OIDC login
