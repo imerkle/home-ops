@@ -92,8 +92,8 @@ spec:
               # Configure the connection to Zitadel
               config:
                 oidc_discovery_url: https://zitadel.x3y.space
-                oidc_client_id: '{{ .Env.OIDC_CLIENT_ID }}'
-                oidc_client_secret: '{{ .Env.OIDC_CLIENT_SECRET }}'
+                oidc_client_id: '${OIDC_CLIENT_ID}'
+                oidc_client_secret: '${OIDC_CLIENT_SECRET}'
                 default_role: reader
                 # Create the Role that maps Zitadel users to Vault policies
               roles:
@@ -107,7 +107,7 @@ spec:
                     # - http://vault:8250/oidc/callback
                   # IMPORTANT: Zitadel uses the client_id as the audience
                   bound_audiences:
-                    - '{{ .Env.OIDC_CLIENT_ID }}'
+                    - '${OIDC_CLIENT_ID}'
                   # Map this login to a Vault policy (e.g., 'reader' or 'default')
                   policies:
                     - reader
