@@ -2,7 +2,6 @@ apiVersion: vault.banzaicloud.com/v1alpha1
 kind: Vault
 metadata:
     name: vault
-    namespace: vault
 spec:
     size: 1
     image: hashicorp/vault:1.16.1
@@ -385,8 +384,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-16T08:52:39Z"
-    mac: ENC[AES256_GCM,data:f2m+lWqm9aze+xiUVkuQKpbTGfcC8P3e0c/GEKhQKRzVNtiJRrtzAhfJvO1raa5gqldlphgIbpEXlqt9gcbr9tR9Nqh6s9CQwZmPzi1yEubw9AioGCO9NSzi/lqWAv1saVMIPdXKowG8rXlTRKrcG8HU/s1LF7jI77wuOH3gZsI=,iv:dC5c7zmP+8t+YP2ew1O7mdrFAozFneWn3bYf2L6XDDU=,tag:Fmur7wpF16s+aa6Tp25T1g==,type:str]
+    lastmodified: "2025-12-16T11:53:55Z"
+    mac: ENC[AES256_GCM,data:qGQkTXfNmfwwLbWnfUeo+9luQLURw477ZFJjIWYNSYhUT4EFYndX/wybox990EIYRdA5U8Fn4gCBQI50pZUp4LqUL0xzg37OeRckUelB+TDKVZ/xQ5cTlnbuoSFEPyYuC9P7oqBrA4n9bxjocj+VxToiDttajzEsJGrD4EmnvoA=,iv:EAhJe5bn7C7MJE5ST3adPJ5vuIuG+q5IjVQuAXLEwwU=,tag:K/RRMbfa4qF7G/lTrN59lg==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
