@@ -297,6 +297,17 @@ spec:
                 data:
                     ID: ENC[AES256_GCM,data:X53jUJAAfCBwCkGELdN1+TB4Zj9+ZvX/Vw==,iv:D/iDhFYXF7w5xR85k0wTNBpAw/0JxYueE5h1QNC80p4=,tag:gNUXagFV6G3EfEbcysLhAg==,type:str]
                     SECRET: ENC[AES256_GCM,data:+3dUabu6XSm9gm9wUM8nPcpU0VZ8Kakxi8AolOXuIg==,iv:zxv4xECju/A94mUBWgeQ+pmC/k2ksqaSXl9z7PBMMXI=,tag:ZjdERW0jvX+vv8mDMZxjsw==,type:str]
+    envsConfig:
+        - name: OIDC_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+                name: vault-oidc-client-creds
+                key: vault_client_id
+        - name: OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+                name: vault-oidc-client-creds
+                key: vault_client_secret
     vaultEnvsConfig:
         - name: VAULT_LOG_LEVEL
           value: debug
@@ -350,17 +361,17 @@ spec:
             httpGet:
                 path: /v1/sys/health
                 port: 8200
-        # env:
-        #     - name: OIDC_CLIENT_ID
-        #       valueFrom:
-        #         secretKeyRef:
-        #             name: vault-oidc-client-creds
-        #             key: vault_client_id
-        #     - name: OIDC_CLIENT_SECRET
-        #       valueFrom:
-        #         secretKeyRef:
-        #             name: vault-oidc-client-creds
-        #             key: vault_client_secret
+                # env:
+                #     - name: OIDC_CLIENT_ID
+                #       valueFrom:
+                #         secretKeyRef:
+                #             name: vault-oidc-client-creds
+                #             key: vault_client_id
+                #     - name: OIDC_CLIENT_SECRET
+                #       valueFrom:
+                #         secretKeyRef:
+                #             name: vault-oidc-client-creds
+                #             key: vault_client_secret
     # Marks presence of Istio, which influences things like port namings
     istioEnabled: false
 sops:
@@ -374,8 +385,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-16T02:24:45Z"
-    mac: ENC[AES256_GCM,data:l6CrlwGcvmq+fiRnQPPE/5eqglIjJSkndAaavCyhqaVa/iDnMsvPAo7OxRbpI6x5e1jdgX5DcCI5JvbSh0Xo1h0/PAon+fPfQ4VDk+evc7VEbkfwaImAip0SbC6RPdlij+sTk4VsWMZ/V3XLNdIKfXoopFO0Y+NSaeUktfD+860=,iv:HuoZ+8vYxlLUMcFdBp/ac9vDXeAQSo7hp+KBfpI1qqc=,tag:VBnARcFEl23EMovUviuBTg==,type:str]
+    lastmodified: "2025-12-16T07:14:53Z"
+    mac: ENC[AES256_GCM,data:AWxxrtzrICOftjsbdphKPjtV8tOK6RFt3SP3V/+uEkrXz1yL++jqLXkgwD7VX77AeP6Zc2WAnmNVY41c7u6iawg4HveNzzL1aizvWEr81Ipw2pyLC8gHoPe1XpdqfD9oM0xhD6oUqrGEWhPUDrJEzA+qgUSBqfZSbVYLsOkj9SA=,iv:h7soVGTz8F3Nk63Bjkhhxv8ndjHJFL2TD7edOXDqMbw=,tag:T9fMWP2hPqX1JLT3DJWHfg==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0

@@ -7,23 +7,11 @@ spec:
   chart:
     spec:
       chart: vault-operator
-      version: 1.22.1
+      version: 1.23.4
       sourceRef:
         name: bank-vaults
         kind: HelmRepository
         namespace: vault
-  values:
-    envsConfig:
-      - name: OIDC_CLIENT_ID
-        valueFrom:
-          secretKeyRef:
-              name: vault-oidc-client-creds
-              key: vault_client_id
-      - name: OIDC_CLIENT_SECRET
-        valueFrom:
-          secretKeyRef:
-              name: vault-oidc-client-creds
-              key: vault_client_secret
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
