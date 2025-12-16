@@ -9,37 +9,6 @@ spec:
     # Specify the ServiceAccount where the Vault Pod and the Bank-Vaults configurer/unsealer is running
     serviceAccount: vault
     serviceType: ClusterIP
-    # ingress:
-    #     annotations:
-    #         # cert-manager.io/cluster-issuer: "${CLUSTER_ISSUER}"
-    #         #kubernetes.io/ingress.class: haproxy
-    #         #   cert-manager.io/cluster-issuer: letsencrypt-prod
-    #         #   hajimari.io/appName: Vault
-    #         #   hajimari.io/icon: database-lock
-    #         # external-dns.alpha.kubernetes.io/target: x3y.space
-    #         external-dns/is-public: "true"
-    #     spec:
-    #         ingressClassName: ${INGRESS1}
-    #         rules:
-    #             - host: vault.x3y.space
-    #               http:
-    #                 paths:
-    #                     - backend:
-    #                         service:
-    #                             name: vault
-    #                             port:
-    #                                 number: 8200
-    #                       path: /
-    #                       pathType: Prefix
-    #         tls:
-    #             - hosts:
-    #                 - vault.x3y.space
-    #                 #       - vault
-    #                 #       - vault.vault
-    #                 #       - vault.vault.svc
-    #                 #       - vault.vault.svc.cluster.local
-    #                 #     secretName: long-domain-tls
-    # # Use local disk to store Vault file data, see config section.
     volumes:
         - name: vault-file
           persistentVolumeClaim:
@@ -349,19 +318,19 @@ spec:
     # 1. Inject Env Vars into BOTH containers
     vaultPodSpec:
         containers:
-            # (Optional) Main Vault container - keeps it for reference if needed
-            - name: vault
-              env:
-                - name: OIDC_CLIENT_ID
-                  valueFrom:
-                    secretKeyRef:
-                        name: vault-oidc-client-creds
-                        key: vault_client_id
-                - name: OIDC_CLIENT_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                        name: vault-oidc-client-creds
-                        key: vault_client_secret
+            # # (Optional) Main Vault container - keeps it for reference if needed
+            # - name: vault
+            #   env:
+            #     - name: OIDC_CLIENT_ID
+            #       valueFrom:
+            #         secretKeyRef:
+            #           name: vault-oidc-client-creds
+            #           key: vault_client_id
+            #     - name: OIDC_CLIENT_SECRET
+            #       valueFrom:
+            #         secretKeyRef:
+            #           name: vault-oidc-client-creds
+            #           key: vault_client_secret
             # (CRITICAL) The Configurer Sidecar - this process applies the externalConfig!
             - name: vault-configurer
               env:
@@ -405,8 +374,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-15T16:30:35Z"
-    mac: ENC[AES256_GCM,data:AcrPeV+55gn2/w23KXgd1K9BXMoKTO1Td4E9yFsYDLuVlzjNkgoyqMXOuiZLOkpIjXUfBVgxUVpdpv8ifFwtxyG44SN6Z8uRUURj3QC+3DlXcuvJGqjjplqw4otKtLFLiQbGkNvhKZGs0w/Vw2d3S0D8nVVoWibXkqRDFszJf30=,iv:ZAYEhYvE1WeY/7cC4lWYBh/QEyJ9FPrad3zqmY+8Xs0=,tag:XCPFchx10kbElAZD92kuPA==,type:str]
+    lastmodified: "2025-12-16T02:00:58Z"
+    mac: ENC[AES256_GCM,data:rEmgt5FjcNK6gb8VJHSuCMtcAJjSkZyZNMVunKncNla3iwpPv9Xr3eKtmkNAxDo4nSx8VFjJvDE9PGHBPaouUaMJ/yi7PxhHCYOe2Fwih25apJ3bvsvlQ5LMPWHYoLJeEhahSOFVtNO2vtZ05hRCgxfC//11XqKNU1i/a8b6KII=,iv:GOsgJpOJegrnlszmXWRafdde68qZLftCZ/sbE0nGmT8=,tag:g56+RMJylY1VX9d5vbZ4Aw==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
