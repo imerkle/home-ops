@@ -103,7 +103,7 @@ spec:
                   # This must match one of the redirect URIs you set in Zitadel
                   allowed_redirect_uris:
                     - https://vault.x3y.space/ui/vault/auth/oidc/oidc/callback
-                    - http://vault:8250/oidc/callback
+                    # - http://vault:8250/oidc/callback
                   # IMPORTANT: Zitadel uses the client_id as the audience
                   bound_audiences:
                     - ${vault_client_id}
@@ -384,8 +384,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-16T11:53:55Z"
-    mac: ENC[AES256_GCM,data:qGQkTXfNmfwwLbWnfUeo+9luQLURw477ZFJjIWYNSYhUT4EFYndX/wybox990EIYRdA5U8Fn4gCBQI50pZUp4LqUL0xzg37OeRckUelB+TDKVZ/xQ5cTlnbuoSFEPyYuC9P7oqBrA4n9bxjocj+VxToiDttajzEsJGrD4EmnvoA=,iv:EAhJe5bn7C7MJE5ST3adPJ5vuIuG+q5IjVQuAXLEwwU=,tag:K/RRMbfa4qF7G/lTrN59lg==,type:str]
+    lastmodified: "2025-12-17T02:37:36Z"
+    mac: ENC[AES256_GCM,data:aL4tik8j5jVUl7mANghSb2eJC3sqcLCCkP/HjDIQBfONZ8tPX/OouXPsi5K2linOWQMzzCL483JEaRvf5MwZTs1JIkCx9bwC4RxIaGmNM31AOypKvy3qY9ZYmT8aPf/6Y5LALdrZEZt543ZJ4f3lDZ0wTH9KKvpG27ZjILpYTLE=,iv:5zoMN8m9mUwBRtqOfqqbh4CEg42CDcTqjuTFDLxGt1E=,tag:eFfYTAnwn6NHv9Z6sSIw5A==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
