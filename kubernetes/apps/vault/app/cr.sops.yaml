@@ -103,7 +103,7 @@ spec:
                   # This must match one of the redirect URIs you set in Zitadel
                   allowed_redirect_uris:
                     - https://vault.x3y.space/ui/vault/auth/oidc/oidc/callback
-                    # - http://vault:8250/oidc/callback
+                    - http://vault:8250/oidc/callback
                   # IMPORTANT: Zitadel uses the client_id as the audience
                   bound_audiences:
                     - ${vault_client_id}
