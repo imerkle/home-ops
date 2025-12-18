@@ -46,8 +46,8 @@ spec:
       kind: StatefulSet
       name: vault
       namespace: vault
-  postBuild:
-    substituteFrom:
-      - kind: Secret
-        name: vault-oidc-client-creds # Must be in the same namespace as this Kustomization
-        optional: false # Fail if secret is missing
+  # postBuild:
+  #   substituteFrom:
+  #     - kind: Secret
+  #       name: vault-oidc-client-creds # Must be in the same namespace as this Kustomization
+  #       optional: false # Fail if secret is missing
