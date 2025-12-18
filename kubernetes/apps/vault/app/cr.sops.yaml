@@ -91,7 +91,7 @@ spec:
               # Configure the connection to Zitadel
               config:
                 oidc_discovery_url: https://zitadel.x3y.space
-                oidc_client_id: ${vault_client_id}
+                oidc_client_id: ${ env `VAULT_CLIENT_ID` }
                 oidc_client_secret: ${vault_client_secret}
                 default_role: reader
                 # Create the Role that maps Zitadel users to Vault policies
@@ -296,17 +296,17 @@ spec:
                 data:
                     ID: ENC[AES256_GCM,data:X53jUJAAfCBwCkGELdN1+TB4Zj9+ZvX/Vw==,iv:D/iDhFYXF7w5xR85k0wTNBpAw/0JxYueE5h1QNC80p4=,tag:gNUXagFV6G3EfEbcysLhAg==,type:str]
                     SECRET: ENC[AES256_GCM,data:+3dUabu6XSm9gm9wUM8nPcpU0VZ8Kakxi8AolOXuIg==,iv:zxv4xECju/A94mUBWgeQ+pmC/k2ksqaSXl9z7PBMMXI=,tag:ZjdERW0jvX+vv8mDMZxjsw==,type:str]
-    # envsConfig:
-    #     - name: OIDC_CLIENT_ID
-    #       valueFrom:
-    #         secretKeyRef:
-    #             name: vault-oidc-client-creds
-    #             key: vault_client_id
-    #     - name: OIDC_CLIENT_SECRET
-    #       valueFrom:
-    #         secretKeyRef:
-    #             name: vault-oidc-client-creds
-    #             key: vault_client_secret
+    envsConfig:
+        - name: OIDC_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+                name: vault-oidc-client-creds
+                key: vault_client_id
+        - name: OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+                name: vault-oidc-client-creds
+                key: vault_client_secret
     vaultEnvsConfig:
         - name: VAULT_LOG_LEVEL
           value: debug
@@ -384,8 +384,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-18T08:54:43Z"
-    mac: ENC[AES256_GCM,data:3tvrtWB9dw6SsBx8aAPjVdIS4z2TAibob8v7w10KCNwVKP8edkGuoYWACBcuzq73KstobTaC4H60qxd46ZrpVo3HTvQEMlERiniJTpJzoN2DE1xXhtd0tUeqY/QC+Gt44to2dylrtVywLDTS01OUKlv4ugQ0lSYsQ2fgrMCnxno=,iv:Xsg5rFtEWeLlK3aR8yJX2r9bUHLXB/hxJkgYU+o6psc=,tag:H7E23MxOxu8FdvCJ+zDwOg==,type:str]
+    lastmodified: "2025-12-18T09:53:28Z"
+    mac: ENC[AES256_GCM,data:bGJ+Rdc74eBKj/Qt8h8YBi4Vryhqe4VwiB2QgSjQq42lI7O4T4vE5hM2u+QHj4FX1OX4vP3ZpPWi/mTQS8td0ibree3x/iQ49PXlApW3Ye6kKZF0xqjWrXGeR8KIE0zOiPLH/Z4kOcj2CX43Q2KJDDCuaYsgTLoiM9TqGDY1g+4=,iv:0QVJHbLOf+ejdNwIYwsi8ooI2g1mJ1HdYRxFxld/pKc=,tag:9rECROWGXj4kmdR/pUziAQ==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
