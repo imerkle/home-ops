@@ -3,7 +3,6 @@ apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup
 metadata:
   name: &pg pg-vector
-  namespace: pg
 spec:
   schedule: "0 0 0 * * *"
   immediate: true

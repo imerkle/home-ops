@@ -4,5 +4,5 @@ resources:
 # - s3.yaml
 - cluster.yaml
 - scheduledbackup.yaml
-- ingress.yaml
+- route.yaml
 # - dump-local.yaml

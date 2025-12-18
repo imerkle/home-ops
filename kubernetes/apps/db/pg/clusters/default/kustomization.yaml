@@ -6,5 +6,5 @@ resources:
 - secret.sops.yaml
 - cluster.yaml
 - scheduledbackup.yaml
-- ingress.yaml
+- route.yaml
 # - dump-local.yaml
