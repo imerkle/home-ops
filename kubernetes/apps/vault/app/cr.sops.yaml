@@ -91,7 +91,7 @@ spec:
               # Configure the connection to Zitadel
               config:
                 oidc_discovery_url: https://zitadel.x3y.space
-                oidc_client_id: ${ env `VAULT_CLIENT_ID` }
+                oidc_client_id: ${ env `OIDC_CLIENT_ID` }
                 oidc_client_secret: ${vault_client_secret}
                 default_role: reader
                 # Create the Role that maps Zitadel users to Vault policies
@@ -384,8 +384,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-18T09:53:28Z"
-    mac: ENC[AES256_GCM,data:bGJ+Rdc74eBKj/Qt8h8YBi4Vryhqe4VwiB2QgSjQq42lI7O4T4vE5hM2u+QHj4FX1OX4vP3ZpPWi/mTQS8td0ibree3x/iQ49PXlApW3Ye6kKZF0xqjWrXGeR8KIE0zOiPLH/Z4kOcj2CX43Q2KJDDCuaYsgTLoiM9TqGDY1g+4=,iv:0QVJHbLOf+ejdNwIYwsi8ooI2g1mJ1HdYRxFxld/pKc=,tag:9rECROWGXj4kmdR/pUziAQ==,type:str]
+    lastmodified: "2025-12-18T10:25:12Z"
+    mac: ENC[AES256_GCM,data:H4+2JXY6MpciyMT5OObPmEItTfQI4gnMc74V+Y1Ah9S5/czM8jZbp3dUC78TT3ttWRs++MxwG8dZ235PeQHI1vYEsAQdcOKsuzezuhnmjiWXV7LwUHmVymmERCX4CWO+KGZui9j8zI0imHvHcm6kCIpzpMkBKswLy7pAkOIyk04=,iv:QjzeHy67FNQuMKgqfpmI2k75N9iaBs+gBg4+sUbBVwo=,tag:LTf6Y8AcEt5zDngp36yWbQ==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
