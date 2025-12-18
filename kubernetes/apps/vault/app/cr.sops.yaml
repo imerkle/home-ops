@@ -92,7 +92,7 @@ spec:
               config:
                 oidc_discovery_url: https://zitadel.x3y.space
                 oidc_client_id: ${ env `OIDC_CLIENT_ID` }
-                oidc_client_secret: ${ env `OIDC_CLIENT_ID` }
+                oidc_client_secret: ${ env `OIDC_CLIENT_SECRET` }
                 default_role: reader
                 # Create the Role that maps Zitadel users to Vault policies
               roles:
@@ -103,7 +103,7 @@ spec:
                   # This must match one of the redirect URIs you set in Zitadel
                   allowed_redirect_uris:
                     - https://vault.x3y.space/ui/vault/auth/oidc/oidc/callback
-                    - http://vault:8250/oidc/callback
+                    # - http://vault:8250/oidc/callback
                   # IMPORTANT: Zitadel uses the client_id as the audience
                   bound_audiences:
                     - ${ env `OIDC_CLIENT_ID` }
@@ -384,8 +384,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-18T10:41:50Z"
-    mac: ENC[AES256_GCM,data:OBRvFQmdkMkIZqqfZy+5IutUKq7YOJdQ7/DgmqzweBchJvTUMWMpuiW+aDqZajGXtVDETr9aXzr6vFSi8mm49Y7+whrvTC6Wzk5QuoSiJFOMb2tZ1taLOsjoqFpHTayXwAoCrQm/vC7tzJO8Tn+7Wfd7hloKz1rNgnb7m5awKBM=,iv:o/i4WorijHcBtwa3QoPohFgtxvqKVK4Io024HnAfxOA=,tag:QTIcAvhxc1Bf5znZWgKGRg==,type:str]
+    lastmodified: "2025-12-18T10:54:07Z"
+    mac: ENC[AES256_GCM,data:XkSZguMqkSkV4rTIqGpnehf2W6LqL3YkW9udHpIcjlMasrOGVrDXySSkbxugg5du2pKVIL1ZHHP1SSpKkA+750HUCqCxK58DebmuMfTIrkLrAwFngWIpwstE83kj2s5M6Y/xDtgusonwMUOsgkJqgpjgHSdqC1WtUtv3GCFRdKg=,iv:nr3KBzj20scGefXCEXh3rtwkGRpX8Yo3yUwu4z4ngGo=,tag:A8U6jekIBJ7gtTSIu5/hMQ==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
