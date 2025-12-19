@@ -99,7 +99,7 @@ spec:
                 - name: default
                   # Check your Zitadel Project -> Token Settings for the correct claim
                   # "sub" is standard, but you might want "email" or "preferred_username"
-                  user_claim: email
+                  user_claim: sub
                   # This must match one of the redirect URIs you set in Zitadel
                   allowed_redirect_uris:
                     - https://vault.x3y.space/ui/vault/auth/oidc/oidc/callback
@@ -384,8 +384,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-19T16:23:48Z"
-    mac: ENC[AES256_GCM,data:XoNOSCWyQP4Bn7Zw3AKvDYgICsj+4RBbFpQRWUl4ha9gdNLmTLZOC/c/x/tgd7JiHp6Ym2KjshUaGQMXQGBtgeRFtBgI8zRjpyD49CjOUtfOv0S29NeaAcZpRIXi7S7diG9Nx7xAs521wHmGA+geer7SlKofSwk6Ii4/aKAc5Os=,iv:mtSCEY0GtSIgI1GrkA7ANNxMozZEJuix2XXjbFmGWQ0=,tag:30nU/CMUq8/S3jD0nNiPfg==,type:str]
+    lastmodified: "2025-12-19T16:33:29Z"
+    mac: ENC[AES256_GCM,data:9RYU9Dlde1pHfGX2/JaUjgq1Y7Gl/Wvd69LOOszHHzVloz0BhywffE200wcElMvn/BICUdT7UADMhwsuv280inoGz4efzU1tMUrP8/G2/R1jRnTXgFcFNXIcP+2Xdrocci1aW5mWREHReqRoH0lBy/kDARsxhXADztXQahUPnw0=,iv:dXcEdzR/m/8pVQSwNfaiw3bL1sBMpMSX1fByVwYtebs=,tag:6I5tMkKYe/CXm8VfjgyC0A==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
