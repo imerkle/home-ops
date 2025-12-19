@@ -93,13 +93,13 @@ spec:
                 oidc_discovery_url: https://zitadel.x3y.space
                 oidc_client_id: ${ env `OIDC_CLIENT_ID` }
                 oidc_client_secret: ${ env `OIDC_CLIENT_SECRET` }
-                default_role: reader
+                default_role: default
                 # Create the Role that maps Zitadel users to Vault policies
               roles:
-                - name: reader
+                - name: default
                   # Check your Zitadel Project -> Token Settings for the correct claim
                   # "sub" is standard, but you might want "email" or "preferred_username"
-                  user_claim: openid
+                  user_claim: email
                   # This must match one of the redirect URIs you set in Zitadel
                   allowed_redirect_uris:
                     - https://vault.x3y.space/ui/vault/auth/oidc/callback
@@ -109,7 +109,7 @@ spec:
                     - ${ env `OIDC_CLIENT_ID` }
                   # Map this login to a Vault policy (e.g., 'reader' or 'default')
                   policies:
-                    - reader
+                    - default
                   ttl: 1h
             - type: kubernetes
               roles:
@@ -384,8 +384,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-18T14:09:32Z"
-    mac: ENC[AES256_GCM,data:1FkcGrSGtmEaNnoXuFvzzTRnFP2CqE+f3sfdL0YWrBfTZ0DAb+clOtH8WPxDL0uVWq2HCeJ4HaLf5ql6MmF+tbnHgNXS8Zbx9pGWdVVWVPnP912enSzJqAvHnPJ5gyLVpyAF/c9Lsy4SI8els/venZIX6xbuMCGbWt6Aj3e9PvE=,iv:WfOB440gmAJYU/iwY99ZSXD3qZWB5wS5sTA275j/Mwo=,tag:x6f3LUB4YYRiuvBrhQLrNA==,type:str]
+    lastmodified: "2025-12-19T15:38:13Z"
+    mac: ENC[AES256_GCM,data:dHhO4vjrrzi6BcA3TOfR47roy3MHPgtww1oKjEefxm8mo+ZQ2EHwN9Meid7Qalh2AlTKLAZzVmk1uXj0vF5E2zRNC3f9lVIkSKtMEme65KpH2S1YZgioTiY9iJ1ZCJ/UIk2ENhiSy2SzORov2WEZ5KBG9ZrNmOpM2LxjwWwU1dQ=,iv:sCq3WMC6somMk0a5zFkLThylgxVQ9UwZpumry10JTCw=,tag:zOdxdlYcka33Whqhlbckig==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
