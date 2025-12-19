@@ -99,10 +99,10 @@ spec:
                 - name: reader
                   # Check your Zitadel Project -> Token Settings for the correct claim
                   # "sub" is standard, but you might want "email" or "preferred_username"
-                  user_claim: email
+                  user_claim: openid
                   # This must match one of the redirect URIs you set in Zitadel
                   allowed_redirect_uris:
-                    - https://vault.x3y.space/ui/vault/auth/oidc/oidc/callback
+                    - https://vault.x3y.space/ui/vault/auth/oidc/callback
                     # - http://vault:8250/oidc/callback
                   # IMPORTANT: Zitadel uses the client_id as the audience
                   bound_audiences:
@@ -384,8 +384,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-18T10:54:07Z"
-    mac: ENC[AES256_GCM,data:XkSZguMqkSkV4rTIqGpnehf2W6LqL3YkW9udHpIcjlMasrOGVrDXySSkbxugg5du2pKVIL1ZHHP1SSpKkA+750HUCqCxK58DebmuMfTIrkLrAwFngWIpwstE83kj2s5M6Y/xDtgusonwMUOsgkJqgpjgHSdqC1WtUtv3GCFRdKg=,iv:nr3KBzj20scGefXCEXh3rtwkGRpX8Yo3yUwu4z4ngGo=,tag:A8U6jekIBJ7gtTSIu5/hMQ==,type:str]
+    lastmodified: "2025-12-18T14:09:32Z"
+    mac: ENC[AES256_GCM,data:1FkcGrSGtmEaNnoXuFvzzTRnFP2CqE+f3sfdL0YWrBfTZ0DAb+clOtH8WPxDL0uVWq2HCeJ4HaLf5ql6MmF+tbnHgNXS8Zbx9pGWdVVWVPnP912enSzJqAvHnPJ5gyLVpyAF/c9Lsy4SI8els/venZIX6xbuMCGbWt6Aj3e9PvE=,iv:WfOB440gmAJYU/iwY99ZSXD3qZWB5wS5sTA275j/Mwo=,tag:x6f3LUB4YYRiuvBrhQLrNA==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
