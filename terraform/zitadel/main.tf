@@ -51,6 +51,12 @@ resource "zitadel_application_oidc" "vault" {
   ]
 
   dev_mode = true # Set to false in production with HTTPS
+
+  id_token_role_assertion = false
+  access_token_role_assertion = false
+  additional_origins = []
+  post_logout_redirect_uris = []
+  skip_native_app_success_page = false
 }
 
 # 3. Output credentials for Vault
