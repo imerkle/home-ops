@@ -8,8 +8,8 @@ spec:
   hostnames:
     - grafana.x3y.space
   parentRefs:
-    - name: envoy-internal
-      namespace: network
+    - name: internal
+      namespace: kube-system
   rules:
     - backendRefs:
         - name: grafana-service
