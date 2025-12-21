@@ -3,7 +3,7 @@
 apiVersion: infra.contrib.fluxcd.io/v1alpha2
 kind: Terraform
 metadata:
-  name: zitadel-oidc
+  name: grafana-zitadel-oidc
 spec:
   interval: 1h
   approvePlan: auto  # Automatically apply changes (GitOps mode)
@@ -21,8 +21,7 @@ spec:
       value: "grafana-oidc"
     - name: redirect_uris
       value:
-        - "https://vault.x3y.space/ui/vault/auth/oidc/oidc/callback"
-        - "https://vault.x3y.space/v1/auth/oidc/oidc/callback"
+        - "https://grafana.x3y.space/login/generic_oauth"
 
   # 2. Write output to a specific Vault Secret
   writeOutputsToSecret:

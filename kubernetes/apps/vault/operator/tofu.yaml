@@ -3,7 +3,7 @@
 apiVersion: infra.contrib.fluxcd.io/v1alpha2
 kind: Terraform
 metadata:
-  name: zitadel-oidc
+  name: vault-zitadel-oidc
 spec:
   interval: 1h
   approvePlan: auto  # Automatically apply changes (GitOps mode)
