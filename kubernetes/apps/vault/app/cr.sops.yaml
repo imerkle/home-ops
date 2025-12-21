@@ -110,6 +110,7 @@ spec:
                   # Map this login to a Vault policy (e.g., 'reader' or 'default')
                   policies:
                     - default
+                    - allow_secrets
                   ttl: 1h
             - type: kubernetes
               roles:
