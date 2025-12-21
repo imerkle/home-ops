@@ -303,13 +303,13 @@ spec:
         - name: OIDC_CLIENT_ID
           valueFrom:
             secretKeyRef:
-                name: vault-oidc-client-creds
-                key: vault_client_id
+                name: vault-oidc-creds
+                key: client_id
         - name: OIDC_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-                name: vault-oidc-client-creds
-                key: vault_client_secret
+                name: vault-oidc-creds
+                key: client_secret
     vaultEnvsConfig:
         - name: VAULT_LOG_LEVEL
           value: debug
@@ -387,8 +387,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-21T06:40:41Z"
-    mac: ENC[AES256_GCM,data:ZSnxEsGw4mZlzFBRbFp8F1mG3ZOz68l/b+JwO4WhYeoSJphDr4+GFLB6bgRaa60zLumlZdzrCKRmd+UTv2V8NA1932WOkpa8zijAMU6En85J+mcdbN1u8B3FQtv0qOEhi24Q66jo1Im3PGJ0MHSaiUDKz45n06IjZY++mZNd2H0=,iv:A0ogNmR6jxmaqBFk1tus6cgsIj9/9ISfOiSeoq2cWyA=,tag:72aymVzzcfEr091MG7w0rQ==,type:str]
+    lastmodified: "2025-12-21T08:14:39Z"
+    mac: ENC[AES256_GCM,data:614/P7xbjT3JKI2maQFSCvybZx3CiM6fybCfibT33X5e7/Xfg1eXPm2rAhk4pOBAVdksI9RsVFLGVB8zb2G1fUv7NcPH8SBDmG5mGnfqOZTxcEYjfVY7JIv4Lfi9Iw1Q28JHsa0022WTCuDzUyDhdT+9S85igX8YenBXmNL1ufE=,iv:UEWwI+hpdQv7wtrs/c6bq/qVgPWfB4/E2WW9DwisksM=,tag:ajTWO01D1mwyK7YqaMN2pA==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0

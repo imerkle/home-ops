@@ -17,6 +17,16 @@ spec:
       disable_login_form: "false"
     auth.anonymous:
       enabled: "true"
+    auth.generic_oauth:
+      enabled: "true"
+      name: Zitadel
+      allow_sign_up: "true"
+      scopes: "openid profile email"
+      # Zitadel specific endpoints
+      auth_url: "https://zitadel.x3y.space/oauth/v2/authorize"
+      token_url: "https://zitadel.x3y.space/oauth/v2/token"
+      api_url: "https://zitadel.x3y.space/oidc/v1/userinfo"
+
     log:
       mode: console
     metrics:
@@ -45,6 +55,16 @@ spec:
                   #   secretKeyRef:
                   #     name: grafana-admin-password-secret
                   #     key: GF_SECURITY_ADMIN_PASSWORD
+                - name: GF_AUTH_GENERIC_OAUTH_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-oidc-creds
+                      key: client_id
+                - name: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-oidc-creds
+                      key: client_secret
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
