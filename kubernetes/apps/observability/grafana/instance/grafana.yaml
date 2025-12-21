@@ -26,7 +26,6 @@ spec:
       auth_url: "https://zitadel.x3y.space/oauth/v2/authorize"
       token_url: "https://zitadel.x3y.space/oauth/v2/token"
       api_url: "https://zitadel.x3y.space/oidc/v1/userinfo"
-
     log:
       mode: console
     metrics:
@@ -49,12 +48,12 @@ spec:
           containers:
             - name: grafana
               env:
-                - name: GF_SECURITY_ADMIN_PASSWORD
-                  value: ${GF_SECURITY_ADMIN_PASSWORD}
-                  # valueFrom:
-                  #   secretKeyRef:
-                  #     name: grafana-admin-password-secret
-                  #     key: GF_SECURITY_ADMIN_PASSWORD
+                # - name: GF_SECURITY_ADMIN_PASSWORD
+                #   value: ${GF_SECURITY_ADMIN_PASSWORD}
+                #   # valueFrom:
+                #   #   secretKeyRef:
+                #   #     name: grafana-admin-password-secret
+                #   #     key: GF_SECURITY_ADMIN_PASSWORD
                 - name: GF_AUTH_GENERIC_OAUTH_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
