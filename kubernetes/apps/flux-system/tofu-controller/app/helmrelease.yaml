@@ -35,6 +35,7 @@ spec:
           - flux-system
           - zitadel
           - observability
+          - home-system
           - vault
 
     metrics:
