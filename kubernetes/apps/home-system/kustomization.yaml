@@ -8,6 +8,7 @@ metadata:
     helm.flux.home.fluxvars: "true"
 components:
   - ../../components/alerts
+  - ../../components/repos
 resources:
   - ./namespace.yaml
   # - ./vars.sops.yaml
