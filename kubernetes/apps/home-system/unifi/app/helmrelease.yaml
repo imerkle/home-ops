@@ -36,6 +36,7 @@ spec:
 
             env:
               RUNAS_UID0: "false"
+              SYSTEM_IP: 10.0.0.97
               # UNIFI_UID: "${APP_UID}"
               # UNIFI_GID: "${APP_GID}"
               UNIFI_STDOUT: "true"
