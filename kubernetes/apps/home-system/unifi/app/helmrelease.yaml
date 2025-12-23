@@ -123,7 +123,7 @@ spec:
         type: secret
         name: unifi-tls
         advancedMounts:
-          unifi:
+          main:
             app:
               - path: /unifi/cert/cert.pem
                 subPath: tls.crt
