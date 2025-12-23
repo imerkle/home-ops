@@ -124,7 +124,7 @@ spec:
         name: unifi-tls
         advancedMounts:
           main:
-            app:
+            main:
               - path: /unifi/cert/cert.pem
                 subPath: tls.crt
                 readOnly: true
