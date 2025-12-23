@@ -55,7 +55,7 @@ spec:
         type: LoadBalancer
         loadBalancerIP: 10.0.0.97
         # loadBalancerIP: "${UNIFI_ADDR:=1.1.1.1}"
-        # externalTrafficPolicy: Local
+        externalTrafficPolicy: Local
         # annotations:
           # traefik.ingress.kubernetes.io/service.serversscheme: https
         ports:
@@ -98,9 +98,3 @@ spec:
         # existingClaim: unifi-data
         # globalMounts:
         #   - path: /unifi
-      # backups:
-      #   type: nfs
-      #   server: "${CORE_NFS_SERVER:=nas0}"
-      #   path: "/mnt/user/backups/unifi"
-      #   globalMounts:
-      #     - path: /unifi/data/backup
