@@ -92,25 +92,25 @@ spec:
             enabled: true
             port: 10001
             protocol: UDP
-    # route:
-    #   app:
-    #     enabled: true
-    #     # annotations:
-    #     #   external-dns.alpha.kubernetes.io/internal: "true"
-    #     #   external-dns.alpha.kubernetes.io/target: "10.0.6.151"
-    #     parentRefs:
-    #       - name: internal
-    #         namespace: kube-system
-    #     hostnames:
-    #       - unifi.x3y.space
-    #     rules:
-    #       - matches:
-    #           - path:
-    #               type: PathPrefix
-    #               value: /
-    #         backendRefs:
-    #           - name: unifi
-    #             port: 8443
+    route:
+      app:
+        enabled: true
+        # annotations:
+        #   external-dns.alpha.kubernetes.io/internal: "true"
+        #   external-dns.alpha.kubernetes.io/target: "10.0.6.151"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+        hostnames:
+          - unifi.x3y.space
+        rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            backendRefs:
+              - name: unifi
+                port: 8443
 
     persistence:
       data:
@@ -120,29 +120,29 @@ spec:
         # existingClaim: unifi-data
         # globalMounts:
         #   - path: /unifi
-      # cert:
-      #   type: secret
-      #   name: unifi-tls
-      #   advancedMounts:
-      #     main:
-      #       main:
-      #         - path: /unifi/cert/cert.pem
-      #           subPath: tls.crt
-      #           readOnly: true
-      #         - path: /unifi/cert/privkey.pem
-      #           subPath: tls.key
-      #           readOnly: true
-    # rawResources:
-    #   backend-tls-policy:
-    #     apiVersion: gateway.networking.k8s.io/v1alpha3
-    #     kind: BackendTLSPolicy
-    #     spec:
-    #       spec:
-    #         targetRefs:
-    #           - group: ""
-    #             kind: Service
-    #             name: unifi
-    #             sectionName: http
-    #         validation:
-    #           hostname: unifi.x3y.space
-    #           wellKnownCACertificates: System
+      cert:
+        type: secret
+        name: unifi-tls
+        advancedMounts:
+          main:
+            main:
+              - path: /unifi/cert/cert.pem
+                subPath: tls.crt
+                readOnly: true
+              - path: /unifi/cert/privkey.pem
+                subPath: tls.key
+                readOnly: true
+    rawResources:
+      backend-tls-policy:
+        apiVersion: gateway.networking.k8s.io/v1alpha3
+        kind: BackendTLSPolicy
+        spec:
+          spec:
+            targetRefs:
+              - group: ""
+                kind: Service
+                name: unifi
+                sectionName: http
+            validation:
+              hostname: unifi.x3y.space
+              wellKnownCACertificates: System
