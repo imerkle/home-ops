@@ -1,18 +1,18 @@
-# apiVersion: gateway.networking.k8s.io/v1alpha2
-# kind: TLSRoute
-# metadata:
-#   name: unifi-route
-# spec:
-#   hostnames:
-#   - "unifi.x3y.space"
-#   parentRefs:
-#     - name: internal
-#       namespace: kube-system
-#   rules:
-#     # - matches:
-#     #     - path:
-#     #         type: PathPrefix
-#     #         value: /
-#     - backendRefs:
-#         - name: unifi
-#           port: 8443
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TLSRoute
+metadata:
+  name: unifi-route
+spec:
+  hostnames:
+  - "unifi.x3y.space"
+  parentRefs:
+    - name: internal
+      namespace: kube-system
+  rules:
+    # - matches:
+    #     - path:
+    #         type: PathPrefix
+    #         value: /
+    - backendRefs:
+        - name: unifi
+          port: 8443
