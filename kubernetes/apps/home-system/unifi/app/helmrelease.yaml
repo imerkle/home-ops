@@ -115,21 +115,21 @@ spec:
     persistence:
       data:
         storageClass: local-path
-        size: 1Gi
+        size: 5Gi
         accessMode: ReadWriteOnce
         # existingClaim: unifi-data
         globalMounts:
-          - path: /data
+          - path: /unifi
       cert:
         type: secret
         name: unifi-tls
         advancedMounts:
           main:
             main:
-              - path: /data/cert/cert.pem
+              - path: /unifi/cert/cert.pem
                 subPath: tls.crt
                 readOnly: true
-              - path: /data/cert/privkey.pem
+              - path: /unifi/cert/privkey.pem
                 subPath: tls.key
                 readOnly: true
     rawResources:
