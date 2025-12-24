@@ -118,8 +118,8 @@ spec:
         size: 1Gi
         accessMode: ReadWriteOnce
         # existingClaim: unifi-data
-        # globalMounts:
-        #   - path: /unifi
+        globalMounts:
+          - path: /unifi
       cert:
         type: secret
         name: unifi-tls
