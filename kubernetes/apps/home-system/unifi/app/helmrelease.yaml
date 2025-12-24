@@ -56,7 +56,7 @@ spec:
         type: LoadBalancer
         loadBalancerIP: 10.0.0.97
         # loadBalancerIP: "${UNIFI_ADDR:=1.1.1.1}"
-        # externalTrafficPolicy: Local
+        externalTrafficPolicy: Local
         # annotations:
           # traefik.ingress.kubernetes.io/service.serversscheme: https
         ports:
@@ -132,17 +132,17 @@ spec:
               - path: /unifi/cert/privkey.pem
                 subPath: tls.key
                 readOnly: true
-    rawResources:
-      backend-tls-policy:
-        apiVersion: gateway.networking.k8s.io/v1alpha3
-        kind: BackendTLSPolicy
-        spec:
-          spec:
-            targetRefs:
-              - group: ""
-                kind: Service
-                name: unifi
-                sectionName: http
-            validation:
-              hostname: unifi.x3y.space
-              wellKnownCACertificates: System
+    # rawResources:
+    #   backend-tls-policy:
+    #     apiVersion: gateway.networking.k8s.io/v1alpha3
+    #     kind: BackendTLSPolicy
+    #     spec:
+    #       spec:
+    #         targetRefs:
+    #           - group: ""
+    #             kind: Service
+    #             name: unifi
+    #             sectionName: http
+    #         validation:
+    #           hostname: unifi.x3y.space
+    #           wellKnownCACertificates: System
