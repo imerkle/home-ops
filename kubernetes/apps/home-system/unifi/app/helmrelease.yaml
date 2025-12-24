@@ -110,7 +110,7 @@ spec:
                   value: /
             backendRefs:
               - name: unifi
-                port: 8443
+                port: 8080
 
     persistence:
       data:
@@ -132,17 +132,17 @@ spec:
               - path: /unifi/cert/privkey.pem
                 subPath: tls.key
                 readOnly: true
-    # rawResources:
-    #   backend-tls-policy:
-    #     apiVersion: gateway.networking.k8s.io/v1alpha3
-    #     kind: BackendTLSPolicy
-    #     spec:
-    #       spec:
-    #         targetRefs:
-    #           - group: ""
-    #             kind: Service
-    #             name: unifi
-    #             sectionName: http
-    #         validation:
-    #           hostname: unifi.x3y.space
-    #           wellKnownCACertificates: System
+    rawResources:
+      backend-tls-policy:
+        apiVersion: gateway.networking.k8s.io/v1alpha3
+        kind: BackendTLSPolicy
+        spec:
+          spec:
+            targetRefs:
+              - group: ""
+                kind: Service
+                name: unifi
+                sectionName: http
+            validation:
+              hostname: unifi.x3y.space
+              wellKnownCACertificates: System
