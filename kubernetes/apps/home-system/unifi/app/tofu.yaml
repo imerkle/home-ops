@@ -1,31 +1,31 @@
----
-# 3. The Terraform Controller CRD
-apiVersion: infra.contrib.fluxcd.io/v1alpha2
-kind: Terraform
-metadata:
-  name: unifi-zitadel-oidc
-spec:
-  interval: 1h
-  approvePlan: auto  # Automatically apply changes (GitOps mode)
-  path: ./terraform/zitadel
+# ---
+# # 3. The Terraform Controller CRD
+# apiVersion: infra.contrib.fluxcd.io/v1alpha2
+# kind: Terraform
+# metadata:
+#   name: unifi-zitadel-oidc
+# spec:
+#   interval: 1h
+#   approvePlan: auto  # Automatically apply changes (GitOps mode)
+#   path: ./terraform/zitadel
 
-  # # Reference the GitRepository created above
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
+#   # # Reference the GitRepository created above
+#   sourceRef:
+#     kind: GitRepository
+#     name: flux-system
+#     namespace: flux-system
 
-# 1. Pass specific Variables for Vault
-  vars:
-    - name: app_name
-      value: "unifi-oidc"
-    - name: redirect_uris
-      value:
-        - "https://unifi.x3y.space/oauth/callback" # Placeholder, confirm with user if needed
+# # 1. Pass specific Variables for Vault
+#   vars:
+#     - name: app_name
+#       value: "unifi-oidc"
+#     - name: redirect_uris
+#       value:
+#         - "https://unifi.x3y.space/oauth/callback" # Placeholder, confirm with user if needed
 
-  # 2. Write output to a specific Vault Secret
-  writeOutputsToSecret:
-    name: unifi-oidc-creds
-    outputs:
-      - client_id
-      - client_secret
+#   # 2. Write output to a specific Vault Secret
+#   writeOutputsToSecret:
+#     name: unifi-oidc-creds
+#     outputs:
+#       - client_id
+#       - client_secret
