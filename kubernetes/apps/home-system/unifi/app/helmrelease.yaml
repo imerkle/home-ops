@@ -119,17 +119,17 @@ spec:
         accessMode: ReadWriteOnce
         # existingClaim: unifi-data
         globalMounts:
-          - path: /unifi
+          - path: /data
       cert:
         type: secret
         name: unifi-tls
         advancedMounts:
           main:
             main:
-              - path: /unifi/cert/cert.pem
+              - path: /data/cert/cert.pem
                 subPath: tls.crt
                 readOnly: true
-              - path: /unifi/cert/privkey.pem
+              - path: /data/cert/privkey.pem
                 subPath: tls.key
                 readOnly: true
     rawResources:
