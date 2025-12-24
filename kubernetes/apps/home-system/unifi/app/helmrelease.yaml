@@ -120,18 +120,18 @@ spec:
         # existingClaim: unifi-data
         globalMounts:
           - path: /unifi
-      cert:
-        type: secret
-        name: unifi-tls
-        advancedMounts:
-          main:
-            main:
-              - path: /unifi/cert/cert.pem
-                subPath: tls.crt
-                readOnly: true
-              - path: /unifi/cert/privkey.pem
-                subPath: tls.key
-                readOnly: true
+      # cert:
+      #   type: secret
+      #   name: unifi-tls
+      #   advancedMounts:
+      #     main:
+      #       main:
+      #         - path: /unifi/cert/cert.pem
+      #           subPath: tls.crt
+      #           readOnly: true
+      #         - path: /unifi/cert/privkey.pem
+      #           subPath: tls.key
+      #           readOnly: true
     # rawResources:
     #   backend-tls-policy:
     #     apiVersion: gateway.networking.k8s.io/v1alpha3
