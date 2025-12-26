@@ -119,7 +119,7 @@ spec:
         accessMode: ReadWriteOnce
         # existingClaim: unifi-data
         globalMounts:
-          - path: /unifi/data
+          - path: /data
       cert:
         type: secret
         name: unifi-tls
