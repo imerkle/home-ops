@@ -2,8 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app "kyverno"
-  namespace: *app
+  name: "kyverno"
 spec:
   chartRef:
     kind: OCIRepository
