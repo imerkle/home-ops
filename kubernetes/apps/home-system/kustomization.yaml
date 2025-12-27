@@ -13,4 +13,3 @@ resources:
   - ./namespace.yaml
   # - ./vars.sops.yaml
   - ./unifi/ks.yaml
-  - ./kyverno/ks.yaml
