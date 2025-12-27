@@ -51,8 +51,8 @@ spec:
 
       # Expose the API server via ingress
       ingress:
-        enabled: true
-        host: vcluster-k8s-api.x3y.space # Your API server hostname
+        enabled: false
+        # host: vcluster-k8s-api.x3y.space # Your API server hostname
 
     # Resource synchronization settings when using host cluster's worker nodes
     sync:
@@ -70,6 +70,6 @@ spec:
     # Kubeconfig export configuration
     exportKubeConfig:
       context: my-vcluster-context  # Name in the kubeconfig file
-      server: https://vcluster-k8s-api.x3y.space  # API server URL
+      server: https://vcluster.x3y.space  # API server URL
       secret:
         name: my-vcluster-kubeconfig  # Secret name for storing kubeconfig
