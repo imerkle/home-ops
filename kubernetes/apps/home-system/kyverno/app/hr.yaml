@@ -9,7 +9,7 @@ spec:
     name: kyverno
   values:
     crds:
-      install: false
+      install: true
     customLabels:
       # netpols
       ingress.home.arpa/host: "allow"
