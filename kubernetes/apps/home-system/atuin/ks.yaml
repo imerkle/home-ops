@@ -4,14 +4,15 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: atuin
+  namespace: &namespace home-system
 spec:
+  targetNamespace: *namespace
   dependsOn: []
   interval: 1h
-  path: ./kubernetes/apps/default/atuin/app
+  path: ./kubernetes/apps/home-system/atuin/app
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: default
   wait: false
