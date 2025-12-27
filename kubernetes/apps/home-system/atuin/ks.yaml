@@ -5,17 +5,9 @@ kind: Kustomization
 metadata:
   name: atuin
 spec:
-  components:
-    - ../../../../components/volsync
-  dependsOn:
-    - name: rook-ceph-cluster
-      namespace: rook-ceph
+  dependsOn: []
   interval: 1h
   path: ./kubernetes/apps/default/atuin/app
-  postBuild:
-    substitute:
-      APP: atuin
-      VOLSYNC_CAPACITY: 5Gi
   prune: true
   sourceRef:
     kind: GitRepository
