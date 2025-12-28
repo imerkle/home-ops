@@ -14,3 +14,4 @@ resources:
   # - ./vars.sops.yaml
   - ./unifi/ks.yaml
   - ./atuin/ks.yaml
+  - ./syncthing/ks.yaml

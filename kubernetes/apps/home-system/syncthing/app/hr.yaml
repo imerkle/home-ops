@@ -72,6 +72,13 @@ spec:
               - identifier: app
                 port: *port
     persistence:
+      data:
+        enabled: true
+        size: 5Gi
+        storageClass: local-path
+        accessMode: ReadWriteOnce
+        globalMounts:
+          path: /data
       # data:
       #   enabled: true
       #   type: ${PERSISTENCE_TYPE}
