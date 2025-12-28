@@ -44,7 +44,7 @@ spec:
     # Control plane configuration
     controlPlane:
       distro:
-        k3s:
+        k8s:
           enabled: true
       backingStore:
         etcd:
