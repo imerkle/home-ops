@@ -41,7 +41,9 @@ spec:
   driftDetection:
     mode: enabled
   values:
-    service:
+    distro:
+      k3s:
+        enabled: true
 
     # Control plane configuration
     controlPlane:
