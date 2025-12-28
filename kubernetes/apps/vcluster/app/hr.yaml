@@ -19,7 +19,7 @@ spec:
   chart:
     spec:
       chart: vcluster
-      version: 0.26.0-beta.3
+      version: 0.31.0-next.1
       sourceRef:
         kind: HelmRepository
         name: loft
@@ -41,6 +41,8 @@ spec:
   driftDetection:
     mode: enabled
   values:
+    service:
+
     # Control plane configuration
     controlPlane:
       # Configure the backing store for vCluster's data
