@@ -41,12 +41,15 @@ spec:
   driftDetection:
     mode: enabled
   values:
-    distro:
-      k3s:
-        enabled: true
-
     # Control plane configuration
     controlPlane:
+      distro:
+        k3s:
+          enabled: true
+      backingStore:
+        etcd:
+          embedded:
+            enabled: true
       # Configure the backing store for vCluster's data
       # backingStore: # Enterprise feature - requires license
         # etcd:
