@@ -69,7 +69,7 @@ spec:
             namespace: network
         rules:
           - backendRefs:
-              - identifier: app
+              - identifier: syncthing-app
                 port: *port
     persistence:
       data:
