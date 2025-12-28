@@ -34,4 +34,3 @@ spec:
         certificateRefs:
           - kind: Secret
             name: "long-domained-tls"
-        mode: Passthrough
