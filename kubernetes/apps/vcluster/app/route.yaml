@@ -10,10 +10,10 @@ spec:
       namespace: kube-system
       sectionName: tls
   rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
+    # - matches:
+    #     - path:
+    #         type: PathPrefix
+    #         value: /
     - backendRefs:
         - name: vcluster
           port: 443
