@@ -14,5 +14,3 @@ spec:
   targetNamespace: home-system
   dependsOn: []
   path: ./kubernetes/apps/home-system/atuin/app
-  prune: true
-  wait: false
