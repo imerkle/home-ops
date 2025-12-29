@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: vault-file
 spec:
-  storageClassName: "local-path"
+  storageClassName: "${STORE1}"
   accessModes:
     - ReadWriteOnce
   resources:

@@ -102,7 +102,7 @@ spec:
     #       - name: internal
     #         namespace: kube-system
     #     hostnames:
-    #       - unifi.x3y.space
+    #       - unifi.${DOMAIN1}
     #     rules:
     #       - matches:
     #           - path:
@@ -114,7 +114,7 @@ spec:
 
     persistence:
       data:
-        storageClass: local-path
+        storageClass: ${STORE1}
         size: 5Gi
         accessMode: ReadWriteOnce
         # existingClaim: unifi-data
@@ -144,5 +144,5 @@ spec:
                 name: unifi
                 sectionName: http
             validation:
-              hostname: unifi.x3y.space
+              hostname: unifi.${DOMAIN1}
               wellKnownCACertificates: System

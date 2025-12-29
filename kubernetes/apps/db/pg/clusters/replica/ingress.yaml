@@ -5,7 +5,7 @@ metadata:
 spec:
   ingressClassName: ${INGRESS1}
   rules:
-  - host: &host "pg-default-rw.x3y.space"
+  - host: &host "pg-default-rw.${DOMAIN1}"
     http:
       paths:
       - pathType: Prefix

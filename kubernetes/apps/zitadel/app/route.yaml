@@ -4,7 +4,7 @@ metadata:
   name: zitadel-route
 spec:
   hostnames:
-  - "zitadel.x3y.space"
+  - "zitadel.${DOMAIN1}"
   parentRefs:
     - name: internal
       namespace: kube-system
@@ -30,7 +30,7 @@ spec:
 #   name: zitadel-login-route
 # spec:
 #   hostnames:
-#   - "zitadel-login.x3y.space"
+#   - "zitadel-login.${DOMAIN1}"
 #   parentRefs:
 #     - name: internal
 #       namespace: kube-system

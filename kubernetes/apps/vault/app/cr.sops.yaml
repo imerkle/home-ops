@@ -92,7 +92,7 @@ spec:
             - type: oidc
               # Configure the connection to Zitadel
               config:
-                oidc_discovery_url: https://zitadel.x3y.space
+                oidc_discovery_url: https://zitadel.${DOMAIN1}
                 oidc_client_id: ${ env `OIDC_CLIENT_ID` }
                 oidc_client_secret: ${ env `OIDC_CLIENT_SECRET` }
                 default_role: default
@@ -104,8 +104,8 @@ spec:
                   user_claim: sub
                   # This must match one of the redirect URIs you set in Zitadel
                   allowed_redirect_uris:
-                    - https://vault.x3y.space/ui/vault/auth/oidc/oidc/callback
-                    - https://vault.x3y.space/v1/auth/oidc/oidc/callback
+                    - https://vault.${DOMAIN1}/ui/vault/auth/oidc/oidc/callback
+                    - https://vault.${DOMAIN1}/v1/auth/oidc/oidc/callback
                   # IMPORTANT: Zitadel uses the client_id as the audience
                   bound_audiences:
                     - ${ env `OIDC_CLIENT_ID` }

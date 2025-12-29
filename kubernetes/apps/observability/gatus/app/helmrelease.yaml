@@ -68,7 +68,7 @@ spec:
         statefulset:
           volumeClaimTemplates:
             - name: config
-              storageClass: local-path
+              storageClass: ${STORE1}
               accessMode: ReadWriteOnce
               size: 5Gi
     defaultPodOptions:
@@ -92,8 +92,8 @@ spec:
         annotations:
           gatus.home-operations.com/enabled: "false"
         hostnames:
-          - "{{ .Release.Name }}.x3y.space"
-          - status.x3y.space
+          - "{{ .Release.Name }}.${DOMAIN1}"
+          - status.${DOMAIN1}
         parentRefs:
           - name: envoy-external
             namespace: network

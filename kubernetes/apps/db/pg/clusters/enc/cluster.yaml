@@ -15,7 +15,7 @@ spec:
   walStorage:
     size: 50Gi
     # storageClass: cnpg-wal-nfs
-    storageClass: "local-path"
+    storageClass: "${STORE1}"
   superuserSecret:
     name: pg-enc-superuser
   postgresql:

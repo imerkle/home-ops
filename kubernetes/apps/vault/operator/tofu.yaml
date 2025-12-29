@@ -21,8 +21,8 @@ spec:
       value: "vault-oidc"
     - name: redirect_uris
       value:
-        - "https://vault.x3y.space/ui/vault/auth/oidc/oidc/callback"
-        - "https://vault.x3y.space/v1/auth/oidc/oidc/callback"
+        - "https://vault.${DOMAIN1}/ui/vault/auth/oidc/oidc/callback"
+        - "https://vault.${DOMAIN1}/v1/auth/oidc/oidc/callback"
 
   # 2. Write output to a specific Vault Secret
   writeOutputsToSecret:

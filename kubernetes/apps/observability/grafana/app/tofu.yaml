@@ -21,7 +21,7 @@ spec:
       value: "grafana-oidc"
     - name: redirect_uris
       value:
-        - "https://grafana.x3y.space/login/generic_oauth"
+        - "https://grafana.${DOMAIN1}/login/generic_oauth"
 
   # 2. Write output to a specific Vault Secret
   writeOutputsToSecret:

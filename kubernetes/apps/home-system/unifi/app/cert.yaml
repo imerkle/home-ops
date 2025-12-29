@@ -10,4 +10,4 @@ spec:
     name: letsencrypt-prodxs
     kind: ClusterIssuer
   dnsNames:
-    - unifi.x3y.space
+    - unifi.${DOMAIN1}

@@ -6,6 +6,12 @@ metadata:
   name: atuin
   namespace: &namespace home-system
 spec:
+  components:
+    - ../../components/volsync
+  postBuild:
+    substitute:
+      APP: atuin
+      VOLSYNC_CAPACITY: 5Gi
   targetNamespace: *namespace
   dependsOn: []
   path: ./kubernetes/apps/home-system/atuin/app

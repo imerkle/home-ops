@@ -21,7 +21,7 @@
 #       value: "unifi-oidc"
 #     - name: redirect_uris
 #       value:
-#         - "https://unifi.x3y.space/oauth/callback" # Placeholder, confirm with user if needed
+#         - "https://unifi.${DOMAIN1}/oauth/callback" # Placeholder, confirm with user if needed
 
 #   # 2. Write output to a specific Vault Secret
 #   writeOutputsToSecret:

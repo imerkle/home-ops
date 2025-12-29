@@ -74,7 +74,7 @@ spec:
           gatus.home-operations.com/endpoint: |
             name: syncthing
         hostnames:
-          - "syncthing.x3y.space"
+          - "syncthing.${DOMAIN1}"
         parentRefs:
           - name: internal
             namespace: kube-system

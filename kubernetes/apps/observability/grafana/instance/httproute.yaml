@@ -6,7 +6,7 @@ metadata:
   name: grafana
 spec:
   hostnames:
-    - grafana.x3y.space
+    - grafana.${DOMAIN1}
   parentRefs:
     - name: internal
       namespace: kube-system

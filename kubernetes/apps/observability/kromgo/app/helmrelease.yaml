@@ -64,7 +64,7 @@ spec:
           gatus.home-operations.com/endpoint: |-
             conditions: ["[STATUS] == 404"]
         hostnames:
-          - "{{ .Release.Name }}.x3y.space"
+          - "{{ .Release.Name }}.${DOMAIN1}"
         parentRefs:
           - name: envoy-external
             namespace: network

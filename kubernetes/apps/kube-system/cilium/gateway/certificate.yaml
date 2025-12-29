@@ -9,5 +9,5 @@ spec:
   issuerRef:
     name: letsencrypt-prodxs
     kind: ClusterIssuer
-  commonName: x3y.space
-  dnsNames: ["x3y.space", "*.x3y.space"]
+  commonName: ${DOMAIN1}
+  dnsNames: ["${DOMAIN1}", "*.${DOMAIN1}"]

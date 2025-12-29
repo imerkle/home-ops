@@ -24,7 +24,7 @@ spec:
   primaryUpdateMethod: restart # prefer downtime of image download from registry instead of switching primary instance (promote a standby instance to primary) when current primary pod is updated
   storage:
     size: 5Gi
-    storageClass: "local-path"
+    storageClass: "${STORE1}"
   superuserSecret:
     name: pg-default-superuser
   postgresql:

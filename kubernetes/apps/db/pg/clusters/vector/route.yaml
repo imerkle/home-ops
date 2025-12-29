@@ -6,7 +6,7 @@
 # spec:
 #   ingressClassName: ${INGRESS1}
 #   rules:
-#   - host: &host "pg-vector-rw.x3y.space"
+#   - host: &host "pg-vector-rw.${DOMAIN1}"
 #     http:
 #       paths:
 #       - pathType: Prefix
@@ -31,7 +31,7 @@ spec:
     - name: internal
       namespace: kube-system
   hostnames:
-    - "pg-vector-rw.x3y.space"
+    - "pg-vector-rw.${DOMAIN1}"
   rules:
     - backendRefs:
         - name: pg-vector-rw

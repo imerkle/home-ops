@@ -19,7 +19,7 @@ spec:
               key: cloudflare
         selector:
           dnsZones:
-           - x3y.space
+           - ${DOMAIN1}
 
 ---
 apiVersion: v1
