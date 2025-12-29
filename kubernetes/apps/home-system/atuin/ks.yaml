@@ -7,7 +7,7 @@ metadata:
   namespace: &namespace home-system
 spec:
   components:
-    - ../../../../components/volsync
+    - ../../../components/volsync
   postBuild:
     substitute:
       APP: atuin
