@@ -171,13 +171,13 @@ spec:
         # Allows writing some secrets to Vault (useful for development purposes).
         # See https://www.vaultproject.io/docs/secrets/kv/index.html for more information.
         startupSecrets:
-            - type: kv
-              path: secret/data/volsync
-              data:
-                data:
-                    RESTIC_PASSWORD: ENC[AES256_GCM,data:x6aWUpOU,iv:Y7LyAnp5RijBI27n+jwTZ5HtefAG+evnykoZIxqKjug=,tag:t2Cw2tfowILa01BzlfrgoA==,type:int]
-                    S3_ACCESS_KEY_ID: ENC[AES256_GCM,data:aWz3blOJdcfrbHTVNS34x0SyiNH/KltWoQ==,iv:Qq7Lm7JU89oQrOpG5g5Ej1rN7ngOcPQdAl+X3/f5F3c=,tag:YxBGIDH+2xmdFFv0z22g8Q==,type:str]
-                    S3_SECRET_ACCESS_KEY: ENC[AES256_GCM,data:u0tTGlklAo3M2LVvFSGT/nYDfR+V3oKW4S/+4Woiyg==,iv:5gvAv0T7xX5FQXnHcDCfCDOqklOWeU1f4KI2K0H74Pc=,tag:qn3T+1otaiUyHQPranwEsg==,type:str]
+            # - type: kv
+            #   path: secret/data/volsync
+            #   data:
+            #     data:
+            #         RESTIC_PASSWORD: 123456
+            #         S3_ACCESS_KEY_ID: 00210e3d484222e0000000003
+            #         S3_SECRET_ACCESS_KEY: K002qs8c3fz0dvfsQb3otZX9NaNMab8
             - type: kv
               path: secret/data/radarr
               data:
@@ -394,8 +394,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-29T21:08:05Z"
-    mac: ENC[AES256_GCM,data:+Tssh/d0QwyqmTgHppldrre8JXkeRgWGTK4pDQW80QRvmQvjaAUm0tXt3fKe7XFgoxAbOPqPY203a6ee+4mQ/fQ9xO0DITxKL+sttGZXCTareBvLrFkLQE7SJzl1HM+PSHUj0uqaLTTVGxsn2uDfkmp4Kn94kzJxMFelsTPo+Hs=,iv:j3mHtfNFAjhg8Z/P4MLFBoy2H3PxcT2jC2FI4DTMIe0=,tag:6sIUom1mgtvVuCz0sUQXbw==,type:str]
+    lastmodified: "2025-12-30T07:42:14Z"
+    mac: ENC[AES256_GCM,data:nGIDEDCx6MlwP/tEizUh0rUcxXriRtnuk4hUfeqbJRmXc+rkLXNyLt2xSWuhhgtsnixoLgpV1tV8LXFvQtmzxCNh4r4dx/y/krrfUH3U7Ph0rt+jm06nsrzNYOXZlFOckxXhYjpCgMdrF6ihWH7ACHQZx+xq1hsjy/P7J3BCpLk=,iv:8Y/JUhdBFImlLnl9cM8Rngae56JW1ARbp3rB2MeJI+U=,tag:iHXlfrYFIsWfwRN0z8RWgA==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
