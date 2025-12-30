@@ -93,8 +93,8 @@ spec:
               # Configure the connection to Zitadel
               config:
                 oidc_discovery_url: https://zitadel.${DOMAIN1}
-                oidc_client_id: ${ env `OIDC_CLIENT_ID` }
-                oidc_client_secret: ${ env `OIDC_CLIENT_SECRET` }
+                oidc_client_id: $${ env `OIDC_CLIENT_ID` }
+                oidc_client_secret: $${ env `OIDC_CLIENT_SECRET` }
                 default_role: default
                 # Create the Role that maps Zitadel users to Vault policies
               roles:
@@ -108,7 +108,7 @@ spec:
                     - https://vault.${DOMAIN1}/v1/auth/oidc/oidc/callback
                   # IMPORTANT: Zitadel uses the client_id as the audience
                   bound_audiences:
-                    - ${ env `OIDC_CLIENT_ID` }
+                    - $${ env `OIDC_CLIENT_ID` }
                   # Map this login to a Vault policy (e.g., 'reader' or 'default')
                   policies:
                     - default
@@ -171,13 +171,13 @@ spec:
         # Allows writing some secrets to Vault (useful for development purposes).
         # See https://www.vaultproject.io/docs/secrets/kv/index.html for more information.
         startupSecrets:
-            # - type: kv
-            #   path: secret/data/volsync
-            #   data:
-            #     data:
-            #         RESTIC_PASSWORD: 123456
-            #         S3_ACCESS_KEY_ID: 00210e3d484222e0000000003
-            #         S3_SECRET_ACCESS_KEY: K002qs8c3fz0dvfsQb3otZX9NaNMab8
+            - type: kv
+              path: secret/data/volsync
+              data:
+                data:
+                    RESTIC_PASSWORD: ENC[AES256_GCM,data:7goyYBuL,iv:8FISinhlqUtPB9m6vL7VIgJ+W9Z//lCEGl3Hg1idY2k=,tag:1g4pHITX8O0u8V6Lf4pu1Q==,type:int]
+                    S3_ACCESS_KEY_ID: ENC[AES256_GCM,data:OYKk/0ksIl21e0nYmQj8dnLN7ZdXwGlwIw==,iv:8g74Mqvt0s15Q2qDtryeGhR0ziXw2ikIBtHl9de3tBc=,tag:4STMizCqSjHH91bBaErTjQ==,type:str]
+                    S3_SECRET_ACCESS_KEY: ENC[AES256_GCM,data:VFxMMb6iE95eYSL7G18MuCW8po1SikouIosJ7v/FcQ==,iv:uL5dDNYCRnceRLsty1bFhswm3suamJGt/7CmaBuhcAA=,tag:GoElgwtE/7kR/cABg7PrGA==,type:str]
             - type: kv
               path: secret/data/radarr
               data:
@@ -394,8 +394,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-30T07:42:14Z"
-    mac: ENC[AES256_GCM,data:nGIDEDCx6MlwP/tEizUh0rUcxXriRtnuk4hUfeqbJRmXc+rkLXNyLt2xSWuhhgtsnixoLgpV1tV8LXFvQtmzxCNh4r4dx/y/krrfUH3U7Ph0rt+jm06nsrzNYOXZlFOckxXhYjpCgMdrF6ihWH7ACHQZx+xq1hsjy/P7J3BCpLk=,iv:8Y/JUhdBFImlLnl9cM8Rngae56JW1ARbp3rB2MeJI+U=,tag:iHXlfrYFIsWfwRN0z8RWgA==,type:str]
+    lastmodified: "2025-12-30T07:54:02Z"
+    mac: ENC[AES256_GCM,data:gVz+q6G9Ts3jzzek81o6lFeDqIlaUC+ZXAXcE0VSGCLIbIy97xXwALJtzqQThSlcLdLOxtM0prJ++AQQv5PLbng09aAqvOjUOwMhf1zH6GCeJH3efABl4Qx+fqbOifoLmQYjTxYP6gbkZpAHY5AJRR+dtUnPfsww7i8i1SgA7pw=,iv:Hs3ASLhDk26OTgdayprWP9Qx3uDe/ebWLK8tSFBGUSg=,tag:ty1ri0LCBN39+jhAEhNKIQ==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
