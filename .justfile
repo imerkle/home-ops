@@ -1,12 +1,14 @@
-#!/usr/bin/env -S just --justfile
-
 set quiet := true
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
+# bootstrap new cluster from scratch
 mod bootstrap "bootstrap"
-mod kube "kubernetes"
+# manage talos cluster
 mod talos "talos"
+# manage kubernetes cluster
+mod kube "kubernetes"
 
+cluster := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || (touch " + justfile_dir() + "/.current-cluster && just cluster)")
 [private]
 default:
     just -l
@@ -16,5 +18,10 @@ log lvl msg *args:
     gum log -t rfc3339 -s -l "{{ lvl }}" "{{ msg }}" {{ args }}
 
 [private]
-template file *args:
-    minijinja-cli "{{ file }}" {{ args }} | op inject
+template context file *args:
+    envconsul -secret="{{ cluster }}/{{ context }}" -once -no-prefix minijinja-cli --strict "{{ file }}" {{ args }} 2> /dev/null
+
+cluster:
+  echo -n "$(find "{{ justfile_dir() }}/talos" -mindepth 1 -maxdepth 1 -type d | sed 's@.*/@@g' | xargs gum choose --header 'Cluster?')" > "{{ justfile_dir() }}/.current-cluster"
+  cat "{{ justfile_dir() }}/.current-cluster"
+  direnv reload

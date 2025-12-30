@@ -6,6 +6,10 @@ creation_rules:
     key_groups:
       - age:
           - age1yvl77vcj6cthafxqnjezrme4ntktjgd2j4xpgkcfutws83zrtdesk93cll
+  - path_regex: talos/.+\.sops\.yaml
+    key_groups:
+      - age:
+          - age1yvl77vcj6cthafxqnjezrme4ntktjgd2j4xpgkcfutws83zrtdesk93cll
 stores:
   yaml:
     indent: 2
