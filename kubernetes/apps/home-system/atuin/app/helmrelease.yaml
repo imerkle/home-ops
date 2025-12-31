@@ -70,6 +70,4 @@ spec:
             namespace: kube-system
     persistence:
       config:
-        storageClass: ${STORE1}
-        size: 1Gi
-        accessMode: ReadWriteOnce
+        existingClaim: "{{ .Release.Name }}"
