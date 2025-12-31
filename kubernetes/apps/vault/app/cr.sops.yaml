@@ -175,6 +175,7 @@ spec:
               path: secret/data/volsync
               data:
                 data:
+                    KOPIA_PASSWORD: ENC[AES256_GCM,data:coWbJRkZ,iv:SIDdc87lJ3ZWk4u2Je95qM5dDsQarxLa1iIcr8AXEnI=,tag:Bue0vA41+xvOgiNpcLDNXA==,type:int]
                     RESTIC_PASSWORD: ENC[AES256_GCM,data:7goyYBuL,iv:8FISinhlqUtPB9m6vL7VIgJ+W9Z//lCEGl3Hg1idY2k=,tag:1g4pHITX8O0u8V6Lf4pu1Q==,type:int]
                     S3_ACCESS_KEY_ID: ENC[AES256_GCM,data:OYKk/0ksIl21e0nYmQj8dnLN7ZdXwGlwIw==,iv:8g74Mqvt0s15Q2qDtryeGhR0ziXw2ikIBtHl9de3tBc=,tag:4STMizCqSjHH91bBaErTjQ==,type:str]
                     S3_SECRET_ACCESS_KEY: ENC[AES256_GCM,data:VFxMMb6iE95eYSL7G18MuCW8po1SikouIosJ7v/FcQ==,iv:uL5dDNYCRnceRLsty1bFhswm3suamJGt/7CmaBuhcAA=,tag:GoElgwtE/7kR/cABg7PrGA==,type:str]
@@ -394,8 +395,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-12-30T07:54:02Z"
-    mac: ENC[AES256_GCM,data:gVz+q6G9Ts3jzzek81o6lFeDqIlaUC+ZXAXcE0VSGCLIbIy97xXwALJtzqQThSlcLdLOxtM0prJ++AQQv5PLbng09aAqvOjUOwMhf1zH6GCeJH3efABl4Qx+fqbOifoLmQYjTxYP6gbkZpAHY5AJRR+dtUnPfsww7i8i1SgA7pw=,iv:Hs3ASLhDk26OTgdayprWP9Qx3uDe/ebWLK8tSFBGUSg=,tag:ty1ri0LCBN39+jhAEhNKIQ==,type:str]
+    lastmodified: "2025-12-31T18:02:29Z"
+    mac: ENC[AES256_GCM,data:Xx7ioSH42NYIt6MH7jaL4HnZRH/aSK5Ybha31Bq8o6PAt+Qm4IAIYZx5kuYZ6gdi38LAOvn7+0+pt/J553de/u5P2tgoN0cofiI1jlN5DHbvemrVUt2W5RiJWjUnwv/d1qJRLzFzMDG6hkJO9EGqqOpEa2myw+Fob6A+cF2Kt2Y=,iv:dPdUvy06iRReUExHYOEmgQn97YFiE4oIn/jaJkRu9MA=,tag:bql1vFq8bJUTQ9YSKeVhcw==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
