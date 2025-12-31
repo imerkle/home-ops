@@ -8,7 +8,6 @@ metadata:
     kustomization.flux.fast/default: "false"
 spec:
   targetNamespace: *namespace
-  interval: 5m
   path: ./kubernetes/apps/db/pg/app
   dependsOn: []
   healthChecks:
@@ -28,7 +27,6 @@ metadata:
     helm.flux.home.fluxvars: "true"
 spec:
   targetNamespace: *namespace
-  interval: 5m
   path: ./kubernetes/apps/db/pg/clusters/default
   dependsOn:
     - name: 1-core-db-pg-app
