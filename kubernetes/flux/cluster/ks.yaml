@@ -40,6 +40,7 @@ spec:
               STORE1: local-path
               DOMAIN1: x3y.space
           prune: true
+          wait: true
           sourceRef:
             kind: GitRepository
             name: flux-system
