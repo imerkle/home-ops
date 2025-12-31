@@ -82,7 +82,7 @@ spec:
     driver:
       config:
         driver: local-hostpath
-        instance_id: homelab-local-hostpath
+        instance_id: biohazard-local-hostpath
         local-hostpath:
           shareBasePath: "/var/lib/democratic-csi-local-hostpath"
           controllerBasePath: "/var/lib/democratic-csi-local-hostpath"
