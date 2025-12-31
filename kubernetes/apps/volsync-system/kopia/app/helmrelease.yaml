@@ -16,6 +16,7 @@ spec:
           reloader.stakater.com/auto: "true"
         containers:
           app:
+            command: ["kopia", "repository", "create", "filesystem", "--path=/repository"]
             image:
               repository: ghcr.io/home-operations/kopia
               tag: 0.22.3@sha256:eeebd12fd4b3a9c25b9f711fff32454f62e2d5e2d431ab6806ad21c52f414807

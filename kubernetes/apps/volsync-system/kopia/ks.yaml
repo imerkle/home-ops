@@ -9,15 +9,8 @@ spec:
   #   - ../../../../components/nfs-scaler
   dependsOn:
     - name: volsync
-  interval: 1h
   path: ./kubernetes/apps/volsync-system/kopia/app
   postBuild:
     substitute:
       APP: kopia
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
   targetNamespace: volsync-system
-  wait: false
