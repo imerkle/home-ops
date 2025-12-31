@@ -63,10 +63,10 @@ spec:
     route:
       app:
         hostnames:
-          - "{{ .Release.Name }}.turbo.ac"
+          - "{{ .Release.Name }}.${DOMAIN1}"
         parentRefs:
-          - name: envoy-internal
-            namespace: network
+          - name: internal
+            namespace: kube-system
     configMaps:
       config:
         data:
@@ -91,9 +91,14 @@ spec:
           - path: /config/repository.config
             subPath: repository.config
       repository:
-        type: nfs
-        server: expanse.internal
-        path: /mnt/eros/VolsyncKopia
+        enabled: true
+        storageClass: local-path
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 20Gi
+        # type: nfs
+        # server: expanse.internal
+        # path: /mnt/eros/VolsyncKopia
         globalMounts:
           - path: /repository
       tmpfs:
