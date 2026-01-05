@@ -39,14 +39,11 @@ spec:
       jsonPatch:
         expression: >-
           [
-          JSONPatch{
+            JSONPatch{
               op: "add", path: "/spec/template/spec/volumes/-",
               value: {
                 name: "repository",
-                hostPath: {
-                  path: "/home/slim/volsync/repository",
-                  type: "DirectoryOrCreate"
-                }
+                emptyDir: {}
               }
             },
             JSONPatch{
