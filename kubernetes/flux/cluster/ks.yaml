@@ -65,11 +65,11 @@ spec:
                   install:
                     createNamespace: true
                     remediation:
-                      retries: 5
+                      retries: 2
                   upgrade:
                     cleanupOnFail: true
                     remediation:
-                      retries: 5
+                      retries: 2
                   uninstall:
                     keepHistory: false
               target:
