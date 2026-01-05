@@ -14,10 +14,10 @@ spec:
               requiredDuringSchedulingIgnoredDuringExecution:
                 nodeSelectorTerms:
                 - matchExpressions:
-                  - key: kubernetes.io/os
+                  - key: kubernetes.io/hostname
                     operator: In
                     values:
-                    - "linux"
+                    - "talos-0d4c1"
     accessModes:
       - ${VOLSYNC_SNAP_ACCESSMODES:=ReadWriteOnce}
     cacheAccessModes:
