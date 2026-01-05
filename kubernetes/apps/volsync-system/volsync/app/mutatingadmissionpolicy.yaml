@@ -100,10 +100,7 @@ spec:
               op: "add", path: "/spec/template/spec/volumes/-",
               value: Object.spec.template.spec.volumes{
                 name: "repository",
-                hostPath: Object.spec.template.spec.volumes.hostPath{
-                  path: "/home/slim/volsync/repository",
-                  type: "DirectoryOrCreate"
-                }
+                emptyDir: Object.spec.template.spec.volumes.emptyDir{}
               }
             },
             JSONPatch{
