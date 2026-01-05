@@ -96,6 +96,16 @@ spec:
       jsonPatch:
         expression: >-
           [
+          JSONPatch{
+              op: "add", path: "/spec/template/spec/volumes/-",
+              value: {
+                name: "repository",
+                hostPath: {
+                  path: "/home/slim/volsync/repository",
+                  type: "DirectoryOrCreate"
+                }
+              }
+            },
             JSONPatch{
               op: "add", path: "/spec/template/spec/containers/0/volumeMounts/-",
               value: Object.spec.template.spec.containers.volumeMounts{
