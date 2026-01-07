@@ -10,15 +10,6 @@ spec:
   trigger:
     manual: restore-once
   kopia:
-    moverAffinity:
-      nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                - matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                    - "talos-0d4c1"
     accessModes:
       - ${VOLSYNC_ACCESSMODES:=ReadWriteOnce}
     cacheAccessModes:
@@ -38,4 +29,4 @@ spec:
     sourceIdentity:
       sourceName: ${APP}
     storageClassName: ${VOLSYNC_STORAGECLASS:=${STORE1}}
-    volumeSnapshotClassName: ${VOLSYNC_SNAPSHOTCLASS:=democratic-csi-local-hostpath}
+    volumeSnapshotClassName: ${VOLSYNC_SNAPSHOTCLASS:=csi-ceph-blockpool}
