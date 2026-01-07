@@ -105,7 +105,7 @@ spec:
             subPath: repository.config
       repository:
         enabled: true
-        storageClass: local-path
+        storageClass: ${STORE1}
         type: persistentVolumeClaim
         accessMode: ReadWriteOnce
         size: 20Gi
