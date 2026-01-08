@@ -72,9 +72,9 @@ spec:
       app:
         annotations:
           gatus.home-operations.com/endpoint: |
-            name: syncthing
+            name: "{{ .Release.Name }}"
         hostnames:
-          - "syncthing.${DOMAIN1}"
+          - "{{ .Release.Name }}.${DOMAIN1}"
         parentRefs:
           - name: internal
             namespace: kube-system
@@ -104,7 +104,7 @@ spec:
       #           port: *sync
     persistence:
       config:
-        existingClaim: syncthing
+        existingClaim: "{{ .Release.Name }}"
         advancedMounts:
           main:
             app:
