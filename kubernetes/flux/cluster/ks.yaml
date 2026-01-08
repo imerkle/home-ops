@@ -46,7 +46,7 @@ spec:
             name: flux-system
             namespace: flux-system
           interval: 1h
-          timeout: 5m
+          timeout: 2m
           retryInterval: 1m
           decryption:
             provider: sops
@@ -60,7 +60,7 @@ spec:
                   name: _
                 spec:
                   interval: 5m
-                  timeout: 7m
+                  timeout: 2m
                   maxHistory: 5
                   install:
                     createNamespace: true
