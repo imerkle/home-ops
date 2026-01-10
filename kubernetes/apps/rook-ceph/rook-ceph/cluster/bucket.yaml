@@ -1,0 +1,8 @@
+---
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: "main-s3"
+spec:
+  bucketName: "test"
+  storageClassName: "ceph-bucket"
