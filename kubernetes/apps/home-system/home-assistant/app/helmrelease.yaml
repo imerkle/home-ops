@@ -83,8 +83,8 @@ spec:
           type: configMap
           name: '{{ .Release.Name }}-config-override'
           advancedMounts:
-            main: # The name of your controller
-              main: # The name of your container
+            home-assistant:
+              app:
                 - path: /config/configuration.yaml
                   subPath: configuration.yaml
                   readOnly: true
