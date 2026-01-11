@@ -78,8 +78,18 @@ spec:
           - path: /config/.venv
       tmp:
         type: emptyDir
+      config-file:
+          enabled: true
+          type: configMap
+          name: '{{ .Release.Name }}-config-override'
+          advancedMounts:
+            main: # The name of your controller
+              main: # The name of your container
+                - path: /config/configuration.yaml
+                  subPath: configuration.yaml
+                  readOnly: true
     configMaps:
-      config:
+      config-override:
         enabled: true
         data:
           configuration.yaml: |
@@ -95,12 +105,3 @@ spec:
             automation: !include automations.yaml
             script: !include scripts.yaml
             scene: !include scenes.yaml
-    # 2. Manually mount the specific file into the existing /config directory
-    extraVolumes:
-      - name: hass-config-override
-        configMap:
-          name: "home-assistant"
-    extraVolumeMounts:
-      - name: hass-config-override
-        mountPath: /config/configuration.yaml
-        subPath: configuration.yaml  # This is the key! It mounts only the file.
