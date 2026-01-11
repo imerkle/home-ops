@@ -85,6 +85,22 @@ spec:
           configuration.yaml: |
             default_config:
             http:
-              use_x_forwarded_for: true
-              trusted_proxies:
-                - 10.244.0.0/16
+            use_x_forwarded_for: true
+            trusted_proxies:
+              - 10.244.0.0/16
+            # Load frontend themes from the themes folder
+            frontend:
+              themes: !include_dir_merge_named themes
+
+            automation: !include automations.yaml
+            script: !include scripts.yaml
+            scene: !include scenes.yaml
+    # 2. Manually mount the specific file into the existing /config directory
+    extraVolumes:
+      - name: hass-config-override
+        configMap:
+          name: "home-assistant"
+    extraVolumeMounts:
+      - name: hass-config-override
+        mountPath: /config/configuration.yaml
+        subPath: configuration.yaml  # This is the key! It mounts only the file.
