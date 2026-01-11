@@ -81,7 +81,7 @@ spec:
       config-file:
           enabled: true
           type: configMap
-          name: '{{ .Release.Name }}-config-override'
+          name: '{{ .Release.Name }}'
           advancedMounts:
             home-assistant:
               app:
@@ -89,7 +89,7 @@ spec:
                   subPath: configuration.yaml
                   readOnly: true
     configMaps:
-      config-override:
+      config:
         enabled: true
         data:
           configuration.yaml: |
