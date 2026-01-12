@@ -70,5 +70,9 @@ spec:
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
+      cache:
+        existingClaim: "{{ .Release.Name }}-cache"
+        globalMounts:
+          - path: /cache
       tmp:
         type: emptyDir
