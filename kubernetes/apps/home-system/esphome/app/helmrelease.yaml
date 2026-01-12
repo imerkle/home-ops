@@ -52,12 +52,12 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
-    # service:
-    #   app:
-    #     ports:
-    #       http:
-    #         appProtocol: kubernetes.io/ws
-    #         port: 8123
+    service:
+      app:
+        ports:
+          http:
+            # appProtocol: kubernetes.io/ws
+            port: 8123
     route:
       app:
         annotations:
