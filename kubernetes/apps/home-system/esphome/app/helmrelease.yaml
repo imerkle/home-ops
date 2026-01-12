@@ -64,7 +64,6 @@ spec:
             conditions: ["[STATUS] == 200"]
         hostnames:
           - "{{ .Release.Name }}.${DOMAIN1}"
-          - esphome.${DOMAIN1}
         parentRefs:
           - name: internal
             namespace: kube-system
