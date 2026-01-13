@@ -1,0 +1,31 @@
+---
+# 3. The Terraform Controller CRD
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: coder-zitadel-oidc
+spec:
+  interval: 1h
+  approvePlan: auto  # Automatically apply changes (GitOps mode)
+  path: ./terraform/zitadel
+
+  # # Reference the GitRepository created above
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+
+# 1. Pass specific Variables for Vault
+  vars:
+    - name: app_name
+      value: "coder-oidc"
+    - name: redirect_uris
+      value:
+        - "https://coder.${DOMAIN1}/api/v2/users/oidc/callback"
+
+  # 2. Write output to a specific Vault Secret
+  writeOutputsToSecret:
+    name: coder-oidc-creds
+    outputs:
+      - client_id
+      - client_secret

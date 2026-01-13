@@ -1,0 +1,84 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: code-server
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          main:
+            image:
+              repository: ghcr.io/coder/code-server
+              tag: 4.20.0
+            env:
+              TZ: ${TZ}
+              SSH_AUTH_SOCK: ""
+            args:
+              - --auth
+              - "none"
+              - --user-data-dir
+              - "/config/.vscode"
+              - --extensions-dir
+              - "/config/.vscode"
+              - "--port"
+              - "80"
+              - /data
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+              limits:
+                memory: 10Gi
+        pod:
+          securityContext:
+            runAsUser: 568
+            runAsGroup: 568
+            fsGroup: 568
+            fsGroupChangePolicy: OnRootMismatch
+    service:
+      main:
+        ports:
+          http:
+            port: 80
+    route:
+      main:
+        hostnames:
+          - "{{ .Release.Name }}.${DNS_MAIN}"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+    persistence:
+      config:
+        enabled: true
+        type: persistentVolumeClaim
+        existingClaim: ${APP}
+      data:
+        enabled: true
+        type: persistentVolumeClaim
+        storageClass: ${STORE1}
+        accessMode: ReadWriteOnce
+        size: 5Gi
+        # existingClaim: code-server-data
+      secrets:
+        enabled: true
+        type: secret
+        name: "code-server-secrets"
+        defaultMode: 0600
+        advancedMounts:
+          main:
+            main:
+              - subPath: "host-priv"
+                path: "/home/coder/.ssh/id_rsa"
+                readOnly: true
+              - subPath: "client-priv"
+                path: "/home/coder/.ssh/id_rsa.pub"
+                readOnly: true

@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: dev-system
+metadata:
+  labels:
+    helm.flux.home.fluxvars: "true"
+components:
+  - ../../components/alerts
+  - ../../components/repos
+resources:
+  - ./namespace.yaml
+  - ./code-server/ks.yaml

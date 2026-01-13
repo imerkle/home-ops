@@ -37,6 +37,7 @@ spec:
           - observability
           - home-system
           - vault
+          - dev-system
 
     metrics:
       enabled: true

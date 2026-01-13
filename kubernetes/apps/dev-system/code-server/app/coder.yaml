@@ -1,0 +1,71 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.ok8.sh/helm.toolkit.fluxcd.io/helmrelease_v2beta1.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app coder
+spec:
+  chart:
+    spec:
+      chart: coder
+      version: 2.17.0
+      sourceRef:
+        kind: HelmRepository
+        name: coder-v2
+        namespace: code-server
+  values:
+    coder:
+      podAnnotations:
+        secret.reloader.stakater.com/reload: coder-secret
+      initContainers:
+        - name: 01-init-db
+          image: ghcr.io/onedr0p/postgres-init:16.4
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: INIT_POSTGRES_DBNAME
+              value: "coder"
+            - name: INIT_POSTGRES_HOST
+              value: "vault:secret/data/pg_default#HOST"
+            - name: INIT_POSTGRES_USER
+              value: "vault:secret/data/pg_default#USER"
+            - name: INIT_POSTGRES_PASS
+              value: "vault:secret/data/pg_default#PASSWORD"
+            - name: INIT_POSTGRES_SUPER_PASS
+              value: "vault:secret/data/pg_default#PASSWORD"
+      env:
+        - name: CODER_ACCESS_URL
+          value: https://coder.${DNS_MAIN}
+        - name: CODER_WILDCARD_ACCESS_URL
+          value: "*.coder.${DNS_MAIN}"
+        - name: CODER_OIDC_SIGN_IN_TEXT
+          value: "Sign In with Ok8Sh"
+        - name: CODER_PROMETHEUS_ENABLE
+          value: "true"
+
+        - name: CODER_OIDC_ISSUER_URL
+          value: ${OAUTH2_ISSUER}
+        - name: CODER_OIDC_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: coder-oidc-creds
+              key: client_id
+        - name: CODER_OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: coder-oidc-creds
+              key: client_secret
+        - name: CODER_POSTGRES_HOST
+          value: "vault:secret/data/pg_default#HOST"
+        - name: CODER_POSTGRES_PORT
+          value: "5432"
+        - name: CODER_POSTGRES_USER
+          value: "vault:secret/data/pg_default#USER"
+        - name: CODER_POSTGRES_PASSWORD
+          value: "vault:secret/data/pg_default#PASSWORD"
+        - name: CODER_POSTGRES_MAIN_DB
+          value: "coder"
+      ingress:
+        enable: true
+        className: internal
+        host: "coder.${DOMAIN1}"
+        wildcardHost: "*.coder.${DOMAIN1}"
