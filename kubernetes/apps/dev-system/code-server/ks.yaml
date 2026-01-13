@@ -11,8 +11,7 @@ spec:
     - ../../../../components/volsync
   targetNamespace: *namespace
   path: ./kubernetes/apps/dev-system/code-server/app
-  dependsOn:
-    - name: vault-app
+  dependsOn: []
   postBuild:
     substitute:
       APP: *app
