@@ -67,6 +67,7 @@ spec:
         storageClass: ${STORE1}
         accessMode: ReadWriteOnce
         size: 1Gi
+        volumeName: "{{ .Release.Name }}-data"
         # existingClaim: code-server-datad
       secrets:
         enabled: true
