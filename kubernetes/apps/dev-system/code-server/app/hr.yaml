@@ -59,17 +59,15 @@ spec:
     persistence:
       config:
         enabled: true
-        type: persistentVolumeClaim
+        # type: persistentVolumeClaim
         existingClaim: ${APP}
-      data:
-        suffix: "data"
-        enabled: true
-        type: persistentVolumeClaim
-        storageClass: ${STORE1}
-        accessMode: ReadWriteOnce
-        size: 1Gi
-        # volumeName: "{{ .Release.Name }}-data"
-        # existingClaim: code-server-datad
+        advancedMounts:
+          main:
+            app:
+              - path: /config
+                subPath: config
+              - path: /data
+                subPath: data
       secrets:
         enabled: true
         type: secret
