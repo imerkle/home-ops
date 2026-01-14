@@ -43,7 +43,7 @@ spec:
         - name: CODER_ACCESS_URL
           value: https://coder.${DOMAIN1}
         - name: CODER_WILDCARD_ACCESS_URL
-          value: "*.coder.${DNS_MAIN}"
+          value: "*.coder.${DOMAIN1}"
         - name: CODER_OIDC_SIGN_IN_TEXT
           value: "Sign In with Ok8Sh"
         - name: CODER_PROMETHEUS_ENABLE
