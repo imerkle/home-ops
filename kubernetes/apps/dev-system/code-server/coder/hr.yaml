@@ -18,10 +18,10 @@ spec:
       resources:
         limits:
          cpu: 2000m
-         memory: 2048Mi
-        requests:
-         cpu: 2000m
          memory: 4096Mi
+        requests:
+         cpu: 500m
+         memory: 1024Mi
       podAnnotations:
         secret.reloader.stakater.com/reload: coder-secret
       initContainers:
