@@ -8,3 +8,4 @@ resources:
   - tofu.yaml
   - secrets.yaml
   - role.yaml
+  - route.yaml

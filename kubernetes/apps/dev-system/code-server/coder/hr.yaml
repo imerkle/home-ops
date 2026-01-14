@@ -64,8 +64,8 @@ spec:
           value: "vault:secret/data/pg_default#PASSWORD"
         - name: CODER_POSTGRES_MAIN_DB
           value: "coder"
-      ingress:
-        enable: true
-        className: internal
-        host: "coder.${DOMAIN1}"
-        wildcardHost: "*.coder.${DOMAIN1}"
+      # ingress:
+      #   enable: true
+      #   className: internal
+      #   host: "coder.${DOMAIN1}"
+      #   wildcardHost: "*.coder.${DOMAIN1}"
