@@ -8,7 +8,7 @@ spec:
   chartRef:
     kind: OCIRepository
     name: rook-ceph-cluster
-  interval: 1h
+  interval: 2h
   values:
     monitoring:
       enabled: true
