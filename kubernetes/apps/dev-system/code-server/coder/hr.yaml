@@ -49,9 +49,9 @@ spec:
         - name: CODER_PROMETHEUS_ENABLE
           value: "true"
         - name: CODER_DISABLE_PASSWORD_AUTH
-          value: true
+          value: "true"
         - name: CODER_OIDC_ALLOW_SIGNUPS
-          value: true
+          value: "true"
         - name: CODER_OIDC_ISSUER_URL
           value: ${OAUTH2_ISSUER}
         - name: CODER_OIDC_CLIENT_ID
