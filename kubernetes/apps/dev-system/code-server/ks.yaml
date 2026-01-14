@@ -4,8 +4,6 @@ kind: Kustomization
 metadata:
   name: &app code-server
   namespace: &namespace dev-system
-  labels:
-    wait.flux.home.arpa/disabled: "true"
 spec:
   components:
     - ../../../../components/volsync
@@ -17,5 +15,22 @@ spec:
       APP: *app
       # GATUS_PATH: /web/index.html
       VOLSYNC_CAPACITY: 1Gi
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app coder
+  namespace: &namespace dev-system
+spec:
+  components:
+    - ../../../../components/volsync
+  targetNamespace: *namespace
+  path: ./kubernetes/apps/dev-system/code-server/coder
+  dependsOn: []
+  postBuild:
+    substitute:
+      APP: *app
+      # GATUS_PATH: /web/index.html
+      VOLSYNC_CAPACITY: 5Gi
       # REDIRECT_URI: https://coder.${DNS_MAIN}/api/v2/users/oidc/callback
       # LOGOUT_URI: https://coder.${DNS_MAIN}/api/v2/users/logout

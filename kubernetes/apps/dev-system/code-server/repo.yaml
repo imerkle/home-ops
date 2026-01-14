@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: coder-v2
-  namespace: code-server
+  namespace: dev-system
 spec:
   interval: 5m
   url: https://helm.coder.com/v2

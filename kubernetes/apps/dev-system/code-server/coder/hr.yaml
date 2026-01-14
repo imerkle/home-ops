@@ -8,11 +8,11 @@ spec:
   chart:
     spec:
       chart: coder
-      version: 2.17.0
+      version: 2.29.1
       sourceRef:
         kind: HelmRepository
         name: coder-v2
-        namespace: code-server
+        namespace: dev-system
   values:
     coder:
       podAnnotations:
@@ -34,7 +34,7 @@ spec:
               value: "vault:secret/data/pg_default#PASSWORD"
       env:
         - name: CODER_ACCESS_URL
-          value: https://coder.${DNS_MAIN}
+          value: https://coder.${DOMAIN1}
         - name: CODER_WILDCARD_ACCESS_URL
           value: "*.coder.${DNS_MAIN}"
         - name: CODER_OIDC_SIGN_IN_TEXT
