@@ -39,7 +39,7 @@ spec:
             substitute:
               STORE1: ceph-block
               DOMAIN1: x3y.space
-              OAUTH2_ISSUER: https://zitadel.x3y.space/
+              OAUTH2_ISSUER: https://zitadel.x3y.space
           prune: true
           wait: true
           sourceRef:
