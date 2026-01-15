@@ -2,7 +2,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: pvc-creator
-  namespace: default
 rules:
   - apiGroups: [""]
     resources: ["persistentvolumeclaims"]
@@ -12,11 +11,10 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: coder-pvc-binding
-  namespace: default
 subjects:
   - kind: ServiceAccount
     name: coder
-    namespace: code-server
+    namespace: dev-system
 roleRef:
   kind: Role
   name: pvc-creator
