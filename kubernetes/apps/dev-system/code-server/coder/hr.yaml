@@ -74,6 +74,27 @@ spec:
           value: "vault:secret/data/pg_default#PASSWORD"
         - name: CODER_POSTGRES_MAIN_DB
           value: "coder"
+      # extraContainers:
+      #         - name: docker-sidecar
+      #           image: docker:24-dind
+      #           securityContext:
+      #             privileged: true  # Required for Docker to run inside a container
+      #           env:
+      #             - name: DOCKER_TLS_CERTDIR
+      #               value: "" # Disables TLS for easier communication on localhost
+      #           resources:
+      #             requests:
+      #               cpu: 100m
+      #               memory: 512Mi
+      #             limits:
+      #               cpu: 1000m
+      #               memory: 2048Mi
+      #           volumeMounts:
+      #             - name: docker-storage
+      #               mountPath: /var/lib/docker
+      # volumes:
+      #   - name: docker-storage
+      #     emptyDir: {}
       # ingress:
       #   enable: true
       #   className: internal
