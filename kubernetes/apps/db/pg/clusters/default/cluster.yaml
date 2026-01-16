@@ -1,13 +1,8 @@
-##
-## backup servername aka folder name should be different than restore
-## when restoring it should use previous backup servername the new backup servername should change or it wont restore
-##
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: pg-default
-  namespace: pg
   # annotations:
   #   cnpg.io/skipEmptyWalArchiveCheck: "enabled"
 spec:
