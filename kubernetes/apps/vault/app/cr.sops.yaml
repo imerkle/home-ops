@@ -118,31 +118,31 @@ spec:
                   token_ttl: 20m
                   token_max_ttl: 30m
                   secret_id_num_uses: 40
-            - type: oidc
-              # Configure the connection to Zitadel
-              config:
-                oidc_discovery_url: https://zitadel.${DOMAIN1}
-                oidc_client_id: $${ env `OIDC_CLIENT_ID` }
-                oidc_client_secret: $${ env `OIDC_CLIENT_SECRET` }
-                default_role: default
-                # Create the Role that maps Zitadel users to Vault policies
-              roles:
-                - name: default
-                  # Check your Zitadel Project -> Token Settings for the correct claim
-                  # "sub" is standard, but you might want "email" or "preferred_username"
-                  user_claim: sub
-                  # This must match one of the redirect URIs you set in Zitadel
-                  allowed_redirect_uris:
-                    - https://vault.${DOMAIN1}/ui/vault/auth/oidc/oidc/callback
-                    - https://vault.${DOMAIN1}/v1/auth/oidc/oidc/callback
-                  # IMPORTANT: Zitadel uses the client_id as the audience
-                  bound_audiences:
-                    - $${ env `OIDC_CLIENT_ID` }
-                  # Map this login to a Vault policy (e.g., 'reader' or 'default')
-                  policies:
-                    - default
-                    - allow_secrets
-                  ttl: 1h
+                  # - type: oidc
+                  #   # Configure the connection to Zitadel
+                  #   config:
+                  #     oidc_discovery_url: https://zitadel.${DOMAIN1}
+                  #     oidc_client_id: $${ env `OIDC_CLIENT_ID` }
+                  #     oidc_client_secret: $${ env `OIDC_CLIENT_SECRET` }
+                  #     default_role: default
+                  #     # Create the Role that maps Zitadel users to Vault policies
+                  #   roles:
+                  #     - name: default
+                  #       # Check your Zitadel Project -> Token Settings for the correct claim
+                  #       # "sub" is standard, but you might want "email" or "preferred_username"
+                  #       user_claim: sub
+                  #       # This must match one of the redirect URIs you set in Zitadel
+                  #       allowed_redirect_uris:
+                  #         - https://vault.${DOMAIN1}/ui/vault/auth/oidc/oidc/callback
+                  #         - https://vault.${DOMAIN1}/v1/auth/oidc/oidc/callback
+                  #       # IMPORTANT: Zitadel uses the client_id as the audience
+                  #       bound_audiences:
+                  #         - $${ env `OIDC_CLIENT_ID` }
+                  #       # Map this login to a Vault policy (e.g., 'reader' or 'default')
+                  #       policies:
+                  #         - default
+                  #         - allow_secrets
+                  #       ttl: 1h
         secrets:
             - path: secret
               type: kv
@@ -398,8 +398,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-01-16T03:18:56Z"
-    mac: ENC[AES256_GCM,data:ll3LTtJ//1S2O6LaxpsXd4CxoP9yndqPjZI9D4qXEyWypGgYgivefoU0oD0ZZ7bxr+cWLY7sWAsyQbgYDdsnLYByQ+N1ekbdQ3j9fniIgtUR+CDaVL+gUkd6/6uY77YQeIOt0jvIKMXKQrDTJtLPVJC1jkdu7PN0A88HJdRc118=,iv:8tWj+5OdQ8p/05Sys1J/acUyrNQYINISF2uT+hdj7ng=,tag:+eylG3DTpChExyT6nZbLVg==,type:str]
+    lastmodified: "2026-01-16T03:23:24Z"
+    mac: ENC[AES256_GCM,data:psXru0Xq4io/UHFbSm2BL3eTwvRVOGAn/b4Hj2iopDPSZQJk9cgTcPewVlgUMCDt/+UugbIBeGgUh1k/wGXzIFEApd+9K9i4wa0RgwEcPGaclJw7kDy7B1L47haNs/xbs+R0S3lWLJ7rsrB8W0RBmTO1q/XJZGP4Q6A4h9RRzL8=,iv:nfe1TLJbua6tnRUvtGJ+0zFFuZnUSJCGLKvEKc8t8WI=,tag:0jEXFTuTLna+yU1aoxYwsQ==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
