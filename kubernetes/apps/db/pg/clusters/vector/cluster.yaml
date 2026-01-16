@@ -75,7 +75,7 @@ spec:
     #           name: *secret
     #           key: AWS_SECRET_ACCESS_KEY
     recovery:
-      source: &previous-cluster pg-default-restore
+      source: &previous-cluster pg-vector-restore
     # Note: externalClusters is needed when recovering from an existing cnpg cluster
   externalClusters:
     - name: *previous-cluster
