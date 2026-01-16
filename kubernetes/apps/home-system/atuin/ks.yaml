@@ -12,5 +12,7 @@ spec:
       APP: atuin
       VOLSYNC_CAPACITY: 5Gi
   targetNamespace: home-system
-  dependsOn: []
+  dependsOn:
+    - name: vault
+      namespace: vault
   path: ./kubernetes/apps/home-system/atuin/app

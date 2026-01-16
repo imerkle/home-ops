@@ -9,6 +9,8 @@ spec:
   #   - ../../../../components/nfs-scaler
   dependsOn:
     - name: volsync
+    - name: vault
+      namespace: vault
   path: ./kubernetes/apps/volsync-system/kopia/app
   postBuild:
     substitute:

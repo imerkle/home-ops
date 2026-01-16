@@ -95,3 +95,5 @@ spec:
   path: ./kubernetes/apps/db/pg/pgadmin
   dependsOn:
     - name: pg-app
+    - name: vault
+      namespace: vault

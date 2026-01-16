@@ -26,7 +26,11 @@ spec:
     - ../../../../components/volsync
   targetNamespace: *namespace
   path: ./kubernetes/apps/dev-system/code-server/coder
-  dependsOn: []
+  dependsOn:
+    - name: vault
+      namespace: vault
+    - name: pg-clusters-default
+      namespace: pg
   postBuild:
     substitute:
       APP: *app
