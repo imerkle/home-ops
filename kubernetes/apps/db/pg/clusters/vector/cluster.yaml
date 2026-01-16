@@ -34,7 +34,7 @@ spec:
     volumeSnapshot:
       className: democratic-csi-local-hostpath
     barmanObjectStore:
-      serverName: "${PG_S3_FOLDER_CURR}"
+      serverName: "${VEC_PG_S3_FOLDER_CURR}"
       wal:
         compression: bzip2
         maxParallel: 8
@@ -80,7 +80,7 @@ spec:
   externalClusters:
     - name: *previous-cluster
       barmanObjectStore:
-        serverName: "${PG_S3_FOLDER_PREV}"
+        serverName: "${VEC_PG_S3_FOLDER_PREV}"
         wal:
           compression: bzip2
           maxParallel: 8
