@@ -130,7 +130,7 @@ spec:
                   bound_service_account_names:
                     - vault-secrets-webhook
                   bound_service_account_namespaces:
-                    - vault-secrets-webhook
+                    - vault
                   policies:
                     - allow_secrets
                   ttl: 1h
@@ -313,6 +313,7 @@ spec:
             secretKeyRef:
                 name: vault-oidc-creds
                 key: client_id
+                #TODO: THIS IS IMPORTANT or vault breaks zitadel
                 optional: true
         - name: OIDC_CLIENT_SECRET
           valueFrom:
@@ -397,8 +398,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-01-16T02:47:19Z"
-    mac: ENC[AES256_GCM,data:6Wkbxffw+9fbWdiaFox2ZGEwBwteJjWaCk7F82obfs759Qg+yxLfI499Nau+I1IFplWpaMBgZMzNIbVBU+kHXadfHMw9x85gvzB9kRp60RbbRf85DjICG0I70oQQujW7pANSkG+YVv3qIYtmSaTJ5qK4aIMrSpZadVcJ/Z5l5ug=,iv:8u37gU1uy6I1c1PV/i+PLrUqmlkWzNw4+r/aoBcq0zo=,tag:fT5tjA7YhHrQLoirMJ2KAQ==,type:str]
+    lastmodified: "2026-01-16T03:10:51Z"
+    mac: ENC[AES256_GCM,data:8+cevAgiobF/tU9J9r4ZDvVMcU1E+qywCVHW9kFNveMy45WbqR38Ucii28ZoHBVoiWaB8PP3H4HB21WxyzzEdfMKKyrXY0HAAPU2BdYGIhirhzws4dOTsTYr+2W6m13+tAlOerHJokmQS0nsh3HhDirmu3w8gzDLJDVJTr72LnI=,iv:ggBHDpjAh7VGGKLiIkgAr0adnpORLMaAdLYXStyDfcc=,tag:ELXUNAX2ygOJZpXqYhkIoA==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
