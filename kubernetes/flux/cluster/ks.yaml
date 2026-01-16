@@ -38,6 +38,7 @@ spec:
           postBuild:
             substitute:
               STORE1: ceph-block
+              VNSAP1: csi-ceph-blockpool
               DOMAIN1: x3y.space
               OAUTH2_ISSUER: https://zitadel.x3y.space
           prune: true

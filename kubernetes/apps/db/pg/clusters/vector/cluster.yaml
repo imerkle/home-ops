@@ -32,7 +32,7 @@ spec:
     target: "primary"
     retentionPolicy: 30d
     volumeSnapshot:
-      className: democratic-csi-local-hostpath
+      className: ${VSNAP1}
     barmanObjectStore:
       serverName: "${VEC_PG_S3_FOLDER_CURR}"
       wal:
