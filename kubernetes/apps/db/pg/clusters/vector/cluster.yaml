@@ -17,6 +17,9 @@ spec:
   storage:
     size: 5Gi
     storageClass: "${STORE1}"
+  walStorage:
+    storageClass: "${STORE1}"
+    size: 5Gi
   superuserSecret:
     name: pg-default-superuser
   enableSuperuserAccess: true
