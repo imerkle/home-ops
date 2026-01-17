@@ -27,6 +27,8 @@ spec:
         TLS:
           Enabled: false
       secretConfig:
+        FirstInstance:
+          skip: false
         ExternalDomain: *host
         ExternalSecure: true
         ExternalPort: 443
