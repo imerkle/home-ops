@@ -6,3 +6,4 @@ resources:
   - ./hr.yaml
   - ./oci.yaml
   - ./route.yaml
+  - ./envoyconfig.yaml
