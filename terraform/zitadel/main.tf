@@ -6,6 +6,17 @@ terraform {
     }
   }
 }
+provider "kubernetes" {
+  # Configuration depends on your environment (e.g., config_path = "~/.kube/config")
+}
+data "kubernetes_secret" "zitadel_admin_key" {
+  metadata {
+    name      = "iam-admin-pat"
+    namespace = "zitadel"
+  }
+}
+
+
 
 # --- INPUT VARIABLES ---
 variable "zitadel_domain" {
@@ -29,7 +40,8 @@ variable "redirect_uris" {
 provider "zitadel" {
   domain = var.zitadel_domain
   # Ensure this file exists in this folder, or pass content via env var
-  jwt_profile_file = "jwt.json"
+  # jwt_profile_file = "jwt.json"
+  jwt_profile_json = data.kubernetes_secret.zitadel_admin_key.data["iam-admin.json"]
 }
 
 # --- RESOURCES ---
