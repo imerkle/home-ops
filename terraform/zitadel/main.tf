@@ -11,7 +11,7 @@ provider "kubernetes" {
 }
 data "kubernetes_secret" "zitadel_admin_key" {
   metadata {
-    name      = "iam-admin-pat"
+    name      = "iam-admin"
     namespace = "zitadel"
   }
 }
