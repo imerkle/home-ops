@@ -7,9 +7,9 @@ terraform {
   }
 }
 provider "kubernetes" {
+  # config_path = "~/.kube/config"
   # Configuration depends on your environment (e.g., config_path = "~/.kube/config")
 }
-
 
 
 # --- INPUT VARIABLES ---
@@ -30,7 +30,7 @@ variable "redirect_uris" {
   description = "List of allowed callback URLs"
 }
 
-data "kubernetes_secret" "zitadel_iam_admin" {
+data "kubernetes_secret_v1" "zitadel_iam_admin" {
   metadata {
     name      = "iam-admin"
     namespace = "zitadel"
@@ -42,16 +42,16 @@ provider "zitadel" {
   domain = var.zitadel_domain
   # Ensure this file exists in this folder, or pass content via env var
   # jwt_profile_file = "jwt.json"
-  jwt_profile_json = data.kubernetes_secret.zitadel_iam_admin.data["iam-admin.json"]
+  jwt_profile_json = data.kubernetes_secret_v1.zitadel_iam_admin.data["iam-admin.json"]
 }
 
 # --- RESOURCES ---
 
-# Create organization
-resource "zitadel_org" "org" {
-  name  = var.app_name
-  # state = "ORG_STATE_ACTIVE"
-}
+# # Create organization
+# resource "zitadel_org" "org" {
+#   name  = var.app_name
+#   # state = "ORG_STATE_ACTIVE"
+# }
 
 # Create project within the organization
 resource "zitadel_project" "project" {
