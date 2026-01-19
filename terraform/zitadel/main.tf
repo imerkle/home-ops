@@ -9,12 +9,6 @@ terraform {
 provider "kubernetes" {
   # Configuration depends on your environment (e.g., config_path = "~/.kube/config")
 }
-data "kubernetes_secret" "zitadel_admin_key" {
-  metadata {
-    name      = "iam-admin"
-    namespace = "zitadel"
-  }
-}
 
 
 
@@ -36,12 +30,19 @@ variable "redirect_uris" {
   description = "List of allowed callback URLs"
 }
 
+data "kubernetes_secret" "zitadel_iam_admin" {
+  metadata {
+    name      = "iam-admin"
+    namespace = "zitadel"
+  }
+}
+
 # --- PROVIDER ---
 provider "zitadel" {
   domain = var.zitadel_domain
   # Ensure this file exists in this folder, or pass content via env var
   # jwt_profile_file = "jwt.json"
-  jwt_profile_json = data.kubernetes_secret.zitadel_admin_key.data["iam-admin.json"]
+  jwt_profile_json = data.kubernetes_secret.zitadel_iam_admin.data["iam-admin.json"]
 }
 
 # --- RESOURCES ---
@@ -85,6 +86,10 @@ resource "zitadel_application_oidc" "app" {
   additional_origins           = []
   post_logout_redirect_uris    = []
   skip_native_app_success_page = false
+  depends_on = [
+    zitadel_project.project,
+    zitadel_org.org
+  ]
 }
 
 # --- OUTPUTS ---
