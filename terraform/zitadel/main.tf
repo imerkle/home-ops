@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     zitadel = {
-      source = "zitadel/zitadel"
+      source  = "zitadel/zitadel"
       version = "2.3.0"
     }
   }
@@ -17,6 +17,7 @@ variable "zitadel_domain" {
 variable "app_name" {
   type        = string
   description = "The name of the OIDC application (e.g., vault, grafana)"
+  default = "default_app"
 }
 
 variable "redirect_uris" {
@@ -24,35 +25,40 @@ variable "redirect_uris" {
   description = "List of allowed callback URLs"
 }
 
-# Use a default project/org or make them variable if they change often
-variable "org_id" {
-  type    = string
-  default = "351115276617580704"
-}
-
-variable "project_id" {
-  type    = string
-  default = "351291229247373498"
-}
-
 # --- PROVIDER ---
 provider "zitadel" {
-  domain           = var.zitadel_domain
+  domain = var.zitadel_domain
   # Ensure this file exists in this folder, or pass content via env var
   jwt_profile_file = "jwt.json"
 }
 
 # --- RESOURCES ---
+
+# Create organization
+resource "zitadel_organization" "org" {
+  name  = var.app_name
+  # state = "ORG_STATE_ACTIVE"
+}
+
+# Create project within the organization
+resource "zitadel_project" "project" {
+  name   = var.app_name
+  org_id = zitadel_organization.org.id
+
+  project_role_assertion = true
+  has_project_check      = true
+}
+
 resource "zitadel_application_oidc" "app" {
-  project_id = var.project_id
-  org_id     = var.org_id
+  project_id = zitadel_project.project.id
+  org_id     = zitadel_organization.org.id
 
   # Use the variable name
-  name       = var.app_name
+  name = var.app_name
 
-  response_types   = ["OIDC_RESPONSE_TYPE_CODE"]
-  grant_types      = ["OIDC_GRANT_TYPE_AUTHORIZATION_CODE"]
-  auth_method_type = "OIDC_AUTH_METHOD_TYPE_BASIC"
+  response_types    = ["OIDC_RESPONSE_TYPE_CODE"]
+  grant_types       = ["OIDC_GRANT_TYPE_AUTHORIZATION_CODE"]
+  auth_method_type  = "OIDC_AUTH_METHOD_TYPE_BASIC"
   access_token_type = "OIDC_TOKEN_TYPE_BEARER"
 
   id_token_userinfo_assertion = true
@@ -62,10 +68,10 @@ resource "zitadel_application_oidc" "app" {
 
   dev_mode = true
 
-  id_token_role_assertion = false
-  access_token_role_assertion = false
-  additional_origins = []
-  post_logout_redirect_uris = []
+  id_token_role_assertion      = false
+  access_token_role_assertion  = false
+  additional_origins           = []
+  post_logout_redirect_uris    = []
   skip_native_app_success_page = false
 }
 
