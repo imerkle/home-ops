@@ -47,7 +47,7 @@ provider "zitadel" {
 # --- RESOURCES ---
 
 # Create organization
-resource "zitadel_organization" "org" {
+resource "zitadel_org" "org" {
   name  = var.app_name
   # state = "ORG_STATE_ACTIVE"
 }
@@ -55,15 +55,15 @@ resource "zitadel_organization" "org" {
 # Create project within the organization
 resource "zitadel_project" "project" {
   name   = var.app_name
-  org_id = data.zitadel_organization.org.id
+  org_id = zitadel_org.org.id
 
   project_role_assertion = true
   has_project_check      = true
 }
 
 resource "zitadel_application_oidc" "app" {
-  project_id = data.zitadel_project.project.id
-  org_id     = data.zitadel_organization.org.id
+  project_id = zitadel_project.project.id
+  org_id     = zitadel_organization.org.id
 
   # Use the variable name
   name = var.app_name
