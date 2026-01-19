@@ -63,7 +63,7 @@ resource "zitadel_project" "project" {
 
 resource "zitadel_application_oidc" "app" {
   project_id = zitadel_project.project.id
-  org_id     = zitadel_organization.org.id
+  org_id     = zitadel_org.org.id
 
   # Use the variable name
   name = var.app_name
