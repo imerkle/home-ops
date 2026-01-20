@@ -14,11 +14,11 @@ spec:
   primaryUpdateStrategy: unsupervised # let k8s handle upgrades
   primaryUpdateMethod: restart # prefer downtime of image download from registry instead of switching primary instance (promote a standby instance to primary) when current primary pod is updated
   storage:
-    size: 5Gi
+    size: 25Gi
     storageClass: "${STORE1}"
   walStorage:
     storageClass: "${STORE1}"
-    size: 5Gi
+    size: 25Gi
   superuserSecret:
     name: pg-default-superuser
   enableSuperuserAccess: true
