@@ -52,7 +52,7 @@ spec:
         # - name: CODER_DISABLE_PASSWORD_AUTH
           # value: "true"
         - name: CODER_PG_CONNECTION_URL
-          value: "postgres://$${vault:secret/data/pg_default#USERNAME}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/coder?sslmode=disable"
+          value: "postgres://$${vault:secret/data/pg_default#USER}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/coder?sslmode=disable"
           # value: postgres://coder:secret42@localhost/coder?sslmode=disable"
         - name: CODER_OIDC_ALLOW_SIGNUPS
           value: "true"
