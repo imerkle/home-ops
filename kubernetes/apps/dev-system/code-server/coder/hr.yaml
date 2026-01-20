@@ -25,7 +25,6 @@ spec:
       podAnnotations:
         secret.reloader.stakater.com/reload: coder-secret
         vault.security.banzaicloud.io/vault-role: "default"
-        vault.security.banzaicloud.io/vault-env-from-path: "secret/data/pg_default"
       initContainers:
         - name: 01-init-db
           image: ghcr.io/onedr0p/postgres-init:16.4
@@ -53,7 +52,7 @@ spec:
         # - name: CODER_DISABLE_PASSWORD_AUTH
           # value: "true"
         - name: CODER_PG_CONNECTION_URL
-          value: "postgres://$${USERNAME}:$${PASSWORD}@$${HOST}:5432/coder?sslmode=disable"
+          value: "postgres://$${vault:secret/data/pg_default#USERNAME}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/coder?sslmode=disable"
           # value: postgres://coder:secret42@localhost/coder?sslmode=disable"
         - name: CODER_OIDC_ALLOW_SIGNUPS
           value: "true"
