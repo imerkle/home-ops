@@ -53,7 +53,7 @@ spec:
         # - name: CODER_DISABLE_PASSWORD_AUTH
           # value: "true"
         - name: CODER_PG_CONNECTION_URL
-          value: "postgres://$USERNAME:$PASSWORD@$HOST:5432/coder?sslmode=disable"
+          value: "postgres://$${USERNAME}:$${PASSWORD}@$${HOST}:5432/coder?sslmode=disable"
           # value: postgres://coder:secret42@localhost/coder?sslmode=disable"
         - name: CODER_OIDC_ALLOW_SIGNUPS
           value: "true"
