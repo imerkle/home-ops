@@ -47,6 +47,7 @@ provider "zitadel" {
 
 # --- RESOURCES ---
 
+
 # # Create organization
 resource "zitadel_org" "org" {
   name  = var.app_name
