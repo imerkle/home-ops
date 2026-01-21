@@ -48,10 +48,10 @@ provider "zitadel" {
 # --- RESOURCES ---
 
 # # Create organization
-# resource "zitadel_org" "org" {
-#   name  = var.app_name
-#   # state = "ORG_STATE_ACTIVE"
-# }
+resource "zitadel_org" "org" {
+  name  = var.app_name
+  # state = "ORG_STATE_ACTIVE"
+}
 
 # Create project within the organization
 resource "zitadel_project" "project" {
