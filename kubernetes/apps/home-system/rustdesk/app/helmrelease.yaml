@@ -70,7 +70,7 @@ spec:
     persistence:
       data:
         enabled: true
-        existingClaim: rustdesk-data
+        existingClaim: "{{ .Release.Name }}"
         globalMounts:
           - path: /db
             subPath: hbbs
