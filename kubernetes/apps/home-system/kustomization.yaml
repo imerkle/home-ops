@@ -18,3 +18,4 @@ resources:
   - ./home-assistant/ks.yaml
   - ./esphome/ks.yaml
   - ./pdf-tool/ks.yaml
+  - ./rustdesk/ks.yaml

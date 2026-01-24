@@ -1,0 +1,78 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: rustdesk
+spec:
+  interval: 15m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  values:
+    controllers:
+      hbbr:
+        containers:
+          hbbr:
+            image:
+              repository: rustdesk/rustdesk-server
+              tag: 1.1.10-3
+            command: ["hbbr"]
+      hbbs:
+        containers:
+          hbbs:
+            image:
+              repository: rustdesk/rustdesk-server
+              tag: 1.1.10-3
+            env:
+              DB_URL: /db/db_v2.sqlite3
+              ENCRYPTED_ONLY: "1"
+              RELAY: "10.0.0.90:21117"
+            command: ["hbbs", "-r 10.0.0.90:21117"]
+    service:
+      relay:
+        controller: hbbr
+        type: LoadBalancer
+        annotations:
+          external-dns.alpha.kubernetes.io/hostname: "rustdesk-relay.${DOMAIN1}"
+          lbipam.cilium.io/ips: "10.0.0.90"
+        ports:
+          rustdesk-5:
+            enabled: true
+            port: 21117
+            protocol: "TCP"
+          rustdesk-6:
+            enabled: true
+            port: 21119
+            protocol: "TCP"
+      server:
+        controller: hbbs
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: "10.0.0.90"
+          external-dns.alpha.kubernetes.io/hostname: "rustdesk.${DOMAIN1}"
+        ports:
+          rustdesk-1:
+            port: 21114
+          rustdesk-2:
+            port: 21115
+          rustdesk-3:
+            port: &port 21116
+          rustdesk-4:
+            port: *port
+            protocol: UDP
+          rustdesk-5-relay:
+            port: 21117
+          rustdesk-6:
+            port: 21118
+          rustdesk-7-relay:
+            port: 21119
+    persistence:
+      data:
+        enabled: true
+        existingClaim: rustdesk-data
+        globalMounts:
+          - path: /db
+            subPath: hbbs
+          - path: /root
+            subPath: root
