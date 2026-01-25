@@ -3,13 +3,13 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: turbo-ac
+  name: domain1
 spec:
-  secretName: turbo-ac-tls
+  secretName: domain1-tls
   issuerRef:
-    name: letsencrypt-production
+    name: letsencrypt-prodxs
     kind: ClusterIssuer
-  commonName: turbo.ac
+  commonName: ${DOMAIN1}
   dnsNames:
-    - turbo.ac
-    - "*.turbo.ac"
+    - ${DOMAIN1}
+    - "*.${DOMAIN1}"
