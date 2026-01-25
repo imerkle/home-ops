@@ -236,6 +236,8 @@ spec:
               path: secret/data/cloudflare
               data:
                 data:
+                    DNS1_TOKEN: ENC[AES256_GCM,data:8br0FH8tsVrfkKv1gjRGlQeLTI4mS1t+JVKt9DAo8eSXDlyHpam6CA==,iv:jYDDrtj+HhUW7mMUXgDLdVh5ewk3Wx/7Ubmuz7Rt+4o=,tag:+7/bbSD7NPBCpXRzuC1V3g==,type:str]
+                    DNS1_ZONE_ID: ENC[AES256_GCM,data:bC8Ul7c5o4oog2pIFoNuxIdSf8TSoNfdkmLw8Y14cWc=,iv:RSMXSAd5jNwzvIw2Qb8mi4pPAUNt0jE9oNC8pg0Zs0U=,tag:FcEzjXzST93/SoCMffoRLg==,type:str]
                     DNS_TOKEN: ENC[AES256_GCM,data:qsl81HL7VO/0HilC4slOCS/5qakMMHVxFGFExVIgcIEcJzSKLArS6g==,iv:As5IXZigJ9doHhU7tOrmcyEAv44S/W/L00PzQOUui0s=,tag:fHaytnTmducOQhxlExxsUw==,type:str]
                     CERT_TOKEN: ENC[AES256_GCM,data:UONaApFRR9iPC1iZWWWTiXyyTNSJX1dWYDt8B/HqRZ/L1ucD7TPu2g==,iv:BcXNHzqb1o4Ho0A9j2lSRO2caaIb+Q8oGA9l4xuzDBU=,tag:OjE5GCnYlReUp0zmOSCoqw==,type:str]
                     EMAIL: ENC[AES256_GCM,data:6JNZszfSXuz8NPvSLYxjou+kyFbDPg==,iv:MFQtbMh0Xui9Bs7hPMG1MpHDTuSh7IjpnZ2qfjBaf4A=,tag:xW0ednprN7ced0Idbo6OFg==,type:str]
@@ -398,8 +400,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-01-16T03:23:24Z"
-    mac: ENC[AES256_GCM,data:psXru0Xq4io/UHFbSm2BL3eTwvRVOGAn/b4Hj2iopDPSZQJk9cgTcPewVlgUMCDt/+UugbIBeGgUh1k/wGXzIFEApd+9K9i4wa0RgwEcPGaclJw7kDy7B1L47haNs/xbs+R0S3lWLJ7rsrB8W0RBmTO1q/XJZGP4Q6A4h9RRzL8=,iv:nfe1TLJbua6tnRUvtGJ+0zFFuZnUSJCGLKvEKc8t8WI=,tag:0jEXFTuTLna+yU1aoxYwsQ==,type:str]
+    lastmodified: "2026-01-25T08:25:20Z"
+    mac: ENC[AES256_GCM,data:LnY49b5AB91VZEEbHsSCIUk77Bgb0P2yJDIQMmWj/a2jO2vYlYxZsYSnVHHEipGp3/gJlVauxI2o+1fEXhqWMkaJJmyP5PoSlyaG5N2ZUAdHLIL1ijZXEJf7uSL4HVwNqxyNvlL6dqE22S8HxLGDRX5zov3g+cPTe170M0rkBL0=,iv:NnVpE4knkTzom/UtwTpvv4TGgSjXJDqLRTMNGLHJakQ=,tag:+huj4GNM75LAerEnh2Yy/Q==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
