@@ -76,6 +76,7 @@ spec:
               image: https://images.unsplash.com/photo-1502790671504-542ad6e13129?auto=format&fit=crop&w=2560&q=80
           kubernetes.yaml: |
             mode: cluster
+            gateway: true
           services.yaml: |
             # Services will be auto-discovered via annotations
           widgets.yaml: |
