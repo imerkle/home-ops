@@ -79,5 +79,14 @@ spec:
                 - Github:
                     - abbr: GH
                       href: https://github.com/
+      tmpfs:
+        type: emptyDir
+        advancedMounts:
+          homepage:
+            app:
+              - path: /app/config/logs
+                subPath: logs
+              - path: /tmp
+                subPath: tmp
     serviceAccount:
       homepage: {}
