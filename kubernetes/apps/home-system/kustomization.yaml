@@ -20,3 +20,4 @@ resources:
   - ./pdf-tool/ks.yaml
   - ./rustdesk/ks.yaml
   - ./zealot/ks.yaml
+  - ./homepage/ks.yaml

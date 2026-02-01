@@ -60,6 +60,11 @@ spec:
     route:
       app:
         annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: Home Assistant
+          gethomepage.dev/description: Home Automation Platform
+          gethomepage.dev/group: Home Automation
+          gethomepage.dev/icon: home-assistant.png
           gatus.home-operations.com/endpoint: |-
             conditions: ["[STATUS] == 200"]
         hostnames:
