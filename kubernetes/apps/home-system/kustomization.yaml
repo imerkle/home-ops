@@ -19,3 +19,4 @@ resources:
   - ./esphome/ks.yaml
   - ./pdf-tool/ks.yaml
   - ./rustdesk/ks.yaml
+  - ./zealot/ks.yaml
