@@ -78,8 +78,8 @@ spec:
         hostnames:
           - "{{ .Release.Name }}.${DOMAIN1}"
         parentRefs:
-          - name: internal
-            namespace: kube-system
+          - name: envoy-internal
+            namespace: network
     configMaps:
       config:
         data:

@@ -5,8 +5,8 @@ metadata:
   name: pg-vector-rw
 spec:
   parentRefs:
-    - name: internal
-      namespace: kube-system
+    - name: envoy-internal
+      namespace: network
   hostnames:
     - "pg-vector-rw.${DOMAIN1}"
   rules:

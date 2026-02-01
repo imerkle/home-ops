@@ -28,8 +28,8 @@ metadata:
   # namespace: pg
 spec:
   parentRefs:
-    - name: internal
-      namespace: kube-system
+    - name: envoy-internal
+      namespace: network
   hostnames:
     - "pg-default-rw.${DOMAIN1}"
   rules:

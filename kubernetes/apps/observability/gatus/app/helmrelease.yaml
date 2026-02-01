@@ -95,8 +95,8 @@ spec:
           - "{{ .Release.Name }}.${DOMAIN1}"
           - status.${DOMAIN1}
         parentRefs:
-          - name: internal
-            namespace: kube-system
+          - name: envoy-internal
+            namespace: network
     rbac:
       roles:
         gatus:
