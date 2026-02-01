@@ -9,3 +9,5 @@ spec:
       name: flux-mcp
   responseBuffer:
     disabled: true
+  timeouts:
+    interStreamIdleTimeout: 300s
