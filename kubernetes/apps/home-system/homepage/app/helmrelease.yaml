@@ -57,6 +57,15 @@ spec:
         name: homepage
         globalMounts:
           - path: /app/config
+      tmpfs:
+        type: emptyDir
+        advancedMounts:
+          homepage:
+            app:
+              - path: /app/config/logs
+                subPath: logs
+              - path: /tmp
+                subPath: tmp
     configMaps:
       config:
         enabled: true
@@ -79,14 +88,5 @@ spec:
                 - Github:
                     - abbr: GH
                       href: https://github.com/
-      tmpfs:
-        type: emptyDir
-        advancedMounts:
-          homepage:
-            app:
-              - path: /app/config/logs
-                subPath: logs
-              - path: /tmp
-                subPath: tmp
     serviceAccount:
       homepage: {}
