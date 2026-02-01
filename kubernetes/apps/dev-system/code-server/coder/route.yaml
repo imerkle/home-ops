@@ -6,7 +6,7 @@ spec:
   hostnames:
   - "coder.${DOMAIN1}"
   parentRefs:
-    - name: envoy
+    - name: envoy-internal
       namespace: network
   rules:
     - matches:
