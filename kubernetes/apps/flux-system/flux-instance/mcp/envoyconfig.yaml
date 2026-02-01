@@ -1,25 +1,11 @@
-apiVersion: cilium.io/v2
-kind: CiliumEnvoyConfig
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
 metadata:
-  name: mcp-streaming-fix
+  name: mcp-disable-buffer
 spec:
-  services:
-    - name: flux-operator-mcp
-      namespace: flux-system
-  resources:
-    - "@type": type.googleapis.com/envoy.config.listener.v3.Listener
-      # Envoy-level tweaks to prevent buffering and increase timeouts
-      name: envoy-sse-listener
-      typed_config:
-        "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
-        common_http_protocol_options:
-          idle_timeout: 3600s # Keep MCP stream alive for 1 hour
-        route_config:
-          virtual_hosts:
-            - name: flux-mcp
-              domains: ["*"]
-              routes:
-                - match: { prefix: "/" }
-                  route:
-                    cluster: "flux-operator-mcp"
-                    timeout: 0s # Disable request timeout for streaming
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: flux-mcp
+  responseBuffer:
+    disabled: true
