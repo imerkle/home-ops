@@ -25,7 +25,7 @@ spec:
               ZEALOT_DATABASE_URL: "postgres://$${vault:secret/data/pg_default#USER}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/zealot?sslmode=disable"
               SECRET_TOKEN: "85dbe15d75ef9308c7ae0f33c7a324cc6f4bf519a2ed2f3027bd33c140a4f9aa"
               SECRET_KEY_BASE: "85dbe15d75ef9308c7ae0f33c7a324cc6f4bf519a2ed2f3027bd33c140a4f9aa"
-  DEFAULT_LOCALE: en
+              DEFAULT_LOCALE: en
             # probes:
             #   liveness:
             #     enabled: true
