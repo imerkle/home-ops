@@ -32,7 +32,6 @@ spec:
               limits:
                 memory: 500Mi
         pod:
-          serviceAccountName: homepage
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
@@ -83,3 +82,5 @@ spec:
                 - Github:
                     - abbr: GH
                       href: https://github.com/
+    serviceAccount:
+      homepage: {}
