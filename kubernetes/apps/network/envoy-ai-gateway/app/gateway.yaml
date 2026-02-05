@@ -1,0 +1,121 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.envoyproxy.io/envoyproxy_v1alpha1.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: envoy-ai
+spec:
+  logging:
+    level:
+      default: info
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyDeployment:
+        replicas: 1
+        container:
+          resources:
+            requests:
+              cpu: 100m
+            limits:
+              memory: 2Gi
+      envoyService:
+        externalTrafficPolicy: Local
+  shutdown:
+    drainTimeout: 180s
+  telemetry:
+    metrics:
+      prometheus:
+        compression:
+          type: Gzip
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.networking.k8s.io/gatewayclass_v1.json
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: envoy-ai
+spec:
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+  parametersRef:
+    group: gateway.envoyproxy.io
+    kind: EnvoyProxy
+    name: envoy-ai
+    namespace: network
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.networking.k8s.io/gateway_v1.json
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: envoy-ai
+  annotations:
+    external-dns.alpha.kubernetes.io/target: &hostname ai.${DOMAIN1}
+    gatus.home-operations.com/endpoint: |-
+      group: ai
+      guarded: true
+      ui:
+        hide-hostname: true
+        hide-url: true
+spec:
+  gatewayClassName: envoy-ai
+  infrastructure:
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: *hostname
+      lbipam.cilium.io/ips: 10.0.0.82
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https
+      protocol: HTTPS
+      port: 443
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: domain1-tls
+---
+# AI workloads need large buffer limits (default 32KB is too small)
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: envoy-ai-buffer
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: envoy-ai
+  connection:
+    bufferLimit: 50Mi
+  http2:
+    onInvalidMessage: TerminateStream
+    maxConcurrentStreams: 100
+  tcpKeepalive: {}
+  tls:
+    minVersion: "1.2"
+    alpnProtocols:
+      - h2
+      - http/1.1
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.networking.k8s.io/httproute_v1.json
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: envoy-ai-https-redirect
+  annotations:
+    external-dns.alpha.kubernetes.io/controller: none
+spec:
+  parentRefs:
+    - name: envoy-ai
+      namespace: network
+      sectionName: http
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
