@@ -1,0 +1,82 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: frigate
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  interval: 1h
+  values:
+    controllers:
+      frigate:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/blakeblackshear/frigate
+              tag: 0.15.0-beta2
+            env:
+              TZ: America/New_York
+              FRIGATE_MQTT_PASSWORD: "vault:secret/data/frigate#MQTT_PASSWORD"
+            # No hardware acceleration or privileged mode as requested
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false # Frigate needs to write to some locations
+              capabilities: {drop: ["ALL"]}
+            resources:
+              requests:
+                cpu: 100m
+                memory: 500Mi
+              limits:
+                memory: 2Gi
+    service:
+      app:
+        controller: frigate
+        ports:
+          http:
+            port: 5000
+          rtsp:
+            port: 8554
+          go2rtc:
+            port: 1984
+    route:
+      app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: Frigate
+          gethomepage.dev/description: NVR with AI object detection
+          gethomepage.dev/group: Home Automation
+          gethomepage.dev/icon: frigate.png
+        hostnames:
+          - "{{ .Release.Name }}.${DOMAIN1}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      config:
+        existingClaim: "{{ .Release.Name }}"
+        globalMounts:
+          - path: /config
+            subPath: config
+      media:
+        existingClaim: "{{ .Release.Name }}"
+        globalMounts:
+          - path: /media
+            subPath: media
+      config-file:
+        type: configMap
+        name: frigate-configmap
+        globalMounts:
+          - path: /config/config.yml
+            subPath: config.yml
+            readOnly: true
+      cache:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 1Gi
+        globalMounts:
+          - path: /dev/shm

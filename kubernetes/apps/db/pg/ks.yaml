@@ -3,7 +3,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: pg-app
-  namespace: &namespace pg
+  namespace: &namespace db
   labels:
     kustomization.flux.fast/default: "false"
 spec:
@@ -20,7 +20,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: pg-clusters-default
-  namespace: &namespace pg
+  namespace: &namespace db
   labels:
     kustomization.flux.fast/default: "false"
     wait.flux.home.arpa/disabled: "true"
@@ -40,7 +40,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: pg-clusters-replica
-  namespace: &namespace pg
+  namespace: &namespace db
 spec:
   targetNamespace: *namespace
   path: ./kubernetes/apps/db/pg/clusters/replica
@@ -58,7 +58,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: pg-clusters-vector
-  namespace: &namespace pg
+  namespace: &namespace db
   labels:
     wait.flux.home.arpa/disabled: "true"
 spec:
@@ -87,7 +87,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: pgadmin-app
-  namespace: &namespace pg
+  namespace: &namespace db
   labels:
     wait.flux.home.arpa/disabled: "true"
 spec:

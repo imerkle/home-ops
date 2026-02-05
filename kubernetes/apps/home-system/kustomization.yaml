@@ -21,3 +21,4 @@ resources:
   - ./rustdesk/ks.yaml
   - ./zealot/ks.yaml
   - ./homepage/ks.yaml
+  - ./frigate/ks.yaml

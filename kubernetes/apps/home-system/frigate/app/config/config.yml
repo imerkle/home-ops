@@ -1,0 +1,23 @@
+mqtt:
+  host: mqtt.home-system.svc.cluster.local
+  user: frigate
+  password: '{FRIGATE_MQTT_PASSWORD}'
+
+database:
+  path: /config/frigate.db
+
+detectors:
+  ov:
+    type: openvino
+    device: CPU
+
+cameras:
+  dummy:
+    enabled: false
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/dummy
+          roles:
+            - detect
+    detect:
+      enabled: false

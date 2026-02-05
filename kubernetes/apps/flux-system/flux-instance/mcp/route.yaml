@@ -27,7 +27,6 @@ spec:
                 value: "flux-mcp.${DOMAIN1}"
         - type: ResponseHeaderModifier
           responseHeaderModifier:
-            # Force the correct content type if the backend is misbehaving
             set:
               - name: "Content-Type"
                 value: "application/json"

@@ -3,8 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: cloudnative-pg
-  # namespace: cnpg
-  namespace: pg
 spec:
   chart:
     spec:
@@ -13,7 +11,7 @@ spec:
       sourceRef:
         name: cloudnative-pg
         kind: HelmRepository
-        namespace: pg
+        namespace: db
   values:
     crds:
       create: true
