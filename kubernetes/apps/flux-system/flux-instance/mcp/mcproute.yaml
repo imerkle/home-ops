@@ -1,6 +1,6 @@
 ---
 # Unified MCPRoute aggregating multiple MCP servers
-# Tools will be prefixed: flux__*, github__*
+# Tools will be prefixed: flux-mcp-backend__*, github-mcp__*
 apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: MCPRoute
 metadata:
@@ -8,6 +8,8 @@ metadata:
   annotations:
     external-dns.alpha.kubernetes.io/hostname: mcp.${DOMAIN1}
 spec:
+  hostnames:
+    - mcp.${DOMAIN1}
   parentRefs:
     - name: envoy-ai
       namespace: network
@@ -28,3 +30,4 @@ spec:
         apiKey:
           secretRef:
             name: github-mcp-token
+
