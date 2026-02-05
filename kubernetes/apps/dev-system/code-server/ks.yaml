@@ -30,7 +30,7 @@ spec:
     - name: vault
       namespace: vault
     - name: pg-clusters-default
-      namespace: pg
+      namespace: db
   postBuild:
     substitute:
       APP: *app
