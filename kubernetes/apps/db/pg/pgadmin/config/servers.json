@@ -3,7 +3,7 @@
       "1": {
         "Name": "postgres",
         "Group": "Servers",
-        "Host": "pg-default-rw.pg",
+        "Host": "pg-default-rw.db",
         "Port": 5432,
         "MaintenanceDB": "postgres",
         "Username": "postgres",
