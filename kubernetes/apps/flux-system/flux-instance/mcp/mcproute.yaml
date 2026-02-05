@@ -21,6 +21,7 @@ spec:
     - name: flux-mcp-backend
       kind: Backend
       group: gateway.envoyproxy.io
+      path: "/mcp"
     # GitHub MCP - GitHub tools (issues, PRs, code)
     - name: github-mcp
       kind: Backend
