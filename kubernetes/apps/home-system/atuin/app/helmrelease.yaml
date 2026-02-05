@@ -22,7 +22,7 @@ spec:
               ATUIN_PORT: &port 80
               ATUIN_OPEN_REGISTRATION: "true"
               # ATUIN_DB_URI: "vault:secret/data/atuin#DB_URI"
-              ATUIN_DB_URI: "postgres://$${vault:secret/data/pg_default#USER}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/atuin?sslmode=disable"
+              ATUIN_DB_URI: "postgres://$${vault:secret/data/pg_default#USER}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/atuin_db?sslmode=disable"
 
               TZ: America/New_York
             command:
