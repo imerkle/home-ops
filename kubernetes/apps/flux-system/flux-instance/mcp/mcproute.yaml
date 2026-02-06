@@ -23,12 +23,12 @@ spec:
       group: gateway.envoyproxy.io
       path: "/mcp"
     # GitHub MCP - GitHub tools (issues, PRs, code)
-    # - name: github-mcp
-    #   kind: Backend
-    #   group: gateway.envoyproxy.io
-    #   path: "/mcp/x/issues/readonly"
-    #   securityPolicy:
-    #     apiKey:
-    #       secretRef:
-    #         name: github-mcp-token
+    - name: github-mcp
+      kind: Backend
+      group: gateway.envoyproxy.io
+      path: "/mcp/x/issues/readonly"
+      securityPolicy:
+        apiKey:
+          secretRef:
+            name: github-mcp-token
 
