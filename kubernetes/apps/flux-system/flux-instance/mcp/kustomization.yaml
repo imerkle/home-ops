@@ -8,4 +8,4 @@ resources:
   - ./backend.yaml
   - ./aigatewayroute.yaml    # flux-mcp.domain.com (hostname-based)
   - ./aiservicebackend.yaml  # Required by AIGatewayRoute
-  # - ./mcproute.yaml          # mcp.domain.com/mcp (path-based aggregation)
+  - ./mcproute.yaml          # mcp.domain.com/mcp (path-based aggregation)
