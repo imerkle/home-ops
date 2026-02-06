@@ -10,9 +10,6 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: opentelemetry-operator
-  dependsOn:
-    - name: kube-prometheus-stack
-      namespace: flux-system
   path: ./kubernetes/apps/observability/opentelemetry/operator
   prune: true
   sourceRef:
