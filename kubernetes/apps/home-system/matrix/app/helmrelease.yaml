@@ -107,7 +107,7 @@ spec:
                   claims_imports:
                     localpart:
                       action: require
-                      template: "{{ user.preferred_username | split(pat='@') | first }}"
+                      template: '{{ user.preferred_username | as_str | split(pat="@") | first }}'
                       on_conflict: replace
                     displayname:
                       action: suggest
