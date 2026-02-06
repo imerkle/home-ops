@@ -94,8 +94,8 @@ spec:
                 - id: 01HFVBY12TMNTYTBV8W921M5FB
                   human_name: Zitadel
                   issuer: https://zitadel.${DOMAIN1}
-                  client_id: ${client_id}
-                  client_secret: ${client_secret}
+                  client_id: "${client_id}"
+                  client_secret: "${client_secret}"
                   userinfo_endpoint: https://zitadel.${DOMAIN1}/oidc/v1/userinfo
                   authorization_endpoint: https://zitadel.${DOMAIN1}/oauth/v2/authorize
                   token_endpoint: https://zitadel.${DOMAIN1}/oauth/v2/token
