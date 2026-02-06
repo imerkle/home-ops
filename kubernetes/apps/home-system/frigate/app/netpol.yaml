@@ -31,6 +31,9 @@ spec:
         - ports:
             - port: "1883"
               protocol: TCP
+    # Allow access to Kubernetes API
+    - toEntities:
+        - kube-apiserver
     # Allow access to camera streams (external/IoT network)
     - toEntities:
         - world
