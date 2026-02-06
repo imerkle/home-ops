@@ -6,4 +6,6 @@ resources:
   - ./hr.yaml
   - ./oci.yaml
   - ./backend.yaml
-  - ./mcproute.yaml
+  - ./aigatewayroute.yaml    # flux-mcp.domain.com (hostname-based)
+  - ./aiservicebackend.yaml  # Required by AIGatewayRoute
+  - ./mcproute.yaml          # mcp.domain.com/mcp (path-based aggregation)

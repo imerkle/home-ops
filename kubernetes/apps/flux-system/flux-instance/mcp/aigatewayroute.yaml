@@ -1,19 +1,20 @@
 ---
+# AIGatewayRoute for flux-mcp
+# Note: Using default rule (no matches) to route all traffic to flux-mcp backend
 apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: AIGatewayRoute
 metadata:
   name: flux-mcp
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: flux-mcp.${DOMAIN1}
 spec:
+  hostnames:
+    - flux-mcp.${DOMAIN1}
   parentRefs:
     - name: envoy-ai
       namespace: network
       kind: Gateway
       group: gateway.networking.k8s.io
   rules:
-    - matches:
-        - headers:
-            - type: Exact
-              name: Host
-              value: flux-mcp.${DOMAIN1}
-      backendRefs:
+    - backendRefs:
         - name: flux-mcp-backend
