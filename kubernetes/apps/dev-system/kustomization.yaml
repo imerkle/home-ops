@@ -12,3 +12,4 @@ components:
 resources:
   - ./namespace.yaml
   - ./code-server/ks.yaml
+  - ./telepresence/ks.yaml

@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.ok8.sh/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: telepresence
+spec:
+  chart:
+    spec:
+      chart: telepresence
+      version: 2.22.0
+      sourceRef:
+        kind: HelmRepository
+        name: datawire
+        namespace: dev-system
+  interval: 1h
+  values:
+    # Traffic Manager configuration
+    rbac:
+      create: true
+    managerRbac:
+      create: true
+    # Resource configuration
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
