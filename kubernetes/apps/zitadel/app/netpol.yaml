@@ -31,6 +31,9 @@ spec:
         - ports:
             - port: "5432"
               protocol: TCP
+    # Allow access to Kubernetes API
+    - toEntities:
+        - kube-apiserver
     # Allow external SMTP/OAuth providers
     - toEntities:
         - world

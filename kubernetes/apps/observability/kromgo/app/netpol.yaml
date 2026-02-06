@@ -23,6 +23,9 @@ spec:
     - toEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: observability
+    # Allow access to Kubernetes API
+    - toEntities:
+        - kube-apiserver
     # Allow DNS
     - toEndpoints:
         - matchLabels:

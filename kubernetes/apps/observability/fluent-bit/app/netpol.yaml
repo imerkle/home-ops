@@ -19,17 +19,20 @@ spec:
             - port: "2020"
               protocol: TCP
   egress:
-    # Allow same namespace traffic (send logs to victoria-logs)
+    # Allow same namespace traffic    # Allow access to Loki/VictoriaLogs
     - toEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: observability
-    # Allow external log destinations
-    - toEntities:
-        - world
+            app.kubernetes.io/name: victoria-logs-single
       toPorts:
         - ports:
-            - port: "443"
+            - port: "8428"
               protocol: TCP
+            - port: "9428"
+              protocol: TCP
+    # Allow access to Kubernetes API (for metadata enrichment)
+    - toEntities:
+        - kube-apiserver
     # Allow DNS
     - toEndpoints:
         - matchLabels:
