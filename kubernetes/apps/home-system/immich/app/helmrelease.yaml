@@ -24,8 +24,8 @@ spec:
       REDIS_PASSWORD: "${REDIS_PASSWORD}"
       DB_DATABASE_NAME: immich
       DB_HOSTNAME: pg-default-rw.db.svc.cluster.local
-      DB_USERNAME: "${PG_USER}"
-      DB_PASSWORD: "${PG_PASSWORD}"
+      DB_USERNAME: postgres
+      DB_PASSWORD: supersecretpas
       DB_PORT: "5432"
       LOG_LEVEL: log
     server:

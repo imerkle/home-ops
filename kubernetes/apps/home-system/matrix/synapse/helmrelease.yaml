@@ -30,8 +30,8 @@ spec:
     externalPostgresql:
       host: pg-default-rw.db.svc.cluster.local
       port: 5432
-      username: "${PG_USER}"
-      password: "${PG_PASSWORD}"
+      username: postgres
+      password: supersecretpas
       database: synapse
 
     redis:
