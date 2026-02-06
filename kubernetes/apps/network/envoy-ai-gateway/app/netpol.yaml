@@ -3,43 +3,35 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: kyverno
+  name: envoy-ai-gateway
 spec:
-  description: "Network policy for Kyverno policy engine"
+  description: "Network policy for Envoy AI Gateway"
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/instance: kyverno
+      app.kubernetes.io/name: ai-gateway
   ingress:
     # Allow same namespace traffic
     - fromEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: kyverno
+            io.kubernetes.pod.namespace: network
     # Allow webhook from kube-apiserver
     - fromEntities:
         - kube-apiserver
-        - host
-        - remote-node
   egress:
     # Allow same namespace traffic
     - toEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: kyverno
-    # Allow kube-apiserver access
-    - toEntities:
-        - kube-apiserver
-        - host
-        - remote-node
-      toPorts:
-        - ports:
-            - port: "6443"
-              protocol: TCP
-    # Allow external registry checks
+            io.kubernetes.pod.namespace: network
+    # Allow access to AI services
     - toEntities:
         - world
       toPorts:
         - ports:
             - port: "443"
               protocol: TCP
+    # Allow kube-apiserver access
+    - toEntities:
+        - kube-apiserver
     # Allow DNS
     - toEndpoints:
         - matchLabels:

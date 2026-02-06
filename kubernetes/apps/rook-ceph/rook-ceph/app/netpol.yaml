@@ -1,0 +1,82 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cilium.io/ciliumnetworkpolicy_v2.json
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: rook-ceph
+spec:
+  description: "Network policy for Rook Ceph"
+  endpointSelector:
+    matchLabels:
+      app: rook-ceph-operator
+  ingress:
+    # Allow same namespace traffic
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: rook-ceph
+    # Allow webhook from kube-apiserver
+    - fromEntities:
+        - kube-apiserver
+  egress:
+    # Allow same namespace traffic
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: rook-ceph
+    # Allow kube-apiserver access
+    - toEntities:
+        - kube-apiserver
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ceph-cluster
+spec:
+  description: "Network policy for Ceph cluster components"
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: rook-ceph-cluster
+  ingress:
+    # Allow same namespace traffic
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: rook-ceph
+    # Allow CSI access from all namespaces
+    - fromEntities:
+        - cluster
+    # Allow ingress from envoy-gateway (dashboard)
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+  egress:
+    # Allow same namespace traffic
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: rook-ceph
+    # Allow kube-apiserver access
+    - toEntities:
+        - kube-apiserver
+    # Allow S3 for backups
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP

@@ -3,42 +3,40 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: kyverno
+  name: homepage
 spec:
-  description: "Network policy for Kyverno policy engine"
+  description: "Network policy for Homepage dashboard"
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/instance: kyverno
+      app.kubernetes.io/name: homepage
   ingress:
     # Allow same namespace traffic
     - fromEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: kyverno
-    # Allow webhook from kube-apiserver
-    - fromEntities:
-        - kube-apiserver
-        - host
-        - remote-node
+            io.kubernetes.pod.namespace: home-system
+    # Allow ingress from envoy-gateway
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
   egress:
     # Allow same namespace traffic
     - toEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: kyverno
-    # Allow kube-apiserver access
+            io.kubernetes.pod.namespace: home-system
+    # Allow access to services for widgets (all namespaces)
+    - toEntities:
+        - cluster
+    # Allow kube-apiserver access for Kubernetes widgets
     - toEntities:
         - kube-apiserver
-        - host
-        - remote-node
-      toPorts:
-        - ports:
-            - port: "6443"
-              protocol: TCP
-    # Allow external registry checks
+    # Allow external API calls for widgets
     - toEntities:
         - world
       toPorts:
         - ports:
             - port: "443"
+              protocol: TCP
+            - port: "80"
               protocol: TCP
     # Allow DNS
     - toEndpoints:

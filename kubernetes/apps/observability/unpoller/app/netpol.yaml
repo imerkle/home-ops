@@ -3,32 +3,34 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: vault-secrets-operator
+  name: unpoller
 spec:
-  description: "Network policy for Vault Secrets Operator"
+  description: "Network policy for Unpoller (UniFi metrics exporter)"
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/name: vault-secrets-operator
+      app.kubernetes.io/name: unpoller
   ingress:
-    # Allow same namespace traffic
+    # Allow prometheus scraping
     - fromEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: vault
-    # Allow webhook from kube-apiserver
-    - fromEntities:
-        - kube-apiserver
-  egress:
-    # Allow access to Vault
-    - toEndpoints:
-        - matchLabels:
-            io.kubernetes.pod.namespace: vault
+            io.kubernetes.pod.namespace: observability
       toPorts:
         - ports:
-            - port: "8200"
+            - port: "9130"
               protocol: TCP
-    # Allow kube-apiserver access
-    - toEntities:
-        - kube-apiserver
+  egress:
+    # Allow same namespace traffic
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: observability
+    # Allow access to UniFi controller (in home-system)
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: home-system
+      toPorts:
+        - ports:
+            - port: "8443"
+              protocol: TCP
     # Allow DNS
     - toEndpoints:
         - matchLabels:

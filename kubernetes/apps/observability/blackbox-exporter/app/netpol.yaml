@@ -3,42 +3,33 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: kyverno
+  name: blackbox-exporter
 spec:
-  description: "Network policy for Kyverno policy engine"
+  description: "Network policy for Blackbox Exporter"
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/instance: kyverno
+      app.kubernetes.io/name: prometheus-blackbox-exporter
   ingress:
-    # Allow same namespace traffic
+    # Allow prometheus scraping
     - fromEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: kyverno
-    # Allow webhook from kube-apiserver
-    - fromEntities:
-        - kube-apiserver
-        - host
-        - remote-node
-  egress:
-    # Allow same namespace traffic
-    - toEndpoints:
-        - matchLabels:
-            io.kubernetes.pod.namespace: kyverno
-    # Allow kube-apiserver access
-    - toEntities:
-        - kube-apiserver
-        - host
-        - remote-node
+            io.kubernetes.pod.namespace: observability
       toPorts:
         - ports:
-            - port: "6443"
+            - port: "9115"
               protocol: TCP
-    # Allow external registry checks
+  egress:
+    # Allow probing all cluster endpoints
+    - toEntities:
+        - cluster
+    # Allow probing external endpoints
     - toEntities:
         - world
       toPorts:
         - ports:
             - port: "443"
+              protocol: TCP
+            - port: "80"
               protocol: TCP
     # Allow DNS
     - toEndpoints:

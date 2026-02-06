@@ -3,37 +3,30 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: kyverno
+  name: kopia
 spec:
-  description: "Network policy for Kyverno policy engine"
+  description: "Network policy for Kopia backup server"
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/instance: kyverno
+      app.kubernetes.io/name: kopia
   ingress:
     # Allow same namespace traffic
     - fromEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: kyverno
-    # Allow webhook from kube-apiserver
+            io.kubernetes.pod.namespace: volsync-system
+    # Allow ingress from envoy-gateway
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+    # Allow VolSync replication sources to connect
     - fromEntities:
-        - kube-apiserver
-        - host
-        - remote-node
+        - cluster
   egress:
     # Allow same namespace traffic
     - toEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: kyverno
-    # Allow kube-apiserver access
-    - toEntities:
-        - kube-apiserver
-        - host
-        - remote-node
-      toPorts:
-        - ports:
-            - port: "6443"
-              protocol: TCP
-    # Allow external registry checks
+            io.kubernetes.pod.namespace: volsync-system
+    # Allow access to S3 storage
     - toEntities:
         - world
       toPorts:

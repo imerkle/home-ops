@@ -3,45 +3,50 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: redis
+  name: unifi
 spec:
-  description: "Network policy for Redis"
+  description: "Network policy for UniFi Controller"
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/name: redis
+      app.kubernetes.io/name: unifi
   ingress:
     # Allow same namespace traffic
     - fromEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: db
-    # Allow connections from app namespaces
-    - fromEndpoints:
-        - matchLabels:
             io.kubernetes.pod.namespace: home-system
+    # Allow ingress from envoy-gateway
+    - fromEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: dev-system
-        - matchLabels:
-            io.kubernetes.pod.namespace: observability
-      toPorts:
-        - ports:
-            - port: "6379"
-              protocol: TCP
-    # Allow prometheus scraping
+            io.kubernetes.pod.namespace: network
+    # Allow unpoller from observability to scrape metrics
     - fromEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: observability
       toPorts:
         - ports:
-            - port: "9121"
+            - port: "8443"
               protocol: TCP
+    # Allow UniFi device communication
+    - fromEntities:
+        - host
+        - remote-node
+        - world
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+            - port: "3478"
+              protocol: UDP
+            - port: "10001"
+              protocol: UDP
   egress:
     # Allow same namespace traffic
     - toEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: db
-    # Allow kube-apiserver access
+            io.kubernetes.pod.namespace: home-system
+    # Allow communication with UniFi devices
     - toEntities:
-        - kube-apiserver
+        - world
     # Allow DNS
     - toEndpoints:
         - matchLabels:
@@ -51,11 +56,3 @@ spec:
         - ports:
             - port: "53"
               protocol: UDP
-    # Allow Vault access for secrets
-    - toEndpoints:
-        - matchLabels:
-            io.kubernetes.pod.namespace: vault
-      toPorts:
-        - ports:
-            - port: "8200"
-              protocol: TCP

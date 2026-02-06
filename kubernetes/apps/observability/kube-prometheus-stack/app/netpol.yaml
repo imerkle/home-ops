@@ -1,0 +1,189 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cilium.io/ciliumnetworkpolicy_v2.json
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: kube-prometheus-stack
+spec:
+  description: "Network policy for Prometheus stack components"
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/instance: kube-prometheus-stack
+  ingress:
+    # Allow same namespace traffic
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: observability
+    # Allow ingress from envoy-gateway
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+    # Allow prometheus scraping by other services
+    - fromEntities:
+        - cluster
+      toPorts:
+        - ports:
+            - port: "9090"
+              protocol: TCP
+            - port: "9093"
+              protocol: TCP
+  egress:
+    # Allow same namespace traffic
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: observability
+    # Allow scraping all pods in cluster
+    - toEntities:
+        - cluster
+    # Allow kube-apiserver access
+    - toEntities:
+        - kube-apiserver
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: prometheus
+spec:
+  description: "Network policy for Prometheus server"
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus
+  ingress:
+    # Allow same namespace traffic
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: observability
+    # Allow ingress from envoy-gateway
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+  egress:
+    # Allow same namespace traffic
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: observability
+    # Allow scraping all pods in cluster for metrics
+    - toEntities:
+        - cluster
+    # Allow kube-apiserver access
+    - toEntities:
+        - kube-apiserver
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: alertmanager
+spec:
+  description: "Network policy for Alertmanager"
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: alertmanager
+  ingress:
+    # Allow same namespace traffic
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: observability
+    # Allow ingress from envoy-gateway
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+  egress:
+    # Allow same namespace traffic
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: observability
+    # Allow external webhooks (e.g., Slack, PagerDuty)
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: node-exporter
+spec:
+  description: "Network policy for Node Exporter"
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: node-exporter
+  ingress:
+    # Allow prometheus scraping
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: observability
+      toPorts:
+        - ports:
+            - port: "9100"
+              protocol: TCP
+  egress:
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: kube-state-metrics
+spec:
+  description: "Network policy for Kube State Metrics"
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: kube-state-metrics
+  ingress:
+    # Allow prometheus scraping
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: observability
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    # Allow kube-apiserver access
+    - toEntities:
+        - kube-apiserver
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP

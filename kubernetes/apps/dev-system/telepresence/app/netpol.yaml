@@ -3,43 +3,34 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: kyverno
+  name: telepresence
 spec:
-  description: "Network policy for Kyverno policy engine"
+  description: "Network policy for Telepresence traffic manager"
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/instance: kyverno
+      app.kubernetes.io/name: traffic-manager
   ingress:
     # Allow same namespace traffic
     - fromEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: kyverno
+            io.kubernetes.pod.namespace: dev-system
+    # Allow telepresence clients from cluster
+    - fromEntities:
+        - cluster
     # Allow webhook from kube-apiserver
     - fromEntities:
         - kube-apiserver
-        - host
-        - remote-node
   egress:
     # Allow same namespace traffic
     - toEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: kyverno
+            io.kubernetes.pod.namespace: dev-system
+    # Allow traffic to all services (for intercept)
+    - toEntities:
+        - cluster
     # Allow kube-apiserver access
     - toEntities:
         - kube-apiserver
-        - host
-        - remote-node
-      toPorts:
-        - ports:
-            - port: "6443"
-              protocol: TCP
-    # Allow external registry checks
-    - toEntities:
-        - world
-      toPorts:
-        - ports:
-            - port: "443"
-              protocol: TCP
     # Allow DNS
     - toEndpoints:
         - matchLabels:

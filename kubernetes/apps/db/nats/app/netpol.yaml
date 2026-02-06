@@ -3,12 +3,12 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: redis
+  name: nats
 spec:
-  description: "Network policy for Redis"
+  description: "Network policy for NATS"
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/name: redis
+      app.kubernetes.io/name: nats
   ingress:
     # Allow same namespace traffic
     - fromEndpoints:
@@ -24,7 +24,17 @@ spec:
             io.kubernetes.pod.namespace: observability
       toPorts:
         - ports:
-            - port: "6379"
+            - port: "4222"
+              protocol: TCP
+    # Allow cluster communication
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: db
+      toPorts:
+        - ports:
+            - port: "6222"
+              protocol: TCP
+            - port: "8222"
               protocol: TCP
     # Allow prometheus scraping
     - fromEndpoints:
@@ -32,16 +42,13 @@ spec:
             io.kubernetes.pod.namespace: observability
       toPorts:
         - ports:
-            - port: "9121"
+            - port: "7777"
               protocol: TCP
   egress:
-    # Allow same namespace traffic
+    # Allow same namespace traffic (cluster communication)
     - toEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: db
-    # Allow kube-apiserver access
-    - toEntities:
-        - kube-apiserver
     # Allow DNS
     - toEndpoints:
         - matchLabels:
@@ -51,11 +58,3 @@ spec:
         - ports:
             - port: "53"
               protocol: UDP
-    # Allow Vault access for secrets
-    - toEndpoints:
-        - matchLabels:
-            io.kubernetes.pod.namespace: vault
-      toPorts:
-        - ports:
-            - port: "8200"
-              protocol: TCP

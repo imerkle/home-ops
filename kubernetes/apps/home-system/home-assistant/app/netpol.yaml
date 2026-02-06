@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cilium.io/ciliumnetworkpolicy_v2.json
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: home-assistant
+spec:
+  description: "Network policy for Home Assistant"
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: home-assistant
+  ingress:
+    # Allow same namespace traffic
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: home-system
+    # Allow ingress from envoy-gateway
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+  egress:
+    # Allow same namespace traffic
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: home-system
+    # Allow access to PostgreSQL
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: db
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # Allow access to MQTT broker
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: db
+      toPorts:
+        - ports:
+            - port: "1883"
+              protocol: TCP
+    # Allow access to IoT devices via multus interface
+    - toEntities:
+        - world
+    # Allow Vault access for secrets
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: vault
+      toPorts:
+        - ports:
+            - port: "8200"
+              protocol: TCP
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP

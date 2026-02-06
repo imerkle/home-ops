@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cilium.io/ciliumnetworkpolicy_v2.json
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: rustdesk
+spec:
+  description: "Network policy for RustDesk remote desktop"
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: rustdesk
+  ingress:
+    # Allow same namespace traffic
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: home-system
+    # Allow ingress from envoy-gateway
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+    # Allow external RustDesk client connections
+    - fromEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "21115"
+              protocol: TCP
+            - port: "21116"
+              protocol: TCP
+            - port: "21116"
+              protocol: UDP
+            - port: "21117"
+              protocol: TCP
+            - port: "21118"
+              protocol: TCP
+            - port: "21119"
+              protocol: TCP
+  egress:
+    # Allow same namespace traffic
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: home-system
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP

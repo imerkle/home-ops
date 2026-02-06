@@ -1,74 +1,105 @@
-# ---
-# # yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cilium.io/ciliumnetworkpolicy_v2.json
-# apiVersion: cilium.io/v2
-# kind: CiliumNetworkPolicy
-# metadata:
-#   name: &app cnpg
-#   namespace: *app
-# spec:
-#   endpointSelector: {}
-#   ingress:
-#     # same namespace
-#     - fromEndpoints:
-#         - matchLabels:
-#             io.kubernetes.pod.namespace: *app
-#     # allow webhook
-#     - fromEntities:
-#         - cluster
-#   egress:
-#     # same namespace
-#     - toEndpoints:
-#         - matchLabels:
-#             io.kubernetes.pod.namespace: *app
-#     # allow access to all CNPG cluster pods
-#     - toEndpoints:
-#         - matchExpressions:
-#             - key: cnpg.io/cluster
-#               operator: Exists
-#             - key: io.kubernetes.pod.namespace
-#               operator: Exists
-#     # allow access to apiserver
-#     - toEntities:
-#         - kube-apiserver
-#     - toEntities:
-#         - host
-#       toPorts:
-#         - ports:
-#             - port: "6443"
-# ---
-# # yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cilium.io/ciliumnetworkpolicy_v2.json
-# apiVersion: cilium.io/v2
-# kind: CiliumNetworkPolicy
-# metadata:
-#   name: &app crunchy-pgo
-#   namespace: *app
-# spec:
-#   endpointSelector: {}
-#   ingress:
-#     # same namespace
-#     - fromEndpoints:
-#         - matchLabels:
-#             io.kubernetes.pod.namespace: *app
-#     # allow webhook
-#     - fromEntities:
-#         - cluster
-#   egress:
-#     # same namespace
-#     - toEndpoints:
-#         - matchLabels:
-#             io.kubernetes.pod.namespace: *app
-#     # allow access to all CNPG cluster pods
-#     - toEndpoints:
-#         - matchExpressions:
-#             - key: cnpg.io/cluster
-#               operator: Exists
-#             - key: io.kubernetes.pod.namespace
-#               operator: Exists
-#     # allow access to apiserver
-#     - toEntities:
-#         - kube-apiserver
-#     - toEntities:
-#         - host
-#       toPorts:
-#         - ports:
-#             - port: "6443"
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cilium.io/ciliumnetworkpolicy_v2.json
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cnpg-operator
+spec:
+  description: "Network policy for CloudNativePG operator"
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: cloudnative-pg
+  ingress:
+    # Allow same namespace traffic
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: db
+    # Allow webhook from kube-apiserver
+    - fromEntities:
+        - kube-apiserver
+  egress:
+    # Allow same namespace traffic (manage all pg clusters)
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: db
+    # Allow access to apiserver
+    - toEntities:
+        - kube-apiserver
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: postgres-clusters
+spec:
+  description: "Network policy for PostgreSQL cluster instances"
+  endpointSelector:
+    matchLabels:
+      cnpg.io/podRole: instance
+  ingress:
+    # Allow same namespace traffic (operator, other pg pods)
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: db
+    # Allow connections from app namespaces
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: home-system
+        - matchLabels:
+            io.kubernetes.pod.namespace: dev-system
+        - matchLabels:
+            io.kubernetes.pod.namespace: zitadel
+        - matchLabels:
+            io.kubernetes.pod.namespace: observability
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # Allow prometheus scraping
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: observability
+      toPorts:
+        - ports:
+            - port: "9187"
+              protocol: TCP
+  egress:
+    # Allow same namespace traffic (replication between pg pods)
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: db
+    # Allow kube-apiserver access
+    - toEntities:
+        - kube-apiserver
+    # Allow S3 backups
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+    # Allow Vault access for secrets
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: vault
+      toPorts:
+        - ports:
+            - port: "8200"
+              protocol: TCP

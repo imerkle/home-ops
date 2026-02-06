@@ -3,32 +3,26 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: vault-secrets-operator
+  name: kromgo
 spec:
-  description: "Network policy for Vault Secrets Operator"
+  description: "Network policy for Kromgo"
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/name: vault-secrets-operator
+      app.kubernetes.io/name: kromgo
   ingress:
     # Allow same namespace traffic
     - fromEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: vault
-    # Allow webhook from kube-apiserver
-    - fromEntities:
-        - kube-apiserver
+            io.kubernetes.pod.namespace: observability
+    # Allow ingress from envoy-gateway
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
   egress:
-    # Allow access to Vault
+    # Allow access to Prometheus
     - toEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: vault
-      toPorts:
-        - ports:
-            - port: "8200"
-              protocol: TCP
-    # Allow kube-apiserver access
-    - toEntities:
-        - kube-apiserver
+            io.kubernetes.pod.namespace: observability
     # Allow DNS
     - toEndpoints:
         - matchLabels:

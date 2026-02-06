@@ -3,37 +3,37 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: kyverno
+  name: vault
 spec:
-  description: "Network policy for Kyverno policy engine"
+  description: "Network policy for HashiCorp Vault"
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/instance: kyverno
+      app.kubernetes.io/name: vault
   ingress:
     # Allow same namespace traffic
     - fromEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: kyverno
-    # Allow webhook from kube-apiserver
+            io.kubernetes.pod.namespace: vault
+    # Allow ingress from envoy-gateway
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+    # Allow all namespaces to fetch secrets
     - fromEntities:
-        - kube-apiserver
-        - host
-        - remote-node
+        - cluster
+      toPorts:
+        - ports:
+            - port: "8200"
+              protocol: TCP
   egress:
     # Allow same namespace traffic
     - toEndpoints:
         - matchLabels:
-            io.kubernetes.pod.namespace: kyverno
+            io.kubernetes.pod.namespace: vault
     # Allow kube-apiserver access
     - toEntities:
         - kube-apiserver
-        - host
-        - remote-node
-      toPorts:
-        - ports:
-            - port: "6443"
-              protocol: TCP
-    # Allow external registry checks
+    # Allow external storage backends if needed
     - toEntities:
         - world
       toPorts:
