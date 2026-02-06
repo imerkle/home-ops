@@ -5,6 +5,5 @@ resources:
   - helmrelease.yaml
   - source.yaml
   - httproutes.yaml
-  - tofu.yaml
   - netpol.yaml
   - secret.yaml
