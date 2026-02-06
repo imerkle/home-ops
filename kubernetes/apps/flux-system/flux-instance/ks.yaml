@@ -5,6 +5,8 @@ kind: Kustomization
 metadata:
   name: &app flux-instance
   namespace: &namespace flux-system
+  labels:
+    flux.home.arpa/wait: disabled
 spec:
   commonMetadata:
     labels:
