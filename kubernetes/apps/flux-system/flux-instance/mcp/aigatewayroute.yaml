@@ -3,6 +3,8 @@ apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: AIGatewayRoute
 metadata:
   name: flux-mcp
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: flux-mcp.${DOMAIN1}
 spec:
   parentRefs:
     - name: envoy-ai
