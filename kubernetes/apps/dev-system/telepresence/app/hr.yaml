@@ -10,11 +10,6 @@ spec:
     name: telepresence
   interval: 1h
   values:
-    # Traffic Manager configuration
-    rbac:
-      create: true
-    managerRbac:
-      create: true
     # Resource configuration
     resources:
       requests:
