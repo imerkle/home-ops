@@ -184,14 +184,23 @@ spec:
             }
           }
 
-    # Use external PostgreSQL
+    # Disable built-in PostgreSQL, use external
     postgres:
       enabled: false
 
-    # External PostgreSQL configuration
-    externalPostgres:
-      host: pg-default-rw.db.svc.cluster.local
-      port: 5432
-      user: postgres
-      password: supersecretpas
-      database: matrix
+    synapse:
+      postgres:
+        host: pg-default-rw.db.svc.cluster.local
+        port: 5432
+        user: postgres
+        password: supersecretpas
+        database: synapse
+
+    matrixAuthenticationService:
+      postgres:
+        host: pg-default-rw.db.svc.cluster.local
+        port: 5432
+        user: postgres
+        password: supersecretpas
+        database: matrix_authentication_service
+
