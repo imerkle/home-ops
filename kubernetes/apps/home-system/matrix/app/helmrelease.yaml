@@ -20,6 +20,12 @@ spec:
         host: matrix.${DOMAIN1}
         className: disabled
         tlsEnabled: false
+      postgres:
+        host: pg-default-rw.db.svc.cluster.local
+        port: 5432
+        user: postgres
+        password: supersecretpas
+        database: synapse
       media:
         storage:
           size: 5Gi
@@ -63,6 +69,12 @@ spec:
         host: auth.${DOMAIN1}
         className: disabled
         tlsEnabled: false
+      postgres:
+        host: pg-default-rw.db.svc.cluster.local
+        port: 5432
+        user: postgres
+        password: supersecretpas
+        database: matrix_authentication_service
       additional:
         1-mas-config:
           config: |
@@ -187,20 +199,3 @@ spec:
     # Disable built-in PostgreSQL, use external
     postgres:
       enabled: false
-
-    synapse:
-      postgres:
-        host: pg-default-rw.db.svc.cluster.local
-        port: 5432
-        user: postgres
-        password: supersecretpas
-        database: synapse
-
-    matrixAuthenticationService:
-      postgres:
-        host: pg-default-rw.db.svc.cluster.local
-        port: 5432
-        user: postgres
-        password: supersecretpas
-        database: matrix_authentication_service
-
