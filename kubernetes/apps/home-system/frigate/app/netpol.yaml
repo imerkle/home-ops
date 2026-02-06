@@ -46,3 +46,11 @@ spec:
         - ports:
             - port: "53"
               protocol: UDP
+    # Allow access to Vault
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: vault
+      toPorts:
+        - ports:
+            - port: "8200"
+              protocol: TCP
