@@ -8,8 +8,8 @@ metadata:
   annotations:
     external-dns.alpha.kubernetes.io/hostname: mcp.${DOMAIN1}
 spec:
-  hostnames:
-    - mcp.${DOMAIN1}
+  # hostnames:
+  #   - mcp.${DOMAIN1}
   parentRefs:
     - name: envoy-ai
       namespace: network
@@ -17,11 +17,11 @@ spec:
       group: gateway.networking.k8s.io
   path: "/mcp"
   backendRefs:
-    # Flux MCP - Kubernetes/Flux management tools
-    - name: flux-mcp-backend
-      kind: Backend
-      group: gateway.envoyproxy.io
-      path: "/mcp"
+    # # Flux MCP - Kubernetes/Flux management tools
+    # - name: flux-mcp-backend
+    #   kind: Backend
+    #   group: gateway.envoyproxy.io
+    #   path: "/mcp"
     # GitHub MCP - GitHub tools (issues, PRs, code)
     - name: github-mcp
       kind: Backend
