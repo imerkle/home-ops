@@ -16,7 +16,9 @@ spec:
   values:
     serverName: "matrix.${DOMAIN1}"
     publicServerName: "matrix.${DOMAIN1}"
-
+    signingkey:
+      job:
+        enabled: true
     workers:
       media_repository:
         enabled: false
