@@ -9,7 +9,17 @@ spec:
     - fqdn:
         hostname: api.githubcopilot.com
         port: 443
-  # TLS required for HTTPS upstream
-  appProtocols:
-    - https
-
+---
+# TLS policy for HTTPS upstream to GitHub Copilot API
+apiVersion: gateway.networking.k8s.io/v1alpha3
+kind: BackendTLSPolicy
+metadata:
+  name: github-mcp-tls
+spec:
+  targetRefs:
+    - group: gateway.envoyproxy.io
+      kind: Backend
+      name: github-mcp
+  validation:
+    wellKnownCACertificates: System
+    hostname: api.githubcopilot.com
