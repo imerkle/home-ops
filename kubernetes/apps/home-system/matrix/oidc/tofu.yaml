@@ -23,7 +23,5 @@ spec:
   writeOutputsToSecret:
     name: matrix-oidc-creds
     outputs:
-      - name: client_id
-        key: MATRIX_OIDC_CLIENT_ID
-      - name: client_secret
-        key: MATRIX_OIDC_CLIENT_SECRET
+      - client_id
+      - client_secret
