@@ -23,5 +23,6 @@ resources:
   - ./homepage/ks.yaml
   - ./frigate/ks.yaml
   - ./immich/ks.yaml
+  - ./matrix/repo.yaml
   - ./matrix/ks.yaml
   - ./copyparty/ks.yaml
