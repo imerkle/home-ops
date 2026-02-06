@@ -23,10 +23,10 @@ spec:
               TZ: America/New_York
               # FRIGATE_MQTT_PASSWORD: "vault:secret/data/frigate#MQTT_PASSWORD"
             # No hardware acceleration or privileged mode as requested
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: false # Frigate needs to write to some locations
-              capabilities: {drop: ["ALL"]}
+            # securityContext:
+            #   allowPrivilegeEscalation: false
+            #   readOnlyRootFilesystem: false # Frigate needs to write to some locations
+            #   capabilities: {drop: ["ALL"]}
             resources:
               requests:
                 cpu: 100m
