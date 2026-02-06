@@ -21,6 +21,10 @@ spec:
     name: home-ops
   wait: false
   interval: 30m
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: matrix-oidc-creds
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
