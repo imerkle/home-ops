@@ -22,3 +22,6 @@ resources:
   - ./zealot/ks.yaml
   - ./homepage/ks.yaml
   - ./frigate/ks.yaml
+  - ./immich/ks.yaml
+  - ./matrix/ks.yaml
+  - ./copyparty/ks.yaml

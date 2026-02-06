@@ -1,0 +1,72 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: immich
+spec:
+  chart:
+    spec:
+      chart: immich
+      version: 0.9.0
+      sourceRef:
+        kind: HelmRepository
+        name: immich-charts
+  interval: 1h
+  values:
+    image:
+      tag: v1.124.0
+    immich:
+      persistence:
+        library:
+          existingClaim: "{{ .Release.Name }}"
+    env:
+      REDIS_HOSTNAME: redis.db.svc.cluster.local
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+      DB_DATABASE_NAME: immich
+      DB_HOSTNAME: pg-default-rw.db.svc.cluster.local
+      DB_USERNAME: "${PG_USER}"
+      DB_PASSWORD: "${PG_PASSWORD}"
+      DB_PORT: "5432"
+      LOG_LEVEL: log
+    server:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 2Gi
+      ingress:
+        main:
+          enabled: false
+    microservices:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 2Gi
+    machine-learning:
+      enabled: true
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 4Gi
+    postgresql:
+      enabled: false
+    redis:
+      enabled: false
+    route:
+      app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: Immich
+          gethomepage.dev/description: Photo Management
+          gethomepage.dev/group: Home
+          gethomepage.dev/icon: immich.png
+        hostnames:
+          - "{{ .Release.Name }}.${DOMAIN1}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network

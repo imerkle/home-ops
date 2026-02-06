@@ -5,3 +5,4 @@ kind: Kustomization
 resources:
   - repo.yaml
   - hr.yaml
+  - netpol.yaml

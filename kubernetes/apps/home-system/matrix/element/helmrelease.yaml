@@ -1,0 +1,55 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: element
+spec:
+  chart:
+    spec:
+      chart: app-template
+      version: 2.4.0
+      sourceRef:
+        kind: OCIRepository
+        name: app-template
+        namespace: flux-system
+  interval: 1h
+  values:
+    controllers:
+      element:
+        containers:
+          app:
+            image:
+              repository: vectorim/element-web
+              tag: v1.11.50
+            resources:
+              requests:
+                cpu: 10m
+                memory: 50Mi
+              limits:
+                memory: 256Mi
+    service:
+      app:
+        controller: element
+        ports:
+          http:
+            port: 80
+    persistence:
+      config:
+        type: configMap
+        name: element-config
+        globalMounts:
+          - path: /app/config.json
+            subPath: config.json
+    route:
+      app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: Element
+          gethomepage.dev/description: Matrix Client
+          gethomepage.dev/group: Social
+          gethomepage.dev/icon: element.png
+        hostnames:
+          - "element.${DOMAIN1}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network

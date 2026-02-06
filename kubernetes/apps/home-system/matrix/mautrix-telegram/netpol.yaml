@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cilium.io/ciliumnetworkpolicy_v2.json
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mautrix-telegram
+spec:
+  description: "Network policy for Mautrix Telegram bridge"
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: mautrix-telegram
+  ingress:
+    # Allow ingress from Synapse
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: matrix-synapse
+  egress:
+    # Allow traffic to Synapse
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: matrix-synapse
+    # Allow traffic to PostgreSQL
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: db
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # Allow Internet Access (Telegram servers)
+    - toEntities:
+        - world
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP

@@ -7,6 +7,7 @@ resources:
   # - ./externalsecret.yaml
   - ./helmrelease.yaml
   - ./httproute.yaml
+  - ./netpol.yaml
   - ./prometheusrule.yaml
   - ./receiver.yaml
 configMapGenerator:

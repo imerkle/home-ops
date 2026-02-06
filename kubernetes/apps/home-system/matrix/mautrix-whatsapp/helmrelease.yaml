@@ -1,0 +1,30 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mautrix-whatsapp
+spec:
+  chart:
+    spec:
+      chart: mautrix-whatsapp
+      version: 3.1.2
+      sourceRef:
+        kind: HelmRepository
+        name: ananace-charts
+        namespace: home-system
+  interval: 1h
+  values:
+    # Additional configuration required:
+    # Create secret 'mautrix-whatsapp-registration' with registration.yaml content
+
+    config:
+      homeserver:
+        address: http://matrix-synapse:8008
+        domain: "matrix.${DOMAIN1}"
+      appservice:
+        address: http://mautrix-whatsapp:29318
+        database: postgres://"${PG_USER}":"${PG_PASSWORD}"@pg-default-rw.db.svc.cluster.local:5432/mautrix-whatsapp
+
+    persistence:
+      enabled: true
+      existingClaim: mautrix-whatsapp

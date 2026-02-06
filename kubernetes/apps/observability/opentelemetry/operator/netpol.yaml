@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cilium.io/ciliumnetworkpolicy_v2.json
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: opentelemetry-operator
+spec:
+  description: "Network policy for OpenTelemetry Operator"
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: opentelemetry-operator
+  ingress:
+    # Allow ingress from K8s API server (webhooks)
+    - fromEntities:
+        - cluster
+      toPorts:
+        - ports:
+            - port: "9443"
+              protocol: TCP
+  egress:
+    # Allow K8s API access
+    - toEntities:
+        - kube-apiserver
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
