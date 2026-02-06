@@ -9,3 +9,7 @@ spec:
     - fqdn:
         hostname: api.githubcopilot.com
         port: 443
+  # TLS required for HTTPS upstream
+  appProtocols:
+    - https
+
