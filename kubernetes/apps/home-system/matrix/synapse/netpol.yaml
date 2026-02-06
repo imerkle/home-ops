@@ -42,6 +42,9 @@ spec:
     # Allow public internet access (Federation)
     - toEntities:
         - world
+    # Allow access to Kubernetes API
+    - toEntities:
+        - kube-apiserver
     # Allow DNS
     - toEndpoints:
         - matchLabels:
