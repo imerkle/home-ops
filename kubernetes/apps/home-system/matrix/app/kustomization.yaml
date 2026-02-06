@@ -7,3 +7,4 @@ resources:
   - httproutes.yaml
   - tofu.yaml
   - netpol.yaml
+  - secret.yaml

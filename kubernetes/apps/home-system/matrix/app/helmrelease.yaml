@@ -24,7 +24,9 @@ spec:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
         user: postgres
-        password: supersecretpas
+        password:
+          secret: matrix-postgres-creds
+          secretKey: password
         database: synapse
       media:
         storage:
@@ -73,7 +75,9 @@ spec:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
         user: postgres
-        password: supersecretpas
+        password:
+          secret: matrix-postgres-creds
+          secretKey: password
         database: matrix_authentication_service
       additional:
         1-mas-config:
