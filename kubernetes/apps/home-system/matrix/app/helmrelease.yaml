@@ -99,7 +99,7 @@ spec:
                   userinfo_endpoint: https://zitadel.${DOMAIN1}/oidc/v1/userinfo
                   authorization_endpoint: https://zitadel.${DOMAIN1}/oauth/v2/authorize
                   token_endpoint: https://zitadel.${DOMAIN1}/oauth/v2/token
-                  jwks_uri: https://zitadel.${DOMAIN1}/.well-known/jwks.json
+                  jwks_uri: https://zitadel.${DOMAIN1}/oauth/v2/keys
                   token_endpoint_auth_method: client_secret_post
                   scope: "openid email profile"
                   discovery_mode: oidc
