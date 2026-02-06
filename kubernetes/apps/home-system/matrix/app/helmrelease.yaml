@@ -1,0 +1,197 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: matrix
+spec:
+  interval: 15m
+  chartRef:
+    kind: OCIRepository
+    name: matrix-stack
+  values:
+    serverName: matrix.${DOMAIN1}
+    labels:
+      app.kubernetes.io/instance: matrix
+
+    synapse:
+      enabled: true
+      ingress:
+        host: matrix.${DOMAIN1}
+        className: disabled
+        tlsEnabled: false
+      media:
+        storage:
+          size: 5Gi
+        maxUploadSize: 100M
+      additional:
+        1-base-config:
+          config: |
+            public_baseurl: https://matrix.${DOMAIN1}
+            presence:
+              enabled: true
+            enable_metrics: true
+            report_stats: false
+            suppress_key_server_warning: true
+            trusted_key_servers:
+              - server_name: "matrix.org"
+            admin_contact: "mailto:admin@${DOMAIN1}"
+            enable_search: true
+            url_preview_enabled: true
+            url_preview_ip_range_blacklist:
+              - '127.0.0.0/8'
+              - '10.0.0.0/8'
+              - '172.16.0.0/12'
+              - '192.168.0.0/16'
+              - '100.64.0.0/10'
+              - '169.254.0.0/16'
+              - '::1/128'
+              - 'fe80::/64'
+              - 'fc00::/7'
+            rc_message:
+              per_second: 10
+              burst_count: 50
+            experimental_features:
+              msc3575_enabled: true
+              msc4186_enabled: true
+            database:
+              allow_unsafe_locale: true
+
+    matrixAuthenticationService:
+      enabled: true
+      ingress:
+        host: auth.${DOMAIN1}
+        className: disabled
+        tlsEnabled: false
+      additional:
+        1-mas-config:
+          config: |
+            branding:
+              service_name: "Matrix"
+            passwords:
+              enabled: false
+            account:
+              email_change_allowed: true
+              displayname_change_allowed: true
+            upstream_oauth2:
+              providers:
+                - id: 01HFVBY12TMNTYTBV8W921M5FB
+                  human_name: Zitadel
+                  issuer: https://zitadel.${DOMAIN1}
+                  client_id: ${MATRIX_OIDC_CLIENT_ID}
+                  client_secret: ${MATRIX_OIDC_CLIENT_SECRET}
+                  userinfo_endpoint: https://zitadel.${DOMAIN1}/oidc/v1/userinfo
+                  authorization_endpoint: https://zitadel.${DOMAIN1}/oauth/v2/authorize
+                  token_endpoint: https://zitadel.${DOMAIN1}/oauth/v2/token
+                  jwks_uri: https://zitadel.${DOMAIN1}/.well-known/jwks.json
+                  token_endpoint_auth_method: client_secret_post
+                  scope: "openid email profile"
+                  discovery_mode: oidc
+                  pkce_method: auto
+                  claims_imports:
+                    localpart:
+                      action: require
+                      template: "{{ user.preferred_username }}"
+                      on_conflict: replace
+                    displayname:
+                      action: suggest
+                      template: "{{ user.name }}"
+                    email:
+                      action: suggest
+                      template: "{{ user.email }}"
+
+    matrixRTC:
+      enabled: true
+      ingress:
+        host: rtc.${DOMAIN1}
+        className: disabled
+        tlsEnabled: false
+      sfu:
+        useStunToDiscoverPublicIP: false
+
+    elementAdmin:
+      enabled: true
+      ingress:
+        host: admin.${DOMAIN1}
+        className: disabled
+        tlsEnabled: false
+
+    elementWeb:
+      enabled: true
+      ingress:
+        host: element.${DOMAIN1}
+        className: disabled
+        tlsEnabled: false
+      additional:
+        extra-config.json: |
+          {
+            "brand": "Element",
+            "default_theme": "dark",
+            "show_labs_settings": true,
+            "force_verification": false,
+            "default_server_config": {
+              "m.homeserver": {
+                "base_url": "https://matrix.${DOMAIN1}",
+                "server_name": "matrix.${DOMAIN1}"
+              },
+              "m.identity_server": {
+                "base_url": "https://vector.im"
+              }
+            },
+            "features": {
+              "feature_video_rooms": true,
+              "feature_element_call_video_rooms": true,
+              "feature_group_calls": true,
+              "feature_native_sliding_sync": true,
+              "feature_new_room_list": false,
+              "feature_pinning": true
+            },
+            "setting_defaults": {
+              "FTUE.userOnboardingButton": false,
+              "Spaces.allRoomsInHome": true,
+              "alwaysShowTimestamps": true
+            },
+            "permalink_prefix": "https://element.${DOMAIN1}"
+          }
+
+    wellKnownDelegation:
+      enabled: true
+      ingress:
+        className: disabled
+        tlsEnabled: false
+      additional:
+        server: |
+          {
+            "m.server": "matrix.${DOMAIN1}:443"
+          }
+        client: |
+          {
+            "m.homeserver": {
+              "base_url": "https://matrix.${DOMAIN1}"
+            },
+            "m.identity_server": {
+              "base_url": "https://vector.im"
+            },
+            "org.matrix.msc3575.proxy": {
+              "url": "https://matrix.${DOMAIN1}"
+            },
+            "io.element.e2ee": {
+              "force_disable": false,
+              "default": false
+            },
+            "io.element.call": {
+              "rtc_backend": "https://rtc.${DOMAIN1}"
+            }
+          }
+
+    # Use external PostgreSQL
+    postgres:
+      enabled: false
+
+    # External PostgreSQL configuration
+    externalPostgres:
+      host: pg-default-rw.db.svc.cluster.local
+      port: 5432
+      user: postgres
+      password: supersecretpas
+      database: matrix

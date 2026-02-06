@@ -1,0 +1,27 @@
+---
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: matrix-zitadel-oidc
+spec:
+  interval: 1h
+  approvePlan: auto
+  path: ./terraform/zitadel
+
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+
+  vars:
+    - name: app_name
+      value: "matrix-oidc"
+    - name: redirect_uris
+      value:
+        - "https://auth.${DOMAIN1}/upstream/callback"
+
+  writeOutputsToSecret:
+    name: matrix-oidc-creds
+    outputs:
+      - client_id
+      - client_secret

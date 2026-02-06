@@ -1,0 +1,145 @@
+---
+# HTTP Route for Synapse (Matrix homeserver)
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: matrix-synapse
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: Matrix
+    gethomepage.dev/description: Communications
+    gethomepage.dev/group: Social
+    gethomepage.dev/icon: matrix.png
+spec:
+  hostnames:
+    - "matrix.${DOMAIN1}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+      sectionName: https
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: matrix-synapse
+          port: 8008
+---
+# HTTP Route for Element Web
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: matrix-element
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: Element
+    gethomepage.dev/description: Matrix Client
+    gethomepage.dev/group: Social
+    gethomepage.dev/icon: element.png
+spec:
+  hostnames:
+    - "element.${DOMAIN1}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+      sectionName: https
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: matrix-element-web
+          port: 80
+---
+# HTTP Route for Matrix Authentication Service (MAS)
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: matrix-auth-service
+spec:
+  hostnames:
+    - "auth.${DOMAIN1}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+      sectionName: https
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: matrix-matrix-authentication-service
+          port: 8080
+---
+# HTTP Route for Matrix RTC (Real-Time Communication)
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: matrix-rtc
+spec:
+  hostnames:
+    - "rtc.${DOMAIN1}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+      sectionName: https
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /sfu/get
+      backendRefs:
+        - name: matrix-matrix-rtc-authorisation-service
+          port: 8080
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: matrix-matrix-rtc-sfu
+          port: 7880
+---
+# HTTP Route for Element Admin
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: matrix-admin
+spec:
+  hostnames:
+    - "admin.${DOMAIN1}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+      sectionName: https
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: matrix-element-admin
+          port: 8080
+---
+# HTTP Route for Well-Known Delegation
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: matrix-well-known
+spec:
+  hostnames:
+    - "matrix.${DOMAIN1}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+      sectionName: https
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /.well-known/
+      backendRefs:
+        - name: matrix-well-known
+          port: 8010
