@@ -17,18 +17,18 @@ spec:
       group: gateway.networking.k8s.io
   path: "/mcp"
   backendRefs:
-    # # Flux MCP - Kubernetes/Flux management tools
-    # - name: flux-mcp-backend
-    #   kind: Backend
-    #   group: gateway.envoyproxy.io
-    #   path: "/mcp"
-    # GitHub MCP - GitHub tools (issues, PRs, code)
-    - name: github-mcp
+    # Flux MCP - Kubernetes/Flux management tools
+    - name: flux-mcp-backend
       kind: Backend
       group: gateway.envoyproxy.io
-      path: "/mcp/x/issues/readonly"
-      securityPolicy:
-        apiKey:
-          secretRef:
-            name: github-mcp-token
+      path: "/mcp"
+    # GitHub MCP - GitHub tools (issues, PRs, code)
+    # - name: github-mcp
+    #   kind: Backend
+    #   group: gateway.envoyproxy.io
+    #   path: "/mcp/x/issues/readonly"
+    #   securityPolicy:
+    #     apiKey:
+    #       secretRef:
+    #         name: github-mcp-token
 
