@@ -19,6 +19,10 @@ spec:
     name: home-ops
   wait: true
   interval: 30m
+  postBuild:
+    substitute:
+      DOMAIN1: x3y.space
+      OIDC_PROVIDER_ID: 01HFVBY12TMNTYTBV8W921M5FB
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -44,6 +48,8 @@ spec:
   wait: false
   interval: 30m
   postBuild:
+    substitute:
+      OIDC_PROVIDER_ID: 01HFVBY12TMNTYTBV8W921M5FB
     substituteFrom:
       - kind: Secret
         name: matrix-oidc-creds

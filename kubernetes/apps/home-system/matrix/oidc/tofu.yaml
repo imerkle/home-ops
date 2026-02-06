@@ -18,7 +18,7 @@ spec:
       value: "matrix-oidc"
     - name: redirect_uris
       value:
-        - "https://auth.${DOMAIN1}/upstream/callback/01HFVBY12TMNTYTBV8W921M5FB"
+        - "https://auth.${DOMAIN1}/upstream/callback/${OIDC_PROVIDER_ID}"
 
   writeOutputsToSecret:
     name: matrix-oidc-creds
