@@ -5,14 +5,9 @@ kind: HelmRelease
 metadata:
   name: telepresence
 spec:
-  chart:
-    spec:
-      chart: telepresence
-      version: 2.26.1
-      sourceRef:
-        kind: HelmRepository
-        name: datawire
-        namespace: dev-system
+  chartRef:
+    kind: OCIRepository
+    name: telepresence
   interval: 1h
   values:
     # Traffic Manager configuration

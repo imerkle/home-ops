@@ -1,8 +1,10 @@
 ---
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
 metadata:
-  name: datawire
+  name: telepresence
 spec:
-  interval: 5m
-  url: https://app.getambassador.io
+  interval: 1h
+  url: oci://ghcr.io/telepresenceio/telepresence-oss
+  ref:
+    semver: "2.x"
