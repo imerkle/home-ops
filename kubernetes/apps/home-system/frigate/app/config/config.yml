@@ -3,6 +3,9 @@ mqtt:
   user: frigate
   password: '{FRIGATE_MQTT_PASSWORD}'
 
+tls:
+  enabled: false
+
 database:
   path: /config/frigate.db
 
