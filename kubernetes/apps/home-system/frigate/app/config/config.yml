@@ -7,9 +7,8 @@ database:
   path: /config/frigate.db
 
 detectors:
-  ov:
-    type: openvino
-    device: CPU
+  cpu:
+    type: cpu
 
 cameras:
   dummy:

@@ -42,7 +42,9 @@ spec:
           rtsp:
             port: 8554
           go2rtc:
-            port: 1984
+             port: 1984
+           auth:
+             port: 8971
     route:
       app:
         annotations:
