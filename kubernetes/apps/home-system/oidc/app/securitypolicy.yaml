@@ -17,7 +17,5 @@ spec:
     clientID: "${client_id}"
     clientSecret:
       name: internal-oidc-creds
-      key: client_secret
     cookieDomain: "${DOMAIN1}"
-    logout:
-      path: "/oauth2/logout"
+    logoutPath: "/oauth2/logout"
