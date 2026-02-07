@@ -1,0 +1,23 @@
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: internal-oidc
+spec:
+  targetSelectors:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      matchLabels:
+        enabled-oidc: "true"
+  oidc:
+    provider:
+      issuer: "https://zitadel.${DOMAIN1}"
+      authorizationEndpoint: "https://zitadel.${DOMAIN1}/oauth/v2/authorize"
+      tokenEndpoint: "https://zitadel.${DOMAIN1}/oauth/v2/token"
+    clientID: "${client_id}"
+    clientSecret:
+      name: internal-oidc-creds
+      key: client_secret
+    cookieDomain: "${DOMAIN1}"
+    logout:
+      path: "/oauth2/logout"

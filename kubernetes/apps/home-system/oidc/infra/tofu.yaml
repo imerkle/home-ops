@@ -1,0 +1,27 @@
+---
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: internal-oidc
+spec:
+  interval: 1h
+  approvePlan: auto
+  path: ./terraform/zitadel
+
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+
+  vars:
+    - name: app_name
+      value: "internal-oidc"
+    - name: redirect_uris
+      value:
+        - "https://frigate.${DOMAIN1}/oauth2/callback"
+
+  writeOutputsToSecret:
+    name: internal-oidc-creds
+    outputs:
+      - client_id
+      - client_secret

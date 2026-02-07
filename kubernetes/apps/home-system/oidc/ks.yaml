@@ -1,0 +1,44 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: internal-oidc-infra
+spec:
+  targetNamespace: home-system
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: internal-oidc-infra
+  path: ./kubernetes/apps/home-system/oidc/infra
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: true
+  interval: 1h
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: internal-oidc-policy
+spec:
+  targetNamespace: home-system
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: internal-oidc-policy
+  dependsOn:
+    - name: internal-oidc-infra
+  path: ./kubernetes/apps/home-system/oidc/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: true
+  interval: 1h
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: internal-oidc-creds

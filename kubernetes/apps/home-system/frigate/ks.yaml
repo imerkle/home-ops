@@ -18,6 +18,8 @@ spec:
     substitute:
       APP: frigate
       VOLSYNC_CAPACITY: 5Gi
+      DOMAIN1: x3y.space
+      OIDC_PROVIDER_ID: 01HFVBY12TMNTYTBV8W921M5FB
   prune: true
   sourceRef:
     kind: GitRepository
