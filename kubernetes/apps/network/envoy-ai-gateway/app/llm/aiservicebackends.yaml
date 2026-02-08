@@ -11,11 +11,6 @@ spec:
     name: openai-backend
     kind: Backend
     group: gateway.envoyproxy.io
-  security:
-    apiKey:
-      secretRef:
-        name: openai-secret
-        key: api-key
 ---
 apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: AIServiceBackend
@@ -29,11 +24,6 @@ spec:
     name: anthropic-backend
     kind: Backend
     group: gateway.envoyproxy.io
-  security:
-    apiKey:
-      secretRef:
-        name: anthropic-secret
-        key: api-key
 ---
 apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: AIServiceBackend
@@ -47,11 +37,6 @@ spec:
     name: google-backend
     kind: Backend
     group: gateway.envoyproxy.io
-  security:
-    apiKey:
-      secretRef:
-        name: google-secret
-        key: api-key
 ---
 apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: AIServiceBackend
@@ -60,13 +45,85 @@ metadata:
   namespace: network
 spec:
   schema:
-    name: OpenAI # Assuming Vercel provides an OpenAI compatible API
+    name: OpenAI
   backendRef:
     name: vercel-backend
     kind: Backend
     group: gateway.envoyproxy.io
-  security:
+---
+# Security Policies for Outbound Authentication
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendSecurityPolicy
+metadata:
+  name: openai-auth
+  namespace: network
+spec:
+  targetRef:
+    group: aigateway.envoyproxy.io
+    kind: AIServiceBackend
+    name: openai
+  # Assuming standard Envoy Gateway syntax for API Key injection
+  # Note: Syntax might vary based on EG version
+  authentication:
     apiKey:
+      type: Header
+      name: Authorization
+      valuePrefix: "Bearer "
+      secretRef:
+        name: openai-secret
+        key: api-key
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendSecurityPolicy
+metadata:
+  name: anthropic-auth
+  namespace: network
+spec:
+  targetRef:
+    group: aigateway.envoyproxy.io
+    kind: AIServiceBackend
+    name: anthropic
+  authentication:
+    apiKey:
+      type: Header
+      name: x-api-key
+      secretRef:
+        name: anthropic-secret
+        key: api-key
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendSecurityPolicy
+metadata:
+  name: google-auth
+  namespace: network
+spec:
+  targetRef:
+    group: aigateway.envoyproxy.io
+    kind: AIServiceBackend
+    name: google
+  authentication:
+    apiKey:
+      type: Query
+      name: key
+      secretRef:
+        name: google-secret
+        key: api-key
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendSecurityPolicy
+metadata:
+  name: vercel-auth
+  namespace: network
+spec:
+  targetRef:
+    group: aigateway.envoyproxy.io
+    kind: AIServiceBackend
+    name: vercel
+  authentication:
+    apiKey:
+      type: Header
+      name: Authorization
+      valuePrefix: "Bearer "
       secretRef:
         name: vercel-secret
         key: api-key
