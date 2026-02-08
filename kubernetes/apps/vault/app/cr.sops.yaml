@@ -176,7 +176,7 @@ spec:
               data:
                 data:
                     openai: ENC[AES256_GCM,data:8EHp3RB6ZfVIaytxUNCmf+6W,iv:w4Gp4evRkC6Wl8GgwsttZj3cg49DRkjk4bBth3ByH2c=,tag:X1ncWHlP9n0KzZ39FEed7w==,type:str]
-                    google: ENC[AES256_GCM,data:Y7mykreUhBOrm8AgwatL+OSf,iv:MskPfArnDh3/a+z1/nlNicHM2RfOCaAtOkQCThUl0+s=,tag:tkdJnNO84HU+lYTHdw3Diw==,type:str]
+                    google: ENC[AES256_GCM,data:wmo2DW6TQPv3GyBZ7v15hXgcfubZdy9MpWSkOLHLIicX2o60o0yS,iv:X6y1pH14ztoP3G2RbEQdU7BXJ2Ulv5HcoxKBnGoMFZQ=,tag:cpEgzn/b4rvqlhRxwln9Kw==,type:str]
                     vercel: ENC[AES256_GCM,data:aUAV9nmIny1zOsY91DaRL51C,iv:xVPqN9YGIYjG0q7uKpI71TuK5yTS8lT0kINjIPK5F2U=,tag:ejF6mdzFj8WmHSSpP0wt+w==,type:str]
                     anthropic: ENC[AES256_GCM,data:CLBE3Bt2H0wCUDPyrTO5WHga,iv:uZQD5YQT6ug2VYF/5YkoQae3s1zNXZdtC/H+l3fDG44=,tag:ykDT2y9xgy331wVUyUpSig==,type:str]
             - type: kv
@@ -408,8 +408,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-02-08T16:18:54Z"
-    mac: ENC[AES256_GCM,data:YFYoqlSnPA3ONTem2AzrKpePilvgDFjg/jkscbbN3vsygPQwy6Cl9r3PItAGpKNhjiyWhYh3qjWLI4JwQtzLrv8dWd+wSPe3bmwSLPEseq7HW1VpSJnDuNMGtAdrw8m1sQi6pqdpaZ5kzP2LesYWMcrsja/0afIUe0jkKTqm5xk=,iv:LDqSDVm3EBtuDPXm6W4DAZA+vGug6wiMVLIKHBHFl7Y=,tag:0I29QkHy/SmDWrlxINWv8Q==,type:str]
+    lastmodified: "2026-02-08T19:01:18Z"
+    mac: ENC[AES256_GCM,data:pf06kT80tEp9T4LC+lB6393MfUjs0a/WTHs6JfQiZqrJ7a6icT3drKIgBrMaJ8hG5++KCi0JVdgCKY88zjAAQkx7ETOSsplHq7Z2gAmO/nUUl75SyAF77cX/SNd1dLImkyZCJQv5Tsnjd+hEU+mR99NT6ox4HiSE4qKKDY8nMbA=,iv:HDnPmjxW8v5zKP6dqIj/C4/7x73hzJgQgZvBA4TgviU=,tag:P0DvF65e5zk54q8fjWIPjA==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
