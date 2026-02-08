@@ -60,6 +60,7 @@ metadata:
 spec:
   targetRefs:
     - kind: AIServiceBackend
+      group: aigateway.envoyproxy.io
       name: openai
   type: APIKey
   apiKey:
@@ -74,6 +75,7 @@ metadata:
 spec:
   targetRefs:
     - kind: AIServiceBackend
+      group: aigateway.envoyproxy.io
       name: anthropic
   type: AnthropicAPIKey
   anthropicAPIKey:
@@ -88,6 +90,7 @@ metadata:
 spec:
   targetRefs:
     - kind: AIServiceBackend
+      group: aigateway.envoyproxy.io
       name: google
   type: APIKey
   apiKey:
@@ -102,6 +105,7 @@ metadata:
 spec:
   targetRefs:
     - kind: AIServiceBackend
+      group: aigateway.envoyproxy.io
       name: vercel
   type: APIKey
   apiKey:
