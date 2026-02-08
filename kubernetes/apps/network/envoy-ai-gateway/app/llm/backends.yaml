@@ -3,7 +3,6 @@ apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: Backend
 metadata:
   name: openai-backend
-  namespace: network
 spec:
   endpoints:
     - fqdn:
@@ -16,7 +15,6 @@ apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: Backend
 metadata:
   name: anthropic-backend
-  namespace: network
 spec:
   endpoints:
     - fqdn:
@@ -29,7 +27,6 @@ apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: Backend
 metadata:
   name: google-backend
-  namespace: network
 spec:
   endpoints:
     - fqdn:
@@ -42,7 +39,6 @@ apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: Backend
 metadata:
   name: vercel-backend
-  namespace: network
 spec:
   endpoints:
     - fqdn:

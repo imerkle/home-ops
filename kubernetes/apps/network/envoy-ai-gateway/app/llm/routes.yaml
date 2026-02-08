@@ -3,7 +3,6 @@ apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: AIGatewayRoute
 metadata:
   name: llm-router
-  namespace: network
 spec:
   parentRefs:
     - name: envoy-ai
