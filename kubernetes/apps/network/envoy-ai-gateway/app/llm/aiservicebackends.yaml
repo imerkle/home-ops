@@ -58,20 +58,14 @@ metadata:
   name: openai-auth
   namespace: network
 spec:
-  targetRef:
-    group: aigateway.envoyproxy.io
-    kind: AIServiceBackend
-    name: openai
-  # Assuming standard Envoy Gateway syntax for API Key injection
-  # Note: Syntax might vary based on EG version
-  authentication:
-    apiKey:
-      type: Header
-      name: Authorization
-      valuePrefix: "Bearer "
-      secretRef:
-        name: openai-secret
-        key: api-key
+  targetRefs:
+    - kind: AIServiceBackend
+      name: openai
+  type: APIKey
+  apiKey:
+    secretRef:
+      name: openai-secret
+      key: api-key
 ---
 apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: BackendSecurityPolicy
@@ -79,17 +73,14 @@ metadata:
   name: anthropic-auth
   namespace: network
 spec:
-  targetRef:
-    group: aigateway.envoyproxy.io
-    kind: AIServiceBackend
-    name: anthropic
-  authentication:
-    apiKey:
-      type: Header
-      name: x-api-key
-      secretRef:
-        name: anthropic-secret
-        key: api-key
+  targetRefs:
+    - kind: AIServiceBackend
+      name: anthropic
+  type: AnthropicAPIKey
+  anthropicAPIKey:
+    secretRef:
+      name: anthropic-secret
+      key: api-key
 ---
 apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: BackendSecurityPolicy
@@ -97,17 +88,14 @@ metadata:
   name: google-auth
   namespace: network
 spec:
-  targetRef:
-    group: aigateway.envoyproxy.io
-    kind: AIServiceBackend
-    name: google
-  authentication:
-    apiKey:
-      type: Query
-      name: key
-      secretRef:
-        name: google-secret
-        key: api-key
+  targetRefs:
+    - kind: AIServiceBackend
+      name: google
+  type: APIKey
+  apiKey:
+    secretRef:
+      name: google-secret
+      key: api-key
 ---
 apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: BackendSecurityPolicy
@@ -115,15 +103,11 @@ metadata:
   name: vercel-auth
   namespace: network
 spec:
-  targetRef:
-    group: aigateway.envoyproxy.io
-    kind: AIServiceBackend
-    name: vercel
-  authentication:
-    apiKey:
-      type: Header
-      name: Authorization
-      valuePrefix: "Bearer "
-      secretRef:
-        name: vercel-secret
-        key: api-key
+  targetRefs:
+    - kind: AIServiceBackend
+      name: vercel
+  type: APIKey
+  apiKey:
+    secretRef:
+      name: vercel-secret
+      key: api-key
