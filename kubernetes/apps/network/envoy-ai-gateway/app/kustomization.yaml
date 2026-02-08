@@ -10,3 +10,4 @@ resources:
   - ./netpol.yaml
   - ./ocirepository-crds.yaml
   - ./ocirepository.yaml
+  - ./llm

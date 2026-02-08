@@ -10,4 +10,5 @@ resources:
   - pg/pg.sops.yaml
   - pg/ks.yaml
   - mosquitto/ks.yaml
+  - dragonfly/ks.yaml
 

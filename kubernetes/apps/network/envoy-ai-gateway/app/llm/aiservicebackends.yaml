@@ -1,0 +1,72 @@
+---
+apiVersion: aigateway.envoyproxy.io/v1alpha1
+kind: AIServiceBackend
+metadata:
+  name: openai
+  namespace: network
+spec:
+  schema:
+    name: OpenAI
+  backendRef:
+    name: openai-backend
+    kind: Backend
+    group: gateway.envoyproxy.io
+  security:
+    apiKey:
+      secretRef:
+        name: openai-secret
+        key: api-key
+---
+apiVersion: aigateway.envoyproxy.io/v1alpha1
+kind: AIServiceBackend
+metadata:
+  name: anthropic
+  namespace: network
+spec:
+  schema:
+    name: Anthropic
+  backendRef:
+    name: anthropic-backend
+    kind: Backend
+    group: gateway.envoyproxy.io
+  security:
+    apiKey:
+      secretRef:
+        name: anthropic-secret
+        key: api-key
+---
+apiVersion: aigateway.envoyproxy.io/v1alpha1
+kind: AIServiceBackend
+metadata:
+  name: google
+  namespace: network
+spec:
+  schema:
+    name: GoogleGemini
+  backendRef:
+    name: google-backend
+    kind: Backend
+    group: gateway.envoyproxy.io
+  security:
+    apiKey:
+      secretRef:
+        name: google-secret
+        key: api-key
+---
+apiVersion: aigateway.envoyproxy.io/v1alpha1
+kind: AIServiceBackend
+metadata:
+  name: vercel
+  namespace: network
+spec:
+  schema:
+    name: OpenAI # Assuming Vercel provides an OpenAI compatible API
+  backendRef:
+    name: vercel-backend
+    kind: Backend
+    group: gateway.envoyproxy.io
+  security:
+    apiKey:
+      secretRef:
+        name: vercel-secret
+        key: api-key

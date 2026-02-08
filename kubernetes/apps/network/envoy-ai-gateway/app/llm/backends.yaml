@@ -1,0 +1,52 @@
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: Backend
+metadata:
+  name: openai-backend
+  namespace: network
+spec:
+  endpoints:
+    - fqdn:
+        hostname: api.openai.com
+        port: 443
+  tls:
+    sni: api.openai.com
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: Backend
+metadata:
+  name: anthropic-backend
+  namespace: network
+spec:
+  endpoints:
+    - fqdn:
+        hostname: api.anthropic.com
+        port: 443
+  tls:
+    sni: api.anthropic.com
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: Backend
+metadata:
+  name: google-backend
+  namespace: network
+spec:
+  endpoints:
+    - fqdn:
+        hostname: generativelanguage.googleapis.com
+        port: 443
+  tls:
+    sni: generativelanguage.googleapis.com
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: Backend
+metadata:
+  name: vercel-backend
+  namespace: network
+spec:
+  endpoints:
+    - fqdn:
+        hostname: api.vercel.com # Verify if this is correct for Vercel AI SDK or similar
+        port: 443
+  tls:
+    sni: api.vercel.com
