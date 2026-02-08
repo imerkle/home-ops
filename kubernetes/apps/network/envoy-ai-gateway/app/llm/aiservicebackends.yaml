@@ -32,7 +32,7 @@ metadata:
   namespace: network
 spec:
   schema:
-    name: GoogleGemini
+    name: OpenAI
   backendRef:
     name: google-backend
     kind: Backend
