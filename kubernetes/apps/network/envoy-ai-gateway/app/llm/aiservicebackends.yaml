@@ -52,7 +52,7 @@ spec:
     group: gateway.envoyproxy.io
 ---
 # Security Policies for Outbound Authentication
-apiVersion: gateway.envoyproxy.io/v1alpha1
+apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: BackendSecurityPolicy
 metadata:
   name: openai-auth
@@ -73,7 +73,7 @@ spec:
         name: openai-secret
         key: api-key
 ---
-apiVersion: gateway.envoyproxy.io/v1alpha1
+apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: BackendSecurityPolicy
 metadata:
   name: anthropic-auth
@@ -91,7 +91,7 @@ spec:
         name: anthropic-secret
         key: api-key
 ---
-apiVersion: gateway.envoyproxy.io/v1alpha1
+apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: BackendSecurityPolicy
 metadata:
   name: google-auth
@@ -109,7 +109,7 @@ spec:
         name: google-secret
         key: api-key
 ---
-apiVersion: gateway.envoyproxy.io/v1alpha1
+apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: BackendSecurityPolicy
 metadata:
   name: vercel-auth
