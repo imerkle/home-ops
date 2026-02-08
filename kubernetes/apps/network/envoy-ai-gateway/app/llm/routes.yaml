@@ -18,8 +18,6 @@ spec:
               value: "google/flash2.5"
       backendRefs:
         - name: google
-          kind: AIServiceBackend
-          group: aigateway.envoyproxy.io
           # modelNameOverride: "gemini-1.5-flash" # Uncomment when supported/verified
 
     # Google Gemini 2.5 Pro (Mapped to gemini-1.5-pro for demo)
@@ -29,8 +27,6 @@ spec:
               value: "google/gemini2.5pro"
       backendRefs:
         - name: google
-          kind: AIServiceBackend
-          group: aigateway.envoyproxy.io
           # modelNameOverride: "gemini-1.5-pro"
 
     # Google Models Wildcard
@@ -40,8 +36,6 @@ spec:
               value: "google/*"
       backendRefs:
         - name: google
-          kind: AIServiceBackend
-          group: aigateway.envoyproxy.io
     # Vercel Models
     - matches:
         - headers:
@@ -49,8 +43,6 @@ spec:
               value: "vercel/*"
       backendRefs:
         - name: vercel
-          kind: AIServiceBackend
-          group: aigateway.envoyproxy.io
     # Anthropic Models
     - matches:
         - headers:
@@ -58,10 +50,6 @@ spec:
               value: "anthropic/*"
       backendRefs:
         - name: anthropic
-          kind: AIServiceBackend
-          group: aigateway.envoyproxy.io
     # Default to OpenAI
     - backendRefs:
         - name: openai
-          kind: AIServiceBackend
-          group: aigateway.envoyproxy.io
