@@ -65,7 +65,6 @@ spec:
   apiKey:
     secretRef:
       name: openai-secret
-      key: api-key
 ---
 apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: BackendSecurityPolicy
@@ -80,7 +79,6 @@ spec:
   anthropicAPIKey:
     secretRef:
       name: anthropic-secret
-      key: api-key
 ---
 apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: BackendSecurityPolicy
@@ -95,7 +93,6 @@ spec:
   apiKey:
     secretRef:
       name: google-secret
-      key: api-key
 ---
 apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: BackendSecurityPolicy
@@ -110,4 +107,3 @@ spec:
   apiKey:
     secretRef:
       name: vercel-secret
-      key: api-key
