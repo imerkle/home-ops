@@ -35,6 +35,20 @@ spec:
   tls:
     sni: generativelanguage.googleapis.com
 ---
+# TLS policy for HTTPS upstream to GitHub Copilot API
+apiVersion: gateway.networking.k8s.io/v1alpha3
+kind: BackendTLSPolicy
+metadata:
+  name: google-tls
+spec:
+  targetRefs:
+    - group: gateway.envoyproxy.io
+      kind: Backend
+      name: google-backend
+  validation:
+    wellKnownCACertificates: System
+    hostname: generativelanguage.googleapis.com
+---
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: Backend
 metadata:
