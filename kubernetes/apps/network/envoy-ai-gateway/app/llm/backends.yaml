@@ -30,7 +30,7 @@ metadata:
 spec:
   endpoints:
     - fqdn:
-        hostname: generativelanguage.googleapis.com/v1beta/openai/
+        hostname: generativelanguage.googleapis.com
         port: 443
   tls:
     sni: generativelanguage.googleapis.com

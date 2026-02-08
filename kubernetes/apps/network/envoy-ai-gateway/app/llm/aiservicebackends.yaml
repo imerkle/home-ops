@@ -3,7 +3,6 @@ apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: AIServiceBackend
 metadata:
   name: openai
-  namespace: network
 spec:
   schema:
     name: OpenAI
@@ -16,7 +15,6 @@ apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: AIServiceBackend
 metadata:
   name: anthropic
-  namespace: network
 spec:
   schema:
     name: Anthropic
@@ -29,10 +27,10 @@ apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: AIServiceBackend
 metadata:
   name: google
-  namespace: network
 spec:
   schema:
     name: OpenAI
+    prefix: "/v1beta/openai"
   backendRef:
     name: google-backend
     kind: Backend
@@ -42,7 +40,6 @@ apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: AIServiceBackend
 metadata:
   name: vercel
-  namespace: network
 spec:
   schema:
     name: OpenAI
@@ -56,7 +53,6 @@ apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: BackendSecurityPolicy
 metadata:
   name: openai-auth
-  namespace: network
 spec:
   targetRefs:
     - kind: AIServiceBackend
@@ -71,7 +67,6 @@ apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: BackendSecurityPolicy
 metadata:
   name: anthropic-auth
-  namespace: network
 spec:
   targetRefs:
     - kind: AIServiceBackend
@@ -86,7 +81,6 @@ apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: BackendSecurityPolicy
 metadata:
   name: google-auth
-  namespace: network
 spec:
   targetRefs:
     - kind: AIServiceBackend
@@ -101,7 +95,6 @@ apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: BackendSecurityPolicy
 metadata:
   name: vercel-auth
-  namespace: network
 spec:
   targetRefs:
     - kind: AIServiceBackend
