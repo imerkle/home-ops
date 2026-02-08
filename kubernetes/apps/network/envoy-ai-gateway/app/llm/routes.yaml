@@ -10,8 +10,6 @@ spec:
       namespace: network
       kind: Gateway
       group: gateway.networking.k8s.io
-  hostnames:
-    - "ai.${DOMAIN1}"
   rules:
     # Google Flash 2.5 (Mapped to gemini-1.5-flash for demo)
     - matches:
