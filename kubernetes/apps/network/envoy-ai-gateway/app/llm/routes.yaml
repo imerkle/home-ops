@@ -32,21 +32,24 @@ spec:
     - matches:
         - headers:
             - name: x-ai-eg-model
-              value: "google/*"
+              type: RegularExpression
+              value: "google/.*"
       backendRefs:
         - name: google
     # Vercel Models
     - matches:
         - headers:
             - name: x-ai-eg-model
-              value: "vercel/*"
+              type: RegularExpression
+              value: "vercel/.*"
       backendRefs:
         - name: vercel
     # Anthropic Models
     - matches:
         - headers:
             - name: x-ai-eg-model
-              value: "anthropic/*"
+              type: RegularExpression
+              value: "anthropic/.*"
       backendRefs:
         - name: anthropic
     # Default to OpenAI
