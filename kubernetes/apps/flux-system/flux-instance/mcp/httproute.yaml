@@ -1,0 +1,21 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: flux-mcp
+  namespace: flux-system
+spec:
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+      kind: Gateway
+  hostnames:
+    - "flux-mcp.x3y.space"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: "/"
+      backendRefs:
+        - name: flux-operator-mcp
+          port: 9090

@@ -1,0 +1,62 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: litellm
+  namespace: dev-system
+spec:
+  chart:
+    spec:
+      chart: litellm
+      version: 0.8.0
+      sourceRef:
+        kind: HelmRepository
+        name: litellm
+        namespace: flux-system
+      interval: 1h
+  interval: 1h
+  values:
+    image:
+      repository: ghcr.io/berriai/litellm
+      tag: v1.60.6
+    service:
+      type: ClusterIP
+      port: 4000
+    ingress:
+      enabled: false
+    litellm:
+      config: |
+        model_list:
+          - model_name: gpt-4o
+            litellm_params:
+              model: openai/gpt-4o
+              api_key: "os.environ/OPENAI_API_KEY"
+          - model_name: claude-3-5-sonnet-20240620
+            litellm_params:
+              model: anthropic/claude-3-5-sonnet-20240620
+              api_key: "os.environ/ANTHROPIC_API_KEY"
+          - model_name: gemini-1.5-pro
+            litellm_params:
+              model: vertex_ai/gemini-1.5-pro
+              vertex_project: "os.environ/VERTEX_PROJECT"
+              vertex_location: "os.environ/VERTEX_LOCATION"
+    extraEnv:
+      - name: OPENAI_API_KEY
+        value: "vault:secret/data/ai#OPENAI_API_KEY"
+      - name: ANTHROPIC_API_KEY
+        value: "vault:secret/data/ai#ANTHROPIC_API_KEY"
+      - name: VERTEX_PROJECT
+        value: "vault:secret/data/ai#VERTEX_PROJECT"
+      - name: VERTEX_LOCATION
+        value: "vault:secret/data/ai#VERTEX_LOCATION"
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /secrets/google-sa/credentials.json
+    extraVolumes:
+      - name: google-sa
+        secret:
+          secretName: google-sa-secret
+    extraVolumeMounts:
+      - name: google-sa
+        mountPath: /secrets/google-sa
+        readOnly: true

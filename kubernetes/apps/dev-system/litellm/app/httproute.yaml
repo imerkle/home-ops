@@ -1,0 +1,21 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: litellm
+  namespace: dev-system
+spec:
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+      kind: Gateway
+  hostnames:
+    - "ai.x3y.space"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: "/"
+      backendRefs:
+        - name: litellm
+          port: 4000
