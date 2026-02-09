@@ -77,6 +77,5 @@ spec:
             path: /metrics
             interval: 1m
             scrapeTimeout: 10s
-    # serviceAccount:
-    #   dragonfly-operator:
-    #     create: true
+    serviceAccount:
+      dragonfly-operator: {}
