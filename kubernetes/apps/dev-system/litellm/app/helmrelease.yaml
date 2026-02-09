@@ -21,7 +21,7 @@ spec:
               tag: v1.81.3-stable
             args:
               - --port
-              - "4000"
+              - &port "4000"
               - --config
               - /app/config.yaml
             env:
