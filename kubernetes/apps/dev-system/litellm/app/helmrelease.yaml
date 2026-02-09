@@ -26,11 +26,8 @@ spec:
               - /app/config.yaml
             env:
               LITELLM_MASTER_KEY: "vault:secret/data/ai#LITELLM_MASTER_KEY"
-              OPENAI_API_KEY: "vault:secret/data/ai#OPENAI_API_KEY"
-              ANTHROPIC_API_KEY: "vault:secret/data/ai#ANTHROPIC_API_KEY"
-              VERTEX_PROJECT: "vault:secret/data/ai#VERTEX_PROJECT"
-              VERTEX_LOCATION: "vault:secret/data/ai#VERTEX_LOCATION"
-              GOOGLE_APPLICATION_CREDENTIALS: /secrets/google-sa/credentials.json
+              LITELLM_SALT_KEY: "vault:secret/data/ai#LITELLM_SALT_KEY"
+              GOOGLE_API_KEY: "vault:secret/data/ai#google"
             probes:
               liveness:
                 enabled: true
@@ -75,7 +72,9 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
-        hostnames: ["ai.x3y.space"]
+        hostnames:
+          - "{{ .Release.Name }}.${DOMAIN1}"
+
         rules:
           - backendRefs:
               - port: *port
