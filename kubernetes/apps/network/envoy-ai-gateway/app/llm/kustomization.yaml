@@ -6,3 +6,4 @@ resources:
   - ./backends.yaml
   - ./aiservicebackends.yaml
   - ./routes.yaml
+  - ./wasm-policy.yaml

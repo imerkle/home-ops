@@ -1,0 +1,20 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyExtensionPolicy
+metadata:
+  name: ai-gateway-wasm
+  namespace: network
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: envoy-ai
+  wasm:
+    - name: ai-gateway-wasm
+      code:
+        type: Image
+        image: docker.io/envoyproxy/ai-gateway-wasm:v0.5.0
+        pullPolicy: IfNotPresent
+      config:
+        "@type": "type.googleapis.com/google.protobuf.Struct"
+        value: {}
+      failOpen: true
