@@ -28,29 +28,29 @@ spec:
               LITELLM_MASTER_KEY: "vault:secret/data/ai#LITELLM_MASTER_KEY"
               LITELLM_SALT_KEY: "vault:secret/data/ai#LITELLM_SALT_KEY"
               GOOGLE_API_KEY: "vault:secret/data/ai#google"
-            probes:
-              liveness:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /health/liveliness
-                    port: &port 4000
-                  initialDelaySeconds: 30
-                  periodSeconds: 60
-                  timeoutSeconds: 10
-                  failureThreshold: 3
-              readiness:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /health/readiness
-                    port: *port
-                  initialDelaySeconds: 5
-                  periodSeconds: 5
-                  timeoutSeconds: 5
-                  failureThreshold: 3
+            # probes:
+            #   liveness:
+            #     enabled: true
+            #     custom: true
+            #     spec:
+            #       httpGet:
+            #         path: /health/liveliness
+            #         port: &port 4000
+            #       initialDelaySeconds: 30
+            #       periodSeconds: 60
+            #       timeoutSeconds: 10
+            #       failureThreshold: 3
+            #   readiness:
+            #     enabled: true
+            #     custom: true
+            #     spec:
+            #       httpGet:
+            #         path: /health/readiness
+            #         port: *port
+            #       initialDelaySeconds: 5
+            #       periodSeconds: 5
+            #       timeoutSeconds: 5
+            #       failureThreshold: 3
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
