@@ -9,12 +9,14 @@ spec:
       namespace: network
       kind: Gateway
       group: gateway.networking.k8s.io
+  filterConfig:
+    type: ExternalProcessor
   rules:
     # Google Flash 2.5 (Mapped to gemini-1.5-flash for demo)
     - matches:
         - headers:
             - name: x-ai-eg-model
-              value: "gemini-3-flash-preview"
+              value: "google/gemini-3-flash-preview"
       backendRefs:
         - name: google
           # modelNameOverride: "gemini-1.5-flash" # Uncomment when supported/verified
