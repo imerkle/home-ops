@@ -88,9 +88,3 @@ spec:
           - path: /app/config.yaml
             subPath: config.yaml
             readOnly: true
-      google-sa:
-        type: secret
-        name: google-sa-secret
-        globalMounts:
-          - path: /secrets/google-sa
-            readOnly: true
