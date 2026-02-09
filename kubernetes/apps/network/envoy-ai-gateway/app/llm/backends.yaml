@@ -11,6 +11,19 @@ spec:
   tls:
     sni: api.openai.com
 ---
+apiVersion: gateway.networking.k8s.io/v1alpha3
+kind: BackendTLSPolicy
+metadata:
+  name: openai-tls
+spec:
+  targetRefs:
+    - group: gateway.envoyproxy.io
+      kind: Backend
+      name: openai-backend
+  validation:
+    wellKnownCACertificates: System
+    hostname: api.openai.com
+---
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: Backend
 metadata:
@@ -22,6 +35,19 @@ spec:
         port: 443
   tls:
     sni: api.anthropic.com
+---
+apiVersion: gateway.networking.k8s.io/v1alpha3
+kind: BackendTLSPolicy
+metadata:
+  name: anthropic-tls
+spec:
+  targetRefs:
+    - group: gateway.envoyproxy.io
+      kind: Backend
+      name: anthropic-backend
+  validation:
+    wellKnownCACertificates: System
+    hostname: api.anthropic.com
 ---
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: Backend
@@ -60,3 +86,16 @@ spec:
         port: 443
   tls:
     sni: api.vercel.com
+---
+apiVersion: gateway.networking.k8s.io/v1alpha3
+kind: BackendTLSPolicy
+metadata:
+  name: vercel-tls
+spec:
+  targetRefs:
+    - group: gateway.envoyproxy.io
+      kind: Backend
+      name: vercel-backend
+  validation:
+    wellKnownCACertificates: System
+    hostname: api.vercel.com
