@@ -14,7 +14,7 @@ spec:
     - matches:
         - headers:
             - name: x-ai-eg-model
-              value: "google/gemini-3-flash-preview"
+              value: "gemini-3-flash-preview"
       backendRefs:
         - name: google
           # modelNameOverride: "gemini-1.5-flash" # Uncomment when supported/verified
