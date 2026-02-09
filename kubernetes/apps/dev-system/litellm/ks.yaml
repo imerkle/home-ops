@@ -6,8 +6,7 @@ metadata:
   name: litellm
   namespace: flux-system
 spec:
-  dependsOn:
-    - name: dev-system-code-server
+  dependsOn: []
   interval: 1h
   path: ./kubernetes/apps/dev-system/litellm/app
   prune: true
