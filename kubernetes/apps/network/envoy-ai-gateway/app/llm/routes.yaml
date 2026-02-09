@@ -53,5 +53,10 @@ spec:
       backendRefs:
         - name: anthropic
     # Default to OpenAI
-    - backendRefs:
+    - matches:
+        - headers:
+            - name: x-ai-eg-model
+              type: RegularExpression
+              value: "openai/.*"
+      backendRefs:
         - name: openai
