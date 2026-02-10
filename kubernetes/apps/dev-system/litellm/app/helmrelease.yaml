@@ -78,7 +78,7 @@ spec:
         rules:
           - backendRefs:
               - port: *port
-                name: litellm-app
+                name: litellm
     persistence:
       config:
         type: configMap
