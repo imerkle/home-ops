@@ -22,7 +22,7 @@ spec:
         - "https://esphome.${DOMAIN1}/oauth2/callback"
         - "https://homepage.${DOMAIN1}/oauth2/callback"
         - "https://pdf-tool.${DOMAIN1}/oauth2/callback"
-        - "https://files.${DOMAIN1}/oauth2/callback"
+        - "https://copyparty.${DOMAIN1}/oauth2/callback"
 
   writeOutputsToSecret:
     name: internal-oidc-creds

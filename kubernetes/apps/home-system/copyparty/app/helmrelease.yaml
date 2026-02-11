@@ -46,7 +46,7 @@ spec:
           gethomepage.dev/group: Storage
           gethomepage.dev/icon: folder-open
         hostnames:
-          - "files.${DOMAIN1}"
+          - "{{ .Release.Name }}.${DOMAIN1}"
         parentRefs:
           - name: envoy-internal
             namespace: network
