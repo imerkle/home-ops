@@ -14,7 +14,7 @@ spec:
       issuer: "https://zitadel.${DOMAIN1}"
       authorizationEndpoint: "https://zitadel.${DOMAIN1}/oauth/v2/authorize"
       tokenEndpoint: "https://zitadel.${DOMAIN1}/oauth/v2/token"
-    clientID:
+    clientIDRef:
       name: internal-oidc-creds
     clientSecret:
       name: internal-oidc-creds
