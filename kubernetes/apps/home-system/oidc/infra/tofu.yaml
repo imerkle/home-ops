@@ -23,5 +23,5 @@ spec:
   writeOutputsToSecret:
     name: internal-oidc-creds
     outputs:
-      - client_id
-      - client_secret
+      - client_id:client-secret
+      - client_secret:client-secret
