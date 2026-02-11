@@ -24,4 +24,4 @@ spec:
     name: internal-oidc-creds
     outputs:
       - client_id
-      - client_secret:client-secret
+      - client_secret
