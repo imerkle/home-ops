@@ -2,7 +2,6 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: zitadel
-  namespace: zitadel
 spec:
   interval: 5m
   url: https://charts.zitadel.com

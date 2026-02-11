@@ -7,5 +7,4 @@ components:
   - ../../components/alerts
 resources:
   - ./namespace.yaml
-  - ./repo.yaml
   - ./ks.yaml
