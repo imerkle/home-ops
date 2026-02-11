@@ -59,6 +59,8 @@ spec:
             port: 6052
     route:
       app:
+        labels:
+          enabled-oidc: "true"
         annotations:
           gatus.home-operations.com/endpoint: |-
             conditions: ["[STATUS] == 200"]

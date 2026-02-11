@@ -37,6 +37,8 @@ spec:
           - path: /w
     route:
       app:
+        labels:
+          enabled-oidc: "true"
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/name: Copyparty

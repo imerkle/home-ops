@@ -31,6 +31,8 @@ spec:
             port: 8080
     route:
       main:
+        labels:
+          enabled-oidc: "true"
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: Utility Service

@@ -19,6 +19,10 @@ spec:
     - name: redirect_uris
       value:
         - "https://frigate.${DOMAIN1}/oauth2/callback"
+        - "https://esphome.${DOMAIN1}/oauth2/callback"
+        - "https://homepage.${DOMAIN1}/oauth2/callback"
+        - "https://pdf-tool.${DOMAIN1}/oauth2/callback"
+        - "https://files.${DOMAIN1}/oauth2/callback"
 
   writeOutputsToSecret:
     name: internal-oidc-creds

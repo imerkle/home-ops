@@ -45,6 +45,8 @@ spec:
             port: 3000
     route:
       app:
+        labels:
+          enabled-oidc: "true"
         hostnames:
           - "{{ .Release.Name }}.${DOMAIN1}"
         parentRefs:
