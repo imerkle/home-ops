@@ -30,6 +30,11 @@ variable "redirect_uris" {
   description = "List of allowed callback URLs"
 }
 
+variable "org_id" {
+  type        = string
+  description = "The ID of the organization"
+}
+
 data "kubernetes_secret_v1" "zitadel_iam_admin" {
   metadata {
     name      = "iam-admin"
@@ -48,16 +53,10 @@ provider "zitadel" {
 # --- RESOURCES ---
 
 
-# # Create organization
-resource "zitadel_org" "org" {
-  name  = var.app_name
-  # state = "ORG_STATE_ACTIVE"
-}
-
 # Create project within the organization
 resource "zitadel_project" "project" {
   name   = var.app_name
-  org_id = zitadel_org.org.id
+  org_id = var.org_id
 
   project_role_assertion = true
   has_project_check      = true
@@ -65,7 +64,7 @@ resource "zitadel_project" "project" {
 
 resource "zitadel_application_oidc" "app" {
   project_id = zitadel_project.project.id
-  org_id     = zitadel_org.org.id
+  org_id     = var.org_id
 
   # Use the variable name
   name = var.app_name
@@ -88,8 +87,7 @@ resource "zitadel_application_oidc" "app" {
   post_logout_redirect_uris    = []
   skip_native_app_success_page = false
   depends_on = [
-    zitadel_project.project,
-    zitadel_org.org
+    zitadel_project.project
   ]
 }
 
