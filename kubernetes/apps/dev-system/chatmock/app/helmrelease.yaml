@@ -52,7 +52,7 @@ spec:
                 python3 -m venv venv
                 . venv/bin/activate
                 pip install --no-cache-dir -r requirements.txt
-                sh docker/entrypoint.sh serve
+                bash docker/entrypoint.sh serve
             env:
               CHATGPT_ACCESS_TOKEN: "randomkey"
               CHATGPT_DEBUG: "True"
