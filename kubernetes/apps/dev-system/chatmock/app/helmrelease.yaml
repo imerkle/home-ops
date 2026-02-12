@@ -61,6 +61,21 @@ spec:
                 cpu: 100m
               limits:
                 memory: 512Mi
+          code-server:
+            image:
+              repository: ghcr.io/coder/code-server
+              tag: latest
+            env:
+              AUTH: none
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 512Mi
             probes:
               liveness:
                 enabled: true
@@ -81,6 +96,8 @@ spec:
             port: 8000
           auth:
             port: 1455
+          code:
+            port: 8080
     route:
       app:
         enabled: true
@@ -103,6 +120,17 @@ spec:
         rules:
           - backendRefs:
               - port: 1455
+                name: chatmock
+      code:
+        enabled: true
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        hostnames:
+          - "code-chatmock.${DOMAIN1}"
+        rules:
+          - backendRefs:
+              - port: 8080
                 name: chatmock
     persistence:
       app-code:
