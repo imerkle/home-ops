@@ -47,7 +47,7 @@ spec:
                 chmod +x docker/entrypoint.sh
                 ./docker/entrypoint.sh serve
             env:
-              CHATGPT_ACCESS_TOKEN: "randomkey" # User provided overrides
+              CHATGPT_ACCESS_TOKEN: "randomkey"
               CHATGPT_DEBUG: "True"
               PYTHONUNBUFFERED: "1"
               PORT: "8000"
@@ -78,6 +78,8 @@ spec:
         ports:
           http:
             port: 8000
+          auth:
+            port: 1455
     route:
       app:
         enabled: true
@@ -85,10 +87,21 @@ spec:
           - name: envoy-internal
             namespace: network
         hostnames:
-          - "chatmock.x3y.space"
+          - "chatmock.${DOMAIN1}"
         rules:
           - backendRefs:
               - port: 8000
+                name: chatmock
+      auth:
+        enabled: true
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        hostnames:
+          - "authchatmock.${DOMAIN1}"
+        rules:
+          - backendRefs:
+              - port: 1455
                 name: chatmock
     persistence:
       app-code:
