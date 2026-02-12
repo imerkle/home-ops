@@ -25,6 +25,7 @@ spec:
                 git clone https://github.com/RayBytes/ChatMock.git /app/repo
                 cp -r /app/repo/. /app/
                 rm -rf /app/repo
+                chown -R 1000:1000 /app
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
