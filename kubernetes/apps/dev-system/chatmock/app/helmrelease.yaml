@@ -46,7 +46,8 @@ spec:
                 pip install --no-cache-dir -r requirements.txt
                 python -m chatmock.app
             env:
-              CHATGPT_ACCESS_TOKEN: "vault:secret/data/ai/chatmock#CHATGPT_ACCESS_TOKEN" # Updated path guess or assuming user needs to create it
+              # CHATGPT_ACCESS_TOKEN: "vault:secret/data/ai/chatmock#CHATGPT_ACCESS_TOKEN" # Updated path guess or assuming user needs to create it
+              CHATGPT_ACCESS_TOKEN: "randomkey" # Updated path guess or assuming user needs to create it
               CHATGPT_DEBUG: "True"
               FLASK_APP: "chatmock.app"
               PYTHONUNBUFFERED: "1"
