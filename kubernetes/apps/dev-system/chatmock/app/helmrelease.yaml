@@ -49,10 +49,9 @@ spec:
             args:
               - |
                 cd /app
+                python3 -m pip install --no-cache-dir --user -r requirements.txt
                 export PATH="${HOME}/.local/bin:${PATH}"
-                pip install --no-cache-dir --user -r requirements.txt
-                chmod +x docker/entrypoint.sh
-                ./docker/entrypoint.sh serve
+                sh docker/entrypoint.sh serve
             env:
               CHATGPT_ACCESS_TOKEN: "randomkey"
               CHATGPT_DEBUG: "True"
