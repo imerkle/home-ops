@@ -49,7 +49,8 @@ spec:
             args:
               - |
                 cd /app
-                pip install --no-cache-dir -r requirements.txt
+                export PATH="${HOME}/.local/bin:${PATH}"
+                pip install --no-cache-dir --user -r requirements.txt
                 chmod +x docker/entrypoint.sh
                 ./docker/entrypoint.sh serve
             env:
@@ -59,6 +60,7 @@ spec:
               PORT: "8000"
               CHATGPT_LOCAL_LOGIN_BIND: "0.0.0.0"
               HOME: "/app"
+              PYTHONUSERBASE: "/app/.local"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
