@@ -51,6 +51,7 @@ spec:
               CHATGPT_DEBUG: "True"
               PYTHONUNBUFFERED: "1"
               PORT: "8000"
+              CHATGPT_LOCAL_LOGIN_BIND: "0.0.0.0"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
