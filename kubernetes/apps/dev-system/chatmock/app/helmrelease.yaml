@@ -87,7 +87,7 @@ spec:
           - name: envoy-internal
             namespace: network
         hostnames:
-          - "chatmock.x3y.space"
+          - "chatmock.${DOMAIN1}"
         rules:
           - backendRefs:
               - port: 8000
@@ -98,7 +98,7 @@ spec:
           - name: envoy-internal
             namespace: network
         hostnames:
-          - "authchatmock.x3y.space"
+          - "authchatmock.${DOMAIN1}"
         rules:
           - backendRefs:
               - port: 1455
