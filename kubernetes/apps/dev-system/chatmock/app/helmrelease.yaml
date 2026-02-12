@@ -14,14 +14,21 @@ spec:
       chatmock:
         annotations:
           reloader.stakater.com/auto: "true"
-        containers:
-          app:
+        initContainers:
+          git-clone:
             image:
-              repository: ghcr.io/raybytes/chatmock
+              repository: alpine/git
               tag: latest
-            env:
-              CHATGPT_ACCESS_TOKEN: "vault:secret/data/ai#CHATGPT_ACCESS_TOKEN"
-              CHATGPT_DEBUG: "True"
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                git clone https://github.com/RayBytes/ChatMock.git /app/repo
+                mv /app/repo/* /app/
+                glob_files=$(ls -A /app/repo/.* 2>/dev/null)
+                if [ -n "$glob_files" ]; then
+                    mv /app/repo/.* /app/
+                fi
+                rm -rf /app/repo
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
@@ -30,7 +37,44 @@ spec:
               requests:
                 cpu: 10m
               limits:
+                memory: 128Mi
+        containers:
+          app:
+            image:
+              repository: python
+              tag: 3.11-slim
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                cd /app
+                pip install --no-cache-dir -r requirements.txt
+                python -m chatmock.app
+            env:
+              CHATGPT_ACCESS_TOKEN: "vault:secret/data/ai#CHATGPT_ACCESS_TOKEN"
+              CHATGPT_DEBUG: "True"
+              FLASK_APP: "chatmock.app"
+              PYTHONUNBUFFERED: "1"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 100m
+              limits:
                 memory: 512Mi
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8000
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
     service:
       app:
         controller: chatmock
@@ -49,3 +93,8 @@ spec:
           - backendRefs:
               - port: 8000
                 name: chatmock
+    persistence:
+      app-code:
+        type: emptyDir
+        globalMounts:
+          - path: /app
