@@ -23,11 +23,7 @@ spec:
             args:
               - |
                 git clone https://github.com/RayBytes/ChatMock.git /app/repo
-                mv /app/repo/* /app/
-                glob_files=$(ls -A /app/repo/.* 2>/dev/null)
-                if [ -n "$glob_files" ]; then
-                    mv /app/repo/.* /app/
-                fi
+                cp -r /app/repo/. /app/
                 rm -rf /app/repo
             securityContext:
               allowPrivilegeEscalation: false
@@ -50,7 +46,7 @@ spec:
                 pip install --no-cache-dir -r requirements.txt
                 python -m chatmock.app
             env:
-              CHATGPT_ACCESS_TOKEN: "vault:secret/data/ai#CHATGPT_ACCESS_TOKEN"
+              CHATGPT_ACCESS_TOKEN: "vault:secret/data/ai/chatmock#CHATGPT_ACCESS_TOKEN" # Updated path guess or assuming user needs to create it
               CHATGPT_DEBUG: "True"
               FLASK_APP: "chatmock.app"
               PYTHONUNBUFFERED: "1"
