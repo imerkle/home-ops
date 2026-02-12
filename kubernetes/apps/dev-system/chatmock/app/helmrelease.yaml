@@ -49,8 +49,9 @@ spec:
             args:
               - |
                 cd /app
-                python3 -m pip install --no-cache-dir --user -r requirements.txt
-                export PATH="${HOME}/.local/bin:${PATH}"
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install --no-cache-dir -r requirements.txt
                 sh docker/entrypoint.sh serve
             env:
               CHATGPT_ACCESS_TOKEN: "randomkey"
@@ -59,7 +60,6 @@ spec:
               PORT: "8000"
               CHATGPT_LOCAL_LOGIN_BIND: "0.0.0.0"
               HOME: "/app"
-              PYTHONUSERBASE: "/app/.local"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
