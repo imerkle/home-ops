@@ -70,44 +70,12 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 512Mi
-          code-server:
-            image:
-              repository: ghcr.io/coder/code-server
-              tag: latest
-            env:
-              AUTH: none
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: false
-              capabilities: { drop: ["ALL"] }
-            resources:
-              requests:
-                cpu: 10m
-                memory: 128Mi
-              limits:
-                memory: 512Mi
-            probes:
-              liveness:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /healthz
-                    port: 8080
-                  initialDelaySeconds: 30
-                  periodSeconds: 10
-                  timeoutSeconds: 5
-                  failureThreshold: 3
     service:
       app:
         controller: chatmock
         ports:
           http:
             port: 8000
-          auth:
-            port: 1455
-          code:
-            port: 8080
     route:
       app:
         enabled: true
@@ -119,28 +87,6 @@ spec:
         rules:
           - backendRefs:
               - port: 8000
-                name: chatmock
-      auth:
-        enabled: true
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
-        hostnames:
-          - "authchatmock.${DOMAIN1}"
-        rules:
-          - backendRefs:
-              - port: 1455
-                name: chatmock
-      code:
-        enabled: true
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
-        hostnames:
-          - "code-chatmock.${DOMAIN1}"
-        rules:
-          - backendRefs:
-              - port: 8080
                 name: chatmock
     persistence:
       app-code:
