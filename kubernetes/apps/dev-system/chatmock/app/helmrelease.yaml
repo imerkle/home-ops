@@ -92,8 +92,8 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /health
-                    port: 8000
+                    path: /healthz
+                    port: 8080
                   initialDelaySeconds: 30
                   periodSeconds: 10
                   timeoutSeconds: 5
