@@ -45,7 +45,8 @@ spec:
         maxParallel: 8
       destinationPath: s3://pg-default
       # endpointURL: http://minio.minio:9000
-      endpointURL: ${S3_ENDPOINT}
+      # endpointURL: ${S3_ENDPOINT}
+      endpointURL: "http://rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80"
       # serverName: pg-default-v1
       s3Credentials:
         accessKeyId:
@@ -54,6 +55,7 @@ spec:
         secretAccessKey:
           name: *secret
           key: AWS_SECRET_ACCESS_KEY
+      # Your internal Ceph RGW Service URL (e.g., inside the cluster)
 #  # RECOVERY
   bootstrap:
     # initdb:
