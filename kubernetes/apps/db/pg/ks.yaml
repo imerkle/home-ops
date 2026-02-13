@@ -23,7 +23,7 @@ metadata:
   namespace: &namespace db
   labels:
     kustomization.flux.fast/default: "false"
-    wait.flux.home.arpa/disabled: "true"
+    flux.home.arpa/wait: disabled
     helm.flux.home.fluxvars: "true"
 spec:
   targetNamespace: *namespace
@@ -41,17 +41,14 @@ kind: Kustomization
 metadata:
   name: pg-clusters-replica
   namespace: &namespace db
+  labels:
+    flux.home.arpa/wait: disabled
 spec:
   targetNamespace: *namespace
   path: ./kubernetes/apps/db/pg/clusters/replica
   dependsOn:
     - name: pg-app
     # - name: 1-core-storage-minio-app
-  healthChecks:
-    - name: pg-replica
-      namespace: pg
-      kind: Cluster
-      apiVersion: postgresql.cnpg.io/v1
 
 # ---
 # apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -60,7 +57,7 @@ spec:
 #   name: pg-clusters-vector
 #   namespace: &namespace db
 #   labels:
-#     wait.flux.home.arpa/disabled: "true"
+#     flux.home.arpa/wait: disabled
 # spec:
 #   targetNamespace: *namespace
 #   path: ./kubernetes/apps/db/pg/clusters/vector
@@ -89,7 +86,7 @@ metadata:
   name: pgadmin-app
   namespace: &namespace db
   labels:
-    wait.flux.home.arpa/disabled: "true"
+    flux.home.arpa/wait: disabled
 spec:
   targetNamespace: *namespace
   path: ./kubernetes/apps/db/pg/pgadmin

@@ -103,3 +103,13 @@ spec:
         - ports:
             - port: "8200"
               protocol: TCP
+    # Allow S3 backups (Rook Ceph)
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: rook-ceph
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+            - port: "8080"
+              protocol: TCP
