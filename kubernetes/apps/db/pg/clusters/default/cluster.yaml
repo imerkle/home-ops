@@ -9,6 +9,11 @@ spec:
   # inheritedMetadata:
   #   annotations:
   #     vault.security.banzaicloud.io/vault-addr: "http://vault.vault:8200"
+  env:
+    - name: AWS_REQUEST_CHECKSUM_CALCULATION
+      value: "when_required"
+    - name: AWS_RESPONSE_CHECKSUM_VALIDATION
+      value: "when_required"
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:15.2-11
   primaryUpdateStrategy: unsupervised # let k8s handle upgrades
