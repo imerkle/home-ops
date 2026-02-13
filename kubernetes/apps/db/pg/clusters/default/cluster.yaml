@@ -18,7 +18,7 @@ spec:
     storageClass: "${STORE1}"
   walStorage:
     storageClass: "${STORE1}"
-    size: 25Gi
+    size: 30Gi
   superuserSecret:
     name: pg-default-superuser
   enableSuperuserAccess: true
