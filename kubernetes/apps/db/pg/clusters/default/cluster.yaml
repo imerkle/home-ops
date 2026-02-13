@@ -45,8 +45,8 @@ spec:
         maxParallel: 8
       destinationPath: s3://pg-default
       # endpointURL: http://minio.minio:9000
-      # endpointURL: ${S3_ENDPOINT}
-      endpointURL: "http://rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80"
+      endpointURL: ${S3_ENDPOINT}
+      # endpointURL: "http://rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80"
       # serverName: pg-default-v1
       s3Credentials:
         accessKeyId:
