@@ -58,26 +58,6 @@ spec:
       # Your internal Ceph RGW Service URL (e.g., inside the cluster)
 #  # RECOVERY
   bootstrap:
-    # initdb:
-    #   postInitTemplateSQL:
-    #     - CREATE DATABASE synapse;
-    #     - CREATE DATABASE matrix_whatsapp;
-    #     - CREATE DATABASE matrix_slack;
-    #     - CREATE DATABASE immich;
-    #     - CREATE DATABASE prowlarr_main;
-    #     - CREATE DATABASE prowlarr_log;
-    #     - CREATE DATABASE radarr_main;
-    #     - CREATE DATABASE radarr_log;
-    #     - CREATE DATABASE sonarr_main;
-    #     - CREATE DATABASE sonarr_log;
-    #     - CREATE DATABASE bazarr_main;
-    #     # - CREATE DATABASE midarr;
-    #     - CREATE DATABASE kratos;
-    #     - CREATE DATABASE hydra;
-    #     - CREATE DATABASE paperless;
-
-    #     #harbor
-    #     - CREATE DATABASE registry;
     recovery:
       source: &previous-cluster pg-default-restore
     # Note: externalClusters is needed when recovering from an existing cnpg cluster
