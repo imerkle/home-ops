@@ -7,4 +7,5 @@ resources:
 - cluster.yaml
 - scheduledbackup.yaml
 - route.yaml
+- bucket.yaml
 # - dump-local.yaml
