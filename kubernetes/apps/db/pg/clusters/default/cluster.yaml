@@ -69,7 +69,7 @@ spec:
           compression: bzip2
           maxParallel: 8
         destinationPath: s3://pg-default
-        endpointURL: ${S3_ENDPOINT}
+        endpointURL: "https://s3.us-west-002.backblazeb2.com"
         s3Credentials:
           accessKeyId:
             name: &secret pg-default-s3
