@@ -53,25 +53,25 @@ spec:
       kind: Cluster
       apiVersion: postgresql.cnpg.io/v1
 
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: pg-clusters-vector
-  namespace: &namespace db
-  labels:
-    wait.flux.home.arpa/disabled: "true"
-spec:
-  targetNamespace: *namespace
-  path: ./kubernetes/apps/db/pg/clusters/vector
-  dependsOn:
-    - name: pg-app
-    # - name: 1-core-storage-minio-app
-  healthChecks:
-    - name: pg-vector
-      namespace: pg
-      kind: Cluster
-      apiVersion: postgresql.cnpg.io/v1
+# ---
+# apiVersion: kustomize.toolkit.fluxcd.io/v1
+# kind: Kustomization
+# metadata:
+#   name: pg-clusters-vector
+#   namespace: &namespace db
+#   labels:
+#     wait.flux.home.arpa/disabled: "true"
+# spec:
+#   targetNamespace: *namespace
+#   path: ./kubernetes/apps/db/pg/clusters/vector
+#   dependsOn:
+#     - name: pg-app
+#     # - name: 1-core-storage-minio-app
+#   healthChecks:
+#     - name: pg-vector
+#       namespace: pg
+#       kind: Cluster
+#       apiVersion: postgresql.cnpg.io/v1
 # ---
 # apiVersion: kustomize.toolkit.fluxcd.io/v1
 # kind: Kustomization
