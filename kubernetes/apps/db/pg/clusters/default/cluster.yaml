@@ -33,28 +33,28 @@ spec:
       shared_buffers: 512MB # amount of RAM to use for data caching, https://postgresqlco.nf/doc/en/param/shared_buffers/
   monitoring:
     enablePodMonitor: true
-  backup:
-    target: "primary"
-    retentionPolicy: 30d
-    volumeSnapshot:
-       className: ${VSNAP1}
-    barmanObjectStore:
-      serverName: "${PG_S3_FOLDER_CURR}"
-      wal:
-        compression: bzip2
-        maxParallel: 8
-      destinationPath: s3://pg-default
-      # endpointURL: http://minio.minio:9000
-      # endpointURL: ${S3_ENDPOINT}
-      endpointURL: "http://rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80"
-      # serverName: pg-default-v1
-      s3Credentials:
-        accessKeyId:
-          name: &secret pg-default-s3
-          key: AWS_ACCESS_KEY_ID_CEPH
-        secretAccessKey:
-          name: *secret
-          key: AWS_SECRET_ACCESS_KEY_CEPH
+  # backup:
+  #   target: "primary"
+  #   retentionPolicy: 30d
+  #   volumeSnapshot:
+  #      className: ${VSNAP1}
+  #   barmanObjectStore:
+  #     serverName: "${PG_S3_FOLDER_CURR}"
+  #     wal:
+  #       compression: bzip2
+  #       maxParallel: 8
+  #     destinationPath: s3://pg-default
+  #     # endpointURL: http://minio.minio:9000
+  #     # endpointURL: ${S3_ENDPOINT}
+  #     endpointURL: "http://rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80"
+  #     # serverName: pg-default-v1
+  #     s3Credentials:
+  #       accessKeyId:
+  #         name: &secret pg-default-s3
+  #         key: AWS_ACCESS_KEY_ID_CEPH
+  #       secretAccessKey:
+  #         name: *secret
+  #         key: AWS_SECRET_ACCESS_KEY_CEPH
       # Your internal Ceph RGW Service URL (e.g., inside the cluster)
 #  # RECOVERY
   bootstrap:
