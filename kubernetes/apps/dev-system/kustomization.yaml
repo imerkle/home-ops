@@ -15,3 +15,4 @@ resources:
   - ./code-server/ks.yaml
   - ./telepresence/ks.yaml
   - ./litellm/ks.yaml
+  - ./mcp/context7/ks.yaml

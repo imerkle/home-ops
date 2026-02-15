@@ -1,0 +1,91 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: context7
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  values:
+    controllers:
+      context7:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: "OnRootMismatch"
+        initContainers:
+          git-clone:
+            image:
+              repository: alpine/git
+              tag: latest
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                git clone https://github.com/upstash/context7-mcp.git /app/repo
+                cp -r /app/repo/. /app/
+                rm -rf /app/repo
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 128Mi
+        containers:
+          app:
+            image:
+              repository: node
+              tag: 20-alpine
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                cd /app
+                npm install
+                npm run build
+                node build/index.js
+            env:
+              CONTEXT7_API_KEY: "vault:secret/data/ai#CONTEXT7_API_KEY"
+              PORT: "3000"
+              NODE_ENV: "production"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+    service:
+      app:
+        controller: context7
+        ports:
+          http:
+            port: 3000
+    route:
+      app:
+        enabled: true
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        hostnames:
+          - "context7.${DOMAIN1}"
+        rules:
+          - backendRefs:
+              - port: 3000
+                name: context7
+    persistence:
+      app-code:
+        type: emptyDir
+        globalMounts:
+          - path: /app
