@@ -1,0 +1,86 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: zitadel-org-bootstrap
+spec:
+  ttlSecondsAfterFinished: 86400  # Clean up after 24 hours
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: zitadel-org-bootstrap
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: default
+      containers:
+        - name: bootstrap
+          image: curlimages/curl:8.11.1
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+
+              echo "Waiting for Zitadel to be ready..."
+              until curl -sf http://zitadel:8080/debug/ready > /dev/null 2>&1; do
+                echo "Zitadel not ready, waiting..."
+                sleep 5
+              done
+              echo "Zitadel is ready!"
+
+              # Configuration
+              ZITADEL_DOMAIN="zitadel.x3y.space"
+              ORG_ID="360051918820605983"
+              ORG_NAME="home"
+              ADMIN_EMAIL="admin@admin.com"
+              ADMIN_PASSWORD="RootPassword1!"
+
+              echo "Authenticating with Zitadel using admin credentials..."
+              # Get access token using password grant (for the admin user)
+              # Note: Password grant requires client_id, we'll use the Console client
+              TOKEN_RESPONSE=$(curl -sf -X POST "https://${ZITADEL_DOMAIN}/oauth/v2/token" \
+                -H "Content-Type: application/x-www-form-urlencoded" \
+                -d "grant_type=password" \
+                -d "scope=openid profile email urn:zitadel:iam:org:project:id:zitadel:aud" \
+                -d "username=${ADMIN_EMAIL}" \
+                -d "password=${ADMIN_PASSWORD}" 2>&1 || echo "AUTH_FAILED")
+
+
+              if echo "$TOKEN_RESPONSE" | grep -q "AUTH_FAILED"; then
+                echo "Failed to authenticate with admin credentials"
+                echo "Response: $TOKEN_RESPONSE"
+                exit 1
+              fi
+
+              # Extract access token using grep and cut (no jq available)
+              ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
+
+              echo "Successfully authenticated!"
+
+              # Check if org already exists
+              echo "Checking if org ${ORG_ID} exists..."
+              ORG_CHECK=$(curl -sf -X GET "https://${ZITADEL_DOMAIN}/management/v1/orgs/${ORG_ID}" \
+                -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+                -H "Accept: application/json" 2>&1 || echo "NOT_FOUND")
+
+              if echo "$ORG_CHECK" | grep -q "\"id\":\"${ORG_ID}\""; then
+                echo "Organization ${ORG_ID} already exists, skipping creation"
+                exit 0
+              fi
+
+              echo "Creating organization ${ORG_ID}..."
+              CREATE_RESPONSE=$(curl -sf -X POST "https://${ZITADEL_DOMAIN}/management/v1/orgs" \
+                -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+                -H "Content-Type: application/json" \
+                -H "Accept: application/json" \
+                -d "{\"name\":\"${ORG_NAME}\",\"id\":\"${ORG_ID}\"}" 2>&1)
+
+              if echo "$CREATE_RESPONSE" | grep -q "\"id\":\"${ORG_ID}\""; then
+                echo "Successfully created organization ${ORG_ID}"
+                echo "Response: $CREATE_RESPONSE"
+              else
+                echo "Failed to create organization"
+                echo "Response: $CREATE_RESPONSE"
+                exit 1
+              fi
