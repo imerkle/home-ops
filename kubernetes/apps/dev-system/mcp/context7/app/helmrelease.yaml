@@ -30,7 +30,7 @@ spec:
               - |
                 npx -y @upstash/context7-mcp@latest --transport http --port 3000
             env:
-              CONTEXT7_API_KEY: "vault:secret/data/context7#api_key"
+              CONTEXT7_API_KEY: "vault:secret/data/ai#CONTEXT7_API_KEY"
               NODE_ENV: "production"
               HOME: "/app"
             securityContext:
