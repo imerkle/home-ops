@@ -4,8 +4,8 @@ metadata:
     name: login-client
 spec:
     type: Opaque
-    data:
-        pat: ENC[AES256_GCM,data:vKSQqQM/LBmZ0YW4jU3qZTFO+TUz7etbLhH3dz57XvdllkWvxKXJcZ7JhYB39dnRTaoaYYrE1KupIa6MHiC9/fOUVj5pUMLe,iv:ylnJE5pBjTXxI2AbBJNIGLvltSZMMGMACOnKTvylNtQ=,tag:2PE9k6WgegiaIleDlRpZsQ==,type:str]
+    stringData:
+        pat: ENC[AES256_GCM,data:F3Mypw8igbXNYCqtK9DVEr3UbtSIDuAtlNF7zv7ZmskARcrjmJLcxX80Cxvr+3yAqJ07I1QtJp5sJXHpD5Hj5ZsnUCP3N/VP,iv:qNxWgu5S3R9741NFaMl3ABDXfJJgAIJV5I8lg201MN8=,tag:bRKNi0nrY7IjwZnU3IsZ/Q==,type:str]
 sops:
     age:
         - recipient: age1yvl77vcj6cthafxqnjezrme4ntktjgd2j4xpgkcfutws83zrtdesk93cll
@@ -17,8 +17,8 @@ sops:
             ekE5Z1BXOHN0MUorUUNGalAvZnZDdDgKyJ3i+SLEBNef94nKUfkh3OmaxfP6vVwJ
             dOaVfgqQZk8x58gXrTEvFOrLGUF3ZNTsoMgWG+v/a9WR6Nzwa8/UWQ==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-02-14T20:41:30Z"
-    mac: ENC[AES256_GCM,data:QNy+5FnXprjj1zX/jQehdm4YY+WHNuVVIJsIwSl6KUsQWCbVMYnzjMAJsbyojVIQi4EHFBFJ4eGCHrEFNbH9kcRtfAPrHChZMgPZKZOV9Gxs2XzLCL3WuNCXIF2Q8CBSyaKbRuS+nkyX2YdzPCPu4J8FewuUBGti18znesHx7R0=,iv:xn9FTijVPRhoOdstma3BrF5ErUkocYupjxglYtL654w=,tag:9n0udDQ03zgwfcpt336jCw==,type:str]
+    lastmodified: "2026-02-15T17:21:50Z"
+    mac: ENC[AES256_GCM,data:loZaF/aHLn/k9LLmiciT2TT9R6le6ZdffIyN42gR+1ZPB1+rPnAnDWzBawOBJELQIc99OH5rQResff8K5hMo0AWdZ1RaBtKs4uFcKkfL9CX46NGqz/ShVU9pcsnXRPUrMy5Xawe83OK+eeJDPz4doRJkKHGNX3ATmjpQ5PYPSpU=,iv:f3rpANO39TpCLZaSP5dZnYmV3zHsrVbwWS60AUGDrnI=,tag:K7CaiAGEtFAzQF68IQzAww==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
