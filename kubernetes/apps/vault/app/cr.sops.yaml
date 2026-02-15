@@ -181,6 +181,7 @@ spec:
                     google: ENC[AES256_GCM,data:wmo2DW6TQPv3GyBZ7v15hXgcfubZdy9MpWSkOLHLIicX2o60o0yS,iv:X6y1pH14ztoP3G2RbEQdU7BXJ2Ulv5HcoxKBnGoMFZQ=,tag:cpEgzn/b4rvqlhRxwln9Kw==,type:str]
                     vercel: ENC[AES256_GCM,data:aUAV9nmIny1zOsY91DaRL51C,iv:xVPqN9YGIYjG0q7uKpI71TuK5yTS8lT0kINjIPK5F2U=,tag:ejF6mdzFj8WmHSSpP0wt+w==,type:str]
                     anthropic: ENC[AES256_GCM,data:CLBE3Bt2H0wCUDPyrTO5WHga,iv:uZQD5YQT6ug2VYF/5YkoQae3s1zNXZdtC/H+l3fDG44=,tag:ykDT2y9xgy331wVUyUpSig==,type:str]
+                    CONTEXT7_API_KEY: ENC[AES256_GCM,data:Espm35J87u0YYB1+MaYWJRDfLXndWkXcX52Mtqws7mm4rh9Te9NJwbD0ZA==,iv:1SP+WHZRHRmbnzGggUz6XYNpcYUYO66AKnOG54zgl40=,tag:rMqaPosXdhJ8A5Xl9MVmow==,type:str]
             - type: kv
               path: secret/data/volsync
               data:
@@ -410,8 +411,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-02-09T18:05:37Z"
-    mac: ENC[AES256_GCM,data:0m4LwPpBisQ6buHyzyNTtCZhsV3ffN32vF6q1wVBNrqYYAWabAnLxrQHZD0CTD0BFVaXAaBRnc5xzxBtdc9ffIVK0iKSRwJOOpyDo1Pv61PJG7JR14DjO9kxVsazF8ufIN73X7oIyJMBMsUIHrHgsU1tR7bMb04k4JnqHORcbSI=,iv:iG2VA0bODg+b1qceRa6Zn48mCkyfO44ABXHRvwGv2BM=,tag:I5eRsTwBmhu47RMTbe7ZsQ==,type:str]
+    lastmodified: "2026-02-15T14:37:37Z"
+    mac: ENC[AES256_GCM,data:K0OfFs6OELXmshWS2Ek648VZopimlnT+NZBOc9/wLrzs+gEgK2Zon+k38LhAIPGMRqOpd3UESEIccfoHGscioaEPTnJ4z7wzNVPjwJlHGDAriVbVRKP3sv4/LN49BlN0zX8hgfE2uo8SaF9aIVnmg81cJtg+wmyKqU5iWtApjIw=,iv:lNuDMyGRued7lL4+jiZt/NP1KOTb3+/EmyWn/JqOAYc=,tag:ryV1AWU03ocZ/PIbvb1MIQ==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.11.0
