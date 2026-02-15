@@ -15,72 +15,133 @@ spec:
       serviceAccountName: default
       containers:
         - name: bootstrap
-          image: curlimages/curl:8.11.1
+          image: python:3.12-alpine
           command:
             - /bin/sh
             - -c
             - |
               set -e
 
+              # Install required packages
+              pip install --no-cache-dir requests pyjwt cryptography
+
               echo "Waiting for Zitadel to be ready..."
-              until curl -sf http://zitadel:8080/debug/ready > /dev/null 2>&1; do
-                echo "Zitadel not ready, waiting..."
-                sleep 5
-              done
-              echo "Zitadel is ready!"
+              python3 -c "
+              import time
+              import requests
+
+              while True:
+                  try:
+                      resp = requests.get('http://zitadel:8080/debug/ready', timeout=5)
+                      if resp.status_code == 200:
+                          print('Zitadel is ready!')
+                          break
+                  except:
+                      pass
+                  print('Zitadel not ready, waiting...')
+                  time.sleep(5)
+              "
+
+              # Run the bootstrap script
+              python3 << 'PYTHON_SCRIPT'
+              import json
+              import time
+              import requests
+              import jwt
+              from datetime import datetime, timedelta
 
               # Configuration
-              ZITADEL_DOMAIN="zitadel.x3y.space"
-              ORG_ID="360051918820605983"
-              ORG_NAME="home"
-              ADMIN_EMAIL="admin@admin.com"
-              ADMIN_PASSWORD="RootPassword1!"
+              ZITADEL_DOMAIN = "zitadel.x3y.space"
+              ORG_ID = "360051918820605983"
+              ORG_NAME = "home"
 
-              echo "Authenticating with Zitadel using admin credentials..."
-              # Get access token using password grant (for the admin user)
-              # Note: Password grant requires client_id, we'll use the Console client
-              TOKEN_RESPONSE=$(curl -sf -X POST "https://${ZITADEL_DOMAIN}/oauth/v2/token" \
-                -H "Content-Type: application/x-www-form-urlencoded" \
-                -d "grant_type=password" \
-                -d "scope=openid profile email urn:zitadel:iam:org:project:id:zitadel:aud" \
-                -d "username=${ADMIN_EMAIL}" \
-                -d "password=${ADMIN_PASSWORD}" 2>&1 || echo "AUTH_FAILED")
+              # Load the service account key
+              with open('/var/run/secrets/zitadel/iam-admin.json', 'r') as f:
+                  sa_key = json.load(f)
 
+              print("Authenticating with Zitadel using service account...")
 
-              if echo "$TOKEN_RESPONSE" | grep -q "AUTH_FAILED"; then
-                echo "Failed to authenticate with admin credentials"
-                echo "Response: $TOKEN_RESPONSE"
-                exit 1
-              fi
+              # Create JWT assertion
+              now = datetime.utcnow()
+              claims = {
+                  "iss": sa_key["userId"],
+                  "sub": sa_key["userId"],
+                  "aud": f"https://{ZITADEL_DOMAIN}",
+                  "iat": int(now.timestamp()),
+                  "exp": int((now + timedelta(hours=1)).timestamp())
+              }
 
-              # Extract access token using grep and cut (no jq available)
-              ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
+              # Sign the JWT with the private key
+              assertion = jwt.encode(
+                  claims,
+                  sa_key["key"],
+                  algorithm="RS256",
+                  headers={"kid": sa_key["keyId"]}
+              )
 
-              echo "Successfully authenticated!"
+              # Get access token
+              token_data = {
+                  "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                  "scope": "openid profile email urn:zitadel:iam:org:project:id:zitadel:aud",
+                  "assertion": assertion
+              }
 
-              # Check if org already exists
-              echo "Checking if org ${ORG_ID} exists..."
-              ORG_CHECK=$(curl -sf -X GET "https://${ZITADEL_DOMAIN}/management/v1/orgs/${ORG_ID}" \
-                -H "Authorization: Bearer ${ACCESS_TOKEN}" \
-                -H "Accept: application/json" 2>&1 || echo "NOT_FOUND")
+              token_resp = requests.post(
+                  f"https://{ZITADEL_DOMAIN}/oauth/v2/token",
+                  data=token_data,
+                  headers={"Content-Type": "application/x-www-form-urlencoded"}
+              )
 
-              if echo "$ORG_CHECK" | grep -q "\"id\":\"${ORG_ID}\""; then
-                echo "Organization ${ORG_ID} already exists, skipping creation"
-                exit 0
-              fi
+              if token_resp.status_code != 200:
+                  print(f"Failed to authenticate: {token_resp.status_code}")
+                  print(f"Response: {token_resp.text}")
+                  exit(1)
 
-              echo "Creating organization ${ORG_ID}..."
-              CREATE_RESPONSE=$(curl -sf -X POST "https://${ZITADEL_DOMAIN}/management/v1/orgs" \
-                -H "Authorization: Bearer ${ACCESS_TOKEN}" \
-                -H "Content-Type: application/json" \
-                -H "Accept: application/json" \
-                -d "{\"name\":\"${ORG_NAME}\",\"id\":\"${ORG_ID}\"}" 2>&1)
+              access_token = token_resp.json()["access_token"]
+              print("Successfully authenticated!")
 
-              if echo "$CREATE_RESPONSE" | grep -q "\"id\":\"${ORG_ID}\""; then
-                echo "Successfully created organization ${ORG_ID}"
-                echo "Response: $CREATE_RESPONSE"
-              else
-                echo "Failed to create organization"
-                echo "Response: $CREATE_RESPONSE"
-                exit 1
-              fi
+              # Check if org exists
+              print(f"Checking if org {ORG_ID} exists...")
+              headers = {
+                  "Authorization": f"Bearer {access_token}",
+                  "Accept": "application/json"
+              }
+
+              org_check = requests.get(
+                  f"https://{ZITADEL_DOMAIN}/management/v1/orgs/{ORG_ID}",
+                  headers=headers
+              )
+
+              if org_check.status_code == 200:
+                  print(f"Organization {ORG_ID} already exists, skipping creation")
+                  exit(0)
+
+              # Create org
+              print(f"Creating organization {ORG_ID}...")
+              create_data = {
+                  "name": ORG_NAME,
+                  "id": ORG_ID
+              }
+
+              create_resp = requests.post(
+                  f"https://{ZITADEL_DOMAIN}/management/v1/orgs",
+                  headers={**headers, "Content-Type": "application/json"},
+                  json=create_data
+              )
+
+              if create_resp.status_code in [200, 201]:
+                  print(f"Successfully created organization {ORG_ID}")
+                  print(f"Response: {create_resp.json()}")
+              else:
+                  print(f"Failed to create organization: {create_resp.status_code}")
+                  print(f"Response: {create_resp.text}")
+                  exit(1)
+              PYTHON_SCRIPT
+          volumeMounts:
+            - name: iam-admin
+              mountPath: /var/run/secrets/zitadel
+              readOnly: true
+      volumes:
+        - name: iam-admin
+          secret:
+            secretName: iam-admin
