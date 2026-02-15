@@ -7,4 +7,3 @@ resources:
   - ./netpol.yaml
   - ./route.yaml
   - ./login-client.sops.yaml
-  - ./bootstrap-job.yaml

@@ -35,6 +35,12 @@ variable "org_id" {
   description = "The ID of the organization"
 }
 
+variable "org_name" {
+  type        = string
+  description = "The name of the organization"
+  default     = "homelab"
+}
+
 data "kubernetes_secret_v1" "zitadel_iam_admin" {
   metadata {
     name      = "iam-admin"
@@ -52,19 +58,26 @@ provider "zitadel" {
 
 # --- RESOURCES ---
 
+# Create the organization with a fixed custom ID
+resource "zitadel_organization" "org" {
+  name   = var.org_name
+  org_id = var.org_id
+}
 
 # Create project within the organization
 resource "zitadel_project" "project" {
   name   = var.app_name
-  org_id = var.org_id
+  org_id = zitadel_organization.org.id
 
   project_role_assertion = true
   has_project_check      = true
+
+  depends_on = [zitadel_organization.org]
 }
 
 resource "zitadel_application_oidc" "app" {
   project_id = zitadel_project.project.id
-  org_id     = var.org_id
+  org_id     = zitadel_organization.org.id
 
   # Use the variable name
   name = var.app_name
