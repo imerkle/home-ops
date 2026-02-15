@@ -23,7 +23,7 @@ spec:
               set -e
 
               # Install required packages
-              pip install --no-cache-dir requests pyjwt cryptography
+              pip install --no-cache-dir requests zitadel-client
 
               echo "Waiting for Zitadel to be ready..."
               python3 -c "
@@ -44,66 +44,34 @@ spec:
 
               # Run the bootstrap script
               python3 << 'PYTHON_SCRIPT'
-              import json
-              import time
               import requests
-              import jwt
-              from datetime import datetime, timedelta
+              import zitadel_client as zitadel
 
               # Configuration
               ZITADEL_DOMAIN = "zitadel.x3y.space"
               ORG_ID = "360051918820605983"
               ORG_NAME = "home"
-
-              # Load the service account key
-              with open('/var/run/secrets/zitadel/iam-admin.json', 'r') as f:
-                  sa_key = json.load(f)
+              KEY_PATH = "/var/run/secrets/zitadel/iam-admin.json"
 
               print("Authenticating with Zitadel using service account...")
 
-              # Create JWT assertion
-              now = datetime.utcnow()
-              claims = {
-                  "iss": sa_key["userId"],
-                  "sub": sa_key["userId"],
-                  "aud": f"https://{ZITADEL_DOMAIN}",
-                  "iat": int(now.timestamp()),
-                  "exp": int((now + timedelta(hours=1)).timestamp())
-              }
-
-              # Sign the JWT with the private key
-              assertion = jwt.encode(
-                  claims,
-                  sa_key["key"],
-                  algorithm="RS256",
-                  headers={"kid": sa_key["keyId"]}
-              )
-
-              # Get access token
-              token_data = {
-                  "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
-                  "scope": "openid profile email urn:zitadel:iam:org:project:id:zitadel:aud",
-                  "assertion": assertion
-              }
-
-              token_resp = requests.post(
-                  f"https://{ZITADEL_DOMAIN}/oauth/v2/token",
-                  data=token_data,
-                  headers={"Content-Type": "application/x-www-form-urlencoded"}
-              )
-
-              if token_resp.status_code != 200:
-                  print(f"Failed to authenticate: {token_resp.status_code}")
-                  print(f"Response: {token_resp.text}")
+              # Use the Zitadel SDK which handles JWT signing internally
+              try:
+                  client = zitadel.Zitadel.with_private_key(
+                      f"https://{ZITADEL_DOMAIN}",
+                      KEY_PATH
+                  )
+                  # Get access token from the SDK's auth
+                  token = client._auth.get_access_token()
+                  print("Successfully authenticated!")
+              except Exception as e:
+                  print(f"Failed to authenticate: {e}")
                   exit(1)
-
-              access_token = token_resp.json()["access_token"]
-              print("Successfully authenticated!")
 
               # Check if org exists
               print(f"Checking if org {ORG_ID} exists...")
               headers = {
-                  "Authorization": f"Bearer {access_token}",
+                  "Authorization": f"Bearer {token}",
                   "Accept": "application/json"
               }
 
