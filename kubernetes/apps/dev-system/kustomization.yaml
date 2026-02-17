@@ -17,3 +17,4 @@ resources:
   - ./litellm/ks.yaml
   - ./mcp/context7/ks.yaml
   - ./mcp/cliproxyapi/ks.yaml
+  - ./headlamp/ks.yaml

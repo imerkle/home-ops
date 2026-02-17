@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2beta2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: headlamp
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: headlamp
+      version: "0.29.0"
+      sourceRef:
+        kind: HelmRepository
+        name: headlamp
+        namespace: dev-system
+      interval: 1h
+  values:
+    ingress:
+      enabled: false  # Using Gateway API via HTTPRoute separately if needed, or stick to Ingress?
+      # Wait, chatmock uses `route` (Gateway API). Headlamp chart uses `ingress`.
+      # If I want to use Gateway API, I should disable Ingress in chart and create HTTPRoute manually
+      # or via `app-template` wrapper?
+      # But Headlamp chart is standalone.
+      # The user uses Gateway API (Envoy Gateway) for `chatmock` via `app-template`.
+      # But Headlamp chart doesn't support Gateway API natively yet maybe?
+      # I can create a separate `httproute.yaml` manifest.
+    service:
+      type: ClusterIP
+      port: 80
+
+    # Headlamp specific config
+    config:
+      baseURL: ""
+
+    # Permissions
+    clusterRoleBinding:
+      create: true
+    serviceAccount:
+      create: true
+      name: headlamp
