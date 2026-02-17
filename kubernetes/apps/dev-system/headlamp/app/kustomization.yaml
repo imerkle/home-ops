@@ -8,3 +8,4 @@ resources:
   - ./repo.yaml
   - ./httproute.yaml
   - ./netpol.yaml
+  - ./tofu.yaml
