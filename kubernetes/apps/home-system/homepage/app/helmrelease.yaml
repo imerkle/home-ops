@@ -88,6 +88,8 @@ spec:
                 disk: /
           docker.yaml: |
             ---
+          proxmox.yaml: |
+            ---
           bookmarks.yaml: |
             - Developer:
                 - Github:
