@@ -32,11 +32,6 @@ spec:
     # Headlamp specific config
     config:
       baseURL: ""
-      oidc:
-        clientID: ""
-        clientSecret: ""
-        issuerURL: ""
-        scopes: ""
 
     # Inject OIDC config via env
     extraEnv:
