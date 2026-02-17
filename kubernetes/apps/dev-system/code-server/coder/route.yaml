@@ -2,6 +2,12 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: coder-route
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: Code Server
+    gethomepage.dev/description: VS Code in Browser
+    gethomepage.dev/group: Development
+    gethomepage.dev/icon: code-server.png
 spec:
   hostnames:
   - "coder.${DOMAIN1}"

@@ -2,6 +2,12 @@ apiVersion: gateway.networking.k8s.io/v1alpha2
 kind: TLSRoute
 metadata:
   name: unifi-route
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: Unifi
+    gethomepage.dev/description: Network Controller
+    gethomepage.dev/group: System
+    gethomepage.dev/icon: unifi.png
 spec:
   hostnames:
   - "unifi.${DOMAIN1}"
