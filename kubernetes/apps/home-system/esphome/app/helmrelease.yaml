@@ -64,6 +64,11 @@ spec:
         annotations:
           gatus.home-operations.com/endpoint: |-
             conditions: ["[STATUS] == 200"]
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: ESPHome
+          gethomepage.dev/description: Home Automation
+          gethomepage.dev/group: Home Automation
+          gethomepage.dev/icon: esphome.png
         hostnames:
           - "{{ .Release.Name }}.${DOMAIN1}"
         parentRefs:

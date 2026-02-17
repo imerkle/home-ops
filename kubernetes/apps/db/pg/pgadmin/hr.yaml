@@ -43,6 +43,12 @@ spec:
             port: 80
     route:
       app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: PgAdmin
+          gethomepage.dev/description: PostgreSQL Admin
+          gethomepage.dev/group: Database
+          gethomepage.dev/icon: pgadmin.png
         hostnames:
           - "{{ .Release.Name }}.${DOMAIN1}"
         parentRefs:

@@ -84,6 +84,12 @@ spec:
             namespace: network
         hostnames:
           - "chatmock.${DOMAIN1}"
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: ChatMock
+          gethomepage.dev/description: Chat Mock API
+          gethomepage.dev/group: Development
+          gethomepage.dev/icon: python.png
         rules:
           - backendRefs:
               - port: 8000

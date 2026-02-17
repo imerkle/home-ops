@@ -17,8 +17,14 @@ spec:
       enabled: true
     route:
       dashboard:
-        host:
-          name: ceph.${DOMAIN1}
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: Ceph
+          gethomepage.dev/description: Storage Dashboard
+          gethomepage.dev/group: Storage
+          gethomepage.dev/icon: ceph.png
+        hostnames:
+          - ceph.${DOMAIN1}
           path: /
           pathType: PathPrefix
         parentRefs:

@@ -63,6 +63,11 @@ spec:
         annotations:
           gatus.home-operations.com/endpoint: |-
             conditions: ["[STATUS] == 404"]
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: Kromgo
+          gethomepage.dev/description: Metrics Visualizer
+          gethomepage.dev/group: Observability
+          gethomepage.dev/icon: prometheus.png
         hostnames:
           - "{{ .Release.Name }}.${DOMAIN1}"
         parentRefs:

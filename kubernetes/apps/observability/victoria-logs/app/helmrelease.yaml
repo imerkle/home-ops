@@ -19,6 +19,12 @@ spec:
       retentionPeriod: 14d
       route:
         enabled: true
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: Victoria Logs
+          gethomepage.dev/description: Log Management
+          gethomepage.dev/group: Observability
+          gethomepage.dev/icon: victoria-logs.png
         hostnames:
           - victoria-logs.${DOMAIN1}
         parentRefs:

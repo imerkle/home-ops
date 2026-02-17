@@ -73,6 +73,11 @@ spec:
         annotations:
           gatus.home-operations.com/endpoint: |
             name: "{{ .Release.Name }}"
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: Syncthing
+          gethomepage.dev/description: File Synchronization
+          gethomepage.dev/group: Storage
+          gethomepage.dev/icon: syncthing.png
         hostnames:
           - "{{ .Release.Name }}.${DOMAIN1}"
         parentRefs:

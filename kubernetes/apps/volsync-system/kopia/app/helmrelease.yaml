@@ -75,6 +75,12 @@ spec:
             port: *port
     route:
       app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: Kopia
+          gethomepage.dev/description: Backup
+          gethomepage.dev/group: Storage
+          gethomepage.dev/icon: kopia.png
         hostnames:
           - "{{ .Release.Name }}.${DOMAIN1}"
         parentRefs:
