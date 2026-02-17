@@ -6,4 +6,4 @@ resources:
   - ./hr.yaml
   - ./netpol.yaml
   - ./route.yaml
-  - ./loginclient.sops.yaml
+  # - ./loginclient.sops.yaml
