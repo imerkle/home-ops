@@ -58,22 +58,36 @@ provider "zitadel" {
 
 # --- RESOURCES ---
 
-# Import the existing organization to manage it with Terraform
-import {
-  to = zitadel_organization.org
-  id = var.org_id
+# Check if the organization already exists
+data "zitadel_orgs" "existing" {
+  name        = var.org_name
+  name_method = "TEXT_QUERY_METHOD_EQUALS"
 }
 
-# Create the organization with a fixed custom ID
+locals {
+  # If we found an org, use its ID. Otherwise null.
+  existing_org_id = length(data.zitadel_orgs.existing.ids) > 0 ? data.zitadel_orgs.existing.ids[0] : null
+  # Only create the org if we didn't find it
+  create_org      = local.existing_org_id == null
+}
+
+# Create the organization ONLY if it doesn't exist
 resource "zitadel_organization" "org" {
-  name   = var.org_name
-  org_id = var.org_id
+  count = local.create_org ? 1 : 0
+  name  = var.org_name
+  # We let Zitadel generate the ID if creating new, or use var.org_id if strictly needed
+  # but user said "org id created with doesn't matter".
+}
+
+locals {
+  # The final org_id to use for downstream resources
+  org_id = local.create_org ? zitadel_organization.org[0].id : local.existing_org_id
 }
 
 # Create project within the organization
 resource "zitadel_project" "project" {
   name   = var.app_name
-  org_id = zitadel_organization.org.id
+  org_id = local.org_id
 
   project_role_assertion = true
   has_project_check      = true
@@ -83,7 +97,7 @@ resource "zitadel_project" "project" {
 
 resource "zitadel_application_oidc" "app" {
   project_id = zitadel_project.project.id
-  org_id     = zitadel_organization.org.id
+  org_id     = local.org_id
 
   # Use the variable name
   name = var.app_name
