@@ -86,6 +86,8 @@ spec:
                 cpu: true
                 memory: true
                 disk: /
+          docker.yaml: |
+            ---
           bookmarks.yaml: |
             - Developer:
                 - Github:
