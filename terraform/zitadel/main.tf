@@ -58,6 +58,12 @@ provider "zitadel" {
 
 # --- RESOURCES ---
 
+# Import the existing organization to manage it with Terraform
+import {
+  to = zitadel_organization.org
+  id = var.org_id
+}
+
 # Create the organization with a fixed custom ID
 resource "zitadel_organization" "org" {
   name   = var.org_name
