@@ -90,6 +90,10 @@ spec:
             ---
           proxmox.yaml: |
             ---
+          custom.css: |
+            /**/
+          custom.js: |
+            /**/
           bookmarks.yaml: |
             - Developer:
                 - Github:
