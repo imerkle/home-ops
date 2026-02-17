@@ -34,7 +34,7 @@ spec:
       baseURL: ""
 
     # Inject OIDC config via env
-    extraEnv:
+    env:
       - name: HEADLAMP_OIDC_CLIENT_ID
         valueFrom:
           secretKeyRef:
