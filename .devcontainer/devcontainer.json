@@ -1,0 +1,19 @@
+{
+  "name": "home-ops",
+  "image": "mcr.microsoft.com/devcontainers/base:debian",
+  "features": {
+    "ghcr.io/devcontainers/features/kubectl:1": {},
+    "ghcr.io/devcontainers/features/helm:1": {},
+    "ghcr.io/devcontainers/features/sshd:1": {}
+  },
+  "postCreateCommand": "curl -s https://fluxcd.io/install.sh | sudo bash",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "redhat.vscode-yaml",
+        "tamasfe.even-better-toml"
+      ]
+    }
+  }
+}
