@@ -30,6 +30,17 @@ spec:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: {drop: ["ALL"]}
+            lifecycle:
+              postStart:
+                exec:
+                  command:
+                    - /bin/bash
+                    - -c
+                    - |
+                      if [ ! -d "/config/custom_components/hacs" ]; then
+                        echo "Installing HACS..."
+                        wget -O - https://get.hacs.xyz | bash -
+                      fi
             resources:
               requests:
                 cpu: 10m
