@@ -42,9 +42,7 @@ spec:
                 memory: 50Mi
               limits:
                 memory: 500Mi
-      blocky-ui:
-        containers:
-          app:
+          ui:
             image:
               repository: ghcr.io/gabeduartem/blocky-ui
               tag: latest
