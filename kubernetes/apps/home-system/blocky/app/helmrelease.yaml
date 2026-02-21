@@ -86,7 +86,7 @@ spec:
             namespace: network
         rules:
           - backendRefs:
-              - name: blocky-app
+              - name: blocky
                 port: 3000
     persistence:
       config:
