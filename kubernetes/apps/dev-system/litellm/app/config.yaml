@@ -75,3 +75,6 @@ model_list:
       model: openai/codex-mini
       api_base: http://chatmock:8000/v1
       api_key: sk-1234567890
+
+litellm_settings:
+  check_provider_endpoint: true
