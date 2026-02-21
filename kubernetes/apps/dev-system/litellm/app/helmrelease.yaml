@@ -14,6 +14,17 @@ spec:
       litellm:
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: "16.4"
+            env:
+              INIT_POSTGRES_DBNAME: "litellm"
+              INIT_POSTGRES_HOST: "vault:secret/data/pg_default#HOST"
+              INIT_POSTGRES_USER: "vault:secret/data/pg_default#USER"
+              INIT_POSTGRES_PASS: "vault:secret/data/pg_default#PASSWORD"
+              INIT_POSTGRES_SUPER_PASS: "vault:secret/data/pg_default#PASSWORD"
         containers:
           app:
             image:
@@ -28,6 +39,7 @@ spec:
               LITELLM_MASTER_KEY: "vault:secret/data/ai#LITELLM_MASTER_KEY"
               LITELLM_SALT_KEY: "vault:secret/data/ai#LITELLM_SALT_KEY"
               GOOGLE_API_KEY: "vault:secret/data/ai#google"
+              DATABASE_URL: "postgresql://$${vault:secret/data/pg_default#USER}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/litellm"
             # probes:
             #   liveness:
             #     enabled: true
