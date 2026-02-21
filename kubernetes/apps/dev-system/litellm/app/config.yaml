@@ -3,6 +3,7 @@ model_list:
     litellm_params:
       model: "openai/*"
       api_key: your-api-key-here
+      custom_llm_provider: "openai"
       api_base: http://cliproxyapi:8317/v1
   # Google
   - model_name: Gemini-Flash
