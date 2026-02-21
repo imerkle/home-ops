@@ -60,15 +60,8 @@ spec:
         ports:
           http:
             port: 4000
-          dns-tcp:
-            port: 53
-            protocol: TCP
-          dns-udp:
-            port: 53
-            protocol: UDP
           ui:
             port: 3000
-    # Cilium static IP for DNS
     service-dns:
       type: LoadBalancer
       controller: blocky
