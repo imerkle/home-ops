@@ -1,7 +1,7 @@
 model_list:
-  - model_name: "antigravity/*"             # all requests where model not in your config go to this deployment
+  - model_name: "antigravity/*"
     litellm_params:
-      model: antigravity/*           # set `openai/` to use the openai route
+      model: "openai/*"
       api_key: your-api-key-here
       api_base: http://cliproxyapi:8317/v1
   # Google
