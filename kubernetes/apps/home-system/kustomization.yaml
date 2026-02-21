@@ -27,3 +27,4 @@ resources:
   - ./copyparty/ks.yaml
   - ./filebrowser/ks.yaml
   - ./oidc/ks.yaml
+  - ./blocky/ks.yaml
