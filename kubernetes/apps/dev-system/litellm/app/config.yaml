@@ -1,4 +1,8 @@
 model_list:
+  - model_name: "*"             # all requests where model not in your config go to this deployment
+    litellm_params:
+      model: antigravity/*           # set `openai/` to use the openai route
+      api_key: your-api-key-here
   # Google
   - model_name: Gemini-Flash
     litellm_params:

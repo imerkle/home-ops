@@ -55,19 +55,16 @@ spec:
               limits:
                 memory: 256Mi
     service:
-      app:
+      main:
         controller: blocky
+        type: LoadBalancer
+        annotations:
+          io.cilium/lb-ipam-ips: 10.0.0.20
         ports:
           http:
             port: 4000
           ui:
             port: 3000
-      dns:
-        type: LoadBalancer
-        controller: blocky
-        annotations:
-          io.cilium/lb-ipam-ips: 10.0.0.20
-        ports:
           dns-tcp:
             port: 53
             protocol: TCP
