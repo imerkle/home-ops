@@ -27,14 +27,14 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /healthz
+                    path: /metrics
                     port: 4000
               readiness:
                 enabled: true
                 custom: true
                 spec:
                   httpGet:
-                    path: /healthz
+                    path: /metrics
                     port: 4000
             resources:
               requests:
@@ -110,10 +110,11 @@ spec:
         enabled: true
         data:
           config.yml: |
-            upstream:
-              default:
-                - 1.1.1.1
-                - 8.8.8.8
+            upstreams:
+              groups:
+                default:
+                  - 1.1.1.1
+                  - 8.8.8.8
             blocking:
               denylists:
                 ads:
@@ -124,8 +125,10 @@ spec:
             prometheus:
               enable: true
               path: /metrics
-            httpPort: 4000
-            logLevel: info
+            ports:
+              http: 4000
+            log:
+              level: info
     serviceMonitor:
       app:
         serviceName: app
