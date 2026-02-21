@@ -1,5 +1,5 @@
 model_list:
-  - model_name: "antigravity/*"
+  - model_name: "*"
     litellm_params:
       model: "openai/*"
       api_key: your-api-key-here
