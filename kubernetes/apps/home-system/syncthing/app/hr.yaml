@@ -115,11 +115,13 @@ spec:
             app:
               - path: /config
                 subPath: config
-              - path: /data
-                subPath: data
             01-set-config:
               - path: /config
                 subPath: config
+      data:
+        existingClaim: syncthing-data
+        globalMounts:
+          - path: /data
       # external-sync:
       #   type: custom
       #   volumeSpec:
