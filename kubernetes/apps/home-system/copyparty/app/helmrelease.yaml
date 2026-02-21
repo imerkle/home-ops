@@ -34,6 +34,9 @@ spec:
         existingClaim: "{{ .Release.Name }}"
         globalMounts:
           - path: /cfg
+      data:
+        existingClaim: copyparty-data
+        globalMounts:
           - path: /w
     route:
       app:

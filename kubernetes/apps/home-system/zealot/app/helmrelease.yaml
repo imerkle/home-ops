@@ -48,5 +48,7 @@ spec:
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
+      uploads:
+        existingClaim: zealot-uploads
         globalMounts:
           - path: /app/public/uploads

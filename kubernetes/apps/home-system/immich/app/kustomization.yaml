@@ -6,3 +6,4 @@ resources:
   - ./repo.yaml
   - ./helmrelease.yaml
   - ./netpol.yaml
+  - ./pvc-library.yaml

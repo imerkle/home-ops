@@ -66,8 +66,10 @@ spec:
         globalMounts:
           - path: /config
             subPath: config
+      media:
+        existingClaim: frigate-media
+        globalMounts:
           - path: /media
-            subPath: media
       config-file:
         type: configMap
         name: frigate-configmap

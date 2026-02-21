@@ -31,6 +31,9 @@ spec:
       media:
         storage:
           size: 5Gi
+          className: ceph-filesystem
+          accessModes:
+            - ReadWriteMany
         maxUploadSize: 100M
       additional:
         1-base-config:

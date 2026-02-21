@@ -25,4 +25,5 @@ resources:
   - ./immich/ks.yaml
   - ./matrix/ks.yaml
   - ./copyparty/ks.yaml
+  - ./filebrowser/ks.yaml
   - ./oidc/ks.yaml

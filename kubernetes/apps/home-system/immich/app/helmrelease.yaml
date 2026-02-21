@@ -18,7 +18,7 @@ spec:
     immich:
       persistence:
         library:
-          existingClaim: "{{ .Release.Name }}"
+          existingClaim: immich-library
     env:
       REDIS_HOSTNAME: redis.db.svc.cluster.local
       REDIS_PASSWORD: "${REDIS_PASSWORD}"

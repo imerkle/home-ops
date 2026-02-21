@@ -1,0 +1,78 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: filebrowser
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  interval: 1h
+  values:
+    controllers:
+      filebrowser:
+        containers:
+          app:
+            image:
+              repository: filebrowser/filebrowser
+              tag: v2.32.0
+            env:
+              FB_PORT: &port 80
+              FB_DATABASE: /config/filebrowser.db
+              FB_ROOT: /data
+              FB_LOG: stdout
+              FB_NOAUTH: "false"
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+            resources:
+              requests:
+                cpu: 10m
+                memory: 50Mi
+              limits:
+                memory: 500Mi
+    service:
+      app:
+        controller: filebrowser
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: Filebrowser
+          gethomepage.dev/description: File Manager
+          gethomepage.dev/group: Utility
+          gethomepage.dev/icon: filebrowser.png
+        hostnames:
+          - "files.${DOMAIN1}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      config:
+        existingClaim: "{{ .Release.Name }}"
+      data:
+        existingClaim: syncthing-data
+        globalMounts:
+          - path: /data
+      immich:
+        existingClaim: immich-library
+        globalMounts:
+          - path: /immich
+      frigate:
+        existingClaim: frigate-media
+        globalMounts:
+          - path: /frigate
+      copyparty:
+        existingClaim: copyparty-data
+        globalMounts:
+          - path: /copyparty
+      zealot:
+        existingClaim: zealot-uploads
+        globalMounts:
+          - path: /zealot
