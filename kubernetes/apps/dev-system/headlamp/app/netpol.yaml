@@ -24,6 +24,14 @@ spec:
     - toEntities:
         - kube-apiserver
     # Allow egress to ingress/gateway proxy for zitadel OIDC routing
+    - toCIDR:
+        - "10.0.0.0/8"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "80"
+              protocol: TCP
     - toEntities:
         - world
         - host
