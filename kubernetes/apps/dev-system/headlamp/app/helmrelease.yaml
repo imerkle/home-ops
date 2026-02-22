@@ -33,7 +33,7 @@ spec:
     config:
       baseURL: ""
       oidc:
-        clientID: "${client_id}"
+        clientID: '"${client_id}"'
         clientSecret: "${client_secret}"
         issuerURL: "https://zitadel.${DOMAIN1}"
         scopes: "openid profile email"
