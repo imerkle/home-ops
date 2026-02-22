@@ -4,3 +4,4 @@ resources:
   - helmrelease.yaml
   - secret-ssh.yaml
   - secrets.yaml
+  - tofu.yaml

@@ -1,0 +1,24 @@
+---
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: forejo-zitadel-oidc
+spec:
+  interval: 1h
+  approvePlan: auto
+  path: ./terraform/zitadel
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  vars:
+    - name: app_name
+      value: "forejo-oidc"
+    - name: redirect_uris
+      value:
+        - "https://git.x3y.space/user/oauth2/ok8sh/callback"
+  writeOutputsToSecret:
+    name: forgejo-oidc-creds
+    outputs:
+      - client_id
+      - client_secret

@@ -16,6 +16,8 @@ spec:
   dependsOn:
     - name: dev-system-code-server
   postBuild:
+    substitute:
+      DOMAIN1: x3y.space
     substituteFrom:
-      - kind: ConfigMap
+      - kind: Secret
         name: flux-vars
