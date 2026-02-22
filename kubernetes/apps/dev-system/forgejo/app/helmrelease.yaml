@@ -34,16 +34,6 @@ spec:
               runAsUser: 1000
               runAsGroup: 1000
             env:
-              OIDC_CLIENT_ID:
-                valueFrom:
-                  secretKeyRef:
-                    name: forgejo-oidc-creds
-                    key: client_id
-              OIDC_CLIENT_SECRET:
-                valueFrom:
-                  secretKeyRef:
-                    name: forgejo-oidc-creds
-                    key: client_secret
               # Need the DB config so forgejo CLI can connect
               FORGEJO__database__DB_TYPE: postgres
               FORGEJO__database__HOST: "vault:secret/data/pg_default#HOST"
@@ -56,24 +46,26 @@ spec:
               - /bin/bash
               - -c
               - |
-                echo "Configuring Forgejo OIDC (client_id=${OIDC_CLIENT_ID})..."
+                echo "Configuring Forgejo OIDC..."
+                CLIENT_ID="${client_id}"
+                CLIENT_SECRET="${client_secret}"
                 if forgejo admin auth list | grep -q "Ok8Sh"; then
                   ID=$(forgejo admin auth list | grep "Ok8Sh" | awk '{print $1}')
                   forgejo admin auth update-oauth --id "$ID" --name Ok8Sh \
                     --provider openidConnect \
-                    --key "$OIDC_CLIENT_ID" \
-                    --secret "$OIDC_CLIENT_SECRET" \
+                    --key "$CLIENT_ID" \
+                    --secret "$CLIENT_SECRET" \
                     --auto-discover-url "https://zitadel.${DOMAIN1}/.well-known/openid-configuration" \
                     --scopes "openid email profile groups"
                 else
                   forgejo admin auth add-oauth --name Ok8Sh \
                     --provider openidConnect \
-                    --key "$OIDC_CLIENT_ID" \
-                    --secret "$OIDC_CLIENT_SECRET" \
+                    --key "$CLIENT_ID" \
+                    --secret "$CLIENT_SECRET" \
                     --auto-discover-url "https://zitadel.${DOMAIN1}/.well-known/openid-configuration" \
                     --scopes "openid email profile groups"
                 fi
-                echo "OIDC init done."
+                echo "OIDC init done (client_id=${client_id})."
         containers:
           app:
             image:
