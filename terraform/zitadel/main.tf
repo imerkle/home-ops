@@ -90,7 +90,7 @@ resource "zitadel_project" "project" {
   org_id = local.org_id
 
   project_role_assertion = true
-  has_project_check      = true
+  has_project_check      = false
 
   depends_on = [zitadel_organization.org]
 }
