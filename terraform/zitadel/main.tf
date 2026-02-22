@@ -41,6 +41,12 @@ variable "org_name" {
   default     = "homelab"
 }
 
+variable "project_name" {
+  type        = string
+  description = "The name of the project"
+  default     = "homelab"
+}
+
 data "kubernetes_secret_v1" "zitadel_iam_admin" {
   metadata {
     name      = "iam-admin"
@@ -84,9 +90,22 @@ locals {
   org_id = local.create_org ? zitadel_organization.org[0].id : local.existing_org_id
 }
 
+# Check if the project already exists
+data "zitadel_projects" "existing" {
+  name        = var.project_name
+  org_id      = local.org_id
+  name_method = "TEXT_QUERY_METHOD_EQUALS"
+}
+
+locals {
+  existing_project_id = length(data.zitadel_projects.existing.project_ids) > 0 ? data.zitadel_projects.existing.project_ids[0] : null
+  create_project      = local.existing_project_id == null
+}
+
 # Create project within the organization
 resource "zitadel_project" "project" {
-  name   = var.app_name
+  count  = local.create_project ? 1 : 0
+  name   = var.project_name
   org_id = local.org_id
 
   project_role_assertion = true
@@ -95,8 +114,12 @@ resource "zitadel_project" "project" {
   depends_on = [zitadel_organization.org]
 }
 
+locals {
+  project_id = local.create_project ? zitadel_project.project[0].id : local.existing_project_id
+}
+
 resource "zitadel_application_oidc" "app" {
-  project_id = zitadel_project.project.id
+  project_id = local.project_id
   org_id     = local.org_id
 
   # Use the variable name
