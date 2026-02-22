@@ -14,6 +14,7 @@ spec:
       forgejo:
         annotations:
           reloader.stakater.com/auto: "true"
+          vault.security.banzaicloud.io/vault-role: "default"
         initContainers:
           init-db:
             image:
@@ -21,18 +22,10 @@ spec:
               tag: 16.4
             env:
               INIT_POSTGRES_DBNAME: forgejo
-              INIT_POSTGRES_HOST: "${POSTGRES_HOST}"
-              INIT_POSTGRES_USER: "${POSTGRES_USER}"
-              INIT_POSTGRES_PASS:
-                valueFrom:
-                  secretKeyRef:
-                    name: forgejo-db-secret
-                    key: password
-              INIT_POSTGRES_SUPER_PASS:
-                valueFrom:
-                  secretKeyRef:
-                    name: forgejo-db-secret
-                    key: password
+              INIT_POSTGRES_HOST: "vault:secret/data/pg_default#HOST"
+              INIT_POSTGRES_USER: "vault:secret/data/pg_default#USER"
+              INIT_POSTGRES_PASS: "vault:secret/data/pg_default#PASSWORD"
+              INIT_POSTGRES_SUPER_PASS: "vault:secret/data/pg_default#PASSWORD"
         containers:
           app:
             image:
@@ -40,14 +33,10 @@ spec:
               tag: 9.0.3
             env:
               FORGEJO__database__DB_TYPE: postgres
-              FORGEJO__database__HOST: "${POSTGRES_HOST}"
+              FORGEJO__database__HOST: "vault:secret/data/pg_default#HOST"
               FORGEJO__database__NAME: forgejo
-              FORGEJO__database__USER: "${POSTGRES_USER}"
-              FORGEJO__database__PASSWD:
-                valueFrom:
-                  secretKeyRef:
-                    name: forgejo-db-secret
-                    key: password
+              FORGEJO__database__USER: "vault:secret/data/pg_default#USER"
+              FORGEJO__database__PASSWD: "vault:secret/data/pg_default#PASSWORD"
               FORGEJO__server__DOMAIN: "git.${DOMAIN1}"
               FORGEJO__server__ROOT_URL: "https://git.${DOMAIN1}/"
               FORGEJO__server__SSH_DOMAIN: "ssh.git.${DOMAIN1}"
