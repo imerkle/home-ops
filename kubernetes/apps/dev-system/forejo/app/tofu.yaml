@@ -16,7 +16,7 @@ spec:
       value: "forejo-oidc"
     - name: redirect_uris
       value:
-        - "https://git.x3y.space/user/oauth2/ok8sh/callback"
+        - "https://forejo.x3y.space/user/oauth2/ok8sh/callback"
   writeOutputsToSecret:
     name: forgejo-oidc-creds
     outputs:

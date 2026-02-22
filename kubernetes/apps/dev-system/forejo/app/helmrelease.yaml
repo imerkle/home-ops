@@ -37,9 +37,10 @@ spec:
               FORGEJO__database__NAME: forgejo
               FORGEJO__database__USER: "vault:secret/data/pg_default#USER"
               FORGEJO__database__PASSWD: "vault:secret/data/pg_default#PASSWORD"
-              FORGEJO__server__DOMAIN: "git.${DOMAIN1}"
-              FORGEJO__server__ROOT_URL: "https://git.${DOMAIN1}/"
-              FORGEJO__server__SSH_DOMAIN: "ssh.git.${DOMAIN1}"
+              FORGEJO__security__INSTALL_LOCK: "true"
+              FORGEJO__server__DOMAIN: "forejo.${DOMAIN1}"
+              FORGEJO__server__ROOT_URL: "https://forejo.${DOMAIN1}/"
+              FORGEJO__server__SSH_DOMAIN: "ssh.forejo.${DOMAIN1}"
               FORGEJO__server__SSH_PORT: "22"
               FORGEJO__server__SSH_LISTEN_PORT: "2222"
               # OIDC
@@ -76,7 +77,7 @@ spec:
           - name: envoy-internal
             namespace: network
         hostnames:
-          - "git.${DOMAIN1}"
+          - "forejo.${DOMAIN1}"
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/name: Forejo
