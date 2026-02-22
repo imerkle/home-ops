@@ -14,7 +14,7 @@ spec:
     name: flux-system
   wait: true
   dependsOn:
-    - name: dev-system-code-server
+    - name: coder
   postBuild:
     substitute:
       DOMAIN1: x3y.space
