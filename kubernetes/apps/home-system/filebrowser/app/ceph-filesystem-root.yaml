@@ -10,11 +10,13 @@ spec:
     storage: 1Pi
   csi:
     driver: rook-ceph.cephfs.csi.ceph.com
-    volumeHandle: ceph-filesystem-root
+    volumeHandle: rook-ceph-ceph-filesystem-root
     volumeAttributes:
       clusterID: rook-ceph
       fsName: ceph-filesystem
+      staticVolume: "true"
       rootPath: /
+      monitors: "10.0.0.99:3300"
     nodeStageSecretRef:
       name: rook-csi-cephfs-node
       namespace: rook-ceph
