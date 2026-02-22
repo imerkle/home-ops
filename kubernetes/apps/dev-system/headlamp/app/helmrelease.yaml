@@ -32,15 +32,11 @@ spec:
     # Headlamp specific config
     env:
       - name: OIDC_CLIENT_ID
-        valueFrom:
-          secretKeyRef:
-            name: headlamp-oidc-creds
-            key: client_id
+        value: >-
+          ${client_id}
       - name: OIDC_CLIENT_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: headlamp-oidc-creds
-            key: client_secret
+        value: >-
+          ${client_secret}
       - name: OIDC_ISSUER_URL
         value: "https://zitadel.${DOMAIN1}"
       - name: OIDC_SCOPES
