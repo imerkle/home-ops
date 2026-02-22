@@ -26,6 +26,54 @@ spec:
               INIT_POSTGRES_USER: "vault:secret/data/pg_default#USER"
               INIT_POSTGRES_PASS: "vault:secret/data/pg_default#PASSWORD"
               INIT_POSTGRES_SUPER_PASS: "vault:secret/data/pg_default#PASSWORD"
+          init-oidc:
+            image:
+              repository: codeberg.org/forgejo/forgejo
+              tag: 9.0.3
+            securityContext:
+              runAsUser: 1000
+              runAsGroup: 1000
+            env:
+              OIDC_CLIENT_ID:
+                valueFrom:
+                  secretKeyRef:
+                    name: forgejo-oidc-creds
+                    key: client_id
+              OIDC_CLIENT_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: forgejo-oidc-creds
+                    key: client_secret
+              # Need the DB config so forgejo CLI can connect
+              FORGEJO__database__DB_TYPE: postgres
+              FORGEJO__database__HOST: "vault:secret/data/pg_default#HOST"
+              FORGEJO__database__NAME: forgejo
+              FORGEJO__database__USER: "vault:secret/data/pg_default#USER"
+              FORGEJO__database__PASSWD: "vault:secret/data/pg_default#PASSWORD"
+              FORGEJO__security__INSTALL_LOCK: "true"
+              FORGEJO__server__OFFLINE_MODE: "true"
+            command:
+              - /bin/bash
+              - -c
+              - |
+                echo "Configuring Forgejo OIDC (client_id=${OIDC_CLIENT_ID})..."
+                if forgejo admin auth list | grep -q "Ok8Sh"; then
+                  ID=$(forgejo admin auth list | grep "Ok8Sh" | awk '{print $1}')
+                  forgejo admin auth update-oauth --id "$ID" --name Ok8Sh \
+                    --provider openidConnect \
+                    --key "$OIDC_CLIENT_ID" \
+                    --secret "$OIDC_CLIENT_SECRET" \
+                    --auto-discover-url "https://zitadel.${DOMAIN1}/.well-known/openid-configuration" \
+                    --scopes "openid email profile groups"
+                else
+                  forgejo admin auth add-oauth --name Ok8Sh \
+                    --provider openidConnect \
+                    --key "$OIDC_CLIENT_ID" \
+                    --secret "$OIDC_CLIENT_SECRET" \
+                    --auto-discover-url "https://zitadel.${DOMAIN1}/.well-known/openid-configuration" \
+                    --scopes "openid email profile groups"
+                fi
+                echo "OIDC init done."
         containers:
           app:
             image:
@@ -60,49 +108,7 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 512Mi
-          oidc-setup:
-            image:
-              repository: codeberg.org/forgejo/forgejo
-              tag: 9.0.3
-            env:
-              OIDC_CLIENT_ID:
-                valueFrom:
-                  secretKeyRef:
-                    name: forgejo-oidc-creds
-                    key: client_id
-              OIDC_CLIENT_SECRET:
-                valueFrom:
-                  secretKeyRef:
-                    name: forgejo-oidc-creds
-                    key: client_secret
-            securityContext:
-              runAsUser: 1000
-              runAsGroup: 1000
-            command:
-              - /bin/bash
-              - -c
-              - |
-                echo "Waiting for Forgejo..."
-                until wget -qO- http://localhost:3000/api/healthz 2>/dev/null | grep -q '"status"'; do sleep 5; done
-                sleep 5
-                if forgejo admin auth list | grep -q "Ok8Sh"; then
-                  ID=$(forgejo admin auth list | grep "Ok8Sh" | awk '{print $1}')
-                  forgejo admin auth update-oauth --id "$ID" --name Ok8Sh \
-                    --provider openidConnect \
-                    --key "$OIDC_CLIENT_ID" \
-                    --secret "$OIDC_CLIENT_SECRET" \
-                    --auto-discover-url "https://zitadel.${DOMAIN1}/.well-known/openid-configuration" \
-                    --scopes "openid email profile groups"
-                else
-                  forgejo admin auth add-oauth --name Ok8Sh \
-                    --provider openidConnect \
-                    --key "$OIDC_CLIENT_ID" \
-                    --secret "$OIDC_CLIENT_SECRET" \
-                    --auto-discover-url "https://zitadel.${DOMAIN1}/.well-known/openid-configuration" \
-                    --scopes "openid email profile groups"
-                fi
-                echo "OIDC setup done. Sleeping..."
-                sleep infinity
+
     service:
       app:
         controller: forgejo
