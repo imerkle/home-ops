@@ -4,4 +4,3 @@ resources:
   - helmrelease.yaml
   - secret-ssh.yaml
   - tofu.yaml
-  - pvc.yaml
