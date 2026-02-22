@@ -101,6 +101,6 @@ spec:
                 name: forgejo
     persistence:
       data:
-        existingClaim: forgejo-data
+        existingClaim: ${APP}
         globalMounts:
           - path: /data
