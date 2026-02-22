@@ -44,18 +44,29 @@ spec:
               FORGEJO__server__SSH_PORT: "22"
               FORGEJO__server__SSH_LISTEN_PORT: "2222"
               # OIDC
-              FORGEJO__auth__OIDC_SIGN_IN_TEXT: "Sign In with Ok8Sh"
-              FORGEJO__auth__OIDC_ISSUER_URL: "${OAUTH2_ISSUER}"
-              FORGEJO__auth__OIDC_CLIENT_ID:
+              OIDC_CLIENT_ID:
                 valueFrom:
                   secretKeyRef:
                     name: forgejo-oidc-creds
                     key: client_id
-              FORGEJO__auth__OIDC_CLIENT_SECRET:
+              OIDC_CLIENT_SECRET:
                 valueFrom:
                   secretKeyRef:
                     name: forgejo-oidc-creds
                     key: client_secret
+            lifecycle:
+              postStart:
+                exec:
+                  command:
+                    - /bin/bash
+                    - -c
+                    - |
+                      sleep 10
+                      if su git -c 'forgejo admin auth list' | grep -q "Ok8Sh"; then
+                        su git -c 'forgejo admin auth update-oauth --id $(forgejo admin auth list | grep "Ok8Sh" | awk "{print \$1}") --name Ok8Sh --provider openidConnect --key "${OIDC_CLIENT_ID}" --secret "${OIDC_CLIENT_SECRET}" --auto-discover-url "https://zitadel.${DOMAIN1}/.well-known/openid-configuration" --scopes "openid email profile groups"'
+                      else
+                        su git -c 'forgejo admin auth add-oauth --name Ok8Sh --provider openidConnect --key "${OIDC_CLIENT_ID}" --secret "${OIDC_CLIENT_SECRET}" --auto-discover-url "https://zitadel.${DOMAIN1}/.well-known/openid-configuration" --scopes "openid email profile groups"'
+                      fi
             resources:
               requests:
                 cpu: 100m

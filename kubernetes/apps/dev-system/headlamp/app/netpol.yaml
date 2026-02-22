@@ -22,7 +22,21 @@ spec:
     # Allow kube-apiserver access
     - toEntities:
         - kube-apiserver
-    # Allow DNS
+    # Allow egress to ingress/gateway proxy for zitadel OIDC routing
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "80"
+              protocol: TCP
+    # Allow egress directly to zitadel in cluster
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: zitadel
+            io.kubernetes.pod.namespace: zitadel
     - toEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: kube-system
