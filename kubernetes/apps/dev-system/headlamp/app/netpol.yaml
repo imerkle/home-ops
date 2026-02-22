@@ -10,10 +10,11 @@ spec:
     matchLabels:
       app.kubernetes.io/name: headlamp
   ingress:
-    # Allow ingress from envoy-gateway
-    - fromEndpoints:
-        - matchLabels:
-            io.kubernetes.pod.namespace: network
+    # Allow all ingress to headlamp
+    - fromEntities:
+        - cluster
+        - host
+        - world
   egress:
     # Allow same namespace traffic
     - toEndpoints:
