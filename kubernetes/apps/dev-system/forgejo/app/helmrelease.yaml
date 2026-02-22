@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: forejo
+  name: forgejo
 spec:
   interval: 1h
   chartRef:
@@ -11,7 +11,7 @@ spec:
     name: app-template
   values:
     controllers:
-      forejo:
+      forgejo:
         annotations:
           reloader.stakater.com/auto: "true"
           vault.security.banzaicloud.io/vault-role: "default"
@@ -38,9 +38,9 @@ spec:
               FORGEJO__database__USER: "vault:secret/data/pg_default#USER"
               FORGEJO__database__PASSWD: "vault:secret/data/pg_default#PASSWORD"
               FORGEJO__security__INSTALL_LOCK: "true"
-              FORGEJO__server__DOMAIN: "forejo.${DOMAIN1}"
-              FORGEJO__server__ROOT_URL: "https://forejo.${DOMAIN1}/"
-              FORGEJO__server__SSH_DOMAIN: "ssh.forejo.${DOMAIN1}"
+              FORGEJO__server__DOMAIN: "forgejo.${DOMAIN1}"
+              FORGEJO__server__ROOT_URL: "https://forgejo.${DOMAIN1}/"
+              FORGEJO__server__SSH_DOMAIN: "ssh.forgejo.${DOMAIN1}"
               FORGEJO__server__SSH_PORT: "22"
               FORGEJO__server__SSH_LISTEN_PORT: "2222"
               # OIDC
@@ -75,7 +75,7 @@ spec:
                 memory: 512Mi
     service:
       app:
-        controller: forejo
+        controller: forgejo
         ports:
           http:
             port: 3000
@@ -88,17 +88,17 @@ spec:
           - name: envoy-internal
             namespace: network
         hostnames:
-          - "forejo.${DOMAIN1}"
+          - "forgejo.${DOMAIN1}"
         annotations:
           gethomepage.dev/enabled: "true"
-          gethomepage.dev/name: Forejo
+          gethomepage.dev/name: Forgejo
           gethomepage.dev/description: Self-hosted Git Service
           gethomepage.dev/group: Development
           gethomepage.dev/icon: forgejo.png
         rules:
           - backendRefs:
               - port: 3000
-                name: forejo
+                name: forgejo
     persistence:
       data:
         existingClaim: forgejo-data

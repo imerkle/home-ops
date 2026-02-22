@@ -2,7 +2,7 @@
 apiVersion: infra.contrib.fluxcd.io/v1alpha2
 kind: Terraform
 metadata:
-  name: forejo-zitadel-oidc
+  name: forgejo-zitadel-oidc
 spec:
   interval: 1h
   approvePlan: auto
@@ -13,10 +13,10 @@ spec:
     namespace: flux-system
   vars:
     - name: app_name
-      value: "forejo-oidc"
+      value: "forgejo-oidc"
     - name: redirect_uris
       value:
-        - "https://forejo.x3y.space/user/oauth2/ok8sh/callback"
+        - "https://forgejo.x3y.space/user/oauth2/ok8sh/callback"
   writeOutputsToSecret:
     name: forgejo-oidc-creds
     outputs:
