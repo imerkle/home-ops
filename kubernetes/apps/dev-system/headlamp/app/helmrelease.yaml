@@ -35,6 +35,31 @@ spec:
       oidc:
         issuerURL: "https://zitadel.${DOMAIN1}"
         scopes: "openid profile email"
+      # Plugins
+    initContainers:
+      - name: install-flux-plugin
+        image: ghcr.io/headlamp-k8s/headlamp-plugin-flux:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - cp -r /plugins/flux /target/
+        volumeMounts:
+          - name: plugins-dir
+            mountPath: /target
+
+    volumeMounts:
+      - name: plugins-dir
+        mountPath: /headlamp/plugins
+
+    volumes:
+      - name: plugins-dir
+        emptyDir: {}
+
+    # Permissions
+    clusterRoleBinding:
+      create: true
+    serviceAccount:
+      create: true
+      name: headlamp
   valuesFrom:
     - kind: Secret
       name: headlamp-oidc-creds
@@ -45,28 +70,4 @@ spec:
       valuesKey: client_secret
       targetPath: config.oidc.clientSecret
 
-    # Plugins
-  initContainers:
-    - name: install-flux-plugin
-      image: ghcr.io/headlamp-k8s/headlamp-plugin-flux:latest
-      command: ["/bin/sh", "-c"]
-      args:
-        - cp -r /plugins/flux /target/
-      volumeMounts:
-        - name: plugins-dir
-          mountPath: /target
 
-  volumeMounts:
-    - name: plugins-dir
-      mountPath: /headlamp/plugins
-
-  volumes:
-    - name: plugins-dir
-      emptyDir: {}
-
-  # Permissions
-  clusterRoleBinding:
-    create: true
-  serviceAccount:
-    create: true
-    name: headlamp
