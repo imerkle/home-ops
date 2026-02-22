@@ -35,29 +35,6 @@ spec:
         value: "https://zitadel.${DOMAIN1}"
       - name: OIDC_SCOPES
         value: "openid profile email"
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Deployment
-              name: headlamp
-            patch: |
-              - op: add
-                path: /spec/template/spec/containers/0/env/-
-                value:
-                  name: OIDC_CLIENT_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: headlamp-oidc-creds
-                      key: client_id
-              - op: add
-                path: /spec/template/spec/containers/0/env/-
-                value:
-                  name: OIDC_CLIENT_SECRET
-                  valueFrom:
-                    secretKeyRef:
-                      name: headlamp-oidc-creds
-                      key: client_secret
 
     # Plugins
     initContainers:
@@ -84,5 +61,28 @@ spec:
     serviceAccount:
       create: true
       name: headlamp
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: headlamp
+            patch: |
+              - op: add
+                path: /spec/template/spec/containers/0/env/-
+                value:
+                  name: OIDC_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: headlamp-oidc-creds
+                      key: client_id
+              - op: add
+                path: /spec/template/spec/containers/0/env/-
+                value:
+                  name: OIDC_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: headlamp-oidc-creds
+                      key: client_secret
 
 
