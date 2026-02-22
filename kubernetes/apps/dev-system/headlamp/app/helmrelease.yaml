@@ -32,23 +32,30 @@ spec:
     # Headlamp specific config
     config:
       baseURL: ""
+      oidc:
+        clientID: "${client_id}"
+        clientSecret: "${client_secret}"
+        issuerURL: "https://zitadel.${DOMAIN1}"
+        scopes: "openid profile email"
 
-    # Inject OIDC config via env
-    env:
-      - name: HEADLAMP_OIDC_CLIENT_ID
-        valueFrom:
-          secretKeyRef:
-            name: headlamp-oidc-creds
-            key: client_id
-      - name: HEADLAMP_OIDC_CLIENT_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: headlamp-oidc-creds
-            key: client_secret
-      - name: HEADLAMP_OIDC_ISSUER_URL
-        value: "https://zitadel.${DOMAIN1}"
-      - name: HEADLAMP_OIDC_SCOPES
-        value: "openid profile email"
+    # Plugins
+    initContainers:
+      - name: install-flux-plugin
+        image: ghcr.io/headlamp-k8s/headlamp-plugin-flux:v0.5.0
+        command: ["/bin/sh", "-c"]
+        args:
+          - cp -r /plugins/flux /target/
+        volumeMounts:
+          - name: plugins-dir
+            mountPath: /target
+
+    volumeMounts:
+      - name: plugins-dir
+        mountPath: /headlamp/plugins
+
+    volumes:
+      - name: plugins-dir
+        emptyDir: {}
 
     # Permissions
     clusterRoleBinding:

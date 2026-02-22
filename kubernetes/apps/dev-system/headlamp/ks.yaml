@@ -22,3 +22,6 @@ spec:
   postBuild:
     substitute:
       DOMAIN1: x3y.space
+    substituteFrom:
+      - kind: Secret
+        name: headlamp-oidc-creds
