@@ -77,6 +77,12 @@ spec:
             namespace: network
         hostnames:
           - "git.${DOMAIN1}"
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: Forejo
+          gethomepage.dev/description: Self-hosted Git Service
+          gethomepage.dev/group: Development
+          gethomepage.dev/icon: forgejo.png
         rules:
           - backendRefs:
               - port: 3000
