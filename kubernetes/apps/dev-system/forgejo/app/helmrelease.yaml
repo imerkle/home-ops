@@ -63,9 +63,9 @@ spec:
                     - |
                       sleep 10
                       if su git -c 'forgejo admin auth list' | grep -q "Ok8Sh"; then
-                        su git -c 'forgejo admin auth update-oauth --id $(forgejo admin auth list | grep "Ok8Sh" | awk "{print \$1}") --name Ok8Sh --provider openidConnect --key "${OIDC_CLIENT_ID}" --secret "${OIDC_CLIENT_SECRET}" --auto-discover-url "https://zitadel.${DOMAIN1}/.well-known/openid-configuration" --scopes "openid email profile groups"'
+                        su git -c "forgejo admin auth update-oauth --id \$(forgejo admin auth list | grep 'Ok8Sh' | awk '{print \$1}') --name Ok8Sh --provider openidConnect --key '${OIDC_CLIENT_ID}' --secret '${OIDC_CLIENT_SECRET}' --auto-discover-url 'https://zitadel.${DOMAIN1}/.well-known/openid-configuration' --scopes 'openid email profile groups'"
                       else
-                        su git -c 'forgejo admin auth add-oauth --name Ok8Sh --provider openidConnect --key "${OIDC_CLIENT_ID}" --secret "${OIDC_CLIENT_SECRET}" --auto-discover-url "https://zitadel.${DOMAIN1}/.well-known/openid-configuration" --scopes "openid email profile groups"'
+                        su git -c "forgejo admin auth add-oauth --name Ok8Sh --provider openidConnect --key '${OIDC_CLIENT_ID}' --secret '${OIDC_CLIENT_SECRET}' --auto-discover-url 'https://zitadel.${DOMAIN1}/.well-known/openid-configuration' --scopes 'openid email profile groups'"
                       fi
             resources:
               requests:
