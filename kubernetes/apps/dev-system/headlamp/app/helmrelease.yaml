@@ -35,6 +35,8 @@ spec:
       oidc:
         issuerURL: "https://zitadel.${DOMAIN1}"
         scopes: "openid profile email"
+        clientID: "${client_id}"
+        clientSecret: "${client_secret}"
     # Plugins
     initContainers:
       - name: install-flux-plugin
@@ -60,14 +62,5 @@ spec:
     serviceAccount:
       create: true
       name: headlamp
-  valuesFrom:
-    - kind: Secret
-      name: headlamp-oidc-creds
-      valuesKey: client_id
-      targetPath: config.oidc.clientID
-    - kind: Secret
-      name: headlamp-oidc-creds
-      valuesKey: client_secret
-      targetPath: config.oidc.clientSecret
 
 
