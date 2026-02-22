@@ -20,7 +20,7 @@ spec:
             env:
               FB_PORT: &port 80
               FB_DATABASE: /config/filebrowser.db
-              FB_ROOT: /data
+              FB_ROOT: /srv
               FB_LOG: stdout
               FB_NOAUTH: "false"
             probes:
@@ -59,24 +59,24 @@ spec:
       data:
         existingClaim: syncthing-data
         globalMounts:
-          - path: /data
+          - path: /srv/data
       immich:
         existingClaim: immich-library
         globalMounts:
-          - path: /immich
+          - path: /srv/immich
       frigate:
         existingClaim: frigate-media
         globalMounts:
-          - path: /frigate
+          - path: /srv/frigate
       copyparty:
         existingClaim: copyparty-data
         globalMounts:
-          - path: /copyparty
+          - path: /srv/copyparty
       zealot:
         existingClaim: zealot-uploads
         globalMounts:
-          - path: /zealot
+          - path: /srv/zealot
       ceph-filesystem-root:
         existingClaim: ceph-filesystem-root
         globalMounts:
-          - path: /ceph-filesystem
+          - path: /srv/ceph-filesystem
