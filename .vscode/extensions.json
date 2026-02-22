@@ -3,6 +3,8 @@
     "blueglassblock.better-json5",
     "irongeek.vscode-env",
     "redhat.vscode-yaml",
-    "signageos.signageos-vscode-sops"
+    "signageos.signageos-vscode-sops",
+    "ivangabriele.vscode-git-add-and-commit",
+    "kilocode.kilo-code"
   ]
 }
