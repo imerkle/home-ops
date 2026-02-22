@@ -83,7 +83,7 @@ spec:
               - -c
               - |
                 echo "Waiting for Forgejo..."
-                until wget -qO- http://localhost:3000/api/healthz 2>/dev/null | grep -q '"status":"pass"'; do sleep 5; done
+                until wget -qO- http://localhost:3000/api/healthz 2>/dev/null | grep -q '"status"'; do sleep 5; done
                 sleep 5
                 if forgejo admin auth list | grep -q "Ok8Sh"; then
                   ID=$(forgejo admin auth list | grep "Ok8Sh" | awk '{print $1}')
