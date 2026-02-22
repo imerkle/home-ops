@@ -20,6 +20,10 @@ spec:
             args:
               - -v
               - /w::rw
+              - --rproxy
+              - "-1"
+              - --xff-src
+              - "lan"
             resources:
               requests:
                 cpu: 10m
