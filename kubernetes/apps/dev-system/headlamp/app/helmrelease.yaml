@@ -86,6 +86,9 @@ spec:
                       key: client_secret
               - op: add
                 path: /spec/template/spec/containers/0/args/-
+                value: -oidc-groups-claim=groups
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
                 value: -oidc-client-id=$(OIDC_CLIENT_ID)
               - op: add
                 path: /spec/template/spec/containers/0/args/-

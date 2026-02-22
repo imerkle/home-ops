@@ -1,0 +1,17 @@
+---
+# Headlamp uses the OIDC groups claim to populate Kubernetes RBAC subjects.
+# The group name here must match what Zitadel sends in the 'groups' claim.
+# Update 'headlamp-admins' to match your actual Zitadel group name.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: headlamp-oidc-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  # Bind by OIDC group claim (requires -oidc-groups-claim=groups arg on headlamp)
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: headlamp-admins
