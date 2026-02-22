@@ -30,13 +30,22 @@ spec:
       port: 80
 
     # Headlamp specific config
-    config:
-      baseURL: ""
-      oidc:
-        issuerURL: "https://zitadel.${DOMAIN1}"
-        scopes: "openid profile email"
-        clientID: "${client_id}"
-        clientSecret: "${client_secret}"
+    env:
+      - name: OIDC_CLIENT_ID
+        valueFrom:
+          secretKeyRef:
+            name: headlamp-oidc-creds
+            key: client_id
+      - name: OIDC_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: headlamp-oidc-creds
+            key: client_secret
+      - name: OIDC_ISSUER_URL
+        value: "https://zitadel.${DOMAIN1}"
+      - name: OIDC_SCOPES
+        value: "openid profile email"
+
     # Plugins
     initContainers:
       - name: install-flux-plugin
