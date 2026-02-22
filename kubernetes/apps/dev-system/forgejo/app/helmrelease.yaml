@@ -62,11 +62,21 @@ spec:
                     - -c
                     - |
                       sleep 10
-                      if su git -c 'forgejo admin auth list' | grep -q "Ok8Sh"; then
-                        su git -c "forgejo admin auth update-oauth --id \$(forgejo admin auth list | grep 'Ok8Sh' | awk '{print \$1}') --name Ok8Sh --provider openidConnect --key '${OIDC_CLIENT_ID}' --secret '${OIDC_CLIENT_SECRET}' --auto-discover-url 'https://zitadel.${DOMAIN1}/.well-known/openid-configuration' --scopes 'openid email profile groups'"
+                      # Write a script with expanded env vars, then run as git user
+                      cat > /tmp/forgejo-oidc-setup.sh << SCRIPT
+                      #!/bin/bash
+                      CLIENT_ID="${OIDC_CLIENT_ID}"
+                      CLIENT_SECRET="${OIDC_CLIENT_SECRET}"
+                      DISCOVER_URL="https://zitadel.${DOMAIN1}/.well-known/openid-configuration"
+                      if forgejo admin auth list | grep -q "Ok8Sh"; then
+                        ID=\$(forgejo admin auth list | grep "Ok8Sh" | awk '{print \$1}')
+                        forgejo admin auth update-oauth --id "\$ID" --name Ok8Sh --provider openidConnect --key "\$CLIENT_ID" --secret "\$CLIENT_SECRET" --auto-discover-url "\$DISCOVER_URL" --scopes "openid email profile groups"
                       else
-                        su git -c "forgejo admin auth add-oauth --name Ok8Sh --provider openidConnect --key '${OIDC_CLIENT_ID}' --secret '${OIDC_CLIENT_SECRET}' --auto-discover-url 'https://zitadel.${DOMAIN1}/.well-known/openid-configuration' --scopes 'openid email profile groups'"
+                        forgejo admin auth add-oauth --name Ok8Sh --provider openidConnect --key "\$CLIENT_ID" --secret "\$CLIENT_SECRET" --auto-discover-url "\$DISCOVER_URL" --scopes "openid email profile groups"
                       fi
+                      SCRIPT
+                      chmod +x /tmp/forgejo-oidc-setup.sh
+                      su git -s /bin/bash -c /tmp/forgejo-oidc-setup.sh
             resources:
               requests:
                 cpu: 100m
