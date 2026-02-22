@@ -31,16 +31,33 @@ spec:
 
     # Headlamp specific config
     env:
-      - name: OIDC_CLIENT_ID
-        value: >-
-          ${client_id}
-      - name: OIDC_CLIENT_SECRET
-        value: >-
-          ${client_secret}
       - name: OIDC_ISSUER_URL
         value: "https://zitadel.${DOMAIN1}"
       - name: OIDC_SCOPES
         value: "openid profile email"
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: headlamp
+            patch: |
+              - op: add
+                path: /spec/template/spec/containers/0/env/-
+                value:
+                  name: OIDC_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: headlamp-oidc-creds
+                      key: client_id
+              - op: add
+                path: /spec/template/spec/containers/0/env/-
+                value:
+                  name: OIDC_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: headlamp-oidc-creds
+                      key: client_secret
 
     # Plugins
     initContainers:
