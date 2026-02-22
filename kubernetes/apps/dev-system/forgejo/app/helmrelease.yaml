@@ -75,6 +75,9 @@ spec:
                   secretKeyRef:
                     name: forgejo-oidc-creds
                     key: client_secret
+            securityContext:
+              runAsUser: 1000
+              runAsGroup: 1000
             command:
               - /bin/bash
               - -c
