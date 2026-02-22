@@ -46,27 +46,27 @@ spec:
       targetPath: config.oidc.clientSecret
 
     # Plugins
-    initContainers:
-      - name: install-flux-plugin
-        image: ghcr.io/headlamp-k8s/headlamp-plugin-flux:latest
-        command: ["/bin/sh", "-c"]
-        args:
-          - cp -r /plugins/flux /target/
-        volumeMounts:
-          - name: plugins-dir
-            mountPath: /target
+  initContainers:
+    - name: install-flux-plugin
+      image: ghcr.io/headlamp-k8s/headlamp-plugin-flux:latest
+      command: ["/bin/sh", "-c"]
+      args:
+        - cp -r /plugins/flux /target/
+      volumeMounts:
+        - name: plugins-dir
+          mountPath: /target
 
-    volumeMounts:
-      - name: plugins-dir
-        mountPath: /headlamp/plugins
+  volumeMounts:
+    - name: plugins-dir
+      mountPath: /headlamp/plugins
 
-    volumes:
-      - name: plugins-dir
-        emptyDir: {}
+  volumes:
+    - name: plugins-dir
+      emptyDir: {}
 
-    # Permissions
-    clusterRoleBinding:
-      create: true
-    serviceAccount:
-      create: true
-      name: headlamp
+  # Permissions
+  clusterRoleBinding:
+    create: true
+  serviceAccount:
+    create: true
+    name: headlamp
