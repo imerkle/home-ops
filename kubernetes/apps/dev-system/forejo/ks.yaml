@@ -18,7 +18,4 @@ spec:
   postBuild:
     substitute:
       DOMAIN1: x3y.space
-    substituteFrom:
-      - kind: Secret
-        name: flux-vars
-        namespace: flux-system
+      OAUTH2_ISSUER: https://hydra.x3y.space
