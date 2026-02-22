@@ -18,3 +18,4 @@ resources:
   - ./mcp/context7/ks.yaml
   - ./mcp/cliproxyapi/ks.yaml
   - ./headlamp/ks.yaml
+  - ./forejo/ks.yaml

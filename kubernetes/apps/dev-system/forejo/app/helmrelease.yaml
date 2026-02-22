@@ -1,0 +1,99 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: forejo
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  values:
+    controllers:
+      forgejo:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: 16.4
+            env:
+              INIT_POSTGRES_DBNAME: forgejo
+              INIT_POSTGRES_HOST: "${POSTGRES_HOST}"
+              INIT_POSTGRES_USER: "${POSTGRES_USER}"
+              INIT_POSTGRES_PASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: forgejo-db-secret
+                    key: password
+              INIT_POSTGRES_SUPER_PASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: forgejo-db-secret
+                    key: password
+        containers:
+          app:
+            image:
+              repository: codeberg.org/forgejo/forgejo
+              tag: 9.0.3
+            env:
+              FORGEJO__database__DB_TYPE: postgres
+              FORGEJO__database__HOST: "${POSTGRES_HOST}"
+              FORGEJO__database__NAME: forgejo
+              FORGEJO__database__USER: "${POSTGRES_USER}"
+              FORGEJO__database__PASSWD:
+                valueFrom:
+                  secretKeyRef:
+                    name: forgejo-db-secret
+                    key: password
+              FORGEJO__server__DOMAIN: "git.${DOMAIN1}"
+              FORGEJO__server__ROOT_URL: "https://git.${DOMAIN1}/"
+              FORGEJO__server__SSH_DOMAIN: "ssh.git.${DOMAIN1}"
+              FORGEJO__server__SSH_PORT: "22"
+              FORGEJO__server__SSH_LISTEN_PORT: "2222"
+              # OIDC
+              FORGEJO__auth__OIDC_SIGN_IN_TEXT: "Sign In with Ok8Sh"
+              FORGEJO__auth__OIDC_ISSUER_URL: "${OAUTH2_ISSUER}"
+              FORGEJO__auth__OIDC_CLIENT_ID:
+                valueFrom:
+                  secretKeyRef:
+                    name: forgejo-oidc-creds
+                    key: client_id
+              FORGEJO__auth__OIDC_CLIENT_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: forgejo-oidc-creds
+                    key: client_secret
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+    service:
+      app:
+        controller: forgejo
+        ports:
+          http:
+            port: 3000
+          ssh:
+            port: 2222
+    route:
+      app:
+        enabled: true
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        hostnames:
+          - "git.${DOMAIN1}"
+        rules:
+          - backendRefs:
+              - port: 3000
+                name: forgejo
+    persistence:
+      data:
+        existingClaim: forgejo-data
+        globalMounts:
+          - path: /data
