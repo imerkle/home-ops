@@ -17,6 +17,9 @@ spec:
             image:
               repository: copyparty/ac
               tag: latest
+            args:
+              - -v
+              - /w::rw
             resources:
               requests:
                 cpu: 10m
