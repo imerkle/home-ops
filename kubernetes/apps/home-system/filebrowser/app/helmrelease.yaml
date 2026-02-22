@@ -76,3 +76,7 @@ spec:
         existingClaim: zealot-uploads
         globalMounts:
           - path: /zealot
+      ceph-filesystem-root:
+        existingClaim: ceph-filesystem-root
+        globalMounts:
+          - path: /ceph-filesystem

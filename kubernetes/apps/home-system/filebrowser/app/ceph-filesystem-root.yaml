@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ceph-filesystem-root
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 1Pi
+  csi:
+    driver: rook-ceph.cephfs.csi.ceph.com
+    volumeHandle: ceph-filesystem-root
+    volumeAttributes:
+      clusterID: rook-ceph
+      fsName: ceph-filesystem
+      rootPath: /
+    nodeStageSecretRef:
+      name: rook-csi-cephfs-node
+      namespace: rook-ceph
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ceph-filesystem-root
+  namespace: home-system
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Pi
+  volumeName: ceph-filesystem-root
+  storageClassName: ""
