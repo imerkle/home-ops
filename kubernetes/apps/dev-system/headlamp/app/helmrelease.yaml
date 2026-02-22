@@ -33,10 +33,17 @@ spec:
     config:
       baseURL: ""
       oidc:
-        clientID: '"${client_id}"'
-        clientSecret: "${client_secret}"
         issuerURL: "https://zitadel.${DOMAIN1}"
         scopes: "openid profile email"
+  valuesFrom:
+    - kind: Secret
+      name: headlamp-oidc-creds
+      valuesKey: client_id
+      targetPath: config.oidc.clientID
+    - kind: Secret
+      name: headlamp-oidc-creds
+      valuesKey: client_secret
+      targetPath: config.oidc.clientSecret
 
     # Plugins
     initContainers:
