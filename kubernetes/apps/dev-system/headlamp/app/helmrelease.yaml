@@ -84,5 +84,11 @@ spec:
                     secretKeyRef:
                       name: headlamp-oidc-creds
                       key: client_secret
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: -oidc-client-id=$(OIDC_CLIENT_ID)
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: -oidc-client-secret=$(OIDC_CLIENT_SECRET)
 
 
