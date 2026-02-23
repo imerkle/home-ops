@@ -71,23 +71,8 @@ data "zitadel_orgs" "existing" {
 }
 
 locals {
-  # If we found an org, use its ID. Otherwise null.
-  existing_org_id = length(data.zitadel_orgs.existing.ids) > 0 ? data.zitadel_orgs.existing.ids[0] : null
-  # Only create the org if we didn't find it
-  create_org      = local.existing_org_id == null
-}
-
-# Create the organization ONLY if it doesn't exist
-resource "zitadel_organization" "org" {
-  count = local.create_org ? 1 : 0
-  name  = var.org_name
-  # We let Zitadel generate the ID if creating new, or use var.org_id if strictly needed
-  # but user said "org id created with doesn't matter".
-}
-
-locals {
-  # The final org_id to use for downstream resources
-  org_id = local.create_org ? zitadel_organization.org[0].id : local.existing_org_id
+  # The org_id to use
+  org_id = length(data.zitadel_orgs.existing.ids) > 0 ? data.zitadel_orgs.existing.ids[0] : null
 }
 
 # Check if the project already exists
@@ -98,24 +83,8 @@ data "zitadel_projects" "existing" {
 }
 
 locals {
-  existing_project_id = length(data.zitadel_projects.existing.project_ids) > 0 ? data.zitadel_projects.existing.project_ids[0] : null
-  create_project      = local.existing_project_id == null
-}
-
-# Create project within the organization
-resource "zitadel_project" "project" {
-  count  = local.create_project ? 1 : 0
-  name   = var.project_name
-  org_id = local.org_id
-
-  project_role_assertion = true
-  has_project_check      = false
-
-  depends_on = [zitadel_organization.org]
-}
-
-locals {
-  project_id = local.create_project ? zitadel_project.project[0].id : local.existing_project_id
+  # The project_id to use
+  project_id = length(data.zitadel_projects.existing.project_ids) > 0 ? data.zitadel_projects.existing.project_ids[0] : null
 }
 
 resource "zitadel_application_oidc" "app" {
@@ -142,9 +111,6 @@ resource "zitadel_application_oidc" "app" {
   additional_origins           = []
   post_logout_redirect_uris    = []
   skip_native_app_success_page = false
-  depends_on = [
-    zitadel_project.project
-  ]
 }
 
 # --- OUTPUTS ---

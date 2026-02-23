@@ -6,4 +6,5 @@ resources:
   - ./hr.yaml
   - ./netpol.yaml
   - ./route.yaml
+  - ./tofu-bootstrap.yaml
   # - ./loginclient.sops.yaml

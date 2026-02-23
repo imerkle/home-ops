@@ -1,0 +1,21 @@
+---
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: zitadel-bootstrap
+  namespace: zitadel
+spec:
+  interval: 1h
+  approvePlan: auto
+  path: ./terraform/zitadel-bootstrap
+
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+
+  vars:
+    - name: org_id
+      value: "dummy"
+    - name: redirect_uris
+      value: ["http://localhost:8080"]

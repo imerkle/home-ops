@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 1h
   approvePlan: auto
-  path: ./terraform/zitadel
+  path: ./terraform/zitadel-oidc
   sourceRef:
     kind: GitRepository
     name: flux-system
