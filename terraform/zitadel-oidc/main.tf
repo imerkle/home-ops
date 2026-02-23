@@ -30,22 +30,7 @@ variable "redirect_uris" {
   description = "List of allowed callback URLs"
 }
 
-variable "org_id" {
-  type        = string
-  description = "The ID of the organization"
-}
 
-variable "org_name" {
-  type        = string
-  description = "The name of the organization"
-  default     = "homelab"
-}
-
-variable "project_name" {
-  type        = string
-  description = "The name of the project"
-  default     = "homelab"
-}
 
 data "kubernetes_secret_v1" "zitadel_iam_admin" {
   metadata {
@@ -64,27 +49,17 @@ provider "zitadel" {
 
 # --- RESOURCES ---
 
-# Check if the organization already exists
-data "zitadel_orgs" "existing" {
-  name        = var.org_name
-  name_method = "TEXT_QUERY_METHOD_EQUALS"
+# Fetch the generated IDs from the bootstrap secret
+data "kubernetes_secret_v1" "bootstrap_ids" {
+  metadata {
+    name      = "zitadel-bootstrap-ids"
+    namespace = "zitadel"
+  }
 }
 
 locals {
-  # The org_id to use
-  org_id = length(data.zitadel_orgs.existing.ids) > 0 ? data.zitadel_orgs.existing.ids[0] : null
-}
-
-# Check if the project already exists
-data "zitadel_projects" "existing" {
-  name        = var.project_name
-  org_id      = local.org_id
-  name_method = "TEXT_QUERY_METHOD_EQUALS"
-}
-
-locals {
-  # The project_id to use
-  project_id = length(data.zitadel_projects.existing.project_ids) > 0 ? data.zitadel_projects.existing.project_ids[0] : null
+  org_id     = data.kubernetes_secret_v1.bootstrap_ids.data["org_id"]
+  project_id = data.kubernetes_secret_v1.bootstrap_ids.data["project_id"]
 }
 
 resource "zitadel_application_oidc" "app" {

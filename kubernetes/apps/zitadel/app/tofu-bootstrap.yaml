@@ -13,8 +13,8 @@ spec:
     name: flux-system
     namespace: flux-system
 
-  vars:
-    - name: org_id
-      value: "dummy"
-    - name: redirect_uris
-      value: ["http://localhost:8080"]
+  writeOutputsToSecret:
+    name: zitadel-bootstrap-ids
+    outputs:
+      - org_id
+      - project_id
