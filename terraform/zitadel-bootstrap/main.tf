@@ -25,11 +25,6 @@ variable "app_name" {
   default = "default_app"
 }
 
-variable "redirect_uris" {
-  type        = list(string)
-  description = "List of allowed callback URLs"
-}
-
 variable "org_id" {
   type        = string
   description = "The ID of the organization"

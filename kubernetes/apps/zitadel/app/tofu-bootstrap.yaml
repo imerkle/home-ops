@@ -3,7 +3,6 @@ apiVersion: infra.contrib.fluxcd.io/v1alpha2
 kind: Terraform
 metadata:
   name: zitadel-bootstrap
-  namespace: zitadel
 spec:
   interval: 1h
   approvePlan: auto
