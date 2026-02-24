@@ -35,6 +35,10 @@ snapshots:
 cameras:
   garage:
     enabled: true
+    zones:
+      driveway:
+        # Placeholder polygon; replace with your garage/driveway area in Frigate UI.
+        coordinates: 0.05,0.95,0.95,0.95,0.95,0.05,0.05,0.05
     ffmpeg:
       output_args:
         record: preset-record-generic-audio-aac
@@ -54,6 +58,8 @@ cameras:
       password: RootPassword1!
       autotracking:
         enabled: true
+        required_zones:
+          - driveway
         calibrate_on_startup: false
         zooming: disabled
         track:
