@@ -13,13 +13,53 @@ detectors:
   cpu:
     type: cpu
 
+go2rtc:
+  streams:
+    garage_main:
+      - rtsp://adminadmin:RootPassword1!@10.0.0.60:554/<MAIN_STREAM_PATH>
+    garage_sub:
+      - rtsp://adminadmin:RootPassword1!@10.0.0.60:554/<SUB_STREAM_PATH>
+
+record:
+  enabled: true
+  # Keep enough timeline to review prior PTZ angles while one angle stays live.
+  retain:
+    days: 7
+    mode: all
+
+snapshots:
+  enabled: true
+  retain:
+    default: 14
+
 cameras:
-  dummy:
-    enabled: false
+  garage:
+    enabled: true
     ffmpeg:
+      output_args:
+        record: preset-record-generic-audio-aac
       inputs:
-        - path: rtsp://127.0.0.1:8554/dummy
+        - path: rtsp://127.0.0.1:8554/garage_main
+          input_args: preset-rtsp-restream
+          roles:
+            - record
+        - path: rtsp://127.0.0.1:8554/garage_sub
+          input_args: preset-rtsp-restream
           roles:
             - detect
+    onvif:
+      host: 10.0.0.60
+      port: 2020
+      user: adminadmin
+      password: RootPassword1!
+      autotracking:
+        enabled: true
+        calibrate_on_startup: false
+        zooming: disabled
+        track:
+          - person
     detect:
-      enabled: false
+      enabled: true
+      width: 1280
+      height: 720
+      fps: 5
