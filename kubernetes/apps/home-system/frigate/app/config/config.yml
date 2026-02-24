@@ -16,9 +16,9 @@ detectors:
 go2rtc:
   streams:
     garage_main:
-      - rtsp://adminadmin:RootPassword1!@10.0.0.60:554/<MAIN_STREAM_PATH>
+      - rtsp://adminadmin:RootPassword1!@10.0.0.60:554/stream1
     garage_sub:
-      - rtsp://adminadmin:RootPassword1!@10.0.0.60:554/<SUB_STREAM_PATH>
+      - rtsp://adminadmin:RootPassword1!@10.0.0.60:554/stream2
 
 record:
   enabled: true
