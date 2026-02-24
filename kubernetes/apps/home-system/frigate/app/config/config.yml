@@ -9,6 +9,13 @@ tls:
 database:
   path: /config/frigate.db
 
+logger:
+  default: info
+  logs:
+    frigate.video: debug
+    watchdog.garage_ptz_experimental: debug
+    ffmpeg.garage_ptz_experimental.detect: debug
+
 detectors:
   cpu:
     type: cpu
