@@ -12,9 +12,9 @@ database:
 logger:
   default: info
   logs:
-    frigate.video: debug
-    watchdog.garage_ptz_experimental: debug
-    ffmpeg.garage_ptz_experimental.detect: debug
+    # frigate.video: debug
+    # watchdog.garage_ptz_experimental: debug
+    # ffmpeg.garage_ptz_experimental.detect: debug
 
 detectors:
   cpu:
@@ -35,8 +35,8 @@ go2rtc:
       - rtsp://adminadmin:RootPassword1!@10.0.0.60:554/stream1
     garage_sub:
       - rtsp://adminadmin:RootPassword1!@10.0.0.60:554/stream2
-    garage_ptz_mosaic:
-      - ffmpeg:http://127.0.0.1:8090/mosaic.mjpg#video=h264
+    # garage_ptz_mosaic:
+    #   - ffmpeg:http://127.0.0.1:8090/mosaic.mjpg#video=h264
 
 record:
   enabled: true
@@ -94,24 +94,24 @@ cameras:
 
   # Experimental pseudo-birdseye for one PTZ camera:
   # live current angle + last unique frame for previously seen angles.
-  garage_ptz_experimental:
-    enabled: true
-    birdseye:
-      enabled: false
-    ffmpeg:
-      inputs:
-        - path: rtsp://127.0.0.1:8554/garage_ptz_mosaic
-          input_args: preset-rtsp-restream
-          roles:
-            - detect
-    detect:
-      enabled: true
-      width: 2880
-      height: 540
-      fps: 1
-    motion:
-      enabled: true
-    record:
-      enabled: false
-    snapshots:
-      enabled: false
+  # garage_ptz_experimental:
+  #   enabled: true
+  #   birdseye:
+  #     enabled: false
+  #   ffmpeg:
+  #     inputs:
+  #       - path: rtsp://127.0.0.1:8554/garage_ptz_mosaic
+  #         input_args: preset-rtsp-restream
+  #         roles:
+  #           - detect
+  #   detect:
+  #     enabled: true
+  #     width: 2880
+  #     height: 540
+  #     fps: 1
+  #   motion:
+  #     enabled: true
+  #   record:
+  #     enabled: false
+  #   snapshots:
+  #     enabled: false

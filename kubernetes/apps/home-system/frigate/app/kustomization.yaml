@@ -10,8 +10,8 @@ configMapGenerator:
   - name: frigate-configmap
     files:
       - ./config/config.yml
-  - name: frigate-ptz-mosaic
-    files:
-      - ./config/ptz_mosaic.py
+  # - name: frigate-ptz-mosaic
+  #   files:
+  #     - ./config/ptz_mosaic.py
 generatorOptions:
   disableNameSuffixHash: true
