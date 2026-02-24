@@ -101,7 +101,7 @@ cameras:
       height: 540
       fps: 1
     motion:
-      enabled: false
+      enabled: true
     record:
       enabled: false
     snapshots:

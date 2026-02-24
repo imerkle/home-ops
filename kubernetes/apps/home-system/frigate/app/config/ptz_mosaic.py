@@ -304,7 +304,8 @@ def frame_capture_loop(state: State) -> None:
 
     while not state.stop_event.is_set():
         if capture is None or not capture.isOpened():
-            capture = cv2.VideoCapture(cfg.rtsp_url, cv2.CAP_FFMPEG)
+            # Avoid forcing a backend; container builds vary in OpenCV backend support.
+            capture = cv2.VideoCapture(cfg.rtsp_url)
             if not capture.isOpened():
                 with state.lock:
                     state.last_error = f"Unable to open RTSP source: {cfg.rtsp_url}"
