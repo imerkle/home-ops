@@ -28,7 +28,7 @@ go2rtc:
       - rtsp://adminadmin:RootPassword1!@10.0.0.60:554/stream1
     garage_sub:
       - rtsp://adminadmin:RootPassword1!@10.0.0.60:554/stream2
-    garage_ptz_experimental:
+    garage_ptz_mosaic:
       - ffmpeg:http://127.0.0.1:8090/mosaic.mjpg#video=h264
 
 record:
@@ -93,7 +93,7 @@ cameras:
       enabled: false
     ffmpeg:
       inputs:
-        - path: rtsp://127.0.0.1:8554/garage_ptz_experimental
+        - path: rtsp://127.0.0.1:8554/garage_ptz_mosaic
           input_args: preset-rtsp-restream
           roles:
             - detect
