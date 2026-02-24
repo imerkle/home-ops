@@ -13,6 +13,15 @@ detectors:
   cpu:
     type: cpu
 
+birdseye:
+  enabled: true
+  restream: true
+  mode: continuous
+  width: 1920
+  height: 1080
+  layout:
+    max_cameras: 1
+
 go2rtc:
   streams:
     garage_main:
@@ -35,6 +44,10 @@ snapshots:
 cameras:
   garage:
     enabled: true
+    birdseye:
+      enabled: true
+      mode: continuous
+      order: 1
     zones:
       driveway:
         # Placeholder polygon; replace with your garage/driveway area in Frigate UI.
@@ -69,3 +82,27 @@ cameras:
       width: 1280
       height: 720
       fps: 5
+
+  # Experimental pseudo-birdseye for one PTZ camera:
+  # live current angle + last unique frame for previously seen angles.
+  garage_ptz_experimental:
+    enabled: true
+    birdseye:
+      enabled: false
+    ffmpeg:
+      inputs:
+        - path: http://127.0.0.1:8090/mosaic.mjpg
+          input_args: preset-http-jpeg-generic
+          roles:
+            - detect
+    detect:
+      enabled: true
+      width: 2880
+      height: 540
+      fps: 1
+    motion:
+      enabled: false
+    record:
+      enabled: false
+    snapshots:
+      enabled: false

@@ -33,6 +33,37 @@ spec:
                 memory: 500Mi
               limits:
                 memory: 2Gi
+          ptz-mosaic:
+            image:
+              repository: ghcr.io/blakeblackshear/frigate
+              tag: 0.15.0-beta2
+            command:
+              - /usr/bin/env
+              - python3
+              - /opt/ptz-mosaic/ptz_mosaic.py
+            env:
+              PTZ_MOSAIC_CAMERA_NAME: garage
+              PTZ_MOSAIC_RTSP_URL: rtsp://127.0.0.1:8554/garage_main
+              PTZ_MOSAIC_FRIGATE_API: http://127.0.0.1:5000
+              PTZ_MOSAIC_BIND_HOST: 0.0.0.0
+              PTZ_MOSAIC_BIND_PORT: "8090"
+              PTZ_MOSAIC_PAN_RANGE_DEG: "360"
+              PTZ_MOSAIC_TILT_RANGE_DEG: "114"
+              PTZ_MOSAIC_BASE_STEP_DEG: "10"
+              PTZ_MOSAIC_PAN_UNIQUE_FACTOR: "0.70"
+              PTZ_MOSAIC_TILT_UNIQUE_FACTOR: "0.70"
+              PTZ_MOSAIC_HASH_DISTANCE: "10"
+              PTZ_MOSAIC_SAMPLE_INTERVAL_SEC: "1.0"
+              PTZ_MOSAIC_STREAM_FPS: "1"
+              PTZ_MOSAIC_TILE_WIDTH: "80"
+              PTZ_MOSAIC_TILE_HEIGHT: "45"
+              PTZ_MOSAIC_JPEG_QUALITY: "80"
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
     service:
       app:
         controller: frigate
@@ -76,6 +107,13 @@ spec:
         globalMounts:
           - path: /config/config.yml
             subPath: config.yml
+            readOnly: true
+      ptz-mosaic-script:
+        type: configMap
+        name: frigate-ptz-mosaic
+        globalMounts:
+          - path: /opt/ptz-mosaic/ptz_mosaic.py
+            subPath: ptz_mosaic.py
             readOnly: true
       cache:
         type: emptyDir
