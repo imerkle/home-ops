@@ -1,0 +1,64 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vyos
+  namespace: network
+spec:
+  interval: 15m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      vyos:
+        type: statefulset
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          annotations:
+            k8s.v1.cni.cncf.io/networks: '[{"name":"wan-macvlan","mac":"00:11:22:33:44:55"}, {"name":"lan-macvlan","mac":"00:11:22:33:44:66"}]'
+          securityContext:
+            sysctls:
+              - name: net.ipv4.ip_forward
+                value: "1"
+              - name: net.ipv6.conf.all.forwarding
+                value: "1"
+        containers:
+          app:
+            image:
+              repository: docker.io/vyos/vyos
+              tag: 1.4.0-epa1
+            env:
+              TZ: Asia/Kolkata
+            securityContext:
+              privileged: true
+              capabilities:
+                add:
+                  - NET_ADMIN
+                  - SYS_ADMIN
+                  - SYS_MODULE
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 1Gi
+    persistence:
+      config:
+        type: configMap
+        name: vyos-config
+        globalMounts:
+          - path: /opt/vyatta/etc/config/config.boot
+            subPath: config.boot
+            readOnly: false

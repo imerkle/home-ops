@@ -1,0 +1,38 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/helmrepository_v1beta2.json
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: multus-cni
+spec:
+  interval: 2h
+  url: https://rancher.github.io/rke2-charts/
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta1.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: multus-cni
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: rke2-multus
+      version: 4.1.4010300
+      sourceRef:
+        kind: HelmRepository
+        name: multus-cni
+      interval: 10m
+  values:
+    config:
+      cni_conf:
+        clusterNetwork: ""
+        cniDir: /var/lib/cni/net.d
+        logLevel: error
+        multusKubeconfig: /etc/cni/net.d/multus.d/multus.kubeconfig
+        multusLogToStderr: true
+        multusMasterCni: ""
+        multusNamespace: kube-system
+      image: ghcr.io/k8snetworkplumbingwg/multus-cni:v4.1.4-thick
+    initContainer:
+      image: alpine:latest
