@@ -11,7 +11,7 @@ database:
 
 logger:
   default: info
-  logs:
+  # logs:
     # frigate.video: debug
     # watchdog.garage_ptz_experimental: debug
     # ffmpeg.garage_ptz_experimental.detect: debug
