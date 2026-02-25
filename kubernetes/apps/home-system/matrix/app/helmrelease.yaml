@@ -16,6 +16,8 @@ spec:
 
     synapse:
       enabled: true
+      annotations:
+        vault.security.banzaicloud.io/vault-role: "default"
       ingress:
         host: matrix.${DOMAIN1}
         className: disabled
@@ -28,6 +30,21 @@ spec:
           secret: matrix-postgres-creds
           secretKey: password
         database: synapse
+      extraInitContainers:
+        - name: init-db
+          image: ghcr.io/onedr0p/postgres-init:16.4
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: INIT_POSTGRES_DBNAME
+              value: "synapse"
+            - name: INIT_POSTGRES_HOST
+              value: "vault:secret/data/pg_default#HOST"
+            - name: INIT_POSTGRES_USER
+              value: "vault:secret/data/pg_default#USER"
+            - name: INIT_POSTGRES_PASS
+              value: "vault:secret/data/pg_default#PASSWORD"
+            - name: INIT_POSTGRES_SUPER_PASS
+              value: "vault:secret/data/pg_default#PASSWORD"
       media:
         storage:
           size: 5Gi
@@ -68,6 +85,8 @@ spec:
 
     matrixAuthenticationService:
       enabled: true
+      annotations:
+        vault.security.banzaicloud.io/vault-role: "default"
       ingress:
         host: auth.${DOMAIN1}
         className: disabled
@@ -80,6 +99,21 @@ spec:
           secret: matrix-postgres-creds
           secretKey: password
         database: matrix_authentication_service
+      extraInitContainers:
+        - name: init-db
+          image: ghcr.io/onedr0p/postgres-init:16.4
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: INIT_POSTGRES_DBNAME
+              value: "matrix_authentication_service"
+            - name: INIT_POSTGRES_HOST
+              value: "vault:secret/data/pg_default#HOST"
+            - name: INIT_POSTGRES_USER
+              value: "vault:secret/data/pg_default#USER"
+            - name: INIT_POSTGRES_PASS
+              value: "vault:secret/data/pg_default#PASSWORD"
+            - name: INIT_POSTGRES_SUPER_PASS
+              value: "vault:secret/data/pg_default#PASSWORD"
       additional:
         1-mas-config:
           config: |
