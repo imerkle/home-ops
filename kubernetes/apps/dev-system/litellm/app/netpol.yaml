@@ -9,7 +9,8 @@ spec:
     matchLabels:
       app.kubernetes.io/name: litellm
   egress:
-    - all
+    - toEntities:
+        - all
     # # Allow communication to Kubernetes API / DNS and external traffic
     # - toEndpoints:
     #     - matchLabels:
