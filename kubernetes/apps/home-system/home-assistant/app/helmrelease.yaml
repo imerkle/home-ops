@@ -47,6 +47,17 @@ spec:
                 memory: 200m
               limits:
                 memory: 2Gi
+          mcp:
+            image:
+              repository: ghcr.io/homeassistant-ai/ha-mcp
+              tag: latest
+            env:
+              HOMEASSISTANT_URL: http://localhost:8123
+              HOMEASSISTANT_TOKEN: vault:secret/data/ai#HA_TOKEN
+            args:
+              - fastmcp
+              - run
+              - fastmcp-http.json
     defaultPodOptions:
       # annotations:
         # k8s.v1.cni.cncf.io/networks: |-
@@ -68,6 +79,8 @@ spec:
           http:
             appProtocol: kubernetes.io/ws
             port: 8123
+          mcp:
+            port: 8086
     route:
       app:
         annotations:
@@ -84,6 +97,15 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
+      mcp:
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        hostnames:
+          - "ha-mcp.${DOMAIN1}"
+        rules:
+          - backendRefs:
+              - port: 8086
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
