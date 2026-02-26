@@ -9,54 +9,55 @@ spec:
     matchLabels:
       app.kubernetes.io/name: litellm
   egress:
-    # Allow communication to Kubernetes API / DNS and external traffic
-    - toEndpoints:
-        - matchLabels:
-            io.kubernetes.pod.namespace: kube-system
-            k8s-app: kube-dns
-      toPorts:
-        - ports:
-            - port: "53"
-              protocol: ANY
-    # Postgres
-    - toEndpoints:
-        - matchLabels:
-            cnpg.io/cluster: pg-default
-            io.kubernetes.pod.namespace: db
-      toPorts:
-        - ports:
-            - port: "5432"
-              protocol: TCP
-    # Envory Internal Proxy
-    - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: envoy-internal
-            io.kubernetes.pod.namespace: network
-      toPorts:
-        - ports:
-            - port: "10000"
-              protocol: TCP
-    # Home Assistant MCP
-    - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: home-assistant
-            io.kubernetes.pod.namespace: home-system
-      toPorts:
-        - ports:
-            - port: "8086"
-              protocol: TCP
-    # Flux Operator MCP
-    - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: flux-operator-mcp
-            io.kubernetes.pod.namespace: flux-system
-      toPorts:
-        - ports:
-            - port: "9090"
-              protocol: TCP
-    # External Context7 Server
-    - toEntities:
-        - world
+    - all
+    # # Allow communication to Kubernetes API / DNS and external traffic
+    # - toEndpoints:
+    #     - matchLabels:
+    #         io.kubernetes.pod.namespace: kube-system
+    #         k8s-app: kube-dns
+    #   toPorts:
+    #     - ports:
+    #         - port: "53"
+    #           protocol: ANY
+    # # Postgres
+    # - toEndpoints:
+    #     - matchLabels:
+    #         cnpg.io/cluster: pg-default
+    #         io.kubernetes.pod.namespace: db
+    #   toPorts:
+    #     - ports:
+    #         - port: "5432"
+    #           protocol: TCP
+    # # Envory Internal Proxy
+    # - toEndpoints:
+    #     - matchLabels:
+    #         app.kubernetes.io/name: envoy-internal
+    #         io.kubernetes.pod.namespace: network
+    #   toPorts:
+    #     - ports:
+    #         - port: "10000"
+    #           protocol: TCP
+    # # Home Assistant MCP
+    # - toEndpoints:
+    #     - matchLabels:
+    #         app.kubernetes.io/name: home-assistant
+    #         io.kubernetes.pod.namespace: home-system
+    #   toPorts:
+    #     - ports:
+    #         - port: "8086"
+    #           protocol: TCP
+    # # Flux Operator MCP
+    # - toEndpoints:
+    #     - matchLabels:
+    #         app.kubernetes.io/name: flux-operator-mcp
+    #         io.kubernetes.pod.namespace: flux-system
+    #   toPorts:
+    #     - ports:
+    #         - port: "9090"
+    #           protocol: TCP
+    # # External Context7 Server
+    # - toEntities:
+    #     - world
 
   ingress:
     - fromEntities:
