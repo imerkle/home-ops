@@ -16,11 +16,9 @@ spec:
 
     synapse:
       additional:
-          forbidden_username.yaml:
-            config: |
-              # This overrides the default list (which usually includes admin)
-              # by providing an empty list or one without "admin".
-              forbidden_username_re: []
+        forbidden_username.yaml:
+          config: |
+            forbidden_username_re: []
       enabled: true
       ingress:
         host: matrix.${DOMAIN1}
