@@ -86,8 +86,8 @@ general_settings:
 mcp_servers:
   "flux_mcp":
     url: "http://flux-operator-mcp.flux-system.svc.cluster.local:9090/mcp"
-  # "ha_mcp":
-  #   url: "http://home-assistant.home-system.svc.cluster.local:8086/mcp"
+  "ha_mcp":
+    url: "http://home-assistant.home-system.svc.cluster.local:8086/mcp"
   "context7":
     url: "https://mcp.context7.com/mcp"
     headers:
