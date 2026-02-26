@@ -39,6 +39,7 @@ spec:
               LITELLM_MASTER_KEY: "vault:secret/data/ai#LITELLM_MASTER_KEY"
               LITELLM_SALT_KEY: "vault:secret/data/ai#LITELLM_SALT_KEY"
               GOOGLE_API_KEY: "vault:secret/data/ai#google"
+              CONTEXT7_API_KEY: "vault:secret/data/ai#CONTEXT7_API_KEY"
               DATABASE_URL: "postgresql://$${vault:secret/data/pg_default#USER}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/litellm"
             # probes:
             #   liveness:

@@ -82,3 +82,13 @@ litellm_settings:
 general_settings:
   allow_model_discovery: true
   master_key: os.environ/LITELLM_MASTER_KEY
+
+mcp_servers:
+  "remote-flux":
+    url: "http://flux-operator-mcp.flux-system.svc.cluster.local:9090/mcp"
+  "ha-mcp":
+    url: "http://home-assistant.home-system.svc.cluster.local:8086/mcp"
+  "context7":
+    url: "https://mcp.context7.com/mcp"
+    headers:
+      CONTEXT7_API_KEY: "os.environ/CONTEXT7_API_KEY"
