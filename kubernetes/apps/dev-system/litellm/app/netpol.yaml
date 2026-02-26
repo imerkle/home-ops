@@ -1,0 +1,70 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: litellm
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: litellm
+  egress:
+    # Allow communication to Kubernetes API / DNS and external traffic
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+    # Postgres
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: postgres16
+            io.kubernetes.pod.namespace: db
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # Envory Internal Proxy
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: envoy-internal
+            io.kubernetes.pod.namespace: network
+      toPorts:
+        - ports:
+            - port: "10000"
+              protocol: TCP
+    # Home Assistant MCP
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: home-assistant
+            io.kubernetes.pod.namespace: home-system
+      toPorts:
+        - ports:
+            - port: "8086"
+              protocol: TCP
+    # Flux Operator MCP
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: flux-operator-mcp
+            io.kubernetes.pod.namespace: flux-system
+      toPorts:
+        - ports:
+            - port: "9090"
+              protocol: TCP
+    # External Context7 Server
+    - toEntities:
+        - world
+
+  ingress:
+    # Allow from Envoy
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: envoy-internal
+            io.kubernetes.pod.namespace: network
+      toPorts:
+        - ports:
+            - port: "4000"
+              protocol: TCP
