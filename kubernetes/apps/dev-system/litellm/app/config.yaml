@@ -84,9 +84,9 @@ general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
 
 mcp_servers:
-  "remote-flux":
+  "flux_mcp":
     url: "http://flux-operator-mcp.flux-system.svc.cluster.local:9090/mcp"
-  "ha-mcp":
+  "ha_mcp":
     url: "http://home-assistant.home-system.svc.cluster.local:8086/mcp"
   "context7":
     url: "https://mcp.context7.com/mcp"
