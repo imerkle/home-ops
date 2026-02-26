@@ -48,7 +48,7 @@ spec:
               limits:
                 memory: 2Gi
     defaultPodOptions:
-      annotations:
+      # annotations:
         # k8s.v1.cni.cncf.io/networks: |-
         #   [{
         #     "name": "iot",
