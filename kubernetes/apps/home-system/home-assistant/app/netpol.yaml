@@ -18,6 +18,10 @@ spec:
     - fromEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: network
+    # Allow same namespace traffic
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: dev-system
   egress:
     # Allow same namespace traffic
     - toEndpoints:
