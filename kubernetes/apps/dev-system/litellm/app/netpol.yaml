@@ -21,7 +21,7 @@ spec:
     # Postgres
     - toEndpoints:
         - matchLabels:
-            app.kubernetes.io/name: postgres16
+            cnpg.io/cluster: pg-default
             io.kubernetes.pod.namespace: db
       toPorts:
         - ports:
