@@ -28,6 +28,4 @@ resources:
   - ./filebrowser/ks.yaml
   - ./oidc/ks.yaml
   - ./blocky/ks.yaml
-  - ./kubevirt/ks.yaml
-  - ./openwrt/ks.yaml
   - ./stalwart/ks.yaml

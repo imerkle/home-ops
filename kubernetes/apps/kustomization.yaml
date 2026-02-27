@@ -9,6 +9,7 @@ resources:
   - ./flux-system
   - ./home-system
   - ./kube-system
+  - ./kubevirt
   - ./kyverno
   - ./network
   - ./observability

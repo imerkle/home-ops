@@ -1,0 +1,10 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: stalwart
+spec:
+  interval: 1h
+  url: oci://codeberg.org/wrenix/helm-charts/stalwart-mail
+  ref:
+    tag: 0.4.9

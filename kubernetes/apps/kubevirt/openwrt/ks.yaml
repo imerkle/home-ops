@@ -1,21 +1,14 @@
----
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app openwrt
-  namespace: home-system
+  namespace: &namespace kubevirt
 spec:
-  targetNamespace: home-system
+  targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: kubevirt
-  path: ./kubernetes/apps/home-system/openwrt/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: home-ops
-  wait: false
-  interval: 30m
+  path: ./kubernetes/apps/kubevirt/openwrt/app

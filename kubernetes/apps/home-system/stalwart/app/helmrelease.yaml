@@ -6,13 +6,9 @@ metadata:
   name: stalwart
 spec:
   interval: 30m
-  chart:
-    spec:
-      chart: stalwart-mail
-      version: "*"
-      sourceRef:
-        kind: HelmRepository
-        name: stalwart
+  chartRef:
+    kind: OCIRepository
+    name: stalwart
   install:
     remediation:
       retries: 3

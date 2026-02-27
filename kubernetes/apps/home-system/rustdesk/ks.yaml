@@ -13,12 +13,3 @@ spec:
       VOLSYNC_CAPACITY: 5Gi
   targetNamespace: home-system
   path: ./kubernetes/apps/home-system/rustdesk/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false
-  interval: 24h
-  retryInterval: 1m
-  timeout: 5m

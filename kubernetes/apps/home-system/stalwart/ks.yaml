@@ -11,9 +11,3 @@ spec:
     labels:
       app.kubernetes.io/name: stalwart
   path: ./kubernetes/apps/home-system/stalwart/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: home-ops
-  wait: false
-  interval: 30m
