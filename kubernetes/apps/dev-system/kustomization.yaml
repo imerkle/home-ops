@@ -19,3 +19,4 @@ resources:
   - ./mcp/cliproxyapi/ks.yaml
   - ./headlamp/ks.yaml
   - ./forgejo/ks.yaml
+  - ./open-webui/ks.yaml

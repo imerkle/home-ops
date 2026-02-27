@@ -29,19 +29,9 @@ spec:
           imap:
             bind: ["[::]:143"]
             protocol: "imap"
-          imaptls:
-            bind: ["[::]:993"]
-            protocol: "imap"
-            tls:
-              implicit: true
           http:
             protocol: "http"
             bind: ["[::]:80"]
-          https:
-            protocol: "http"
-            bind: ["[::]:443"]
-            tls:
-              implicit: true
     service:
       type: LoadBalancer
       annotations:
@@ -50,11 +40,10 @@ spec:
       ports:
         smtp: 25
         imap: 143
-        imaptls: 993
         http: 80
-        https: 443
     certificate:
       certmanager:
+        enabled: false
         issuerRef:
           name: letsencrypt-prodxs
         dnsNames:
