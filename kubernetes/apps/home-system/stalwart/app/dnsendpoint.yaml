@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/externaldns.k8s.io/dnsendpoint_v1alpha1.json
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: stalwart
+spec:
+  endpoints:
+    - dnsName: ${DOMAIN1}
+      recordType: MX
+      recordTTL: 300
+      targets:
+        - "10 mail.${DOMAIN1}"
+    - dnsName: ${DOMAIN1}
+      recordType: TXT
+      recordTTL: 300
+      targets:
+        - '"v=spf1 include:spf.${DOMAIN1} ~all"' # Placeholder SPF: Update based on the relay used
+    - dnsName: _dmarc.${DOMAIN1}
+      recordType: TXT
+      recordTTL: 300
+      targets:
+        - '"v=DMARC1; p=none; rua=mailto:postmaster@${DOMAIN1}"'
+    # DKIM to be provisioned via Stalwart UI and a new DNSEndpoint definition or Cloudflare manually

@@ -1,0 +1,43 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: stalwart
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: stalwart-mail
+      version: "*"
+      sourceRef:
+        kind: HelmRepository
+        name: stalwart
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # Stalwart minimal values. Configure routing natively via the UI using the SMTP Secret values.
+    # You might want to refer to the official Stalwart Helm documentation if structure differs.
+    server:
+      hostname: "mail.${DOMAIN1}"
+    env:
+      SMTP_USERNAME: "{{ .SMTP_USERNAME }}"
+      SMTP_PASSWORD: "{{ .SMTP_PASSWORD }}"
+      SMTP_HOST: "{{ .SMTP_HOST }}"
+      SMTP_PORT: "{{ .SMTP_PORT }}"
+    service:
+      main:
+        type: LoadBalancer
+        annotations:
+          # This tells external-dns to create an A record for the LoadBalancer IP
+          # Note: If your home IP is dynamic, you might need a different DDNS method
+          # because LoadBalancer IP is an internal IP.
+          # Actually, usually users have a generic external IP DDNS updater for the apex domain.
+          external-dns.alpha.kubernetes.io/hostname: "mail.${DOMAIN1}"
+          # We must NOT proxy this record, because SMTP (25) cannot flow through Cloudflare proxy
+          external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+
