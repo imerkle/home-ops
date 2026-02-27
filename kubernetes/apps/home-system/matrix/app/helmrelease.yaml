@@ -15,10 +15,6 @@ spec:
       app.kubernetes.io/instance: matrix
 
     synapse:
-      additional:
-        forbidden_username.yaml:
-          config: |
-            forbidden_username_re: []
       enabled: true
       ingress:
         host: matrix.${DOMAIN1}
@@ -40,6 +36,7 @@ spec:
       additional:
         1-base-config:
           config: |
+            forbidden_username_re: []
             public_baseurl: https://matrix.${DOMAIN1}
             presence:
               enabled: true
@@ -69,7 +66,6 @@ spec:
               msc4186_enabled: true
             database:
               allow_unsafe_locale: true
-
     matrixAuthenticationService:
       enabled: true
       ingress:

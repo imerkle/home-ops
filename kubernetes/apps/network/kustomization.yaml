@@ -16,4 +16,3 @@ resources:
   - ./envoy-gateway/ks.yaml
 
   # - ./unifi-dns/ks.yaml
-  - ./vyos/ks.yaml
