@@ -1,0 +1,59 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kubevirt.io/virtualmachine_v1.json
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: openwrt
+  namespace: home-system
+  labels:
+    app.kubernetes.io/name: openwrt
+spec:
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: openwrt
+        kubevirt.io/vm: openwrt
+    spec:
+      domain:
+        cpu:
+          cores: 2
+        devices:
+          disks:
+            - disk:
+                bus: virtio
+              name: containerdisk
+            - disk:
+                bus: virtio
+              name: cloudinitdisk
+          interfaces:
+            - name: default
+              masquerade: {}
+            - name: wan
+              macAddress: "02:00:00:00:00:01"
+              bridge: {}
+            - name: lan
+              macAddress: "02:00:00:00:00:02"
+              bridge: {}
+        resources:
+          requests:
+            memory: 512Mi
+      networks:
+        - name: default
+          pod: {}
+        - name: wan
+          multus:
+            networkName: wan-net
+        - name: lan
+          multus:
+            networkName: lan-net
+      volumes:
+        - name: containerdisk
+          containerDisk:
+            image: containercraft/openwrt:24
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userData: |-
+              #cloud-config
+              runcmd:
+                - echo "Hello, configuring OpenWrt..."

@@ -29,3 +29,4 @@ resources:
   - ./oidc/ks.yaml
   - ./blocky/ks.yaml
   - ./kubevirt/ks.yaml
+  - ./openwrt/ks.yaml
