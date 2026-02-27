@@ -20,5 +20,5 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: stalwart
+        - name: stalwart-stalwart-mail
           port: 80
