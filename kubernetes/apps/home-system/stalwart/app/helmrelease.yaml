@@ -53,3 +53,9 @@ spec:
         imaptls: 993
         http: 80
         https: 443
+    certificate:
+      certmanager:
+        issuerRef:
+          name: letsencrypt-prodxs
+        dnsNames:
+          - "mail.mail.${DOMAIN1}"
