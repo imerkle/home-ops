@@ -11,9 +11,8 @@ spec:
   hostnames:
     - "admin-mail.${DOMAIN1}"
   parentRefs:
-    - name: envoy-external
+    - name: envoy-internal
       namespace: network
-      sectionName: https
   rules:
     - matches:
         - path:
