@@ -74,9 +74,9 @@ spec:
       resources:
         osd:
           requests:
-            memory: 2Gi
-          limits:
             memory: 4Gi
+          limits:
+            memory: 6Gi
       storage:
         useAllNodes: true
         useAllDevices: false
