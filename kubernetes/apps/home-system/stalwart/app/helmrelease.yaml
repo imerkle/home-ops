@@ -16,24 +16,40 @@ spec:
     remediation:
       retries: 3
   values:
-    # Stalwart minimal values. Configure routing natively via the UI using the SMTP Secret values.
-    # You might want to refer to the official Stalwart Helm documentation if structure differs.
-    server:
-      hostname: "mail.${DOMAIN1}"
-    env:
-      SMTP_USERNAME: ""
-      SMTP_PASSWORD: ""
-      SMTP_HOST: ""
-      SMTP_PORT: ""
+    # Chart expects config under `config.*` and env as list entries, not a key/value map.
+    # Keep this receive-focused and configure outbound relay in Stalwart admin once deployed.
+    backup:
+      enabled: false
+    config:
+      server:
+        listener:
+          smtp:
+            bind: ["[::]:25"]
+            protocol: "smtp"
+          imap:
+            bind: ["[::]:143"]
+            protocol: "imap"
+          imaptls:
+            bind: ["[::]:993"]
+            protocol: "imap"
+            tls:
+              implicit: true
+          http:
+            protocol: "http"
+            bind: ["[::]:80"]
+          https:
+            protocol: "http"
+            bind: ["[::]:443"]
+            tls:
+              implicit: true
     service:
-      main:
-        type: LoadBalancer
-        annotations:
-          # This tells external-dns to create an A record for the LoadBalancer IP
-          # Note: If your home IP is dynamic, you might need a different DDNS method
-          # because LoadBalancer IP is an internal IP.
-          # Actually, usually users have a generic external IP DDNS updater for the apex domain.
-          external-dns.alpha.kubernetes.io/hostname: "mail.${DOMAIN1}"
-          # We must NOT proxy this record, because SMTP (25) cannot flow through Cloudflare proxy
-          external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
-
+      type: LoadBalancer
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: "mail.${DOMAIN1}"
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+      ports:
+        smtp: 25
+        imap: 143
+        imaptls: 993
+        http: 80
+        https: 443

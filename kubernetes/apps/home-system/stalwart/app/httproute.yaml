@@ -21,4 +21,4 @@ spec:
             value: /
       backendRefs:
         - name: stalwart
-          port: 8080
+          port: 80
