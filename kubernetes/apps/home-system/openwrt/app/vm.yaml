@@ -4,7 +4,6 @@ apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
   name: openwrt
-  namespace: home-system
   labels:
     app.kubernetes.io/name: openwrt
 spec:
