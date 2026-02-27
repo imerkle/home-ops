@@ -49,7 +49,10 @@
   },
   "yaml.schemaStore.enable": true,
   "yaml.schemas": {
-    "kubernetes": "./kubernetes/**/*.yaml"
+    "kubernetes": [
+      "./kubernetes/**/*.yaml",
+      "!**/ks.yaml"
+    ]
   },
   "workbench.colorTheme": "GitHub Sharp Dark",
   "workbench.colorCustomizations": {

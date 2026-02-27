@@ -21,10 +21,10 @@ spec:
     server:
       hostname: "mail.${DOMAIN1}"
     env:
-      SMTP_USERNAME: "{{ .SMTP_USERNAME }}"
-      SMTP_PASSWORD: "{{ .SMTP_PASSWORD }}"
-      SMTP_HOST: "{{ .SMTP_HOST }}"
-      SMTP_PORT: "{{ .SMTP_PORT }}"
+      SMTP_USERNAME: ""
+      SMTP_PASSWORD: ""
+      SMTP_HOST: ""
+      SMTP_PORT: ""
     service:
       main:
         type: LoadBalancer

@@ -55,4 +55,18 @@ spec:
             userData: |-
               #cloud-config
               runcmd:
-                - echo "Hello, configuring OpenWrt..."
+                - |
+                  uci set network.wan.device='eth1'
+                  uci set network.wan.proto='pppoe'
+                  uci set network.wan.username='${OPENWRT_PPPOE_USER}'
+                  uci set network.wan.password='${OPENWRT_PPPOE_PASS}'
+                  uci set network.lan.device='eth2'
+                  uci set network.lan.proto='static'
+                  uci set network.lan.ipaddr='${OPENWRT_LAN_IP}'
+                  uci set network.lan.netmask='${OPENWRT_LAN_NETMASK}'
+                  uci set network.wan.peerdns='0'
+                  uci del network.wan.dns
+                  uci add_list network.wan.dns='1.1.1.1'
+                  uci add_list network.wan.dns='1.0.0.1'
+                  uci commit network
+                  /etc/init.d/network restart
