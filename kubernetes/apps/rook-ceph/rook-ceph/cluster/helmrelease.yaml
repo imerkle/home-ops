@@ -73,8 +73,10 @@ spec:
           requireMsgr2: true
       resources:
         osd:
-          limits:
+          requests:
             memory: 2Gi
+          limits:
+            memory: 4Gi
       storage:
         useAllNodes: true
         useAllDevices: false

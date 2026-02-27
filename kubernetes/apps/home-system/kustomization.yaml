@@ -17,7 +17,7 @@ resources:
   - ./syncthing/ks.yaml
   - ./home-assistant/ks.yaml
   - ./esphome/ks.yaml
-  - ./pdf-tool/ks.yaml
+  # - ./pdf-tool/ks.yaml
   - ./rustdesk/ks.yaml
   - ./zealot/ks.yaml
   - ./homepage/ks.yaml
@@ -30,4 +30,3 @@ resources:
   - ./blocky/ks.yaml
   - ./kubevirt/ks.yaml
   - ./openwrt/ks.yaml
-  - ./stalwart/ks.yaml

@@ -17,11 +17,10 @@ spec:
     coder:
       resources:
         requests:
-         cpu: 500m
-         memory: 300Mi
+         cpu: 175m
+         memory: 600Mi
         limits:
-         cpu: 2000m
-         memory: 4096Mi
+         memory: 600Mi
       podAnnotations:
         reloader.stakater.com/auto: "true"
         vault.security.banzaicloud.io/vault-role: "default"
