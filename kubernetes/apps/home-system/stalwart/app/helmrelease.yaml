@@ -58,4 +58,4 @@ spec:
         issuerRef:
           name: letsencrypt-prodxs
         dnsNames:
-          - "mail.mail.${DOMAIN1}"
+          - "mail.${DOMAIN1}"
