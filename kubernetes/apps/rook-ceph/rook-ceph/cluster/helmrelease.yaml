@@ -83,6 +83,8 @@ spec:
         devicePathFilter: "^/dev/disk/by-id/ata-WDC_WDS240G2G0A-00JH30_19226D800608"
         config:
           osdsPerDevice: "1"
+      disruptionManagement:
+        managePodBudgets: false
     cephBlockPools:
       - name: ceph-blockpool
         spec:
