@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: goldilocks
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: goldilocks
+      version: '*'
+      sourceRef:
+        kind: HelmRepository
+        name: fairwinds-stable
+        namespace: observability
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    # Disable subcharts since we installed VPA separately
+    metrics-server:
+      enabled: false
+    vpa:
+      enabled: false
+    dashboard:
+      replicaCount: 1
+      ingress:
+        enabled: false
+        # Example for later if needed:
+        # className: "internal"
+        # hosts:
+        #   - host: goldilocks.home.arpa
+        #     paths:
+        #       - path: /
+        #         type: Prefix

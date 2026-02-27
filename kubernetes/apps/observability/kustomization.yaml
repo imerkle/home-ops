@@ -22,3 +22,5 @@ resources:
   # - ./unpoller/ks.yaml
   - ./victoria-logs/ks.yaml
   - ./opentelemetry/ks.yaml
+  - ./vpa/ks.yaml
+  - ./goldilocks/ks.yaml
