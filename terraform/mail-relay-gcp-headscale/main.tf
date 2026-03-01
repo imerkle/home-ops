@@ -168,8 +168,5 @@ output "headscale_authkey_read_cmd" {
   value = "ssh ${var.ssh_username}@${google_compute_instance.mail_relay.network_interface[0].access_config[0].nat_ip} 'sudo cat /root/headscale-preauth-key.txt'"
 }
 
-# Output the preauth key to be used by other resources
-output "headscale_preauth_key" {
-  value = nonsensitive(fileexists("/root/headscale-preauth-key.txt") ? file("/root/headscale-preauth-key.txt") : "")
-  sensitive = true
-}
+# Note: The preauth key is generated on the server and available via the SSH command
+# To retrieve it manually: terraform output headscale_authkey_read_cmd
