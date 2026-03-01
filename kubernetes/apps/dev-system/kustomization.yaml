@@ -11,7 +11,7 @@ components:
   - ../../components/repos
 resources:
   - ./namespace.yaml
-  - ./chatmock/ks.yaml
+#  - ./chatmock/ks.yaml
   - ./code-server/ks.yaml
   - ./telepresence/ks.yaml
   - ./litellm/ks.yaml
