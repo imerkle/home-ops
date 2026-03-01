@@ -6,3 +6,6 @@ resources:
   - helmrelease.yaml
   - dnsendpoint.yaml
   - httproute.yaml
+  - tailscale-auth-secret.yaml
+patchesStrategicMerge:
+  - patches/tailscale-sidecar.yaml

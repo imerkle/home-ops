@@ -1,0 +1,31 @@
+# GCP auth can be provided by Application Default Credentials (ADC),
+# e.g. `gcloud auth application-default login`, or service account credentials.
+gcp_project_id = "your-gcp-project-id"
+gcp_region     = "us-west1"
+gcp_zone       = "us-west1-a"
+
+# Domain + relay target
+mail_domain          = "example.com"
+hostname             = "mail"
+relay_target_mesh_ip = "100.64.10.20"
+relay_target_port    = 25
+
+# Headscale hosted on this same VPS.
+# Use HTTP for initial bootstrap; place a reverse proxy/TLS in front later if desired.
+headscale_url         = "http://203.0.113.10:8080"
+headscale_listen_port = 8080
+headscale_user        = "homelab"
+
+# SSH
+ssh_username        = "debian"
+ssh_authorized_keys = "ssh-ed25519 AAAAC3... you@example"
+
+# Cloudflare DNS (optional)
+create_cloudflare_records = true
+cloudflare_api_token      = "cf_api_token_with_dns_edit"
+cloudflare_zone_id        = "cloudflare_zone_id"
+
+# Optional overrides for free-tier compute
+machine_type  = "e2-micro"
+image_project = "debian-cloud"
+image_family  = "debian-12"

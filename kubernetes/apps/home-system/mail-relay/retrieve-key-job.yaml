@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: retrieve-headscale-key
+spec:
+  template:
+    spec:
+      containers:
+      - name: ssh-client
+        image: lscr.io/linuxserver/openssh-server:latest
+        command:
+          - /bin/sh
+          - -c
+          - |
+            # Wait for the mail relay server to be ready
+            sleep 60
+            # Retrieve the preauth key from the server (this would need proper SSH access setup)
+            # ssh -i /path/to/key user@server-ip "sudo cat /root/headscale-preauth-key.txt"
+            # Then update the tailscale-auth secret with the retrieved key
+            echo "This job would retrieve the headscale preauth key from the mail relay server"
+            echo "and update the tailscale-auth secret with the key"
+        volumeMounts:
+        - name: ssh-keys
+          mountPath: /root/.ssh
+      restartPolicy: Never
+      volumes:
+      - name: ssh-keys
+        secret:
+          secretName: mail-relay-ssh-keys  # This would need to be created with proper SSH keys

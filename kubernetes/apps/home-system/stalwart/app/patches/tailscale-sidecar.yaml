@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: stalwart
+spec:
+  template:
+    spec:
+      volumes:
+        - name: tailscale-state
+          emptyDir: {}
+      initContainers:
+        - name: tailscale-init
+          image: busybox:1.36
+          command: ['sh', '-c', 'mkdir -p /var/lib/tailscale']
+          volumeMounts:
+            - name: tailscale-state
+              mountPath: /var/lib/tailscale
+      containers:
+        # Tailscale sidecar container
+        - name: tailscale
+          image: tailscale/tailscale:v1.70
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TS_USERSPACE
+              value: "true"
+            - name: TS_AUTHKEY
+              valueFrom:
+                secretKeyRef:
+                  name: tailscale-auth
+                  key: authkey
+            - name: TS_HOSTNAME
+              value: "stalwart"
+            - name: TS_STATE_DIR
+              value: "/var/lib/tailscale"
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          volumeMounts:
+            - name: tailscale-state
+              mountPath: /var/lib/tailscale
+          ports:
+            - containerPort: 25
+              name: smtp
+              protocol: TCP
+            - containerPort: 143
+              name: imap
+              protocol: TCP
+            - containerPort: 80
+              name: http
+              protocol: TCP

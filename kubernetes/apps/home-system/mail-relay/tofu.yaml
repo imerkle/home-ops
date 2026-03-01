@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/infra.contrib.fluxcd.io/terraform_v1alpha2.json
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: mail-relay-gcp-headscale
+  namespace: home-system
+spec:
+  interval: 10m
+  path: ./terraform/mail-relay-gcp-headscale
+  sourceRef:
+    kind: GitRepository
+    name: home-ops
+    namespace: flux-system
+  backendConfig:
+    disable: true  # Use default local backend for state
+  vars:
+    - name: use_vault
+      value: "true"
+  runnerPodTemplate:
+    spec:
+      serviceAccountName: tf-runner
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
+  # Output information from the Terraform configuration
+  writeOutputsToSecret:
+    name: mail-relay-outputs
+    namespace: home-system

@@ -1,0 +1,169 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+packages:
+  - postfix
+  - cyrus-sasl-plain
+  - ca-certificates
+  - curl
+  - jq
+
+write_files:
+  - path: /etc/postfix/main.cf
+    owner: root:root
+    permissions: "0644"
+    content: |
+      compatibility_level = 2
+      myhostname = ${hostname}.${mail_domain}
+      myorigin = $myhostname
+      mydestination = localhost
+      relay_domains = ${mail_domain}
+      transport_maps = hash:/etc/postfix/transport
+
+      smtpd_banner = $myhostname ESMTP relay
+      biff = no
+      append_dot_mydomain = no
+      readme_directory = no
+
+      inet_interfaces = all
+      inet_protocols = ipv4
+
+      smtpd_tls_security_level = may
+      smtp_tls_security_level = may
+
+      smtpd_relay_restrictions = permit_mynetworks, reject_unauth_destination
+      smtpd_recipient_restrictions = permit_mynetworks, reject_unauth_destination
+
+      # Forward all mail for your domain to Stalwart over Headscale mesh.
+      relay_transport = smtp
+      recipient_delimiter = +
+
+  - path: /etc/postfix/master.cf
+    owner: root:root
+    permissions: "0644"
+    content: |
+      smtp      inet  n       -       n       -       -       smtpd
+      pickup    unix  n       -       y       60      1       pickup
+      cleanup   unix  n       -       y       -       0       cleanup
+      qmgr      unix  n       -       n       300     1       qmgr
+      tlsmgr    unix  -       -       y       1000?   1       tlsmgr
+      rewrite   unix  -       -       y       -       -       trivial-rewrite
+      bounce    unix  -       -       y       -       0       bounce
+      defer     unix  -       -       y       -       0       bounce
+      trace     unix  -       -       y       -       0       bounce
+      verify    unix  -       -       y       -       1       verify
+      flush     unix  n       -       y       1000?   0       flush
+      proxymap  unix  -       -       n       -       -       proxymap
+      proxywrite unix -       -       n       -       1       proxymap
+      smtp      unix  -       -       y       -       -       smtp
+      relay     unix  -       -       y       -       -       smtp
+      showq     unix  n       -       y       -       -       showq
+      error     unix  -       -       y       -       -       error
+      retry     unix  -       -       y       -       -       error
+      discard   unix  -       -       y       -       -       discard
+      local     unix  -       n       n       -       -       local
+      virtual   unix  -       n       n       -       -       virtual
+      lmtp      unix  -       -       y       -       -       lmtp
+      anvil     unix  -       -       y       -       1       anvil
+      scache    unix  -       -       y       -       1       scache
+
+  - path: /etc/postfix/transport
+    owner: root:root
+    permissions: "0644"
+    content: |
+      ${mail_domain} smtp:[${relay_target_mesh_ip}]:${relay_target_port}
+
+  - path: /usr/local/bin/bootstrap-headscale-relay.sh
+    owner: root:root
+    permissions: "0755"
+    content: |
+      #!/usr/bin/env bash
+      set -euo pipefail
+
+      # Install Headscale binary and service.
+      curl -fsSL "https://github.com/juanfont/headscale/releases/download/v${headscale_version}/headscale_${headscale_version}_linux_amd64" -o /usr/local/bin/headscale
+      chmod +x /usr/local/bin/headscale
+      mkdir -p /etc/headscale /var/lib/headscale /var/run/headscale
+
+      cat >/etc/headscale/config.yaml <<'HSCFG'
+      server_url: ${headscale_url}
+      listen_addr: 0.0.0.0:${headscale_listen_port}
+      metrics_listen_addr: 127.0.0.1:9090
+      noise:
+        private_key_path: /var/lib/headscale/noise_private.key
+      prefixes:
+        v4: 100.64.0.0/10
+      derp:
+        server:
+          enabled: false
+      dns:
+        base_domain: headscale.local
+        magic_dns: false
+      database:
+        type: sqlite
+        sqlite:
+          path: /var/lib/headscale/db.sqlite
+      unix_socket: /var/run/headscale/headscale.sock
+      unix_socket_permission: "0770"
+      log:
+        format: text
+        level: info
+      HSCFG
+
+      cat >/etc/systemd/system/headscale.service <<'HSUNIT'
+      [Unit]
+      Description=Headscale coordination server
+      After=network-online.target
+      Wants=network-online.target
+
+      [Service]
+      Type=simple
+      ExecStart=/usr/local/bin/headscale serve --config /etc/headscale/config.yaml
+      Restart=always
+      RestartSec=2
+      User=root
+
+      [Install]
+      WantedBy=multi-user.target
+      HSUNIT
+
+      systemctl daemon-reload
+      systemctl enable --now headscale
+      sleep 3
+
+      /usr/local/bin/headscale --config /etc/headscale/config.yaml users create ${headscale_user} || true
+
+      if [[ ! -s /root/headscale-preauth-key.txt ]]; then
+        /usr/local/bin/headscale --config /etc/headscale/config.yaml preauthkeys create \
+          --user ${headscale_user} \
+          --reusable \
+          --expiration 8760h \
+          -o json | jq -r '.key' >/root/headscale-preauth-key.txt
+        chmod 0600 /root/headscale-preauth-key.txt
+      fi
+
+      HEADSCALE_AUTH_KEY="$(cat /root/headscale-preauth-key.txt)"
+
+      # Install Tailscale client and join the local Headscale control plane.
+      curl -fsSL https://tailscale.com/install.sh | sh
+
+      TS_ARGS=(
+        --login-server=${headscale_url}
+        --authkey=$${HEADSCALE_AUTH_KEY}
+        --accept-routes
+        --ssh
+      )
+
+      if [[ -n "${tailscale_advertise_tag}" ]]; then
+        TS_ARGS+=(--advertise-tags=${tailscale_advertise_tag})
+      fi
+
+      tailscale up "$${TS_ARGS[@]}"
+
+      postmap /etc/postfix/transport
+      systemctl enable --now postfix
+      systemctl restart postfix
+
+runcmd:
+  - [bash, -lc, "/usr/local/bin/bootstrap-headscale-relay.sh"]
+  - [bash, -lc, "systemctl status postfix --no-pager || true"]
