@@ -18,9 +18,9 @@ terraform {
 }
 
 provider "google" {
-  project     = coalesce(var.gcp_project_id, lookup(data.vault_generic_secret.gcp_credentials.data, "gcp_project_id", null))
-  region      = var.gcp_region
-  zone        = var.gcp_zone
+  project = coalesce(var.gcp_project_id, lookup(data.vault_generic_secret.gcp_credentials.data, "gcp_project_id", null))
+  region  = var.gcp_region
+  zone    = var.gcp_zone
   # For Vault KV v2, the actual data is in the "data" key of the response
   # If GCP credentials are nested under a 'gcp' key in the secret
   credentials = jsonencode(
@@ -33,7 +33,8 @@ provider "cloudflare" {
 }
 
 provider "vault" {
-  address = "http://vault.vault:8200"
+  address          = "http://vault.vault:8200"
+  skip_child_token = true
 
   # Configure for Kubernetes authentication when running in-cluster
   # This will use the pod's service account token automatically when running in tofu-controller

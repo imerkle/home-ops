@@ -31,4 +31,4 @@ image_project = "debian-cloud"
 image_family  = "debian-12"
 
 # Use Vault for credentials when running in proper environment
-use_vault = false  # Set to true when running with proper Vault access
+use_vault = false # Set to true when running with proper Vault access
