@@ -7,5 +7,8 @@ resources:
   - dnsendpoint.yaml
   - httproute.yaml
   - tailscale-auth-secret.yaml
-patchesStrategicMerge:
-  - patches/tailscale-sidecar.yaml
+patches:
+  - path: patches/tailscale-sidecar.yaml
+    target:
+      kind: StatefulSet
+      name: stalwart-stalwart-mail
