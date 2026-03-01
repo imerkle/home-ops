@@ -35,9 +35,8 @@ provider "cloudflare" {
 provider "vault" {
   address = "http://vault.vault:8200"
 
-  # Authentication will be handled by the tofu-controller pod's ServiceAccount
-  # when running in Kubernetes. Vault should be configured with the kubernetes auth method
-  # and the appropriate role mapping for the tf-runner service account.
+  # Configure for Kubernetes authentication when running in-cluster
+  # This will use the pod's service account token automatically when running in tofu-controller
 }
 
 data "vault_generic_secret" "gcp_credentials" {
