@@ -88,7 +88,7 @@ spec:
             branding:
               service_name: "Matrix"
             passwords:
-              enabled: false
+              enabled: true
             account:
               email_change_allowed: true
               displayname_change_allowed: true
