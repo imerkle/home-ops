@@ -104,10 +104,8 @@ spec:
                 - name: secretsmutation
                   bound_service_account_names:
                     - vault-secrets-webhook
-                    - tf-runner
                   bound_service_account_namespaces:
                     - vault
-                    - home-system
                   policies:
                     - allow_secrets
                   ttl: 1h
@@ -415,8 +413,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-03-01T16:42:16Z"
-    mac: ENC[AES256_GCM,data:RgCYqMwVhzvUZLOsggVjyS9nd9GQMT0eIJumk69FhrGEPHcbhrKXMuLYqwMPgqt/MEnptxyZW4hgoUqqZDPzcRNQhDWMKnKU5gHR/tBEPUTKG1zBCkQ+xU+055Oy7EHrUtaldi8AQ1zAN1g/5dh1MMAMXEwXNjQ2xG5glh60voI=,iv:N45uExa+w0uSbYQWXfBCsD3mr6+PWLLKaMIPCG5862o=,tag:T0SeXIIoATy00Z145QffjQ==,type:str]
+    lastmodified: "2026-03-01T16:44:26Z"
+    mac: ENC[AES256_GCM,data:jcKbVgpqiEkK4Q+sOV6yMwNBNkl1XxOcUDVfzw7aDIJ4jhyumfa1uaQ5AEsRbxbosWeZreL7Z0aRi06NugOvj5BJ8LQyWgcpC3QrLfeeTuxMStqvUd9zIDiNvuk8Qah1v+7WBfhZDJuarIAuNG0hvbUE0nBvauC7VN5heVVfois=,iv:/Bq8JE73u+oVdxRI5jBIV6KMI+mmtIOW4yvCql2eOos=,tag:COKjPMhni8O2i30BgLCozw==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.12.1
