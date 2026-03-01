@@ -45,8 +45,16 @@ spec:
               DATABASE_URL: "postgresql://$${vault:secret/data/pg_default#USER}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/vaultwarden?sslmode=disable"
               SSO_ENABLED: "true"
               SSO_AUTHORITY: "https://zitadel.${DOMAIN1}"
-              SSO_CLIENT_ID: "$${client_id}"
-              SSO_CLIENT_SECRET: "${client_secret}"
+              SSO_CLIENT_ID:
+                valueFrom:
+                  secretKeyRef:
+                    name: vaultwarden-oidc-creds
+                    key: client_id
+              SSO_CLIENT_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: vaultwarden-oidc-creds
+                    key: client_secret
               RELOAD_TEMPLATES: "true"
             probes:
               liveness: &probes
