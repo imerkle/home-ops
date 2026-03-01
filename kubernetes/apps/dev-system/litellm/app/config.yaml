@@ -1,7 +1,7 @@
 model_list:
   - model_name: "qwen/*"
     litellm_params:
-      model: "openai/*"
+      model: "qwen/*"
       api_key: your-api-key-here
       custom_llm_provider: "openai"
       api_base: http://cliproxyapi:8317/v1
@@ -13,7 +13,7 @@ model_list:
       api_base: http://cliproxyapi:8317/v1
   - model_name: "antigravity/*"
     litellm_params:
-      model: "openai/*"
+      model: "antigravity/*"
       api_key: your-api-key-here
       custom_llm_provider: "openai"
       api_base: http://cliproxyapi:8317/v1
