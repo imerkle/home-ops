@@ -33,8 +33,8 @@ go2rtc:
   streams:
     garage_main:
       - rtsp://adminadmin:RootPassword1!@10.0.0.60:554/stream1
-    garage_sub:
-      - rtsp://adminadmin:RootPassword1!@10.0.0.60:554/stream2
+#    garage_sub:
+#      - rtsp://adminadmin:RootPassword1!@10.0.0.60:554/stream2
     # garage_ptz_mosaic:
     #   - ffmpeg:http://127.0.0.1:8090/mosaic.mjpg#video=h264
 
@@ -69,10 +69,10 @@ cameras:
           input_args: preset-rtsp-restream
           roles:
             - record
-        - path: rtsp://127.0.0.1:8554/garage_sub
-          input_args: preset-rtsp-restream
-          roles:
-            - detect
+#        - path: rtsp://127.0.0.1:8554/garage_sub
+#          input_args: preset-rtsp-restream
+#          roles:
+#            - detect
     onvif:
       host: 10.0.0.60
       port: 2020
