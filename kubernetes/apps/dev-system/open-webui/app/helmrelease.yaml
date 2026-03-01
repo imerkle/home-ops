@@ -22,7 +22,7 @@ spec:
             env:
               WEBUI_AUTH: "False"
               PORT: &port "8080"
-              OPENAI_API_BASE_URL: "http://litellm.dev-system.svc.cluster.local:4000/v1"
+              OPENAI_API_BASE_URL: "http://litellm.dev-system.svc.cluster.local:4000"
               OPENAI_API_KEY: "vault:secret/data/ai#LITELLM_MASTER_KEY"
             securityContext:
               allowPrivilegeEscalation: false
