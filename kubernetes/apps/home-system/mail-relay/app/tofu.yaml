@@ -24,3 +24,4 @@ spec:
   # Output information from the Terraform configuration
   writeOutputsToSecret:
     name: mail-relay-outputs
+  approvePlan: auto

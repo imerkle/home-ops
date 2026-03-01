@@ -34,7 +34,7 @@ provider "cloudflare" {
 
 provider "vault" {
   address          = "http://vault.vault:8200"
-  skip_child_token = true
+  skip_child_token = true #less secure to remove these policies lack the update permission on awuth/token/create
 
   # Configure for Kubernetes authentication when running in-cluster
   # This will use the pod's service account token automatically when running in tofu-controller
