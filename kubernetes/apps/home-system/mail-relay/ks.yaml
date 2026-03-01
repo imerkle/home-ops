@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: mail-relay
+  namespace: home-system
+spec:
+  targetNamespace: home-system
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: mail-relay
+  path: ./kubernetes/apps/home-system/mail-relay/app
