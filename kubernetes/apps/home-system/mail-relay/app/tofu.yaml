@@ -18,7 +18,6 @@ spec:
       value: "true"
   runnerPodTemplate:
     spec:
-      serviceAccountName: tf-runner
       securityContext:
         runAsNonRoot: true
         runAsUser: 65534
