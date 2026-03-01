@@ -9,7 +9,7 @@ spec:
   path: ./terraform/mail-relay-gcp-headscale
   sourceRef:
     kind: GitRepository
-    name: home-ops
+    name: flux-system
     namespace: flux-system
   backendConfig:
     disable: true  # Use default local backend for state
