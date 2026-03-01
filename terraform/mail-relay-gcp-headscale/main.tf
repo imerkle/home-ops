@@ -37,6 +37,14 @@ provider "vault" {
 
   # Configure for Kubernetes authentication when running in-cluster
   # This will use the pod's service account token automatically when running in tofu-controller
+  auth_login {
+    path = "auth/kubernetes/login"
+
+    parameters = {
+      role = "default"
+      jwt  = file("/var/run/secrets/kubernetes.io/serviceaccount/token")
+    }
+  }
 }
 
 data "vault_generic_secret" "gcp_credentials" {
