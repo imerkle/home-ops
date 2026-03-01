@@ -22,8 +22,6 @@ spec:
       securityContext:
         runAsNonRoot: true
         runAsUser: 65534
-        fsGroup: 65534
   # Output information from the Terraform configuration
   writeOutputsToSecret:
     name: mail-relay-outputs
-    namespace: home-system
