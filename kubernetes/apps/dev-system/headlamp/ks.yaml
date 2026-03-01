@@ -19,6 +19,3 @@ spec:
     kind: GitRepository
     name: flux-system
   wait: false
-  postBuild:
-    substitute:
-      DOMAIN1: x3y.space

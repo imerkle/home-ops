@@ -172,6 +172,11 @@ spec:
         # See https://www.vaultproject.io/docs/secrets/kv/index.html for more information.
         startupSecrets:
             - type: kv
+              path: secret/data/vaultwarden
+              data:
+                data:
+                  ADMIN_TOKEN: vaultwardenadmintoken123
+            - type: kv
               path: secret/data/ai
               data:
                 data:

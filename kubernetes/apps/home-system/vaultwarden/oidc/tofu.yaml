@@ -2,23 +2,26 @@
 apiVersion: infra.contrib.fluxcd.io/v1alpha2
 kind: Terraform
 metadata:
-  name: forgejo-zitadel-oidc
+  name: vaultwarden-zitadel-oidc
 spec:
   interval: 1h
   approvePlan: auto
   path: ./terraform/zitadel-oidc
+
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
+
   vars:
     - name: app_name
-      value: "forgejo-oidc"
+      value: "vaultwarden"
     - name: redirect_uris
       value:
-        - "https://forgejo.${DOMAIN1}/user/oauth2/Ok8Sh/callback"
+        - "https://vaultwarden.${DOMAIN1}/identity/connect/oidc-signin"
+
   writeOutputsToSecret:
-    name: forgejo-oidc-creds
+    name: vaultwarden-oidc-creds
     outputs:
       - client_id
       - client_secret

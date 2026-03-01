@@ -10,7 +10,7 @@ spec:
       namespace: network
       kind: Gateway
   hostnames:
-    - "flux-mcp.x3y.space"
+    - "flux-mcp.${DOMAIN1}"
   rules:
     - matches:
         - path:
