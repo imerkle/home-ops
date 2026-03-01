@@ -20,6 +20,20 @@ spec:
 
     controllers:
       vaultwarden:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          vault.security.banzaicloud.io/vault-role: "default"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: 16.4
+            env:
+              INIT_POSTGRES_DBNAME: vaultwarden
+              INIT_POSTGRES_HOST: "vault:secret/data/pg_default#HOST"
+              INIT_POSTGRES_USER: "vault:secret/data/pg_default#USER"
+              INIT_POSTGRES_PASS: "vault:secret/data/pg_default#PASSWORD"
+              INIT_POSTGRES_SUPER_PASS: "vault:secret/data/pg_default#PASSWORD"
         containers:
           app:
             image:
