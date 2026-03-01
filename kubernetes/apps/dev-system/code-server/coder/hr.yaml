@@ -18,7 +18,7 @@ spec:
       resources:
         requests:
          cpu: 175m
-         memory: 600Mi
+#         memory: 600Mi
         limits:
          memory: 600Mi
       podAnnotations:
