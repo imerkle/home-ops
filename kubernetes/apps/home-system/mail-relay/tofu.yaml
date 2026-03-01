@@ -4,7 +4,6 @@ apiVersion: infra.contrib.fluxcd.io/v1alpha2
 kind: Terraform
 metadata:
   name: mail-relay-gcp-headscale
-  namespace: home-system
 spec:
   interval: 10m
   path: ./terraform/mail-relay-gcp-headscale
