@@ -175,7 +175,7 @@ spec:
               path: secret/data/vaultwarden
               data:
                 data:
-                  ADMIN_TOKEN: vaultwardenadmintoken123
+                    ADMIN_TOKEN: ENC[AES256_GCM,data:vbhX3WPv7PU20SDn5KES5JZtfPj0vhJx,iv:Z4qIjnbQxPMrnzDfofbD9W0ND49XtwVAe71cEpXbKus=,tag:oB8RQ7W0OHy9ukawq6QJAQ==,type:str]
             - type: kv
               path: secret/data/ai
               data:
@@ -418,8 +418,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-03-01T16:44:26Z"
-    mac: ENC[AES256_GCM,data:jcKbVgpqiEkK4Q+sOV6yMwNBNkl1XxOcUDVfzw7aDIJ4jhyumfa1uaQ5AEsRbxbosWeZreL7Z0aRi06NugOvj5BJ8LQyWgcpC3QrLfeeTuxMStqvUd9zIDiNvuk8Qah1v+7WBfhZDJuarIAuNG0hvbUE0nBvauC7VN5heVVfois=,iv:/Bq8JE73u+oVdxRI5jBIV6KMI+mmtIOW4yvCql2eOos=,tag:COKjPMhni8O2i30BgLCozw==,type:str]
+    lastmodified: "2026-03-01T20:20:17Z"
+    mac: ENC[AES256_GCM,data:8PfD1/AE0TipapicpapIqMbdCnKOXBt2exnD8YBJKVRXBzbxn0oxSGDS4njMJQeta8v+cn+jmX+wsg927aW9Uppn3I+vtiE8fdrL9p5bIjCOPj0ehLX8aMGmyjK9/AWn1y86KGbH6HKaB5twWTHNOj4uGutYeXUdtm8GpmIb4g4=,iv:gJbWGk4+msHZ58eon3FxAtfSL3dQwkfg/NabiDCtKTo=,tag:IIP8/izLqjfctiicnnZ7EQ==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.12.1
