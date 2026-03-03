@@ -6,11 +6,11 @@ metadata:
 spec:
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/instance: matrix
+      app.kubernetes.io/part-of: matrix-stack
   ingress:
     - fromEndpoints:
         - matchLabels:
-            app.kubernetes.io/instance: mautrix-whatsapp
+            app.kubernetes.io/name: mautrix-whatsapp
       toPorts:
         - ports:
             - port: "8008"
@@ -33,7 +33,7 @@ spec:
   egress:
     - toEndpoints:
         - matchLabels:
-            app.kubernetes.io/instance: mautrix-whatsapp
+            app.kubernetes.io/name: mautrix-whatsapp
       toPorts:
         - ports:
             - port: "8000"
