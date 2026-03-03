@@ -6,8 +6,15 @@ metadata:
 spec:
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/instance: matrix
+      app.kubernetes.io/part-of: matrix-stack
   ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: mautrix-whatsapp
+      toPorts:
+        - ports:
+            - port: "8008"
+              protocol: TCP
     - fromEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: network
@@ -24,6 +31,13 @@ spec:
             - port: "8010"
               protocol: TCP
   egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: mautrix-whatsapp
+      toPorts:
+        - ports:
+            - port: "8000"
+              protocol: TCP
     - toEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: db
