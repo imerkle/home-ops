@@ -1,7 +1,7 @@
 id: whatsapp
 url: http://mautrix-whatsapp:8000
-as_token: {{ .WHATSAPP_AS_TOKEN }}
-hs_token: {{ .WHATSAPP_HS_TOKEN }}
+as_token: "$${vault:secret/data/mautrix#as_token}"
+hs_token: "$${vault:secret/data/mautrix#hs_token}"
 sender_localpart: whatsappbot
 rate_limited: false
 namespaces:
