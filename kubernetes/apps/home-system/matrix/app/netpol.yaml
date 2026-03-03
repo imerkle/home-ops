@@ -10,7 +10,7 @@ spec:
   ingress:
     - fromEndpoints:
         - matchLabels:
-            app.kubernetes.io/name: mautrix-whatsapp
+            app.kubernetes.io/instance: mautrix-whatsapp
       toPorts:
         - ports:
             - port: "8008"
@@ -33,7 +33,7 @@ spec:
   egress:
     - toEndpoints:
         - matchLabels:
-            app.kubernetes.io/name: mautrix-whatsapp
+            app.kubernetes.io/instance: mautrix-whatsapp
       toPorts:
         - ports:
             - port: "8000"
