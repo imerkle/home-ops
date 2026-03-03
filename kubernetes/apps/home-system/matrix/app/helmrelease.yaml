@@ -23,7 +23,7 @@ spec:
       postgres:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
-        user: postgres
+        user: ${vault:secret/data/pg_default#USER}
         password:
           secret: matrix-postgres-creds
           secretKey: password
@@ -77,7 +77,7 @@ spec:
       postgres:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
-        user: postgres
+        user: ${vault:secret/data/pg_default#USER}
         password:
           secret: matrix-postgres-creds
           secretKey: password
