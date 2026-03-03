@@ -13,12 +13,12 @@ spec:
     # Allow ingress from Synapse
     - fromEndpoints:
         - matchLabels:
-            app.kubernetes.io/name: matrix
+            app.kubernetes.io/instance: matrix
   egress:
     # Allow traffic to Synapse
     - toEndpoints:
         - matchLabels:
-            app.kubernetes.io/name: matrix
+            app.kubernetes.io/instance: matrix
     # Allow traffic to PostgreSQL
     - toEndpoints:
         - matchLabels:
