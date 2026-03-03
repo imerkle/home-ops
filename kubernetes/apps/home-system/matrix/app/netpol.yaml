@@ -10,6 +10,19 @@ spec:
   ingress:
     - fromEndpoints:
         - matchLabels:
+            app.kubernetes.io/part-of: matrix-stack
+      toPorts:
+        - ports:
+            - port: "8008"
+              protocol: TCP
+            - port: "8080"
+              protocol: TCP
+            - port: "8081"
+              protocol: TCP
+            - port: "80"
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
             app.kubernetes.io/name: mautrix-whatsapp
       toPorts:
         - ports:
@@ -31,6 +44,19 @@ spec:
             - port: "8010"
               protocol: TCP
   egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/part-of: matrix-stack
+      toPorts:
+        - ports:
+            - port: "8008"
+              protocol: TCP
+            - port: "8080"
+              protocol: TCP
+            - port: "8081"
+              protocol: TCP
+            - port: "80"
+              protocol: TCP
     - toEndpoints:
         - matchLabels:
             app.kubernetes.io/name: mautrix-whatsapp
