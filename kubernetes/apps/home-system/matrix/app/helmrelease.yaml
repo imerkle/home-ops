@@ -16,6 +16,20 @@ spec:
 
     synapse:
       enabled: true
+      extraInitContainers:
+        - name: init-db
+          image: ghcr.io/onedr0p/postgres-init:16.4
+          env:
+            - name: INIT_POSTGRES_DBNAME
+              value: "synapse"
+            - name: INIT_POSTGRES_HOST
+              value: "vault:secret/data/pg_default#HOST"
+            - name: INIT_POSTGRES_USER
+              value: "vault:secret/data/pg_default#USER"
+            - name: INIT_POSTGRES_PASS
+              value: "vault:secret/data/pg_default#PASSWORD"
+            - name: INIT_POSTGRES_SUPER_PASS
+              value: "vault:secret/data/pg_default#PASSWORD"
       ingress:
         host: matrix.${DOMAIN1}
         className: disabled
@@ -70,6 +84,20 @@ spec:
             forbidden_username_re: []
     matrixAuthenticationService:
       enabled: true
+      extraInitContainers:
+        - name: init-db
+          image: ghcr.io/onedr0p/postgres-init:16.4
+          env:
+            - name: INIT_POSTGRES_DBNAME
+              value: "matrix_authentication_service"
+            - name: INIT_POSTGRES_HOST
+              value: "vault:secret/data/pg_default#HOST"
+            - name: INIT_POSTGRES_USER
+              value: "vault:secret/data/pg_default#USER"
+            - name: INIT_POSTGRES_PASS
+              value: "vault:secret/data/pg_default#PASSWORD"
+            - name: INIT_POSTGRES_SUPER_PASS
+              value: "vault:secret/data/pg_default#PASSWORD"
       ingress:
         host: auth.${DOMAIN1}
         className: disabled
