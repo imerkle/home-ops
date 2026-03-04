@@ -9,6 +9,9 @@ resources:
   - secret.yaml
 configMapGenerator:
   - name: mautrix-whatsapp-config
+    options:
+      annotations:
+        vault.security.banzaicloud.io/mutate: "true"
     files:
       - ./whatsapp/config.yaml
       - ./whatsapp/registration.yaml
