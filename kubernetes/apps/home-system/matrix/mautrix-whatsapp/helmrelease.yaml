@@ -71,7 +71,7 @@ spec:
     persistence:
       config:
         type: configMap
-        name: mautrix-whatsapp-configmap
+        name: mautrix-whatsapp-config
         globalMounts:
           - path: /data/config.yaml
             subPath: config.yaml
