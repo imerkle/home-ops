@@ -101,8 +101,8 @@ spec:
             forbidden_username_re: []
       extraVolumes:
         - name: whatsapp-registration
-          secret:
-            secretName: mautrix-whatsapp-config
+          configMap:
+            name: mautrix-whatsapp-config
             items:
               - key: registration.yaml
                 path: whatsapp.yaml

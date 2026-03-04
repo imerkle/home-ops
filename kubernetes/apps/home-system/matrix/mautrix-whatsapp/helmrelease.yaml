@@ -27,6 +27,19 @@ spec:
               INIT_POSTGRES_USER: "vault:secret/data/pg_default#USER"
               INIT_POSTGRES_PASS: "vault:secret/data/pg_default#PASSWORD"
               INIT_POSTGRES_SUPER_PASS: "vault:secret/data/pg_default#PASSWORD"
+          render-config:
+            image:
+              repository: public.ecr.aws/docker/library/alpine
+              tag: 3.21
+            env:
+              AS_TOKEN: vault:secret/data/mautrix#as_token
+              HS_TOKEN: vault:secret/data/mautrix#hs_token
+            command: ["/bin/sh", "-c"]
+            args:
+              - >-
+                apk add --no-cache gettext &&
+                envsubst < /config/config.yaml > /data/config.yaml &&
+                envsubst < /config/registration.yaml > /data/registration.yaml
         containers:
           app:
             image:
@@ -70,15 +83,20 @@ spec:
             namespace: networking
     persistence:
       config:
-        type: secret
+        type: configMap
         name: mautrix-whatsapp-config
-        globalMounts:
-          - path: /data/config.yaml
-            subPath: config.yaml
-            readOnly: true
-          - path: /data/registration.yaml
-            subPath: registration.yaml
-            readOnly: true
+        advancedMounts:
+          mautrix-whatsapp:
+            render-config:
+              - path: /config
+      data:
+        type: emptyDir
+        advancedMounts:
+          mautrix-whatsapp:
+            app:
+              - path: /data
+            render-config:
+              - path: /data
       tmpfs:
         type: emptyDir
         advancedMounts:

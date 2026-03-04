@@ -1,0 +1,44 @@
+--- a/kubernetes/apps/home-system/matrix/mautrix-whatsapp/helmrelease.yaml
++++ b/kubernetes/apps/home-system/matrix/mautrix-whatsapp/helmrelease.yaml
+@@ -28,6 +28,17 @@
+               INIT_POSTGRES_USER: "vault:secret/data/pg_default#USER"
+               INIT_POSTGRES_PASS: "vault:secret/data/pg_default#PASSWORD"
+               INIT_POSTGRES_SUPER_PASS: "vault:secret/data/pg_default#PASSWORD"
++          render-config:
++            image:
++              repository: public.ecr.aws/docker/library/alpine
++              tag: 3.21
++            env:
++              AS_TOKEN: "vault:secret/data/mautrix#as_token"
++              HS_TOKEN: "vault:secret/data/mautrix#hs_token"
++            command: ["/bin/sh", "-c"]
++            args:
++              - sed "s/\$AS_TOKEN/$AS_TOKEN/g" /config/config.yaml | sed "s/\$HS_TOKEN/$HS_TOKEN/g" > /data/config.yaml &&
++                sed "s/\$AS_TOKEN/$AS_TOKEN/g" /config/registration.yaml | sed "s/\$HS_TOKEN/$HS_TOKEN/g" > /data/registration.yaml
+         containers:
+           app:
+             image:
+@@ -71,11 +82,15 @@
+       config:
+         type: configMap
+         name: mautrix-whatsapp-config
+-        globalMounts:
+-          - path: /data/config.yaml
+-            subPath: config.yaml
+-            readOnly: true
+-          - path: /data/registration.yaml
+-            subPath: registration.yaml
+-            readOnly: true
++        advancedMounts:
++          mautrix-whatsapp:
++            render-config:
++              - path: /config
++      data:
++        type: emptyDir
++        advancedMounts:
++          mautrix-whatsapp:
++            app:
++              - path: /data
++            render-config:
++              - path: /data
+       tmpfs:
