@@ -92,9 +92,24 @@ spec:
               msc4186_enabled: true
             database:
               allow_unsafe_locale: true
+        whatsapp-appservice.yaml:
+          config: |
+            app_service_config_files:
+              - /data/whatsapp/whatsapp.yaml
         forbidden_username.yaml:
           config: |
             forbidden_username_re: []
+      extraVolumes:
+        - name: whatsapp-registration
+          secret:
+            secretName: mautrix-whatsapp-secret
+            items:
+              - key: registration.yaml
+                path: whatsapp.yaml
+      extraVolumeMounts:
+        - name: whatsapp-registration
+          mountPath: /data/whatsapp
+          readOnly: true
     matrixAuthenticationService:
       enabled: true
 
