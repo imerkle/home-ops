@@ -424,8 +424,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-03-03T14:01:32Z"
-    mac: ENC[AES256_GCM,data:CZI23AaSn80/6Ob4XQs9NLzAM/jDfqsSMsbzT0hMyp29bcLMqfxdwtxXZlOOSSpeeG2dO7DyxA1VZs1h7+JHAbGKJckx84RhyFrNo78JMHRVTbvLa0dQP/yQkNZrInd1I40izJEFWdkux0MJjoKF7cC+0Pnayocd3x1VwW/xH64=,iv:bkc3xZ8+WG6vgX31SMOGusr/foFcVy9Pa+1Tk4w9oyQ=,tag:NUjhLVSUzU74xHXXHlXuxg==,type:str]
+    lastmodified: "2026-03-04T08:15:55Z"
+    mac: ENC[AES256_GCM,data:Qs+hdCPDms2bEJwLMqRFoXuIoiP/2Ff5aZg8Y47hhOzAxdXT/7rB1zgTMG/XW0XL6w7dd8c0xj54Hb7tFau2b9j32TVhtAMu3o5j4mwD6+T9I+lL+UAcRR2rMKsomtcsNnzcz3Zbqhuu+SKs5pNWsYtYT/V6nDLyF2qVUolVdlo=,iv:ARbrQswuDmeXMraCQmNrCKVSIpW/oeNz7gDLD9+ssFM=,tag:IkPVXu5qB3NIqa7CYwASGQ==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.12.1

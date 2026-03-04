@@ -7,12 +7,8 @@ resources:
   - httproutes.yaml
   - netpol.yaml
   - secret.yaml
-configMapGenerator:
+secretGenerator:
   - name: mautrix-whatsapp-config
-    options:
-      annotations:
-        vault.security.banzaicloud.io/mutate: "true"
-        vault.security.banzaicloud.io/vault-role: "default"
     files:
       - ./whatsapp/config.yaml
       - ./whatsapp/registration.yaml
