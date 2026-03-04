@@ -71,11 +71,14 @@ spec:
     persistence:
       config:
         type: configMap
-        name: mautrix-whatsapp-config
-        advancedMounts:
-          mautrix-whatsapp:
-            render-config:
-              - path: /config
+        name: mautrix-whatsapp-configmap
+        globalMounts:
+          - path: /data/config.yaml
+            subPath: config.yaml
+            readOnly: true
+          - path: /data/registration.yaml
+            subPath: registration.yaml
+            readOnly: true
       data:
         type: emptyDir
         advancedMounts:
