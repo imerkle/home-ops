@@ -23,7 +23,7 @@ metadata:
   namespace: &namespace kube-system
 spec:
   interval: 10m
-  path: ./kubernetes/apps/kube-system/multus/network
+  path: ./kubernetes/apps/kube-system/multus/networks
   prune: true
   sourceRef:
     kind: GitRepository
