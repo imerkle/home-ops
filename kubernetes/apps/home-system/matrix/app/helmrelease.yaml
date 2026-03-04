@@ -95,7 +95,7 @@ spec:
         whatsapp-appservice.yaml:
           config: |
             app_service_config_files:
-              - /data/whatsapp/whatsapp.yaml
+              - /data/whatsapp/registration.yaml
         forbidden_username.yaml:
           config: |
             forbidden_username_re: []
@@ -105,7 +105,7 @@ spec:
             name: mautrix-whatsapp-config
             items:
               - key: registration.yaml
-                path: whatsapp.yaml
+                path: registration.yaml
       extraVolumeMounts:
         - name: whatsapp-registration
           mountPath: /data/whatsapp
