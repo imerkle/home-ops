@@ -79,14 +79,6 @@ spec:
           - path: /data/registration.yaml
             subPath: registration.yaml
             readOnly: true
-      data:
-        type: emptyDir
-        advancedMounts:
-          mautrix-whatsapp:
-            app:
-              - path: /data
-            render-config:
-              - path: /data
       tmpfs:
         type: emptyDir
         advancedMounts:
