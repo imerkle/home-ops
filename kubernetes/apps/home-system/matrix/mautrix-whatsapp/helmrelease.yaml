@@ -29,15 +29,14 @@ spec:
               INIT_POSTGRES_SUPER_PASS: "vault:secret/data/pg_default#PASSWORD"
           render-config:
             image:
-              repository: public.ecr.aws/docker/library/alpine
-              tag: 3.21
+              repository: ghcr.io/bhgedigital/envsubst
+              tag: v1.0.0
             env:
               AS_TOKEN: vault:secret/data/mautrix#as_token
               HS_TOKEN: vault:secret/data/mautrix#hs_token
             command: ["/bin/sh", "-c"]
             args:
               - >-
-                apk add --no-cache gettext &&
                 envsubst < /config/config.yaml > /data/config.yaml &&
                 envsubst < /config/registration.yaml > /data/registration.yaml
         containers:
