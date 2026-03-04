@@ -27,18 +27,6 @@ spec:
               INIT_POSTGRES_USER: "vault:secret/data/pg_default#USER"
               INIT_POSTGRES_PASS: "vault:secret/data/pg_default#PASSWORD"
               INIT_POSTGRES_SUPER_PASS: "vault:secret/data/pg_default#PASSWORD"
-          render-config:
-            image:
-              repository: ghcr.io/bhgedigital/envsubst
-              tag: v1.0.0
-            env:
-              AS_TOKEN: vault:secret/data/mautrix#as_token
-              HS_TOKEN: vault:secret/data/mautrix#hs_token
-            command: ["/bin/sh", "-c"]
-            args:
-              - >-
-                envsubst < /config/config.yaml > /data/config.yaml &&
-                envsubst < /config/registration.yaml > /data/registration.yaml
         containers:
           app:
             image:
