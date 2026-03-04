@@ -7,3 +7,10 @@ resources:
   - httproutes.yaml
   - netpol.yaml
   - secret.yaml
+configMapGenerator:
+  - name: mautrix-whatsapp-config
+    files:
+      - ./whatsapp/config.yaml
+      - ./whatsapp/registration.yaml
+generatorOptions:
+  disableNameSuffixHash: true

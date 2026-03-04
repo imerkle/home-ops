@@ -5,11 +5,3 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./netpol.yaml
-
-configMapGenerator:
-  - name: mautrix-whatsapp-config
-    files:
-      - ./app/resources/config.yaml
-      - ./app/resources/registration.yaml
-generatorOptions:
-  disableNameSuffixHash: true
