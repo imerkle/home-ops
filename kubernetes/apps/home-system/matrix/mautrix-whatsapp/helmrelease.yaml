@@ -73,11 +73,7 @@ spec:
         type: configMap
         name: mautrix-whatsapp-config
         globalMounts:
-          - path: /data/config.yaml
-            subPath: config.yaml
-            readOnly: true
-          - path: /data/registration.yaml
-            subPath: registration.yaml
+          - path: /data
             readOnly: true
       tmpfs:
         type: emptyDir
