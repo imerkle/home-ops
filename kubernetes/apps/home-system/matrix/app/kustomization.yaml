@@ -12,5 +12,6 @@ configMapGenerator:
     files:
       - ./whatsapp/config.yaml
       - ./whatsapp/registration.yaml
+      - ./whatsapp/doublepuppet.yaml
 generatorOptions:
   disableNameSuffixHash: true
