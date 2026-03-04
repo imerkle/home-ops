@@ -6,8 +6,8 @@ resources:
   - ./helmrelease.yaml
   - ./netpol.yaml
 
-secretGenerator:
-  - name: mautrix-whatsapp-secret
+configMapGenerator:
+  - name: mautrix-whatsapp-config
     files:
       - ./app/resources/config.yaml
       - ./app/resources/registration.yaml

@@ -70,8 +70,8 @@ spec:
             namespace: networking
     persistence:
       config:
-        type: secret
-        name: mautrix-whatsapp-secret
+        type: configMap
+        name: mautrix-whatsapp-config
         globalMounts:
           - path: /data/config.yaml
             subPath: config.yaml
