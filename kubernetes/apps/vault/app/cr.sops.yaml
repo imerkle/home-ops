@@ -177,6 +177,8 @@ spec:
                 data:
                     as_token: ENC[AES256_GCM,data:Zlf855iXBDzj8Q95olNwLSLhgD9s+WQnE4D9v5HfDLzg6vx4,iv:lY2N1viNetDQAHuixuml0vCxH+sS1EeGmplkCUw1wSU=,tag:mdXMfkOMe8m5wNvU+lVa4A==,type:str]
                     hs_token: ENC[AES256_GCM,data:U78zzszsvdqF1efMRESi5NPEfpJrVmJEYEts9QlWwwNy6HHQ,iv:CzJ8RfuNMJe0pMDMXubHZozmhFY8YEP5552wKVDHrSE=,tag:fg/uAPYOiua//sRKRsYF7A==,type:str]
+                    as_token2: ENC[AES256_GCM,data:hNjplNeLXiHk9AeeHK8/zwByeSriJp8Z62nZvc4g0bL6KuxM,iv:fB20nAxesXdZH96iLnpa74hiukT4EPPRgenczPIiVAw=,tag:jgVnKyUKD+s0vHTkDF8JdA==,type:str]
+                    hs_token2: ENC[AES256_GCM,data:DtwpxkOwJCjd1zG1Pgvg7LHpdOGvcVbIeryhUc0CB62a7vre,iv:7nMjsmc+IpZvsJmSS1ScJtiDN06xqwv8AQA0UHi5QxA=,tag:mQMiJujq26Baf7IrFFF2zA==,type:str]
             - type: kv
               path: secret/data/vaultwarden
               data:
@@ -424,8 +426,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-03-04T08:15:55Z"
-    mac: ENC[AES256_GCM,data:Qs+hdCPDms2bEJwLMqRFoXuIoiP/2Ff5aZg8Y47hhOzAxdXT/7rB1zgTMG/XW0XL6w7dd8c0xj54Hb7tFau2b9j32TVhtAMu3o5j4mwD6+T9I+lL+UAcRR2rMKsomtcsNnzcz3Zbqhuu+SKs5pNWsYtYT/V6nDLyF2qVUolVdlo=,iv:ARbrQswuDmeXMraCQmNrCKVSIpW/oeNz7gDLD9+ssFM=,tag:IkPVXu5qB3NIqa7CYwASGQ==,type:str]
+    lastmodified: "2026-03-05T23:01:27Z"
+    mac: ENC[AES256_GCM,data:6hvhcYDzL0kFoe8FItVEe6xC02rDQeBmvPOIxp/sGbTXqEDngdqpI/mWw8j6AXd6p30r03kE6hXSVqn4MW/sonmnMD5L79STY/LWyEYaaLY8VMaR73ODiYnBCJYmFI8TCj5ef9A/nn0YKw782Yjp08yp/gQ3YkcgcmH5fiDPM/4=,iv:nQEnl+9shU5ChRmda7HI07VyF69kJUQDULvmycvyAHc=,tag:qMVTTQij18y3nk39q4wL9Q==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.12.1
