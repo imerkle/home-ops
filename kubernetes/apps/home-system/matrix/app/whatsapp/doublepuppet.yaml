@@ -9,7 +9,7 @@ url:
 # user (sender_localpart) is never used either.
 as_token: $${vault:secret/data/mautrix#as_token}
 hs_token: $${vault:secret/data/mautrix#hs_token}
-sender_localpart: random string
+sender_localpart: sender_localpart
 # Bridges don't like ratelimiting. This should only apply when using the
 # as_token, normal user tokens will still be ratelimited.
 rate_limited: false
