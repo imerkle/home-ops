@@ -51,7 +51,8 @@ spec:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
         user: vault:secret/data/pg_default#USER
-        value: vault:secret/data/pg_default#PASSWORD
+        password:
+          value: vault:secret/data/pg_default#PASSWORD
         database: synapse
       media:
         storage:
