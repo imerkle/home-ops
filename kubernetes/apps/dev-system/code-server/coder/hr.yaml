@@ -77,13 +77,6 @@ spec:
           value: "vault:secret/data/pg_default#PASSWORD"
         - name: CODER_POSTGRES_MAIN_DB
           value: "coder"
-      volumes:
-        - name: syncthing-data
-          persistentVolumeClaim:
-            claimName: syncthing-data-shared
-      volumeMounts:
-        - name: syncthing-data
-          mountPath: /home/coder/shared
       # extraContainers:
       #         - name: docker-sidecar
       #           image: docker:24-dind

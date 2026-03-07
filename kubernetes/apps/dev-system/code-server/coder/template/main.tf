@@ -304,12 +304,24 @@ resource "kubernetes_deployment" "main" {
             name       = "workspaces"
             read_only  = false
           }
+          volume_mount {
+            mount_path = "/home/coder/shared"
+            name       = "syncthing-data"
+            read_only  = false
+          }
         }
 
         volume {
           name = "workspaces"
           persistent_volume_claim {
             claim_name = kubernetes_persistent_volume_claim.workspaces.metadata.0.name
+            read_only  = false
+          }
+        }
+        volume {
+          name = "syncthing-data"
+          persistent_volume_claim {
+            claim_name = "syncthing-data-shared"
             read_only  = false
           }
         }
