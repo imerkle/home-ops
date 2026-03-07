@@ -18,6 +18,7 @@ resource "coderd_template" "kubernetes_dev" {
   versions = [
     {
       directory = "${path.module}/../template"
+      active = true
     }
   ]
 }
