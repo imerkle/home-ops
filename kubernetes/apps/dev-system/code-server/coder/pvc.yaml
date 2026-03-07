@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: syncthing-data-shared
+spec:
+  accessModes:
+    - ReadWriteMany  # CephFS supports this
+  storageClassName: ceph-filesystem # Match your CephFS storage class
+  volumeName: pvc-1ce68252-9876-4187-ac7d-70cd648cff8a
+  resources:
+    requests:
+      storage: 10Gi
