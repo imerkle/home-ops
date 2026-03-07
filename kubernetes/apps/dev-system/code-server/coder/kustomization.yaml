@@ -10,3 +10,4 @@ resources:
   - role.yaml
   - route.yaml
   - pvc.yaml
+  - template-tofu.yaml
