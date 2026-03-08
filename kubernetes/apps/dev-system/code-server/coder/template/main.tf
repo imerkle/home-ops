@@ -305,7 +305,7 @@ resource "kubernetes_deployment" "main" {
             read_only  = false
           }
           volume_mount {
-            mount_path = "/home/coder/shared"
+            mount_path = "/home/coder/"
             name       = "syncthing-data"
             read_only  = false
           }
