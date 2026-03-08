@@ -1,0 +1,24 @@
+---
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: coder-workspace-dev
+spec:
+  interval: 1h
+  approvePlan: auto  # Automatically apply changes (GitOps mode)
+  path: ./kubernetes/apps/dev-system/code-server/coder/deploy-workspace
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  runnerPodTemplate:
+    metadata:
+      annotations:
+        vault.security.banzaicloud.io/vault-role: "default"
+    spec:
+      env:
+        - name: CODER_URL
+          value: "https://coder.${DOMAIN1}"
+        - name: CODER_SESSION_TOKEN
+          # value: "vault:secret/data/coder#SESSION_TOKEN"
+          value: "AqY3zlzjst-VPC9li95Mthj3jByRs2yQl"
