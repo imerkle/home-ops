@@ -1,0 +1,21 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: zot-yt2009-build-initial
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      containers:
+      - name: kaniko
+        image: gcr.io/kaniko-project/executor:latest
+        args:
+        - "--context=git://github.com/ftde0/yt2009.git"
+        - "--destination=zot.dev-system.svc.cluster.local:5000/yt2009:latest"
+        - "--insecure"
+        - "--insecure-pull"
+      restartPolicy: OnFailure

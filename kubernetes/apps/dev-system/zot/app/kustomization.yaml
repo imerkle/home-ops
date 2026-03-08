@@ -4,6 +4,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ./helmrelease.yaml
+  - ./cronjob.yaml
+  - ./job.yaml
 configMapGenerator:
   - name: zot
     files:

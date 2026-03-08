@@ -1,0 +1,22 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: zot-yt2009-build
+spec:
+  schedule: "0 3 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: kaniko
+            image: gcr.io/kaniko-project/executor:latest
+            args:
+            - "--context=git://github.com/ftde0/yt2009.git"
+            - "--destination=zot.dev-system.svc.cluster.local:5000/yt2009:latest"
+            - "--insecure"
+            - "--insecure-pull"
+          restartPolicy: OnFailure
