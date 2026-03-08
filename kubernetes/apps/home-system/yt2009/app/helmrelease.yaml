@@ -52,21 +52,18 @@ spec:
         ports:
           http:
             port: 80
-    ingress:
+    route:
       app:
-        className: internal
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        hostnames:
+          - "yt2009.x3y.space"
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: Media
           gethomepage.dev/name: yt2009
           gethomepage.dev/icon: mdi-youtube
-        hosts:
-          - host: "yt2009.x3y.space"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
     persistence:
       data:
         type: emptyDir
