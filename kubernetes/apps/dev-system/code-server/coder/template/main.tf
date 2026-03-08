@@ -305,9 +305,10 @@ resource "kubernetes_deployment" "main" {
             read_only  = false
           }
           volume_mount {
-            mount_path = "/home/coder/"
+            mount_path = "/home/coder/dotfiles"
             name       = "syncthing-data"
             read_only  = false
+            sub_path   = "dotfiles"
           }
         }
 
@@ -359,6 +360,14 @@ resource "coder_agent" "main" {
 
     # 1. Fix ownership of the mount point
     sudo chown -R $(whoami):$(whoami) /workspaces
+
+    # Install stow
+    if command -v apt-get >/dev/null; then
+      sudo DEBIAN_FRONTEND=noninteractive apt-get update
+      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y stow
+    elif command -v apk >/dev/null; then
+      sudo apk add stow
+    fi
 
     # 2. Cleanup "Poisoned" Directories
     # If the folder exists but isn't a git repo, it's a failed clone from a previous run.
