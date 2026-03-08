@@ -171,7 +171,7 @@ locals {
 
     # ADD THIS: Forces envbuilder to use a specific user for the clone
     # and not default to root if the image supports it.
-    "ENVBUILDER_USER": "coder",
+    "ENVBUILDER_USER": "slim",
 
     # MODIFY THIS: We wrap the init script to fix permissions immediately
     "ENVBUILDER_INIT_SCRIPT" : <<-EOT
@@ -305,7 +305,7 @@ resource "kubernetes_deployment" "main" {
             read_only  = false
           }
           volume_mount {
-            mount_path = "/home/coder/dotfiles"
+            mount_path = "/home/slim/dotfiles"
             name       = "syncthing-data"
             read_only  = false
             sub_path   = "dotfiles"
@@ -469,15 +469,7 @@ module "code-server" {
   order    = 1
 }
 
-# See https://registry.coder.com/modules/coder/jetbrains
-module "jetbrains" {
-  count      = data.coder_workspace.me.start_count
-  source     = "registry.coder.com/coder/jetbrains/coder"
-  version    = "~> 1.0"
-  agent_id   = coder_agent.main.id
-  agent_name = "main"
-  folder     = "/home/coder"
-}
+
 
 resource "coder_metadata" "container_info" {
   count       = data.coder_workspace.me.start_count
