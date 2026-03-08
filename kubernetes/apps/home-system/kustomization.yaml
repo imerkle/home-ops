@@ -31,3 +31,4 @@ resources:
   - ./stalwart/ks.yaml
   - ./mail-relay/ks.yaml
   - ./vaultwarden/ks.yaml
+  - ./yt2009/ks.yaml
