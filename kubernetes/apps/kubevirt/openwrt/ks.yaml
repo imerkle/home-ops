@@ -12,6 +12,9 @@ spec:
     - name: kubevirt
   path: ./kubernetes/apps/kubevirt/openwrt/app
   postBuild:
-    substituteFrom:
-      - kind: Secret
-        name: openwrt-secret
+    substitute:
+      OPENWRT_ROUTER_NODE: k8s-0
+      OPENWRT_WAN_LINK: enp5s0.100
+      OPENWRT_LAN_LINK: enp5s0.200
+      OPENWRT_LAN_IP: 192.168.10.1
+      OPENWRT_LAN_NETMASK: 255.255.255.0

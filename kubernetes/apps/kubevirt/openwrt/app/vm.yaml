@@ -14,6 +14,15 @@ spec:
         kubevirt.io/domain: openwrt
         kubevirt.io/vm: openwrt
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - ${OPENWRT_ROUTER_NODE}
       domain:
         cpu:
           cores: 2
@@ -25,6 +34,9 @@ spec:
             - disk:
                 bus: virtio
               name: cloudinitdisk
+            - disk:
+                bus: virtio
+              name: state
           interfaces:
             - name: default
               masquerade: {}
@@ -58,8 +70,8 @@ spec:
                 - |
                   uci set network.wan.device='eth1'
                   uci set network.wan.proto='pppoe'
-                  uci set network.wan.username='${OPENWRT_PPPOE_USER}'
-                  uci set network.wan.password='${OPENWRT_PPPOE_PASS}'
+                  uci set network.wan.username='vault:secret/data/wan#username'
+                  uci set network.wan.password='vault:secret/data/wan#password'
                   uci set network.lan.device='eth2'
                   uci set network.lan.proto='static'
                   uci set network.lan.ipaddr='${OPENWRT_LAN_IP}'
@@ -70,3 +82,6 @@ spec:
                   uci add_list network.wan.dns='1.0.0.1'
                   uci commit network
                   /etc/init.d/network restart
+        - name: state
+          persistentVolumeClaim:
+            claimName: openwrt-state
