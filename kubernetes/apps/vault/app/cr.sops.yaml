@@ -172,6 +172,12 @@ spec:
         # See https://www.vaultproject.io/docs/secrets/kv/index.html for more information.
         startupSecrets:
             - type: kv
+              path: secret/data/wan
+              data:
+                data:
+                    username: ENC[AES256_GCM,data:rYRZMxlPm+yajY2NKC0+n+SPpeKDqBQCfpwdFEPou6jyZg==,iv:cSuV/oxTpvXx2hM2a8+7IS2khiCjP3jSvSkVe6ihQBU=,tag:HBqTKYr/kHO97TWCQKNXfw==,type:str]
+                    password: ENC[AES256_GCM,data:JCEX1W+8ufmwAxU=,iv:v5RcZm7TDtHoDK2BPi+Emk+YVxO9f4TQacEMACKXmL0=,tag:t6WhuCmoO6Q3+DJboXsjJQ==,type:str]
+            - type: kv
               path: secret/data/mautrix
               data:
                 data:
@@ -426,8 +432,8 @@ sops:
             cGVtdEFKejlESXpiQlBuTS9tZVN1TEEKgAoDvpDdU/Hn4xQ/baZ7KTRmC71Cgtgq
             4HM9RBAQp5YlGq4duaHDLXp7It7TLaT6zqt4kMnkr+pzpq39N6G+8A==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-03-05T23:01:27Z"
-    mac: ENC[AES256_GCM,data:6hvhcYDzL0kFoe8FItVEe6xC02rDQeBmvPOIxp/sGbTXqEDngdqpI/mWw8j6AXd6p30r03kE6hXSVqn4MW/sonmnMD5L79STY/LWyEYaaLY8VMaR73ODiYnBCJYmFI8TCj5ef9A/nn0YKw782Yjp08yp/gQ3YkcgcmH5fiDPM/4=,iv:nQEnl+9shU5ChRmda7HI07VyF69kJUQDULvmycvyAHc=,tag:qMVTTQij18y3nk39q4wL9Q==,type:str]
+    lastmodified: "2026-03-09T16:00:12Z"
+    mac: ENC[AES256_GCM,data:KQo4EUkM+zC4h7vMCLSagoE6KGufsOL5MLfYkl7N6O5jHmEt5bWFzDQb0OoCWcZknKd3Yq0LgjQUzLa4HpiAAWOePsxdCZkt2tkHMWIgy661fehI4BRwVAY6lwh9Xj4kyngjeQgJJNgrhiuFZ2rhD3HwJlFkIMbGC1Y872W5zfQ=,iv:iAyE30MafzzLCVAadwWlxH4KRisHX59FUDttOZSADWg=,tag:3k2e59qHcBxPIskQGuZO3w==,type:str]
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
     version: 3.12.1

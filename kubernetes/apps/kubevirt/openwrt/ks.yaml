@@ -11,3 +11,7 @@ spec:
   dependsOn:
     - name: kubevirt
   path: ./kubernetes/apps/kubevirt/openwrt/app
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: openwrt-secret
