@@ -47,7 +47,7 @@ machine:
   install:
     diskSelector:
       model: EVM SSD
-    image: factory.talos.dev/metal-installer/cc720ffb8efc8f12637b8660a86448a88b3f89f516995fb9c67bf80564e723b1:v1.12.0
+    image: factory.talos.dev/metal-installer/cbc20e313ea99869a01aba9ea3301f1cc29dc73e0a6987662b96a33538a25cc2:v1.12.1
     wipe: false
   kernel:
     modules:
@@ -59,7 +59,7 @@ machine:
     disableManifestsDirectory: true
     extraConfig:
       serializeImagePulls: false
-    image: ghcr.io/siderolabs/kubelet:v1.35.0
+    image: ghcr.io/siderolabs/kubelet:v1.33.1
     nodeIP:
       validSubnets:
         - 10.0.0.0/24
@@ -97,7 +97,7 @@ cluster:
     {% endif %}
   clusterName: main
   controlPlane:
-    endpoint: https://k8s.internal:6443
+    endpoint: https://10.0.0.99:6443
   discovery:
     enabled: true
     registries:
@@ -111,9 +111,9 @@ cluster:
       name: none
     dnsDomain: cluster.local
     podSubnets:
-      - 10.42.0.0/16
+      - 10.244.0.0/16
     serviceSubnets:
-      - 10.43.0.0/16
+      - 10.96.0.0/16
   secret: {{ ENV.CLUSTER_SECRET }}
   token: {{ ENV.CLUSTER_TOKEN }}
   {% if ENV.IS_CONTROLLER %}
@@ -128,17 +128,18 @@ cluster:
       rules:
         - level: Metadata
     certSANs:
+      - 10.0.0.99
       - k8s.internal
     disablePodSecurityPolicy: true
     extraArgs:
       enable-aggregator-routing: "true"
       feature-gates: MutatingAdmissionPolicy=true
-      runtime-config: admissionregistration.k8s.io/v1beta1=true
-    image: registry.k8s.io/kube-apiserver:v1.35.0
+      runtime-config: admissionregistration.k8s.io/v1alpha1=true
+    image: registry.k8s.io/kube-apiserver:v1.33.1
   controllerManager:
     extraArgs:
       bind-address: 0.0.0.0
-    image: registry.k8s.io/kube-controller-manager:v1.35.0
+    image: registry.k8s.io/kube-controller-manager:v1.33.1
   coreDNS:
     disabled: true
   etcd:
@@ -151,7 +152,7 @@ cluster:
       listen-metrics-urls: http://0.0.0.0:2381
   proxy:
     disabled: true
-    image: registry.k8s.io/kube-proxy:v1.35.0
+    image: registry.k8s.io/kube-proxy:v1.33.1
   scheduler:
     config:
       apiVersion: kubescheduler.config.k8s.io/v1
@@ -172,7 +173,7 @@ cluster:
                     whenUnsatisfiable: ScheduleAnyway
     extraArgs:
       bind-address: 0.0.0.0
-    image: registry.k8s.io/kube-scheduler:v1.35.0
+    image: registry.k8s.io/kube-scheduler:v1.33.1
   secretboxEncryptionSecret: {{ ENV.CLUSTER_SECRETBOXENCRYPTIONSECRET }}
   serviceAccount:
     key: {{ ENV.CLUSTER_SERVICEACCOUNT_KEY }}
@@ -223,3 +224,15 @@ cluster:
 # kind: WatchdogTimerConfig
 # device: /dev/watchdog0
 # timeout: 5m
+---
+apiVersion: v1alpha1
+kind: VLANConfig
+name: enp5s0.100
+vlanID: 100
+parent: enp5s0
+---
+apiVersion: v1alpha1
+kind: VLANConfig
+name: enp5s0.200
+vlanID: 200
+parent: enp5s0

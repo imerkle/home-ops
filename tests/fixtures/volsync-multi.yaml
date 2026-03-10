@@ -1,0 +1,5 @@
+volumes:
+  - name: home-assistant
+    capacity: 5Gi
+  - name: home-assistant-cache
+    capacity: 1Gi

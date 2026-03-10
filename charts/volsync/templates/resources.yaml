@@ -1,0 +1,104 @@
+{{- $_ := required "values.app is required" .Values.app -}}
+{{- $defaults := .Values.defaults -}}
+{{- range $volume := .Values.volumes }}
+{{- $name := required "volume.name is required" $volume.name -}}
+{{- $claimName := default $name $volume.claimName -}}
+{{- $secretName := default (printf "%s-volsync-secret" $name) $volume.repositorySecretName -}}
+{{- $schedule := default $defaults.schedule $volume.schedule -}}
+{{- $capacity := required (printf "volume.capacity is required for %s" $name) (default $defaults.capacity $volume.capacity) -}}
+{{- $accessModes := default $defaults.accessModes $volume.accessModes -}}
+{{- $sourceAccessModes := default $defaults.sourceAccessModes $volume.sourceAccessModes -}}
+{{- $cacheAccessModes := default $defaults.cacheAccessModes $volume.cacheAccessModes -}}
+{{- $storageClassName := default $defaults.storageClassName $volume.storageClassName -}}
+{{- $cacheStorageClassName := default $defaults.cacheStorageClassName $volume.cacheStorageClassName -}}
+{{- $snapshotClassName := default $defaults.snapshotClassName $volume.snapshotClassName -}}
+{{- $runAsUser := default $defaults.runAsUser $volume.runAsUser -}}
+{{- $runAsGroup := default $defaults.runAsGroup $volume.runAsGroup -}}
+{{- $fsGroup := default $defaults.fsGroup $volume.fsGroup -}}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+type: Opaque
+stringData:
+  {{- range $key, $value := $defaults.secretData }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $claimName }}
+spec:
+  accessModes:
+    {{- toYaml $accessModes | nindent 4 }}
+  dataSourceRef:
+    kind: ReplicationDestination
+    apiGroup: volsync.backube
+    name: {{ printf "%s-dst" $name }}
+  resources:
+    requests:
+      storage: {{ $capacity }}
+  storageClassName: {{ $storageClassName }}
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: {{ printf "%s-dst" $name }}
+  labels:
+    kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
+spec:
+  trigger:
+    manual: restore-once
+  kopia:
+    accessModes:
+      {{- toYaml $accessModes | nindent 6 }}
+    cacheAccessModes:
+      {{- toYaml $cacheAccessModes | nindent 6 }}
+    cacheCapacity: {{ $capacity }}
+    cacheStorageClassName: {{ $cacheStorageClassName }}
+    capacity: {{ $capacity }}
+    cleanupCachePVC: true
+    cleanupTempPVC: true
+    copyMethod: Snapshot
+    enableFileDeletion: true
+    moverSecurityContext:
+      runAsUser: {{ $runAsUser }}
+      runAsGroup: {{ $runAsGroup }}
+      fsGroup: {{ $fsGroup }}
+    repository: {{ $secretName }}
+    sourceIdentity:
+      sourceName: {{ $name }}
+    storageClassName: {{ $storageClassName }}
+    volumeSnapshotClassName: {{ $snapshotClassName }}
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: {{ $name }}
+spec:
+  sourcePVC: {{ $claimName }}
+  trigger:
+    schedule: {{ $schedule | quote }}
+  kopia:
+    accessModes:
+      {{- toYaml $sourceAccessModes | nindent 6 }}
+    cacheAccessModes:
+      {{- toYaml $cacheAccessModes | nindent 6 }}
+    cacheCapacity: {{ $capacity }}
+    cacheStorageClassName: {{ $cacheStorageClassName }}
+    compression: zstd-fastest
+    copyMethod: Snapshot
+    moverSecurityContext:
+      runAsUser: {{ $runAsUser }}
+      runAsGroup: {{ $runAsGroup }}
+      fsGroup: {{ $fsGroup }}
+    parallelism: 2
+    repository: {{ $secretName }}
+    retain:
+      hourly: 24
+      daily: 7
+    storageClassName: {{ $storageClassName }}
+    volumeSnapshotClassName: {{ $snapshotClassName }}
+{{ end }}

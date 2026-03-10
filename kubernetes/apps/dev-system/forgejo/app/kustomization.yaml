@@ -1,5 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+  - name: ${APP}-volsync-values
+    files:
+      - values.yaml=volsync.values.yaml
 resources:
   - helmrelease.yaml
   - secret-ssh.yaml
+  - servicemonitor.yaml
+  - grafanadashboard.yaml

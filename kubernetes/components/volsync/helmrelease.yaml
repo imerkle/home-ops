@@ -1,0 +1,50 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ${APP}-volsync
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: ./charts/volsync
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+      interval: 1h
+  values:
+    app: ${APP}
+    volumes:
+      - name: ${APP}
+        capacity: ${VOLSYNC_CAPACITY:=5Gi}
+    defaults:
+      schedule: "0 * * * *"
+      accessModes:
+        - ${VOLSYNC_ACCESSMODES:=ReadWriteOnce}
+      sourceAccessModes:
+        - ${VOLSYNC_SNAP_ACCESSMODES:=ReadWriteOnce}
+      cacheAccessModes:
+        - ${VOLSYNC_CACHE_ACCESSMODES:=ReadWriteOnce}
+      storageClassName: ${VOLSYNC_STORAGECLASS:=${STORE1}}
+      cacheStorageClassName: ${VOLSYNC_CACHE_SNAPSHOTCLASS:=${STORE1}}
+      snapshotClassName: ${VOLSYNC_SNAPSHOTCLASS:=csi-ceph-blockpool}
+      runAsUser: ${VOLSYNC_PUID:=1000}
+      runAsGroup: ${VOLSYNC_PGID:=1000}
+      fsGroup: ${VOLSYNC_PGID:=1000}
+      secretData:
+        KOPIA_FS_PATH: /repository
+        KOPIA_PASSWORD: "vault:secret/data/volsync#RESTIC_PASSWORD"
+        KOPIA_S3_BUCKET: test
+        KOPIA_REPOSITORY: s3:http://rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80/test
+        KOPIA_S3_ENDPOINT: rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80
+        AWS_S3_ENDPOINT: rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80
+        AWS_ACCESS_KEY_ID: KNJOTGE7Q7BRRDHBCS4X
+        AWS_SECRET_ACCESS_KEY: dG7hHBysokmVgkvIjCnl5L2pHwlc2cpoT4wen6Vb
+        KOPIA_S3_DISABLE_TLS: "true"
+        AWS_S3_DISABLE_TLS: "true"
+  valuesFrom:
+    - kind: ConfigMap
+      name: ${APP}-volsync-values
+      valuesKey: values.yaml
+      optional: true
