@@ -35,10 +35,8 @@ spec:
             - name: default
               masquerade: {}
             - name: wan
-              macAddress: "02:00:00:00:00:01"
               bridge: {}
             - name: lan
-              macAddress: "02:00:00:00:00:02"
               bridge: {}
         resources:
           requests:
