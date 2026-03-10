@@ -38,7 +38,7 @@ spec:
           bootloader:
             bios: {}
         machine:
-          type: pc
+          type: pc-q35
         resources:
           requests:
             memory: 1024Mi
