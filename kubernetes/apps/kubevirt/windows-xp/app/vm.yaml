@@ -1,0 +1,62 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kubevirt.io/virtualmachine_v1.json
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: windows-xp
+  labels:
+    app.kubernetes.io/name: windows-xp
+spec:
+  running: false
+  template:
+    metadata:
+      annotations:
+        kubevirt.io/disablePCIHole64: "true"
+      labels:
+        kubevirt.io/domain: windows-xp
+        kubevirt.io/vm: windows-xp
+    spec:
+      terminationGracePeriodSeconds: 0
+      domain:
+        cpu:
+          cores: 1
+        devices:
+          autoattachMemBalloon: false
+          disks:
+            - name: systemdisk
+              bootOrder: 2
+              disk:
+                bus: sata
+            - name: install-media
+              bootOrder: 1
+              cdrom:
+                bus: sata
+            - name: virtio-drivers
+              cdrom:
+                bus: sata
+          interfaces:
+            - name: default
+              masquerade: {}
+              model: e1000
+        features:
+          acpi: {}
+          apic: {}
+        firmware:
+          bootloader:
+            bios: {}
+        resources:
+          requests:
+            memory: 1024Mi
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - name: systemdisk
+          persistentVolumeClaim:
+            claimName: windows-xp-systemdisk
+        - name: install-media
+          persistentVolumeClaim:
+            claimName: windows-xp-install-media
+        - name: virtio-drivers
+          containerDisk:
+            image: quay.io/kubevirt/virtio-container-disk:v1.7.1

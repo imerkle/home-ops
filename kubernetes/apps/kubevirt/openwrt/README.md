@@ -17,11 +17,66 @@ The OpenWrt VM consumes:
 - `wan-net` on `${OPENWRT_WAN_LINK}`
 - `lan-net` on `${OPENWRT_LAN_LINK}`
 
-The VM bootstrap explicitly configures:
+The VM now boots from the persistent PVC `openwrt-state` instead of a transient `containerDisk`.
+That means once you fix OpenWrt from inside the guest, the changes survive VM restarts.
 
-- PPPoE on OpenWrt `eth1`
-- static LAN on OpenWrt `eth2`
-- DHCP service on the LAN interface
+This repo no longer relies on `cloudInitNoCloud` for OpenWrt bootstrap because the current
+`containercraft/openwrt:24` image does not apply that config in KubeVirt.
+
+## Root Disk Seeding
+
+Because this cluster does not have CDI `DataVolume` support installed, seed the persistent
+OpenWrt boot disk once before starting the VM from the PVC:
+
+```bash
+kubectl -n kubevirt patch vm openwrt --type merge -p '{"spec":{"running":false}}'
+./kubernetes/apps/kubevirt/openwrt/seed-rootdisk.sh
+kubectl -n kubevirt patch vm openwrt --type merge -p '{"spec":{"running":true}}'
+```
+
+The seeder stages `/disk/openwrt-24.qcow2` from the OpenWrt image, converts it to a raw disk,
+and writes the result into `openwrt-state` as `/disk.img`, which KubeVirt can boot directly
+from the filesystem PVC.
+
+If you already seeded the PVC with the older copy-only workflow, reseed it now. A qcow2 payload
+stored directly as `/disk.img` will show up in VNC as `No bootable device`.
+
+After that, any UCI changes made inside OpenWrt are persistent.
+
+## Console Access
+
+KubeVirt auto-attaches a serial device to this VM, so `virtctl console -n kubevirt openwrt`
+can connect even when the guest is not actually presenting a login prompt on `ttyS0`.
+
+With the current `containercraft/openwrt:24` image, the common failure mode is:
+
+- the VMI is `Running`
+- `virtctl console` connects and then appears to hang
+- the guest serial log stays empty because OpenWrt is not writing boot or login output to `ttyS0`
+
+Check that condition directly with:
+
+```bash
+./kubernetes/apps/kubevirt/openwrt/check-serial-console.sh
+```
+
+If the reported serial log size is `0`, this is a guest-image problem, not a KubeVirt transport problem.
+
+### Recovery Path
+
+If `virtctl console` hangs, use VNC to recover the guest instead:
+
+```bash
+virtctl vnc -n kubevirt openwrt
+```
+
+Inside OpenWrt, enable serial console persistently:
+
+- ensure the kernel command line includes `console=ttyS0`
+- ensure a login service is enabled on `ttyS0`
+- reboot the guest and confirm the serial log is no longer empty
+
+Because this VM boots from the persistent PVC `openwrt-state`, those guest-side changes survive restarts.
 
 ## Switch VLANs
 
@@ -69,15 +124,16 @@ If the switch has per-port PVID settings, use:
 
 1. Confirm the Talos node still has native management on `10.0.0.99`.
 2. Confirm the Talos node exposes `enp5s0.100` and `enp5s0.200` before moving the switch.
-3. Apply the OpenWrt manifests and wait for the VM to land on `talos-0d4c1`.
-4. Program the switch VLANs exactly as above, but leave the ISP router/modem in router mode first.
-5. Keep your admin laptop on `Port 8` so the switch UI and native management network remain reachable.
-6. Put one test device on `Port 1` in `VLAN 200`.
-7. Verify the test device receives `192.168.10.x` from OpenWrt and reaches `192.168.10.1`.
-8. Verify Talos and cluster access still work over the native management path on `10.0.0.99`.
-9. Put the ISP router/modem on `Port 2` into bridge mode.
-10. Verify OpenWrt establishes PPPoE on `WAN`.
-11. Move the remaining client devices from `Ports 3,4,5,7` onto `VLAN 200` one by one.
+3. Seed the OpenWrt root disk with [seed-rootdisk.sh](./seed-rootdisk.sh).
+4. Apply the OpenWrt manifests and wait for the VM to land on `talos-0d4c1`.
+5. Program the switch VLANs exactly as above, but leave the ISP router/modem in router mode first.
+6. Keep your admin laptop on `Port 8` so the switch UI and native management network remain reachable.
+7. Put one test device on `Port 1` in `VLAN 200`.
+8. Verify the test device receives `192.168.10.x` from OpenWrt and reaches `192.168.10.1`.
+9. Verify Talos and cluster access still work over the native management path on `10.0.0.99`.
+10. Put the ISP router/modem on `Port 2` into bridge mode.
+11. Verify OpenWrt establishes PPPoE on `WAN`.
+12. Move the remaining client devices from `Ports 3,4,5,7` onto `VLAN 200` one by one.
 
 ## Rollback
 
