@@ -8,8 +8,7 @@ Windows XP needs a few legacy-oriented settings to boot reliably on KubeVirt:
 
 - `kubevirt.io/disablePCIHole64: "true"` on the VM template, per the KubeVirt legacy Windows guidance
 - BIOS boot instead of UEFI
-- a `scsi` system disk, because KubeVirt does not expose an IDE hard-disk bus and stock XP setup usually fails against AHCI/SATA with `STOP 0x0000007B`
-- SATA CD-ROM devices for the installer and virtio driver media
+- a `sata` system disk to better match common VMware-origin XP appliances; if the imported image was built against a different controller, boot can still fail
 - an `e1000` NIC model instead of a virtio NIC
 
 The VM is created with `running: false` so Flux can reconcile it before the PVC contents are staged.
@@ -41,7 +40,7 @@ KubeVirt expects filesystem PVC-backed disk content at the root of the volume wi
 
 ## Important Limitation
 
-KubeVirt does not provide a legacy IDE/ATAPI hard-disk mode for this VM. For disks it supports `virtio` and `scsi`, while optical media is exposed as `sata`.
+KubeVirt does not provide a legacy IDE hard-disk mode for this VM. Current KubeVirt supports `virtio`, `sata`, and `scsi` disk buses.
 
 That means a stock Windows XP SP3 installer ISO can still fail during setup unless you do one of these:
 
