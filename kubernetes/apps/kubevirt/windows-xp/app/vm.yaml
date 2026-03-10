@@ -24,16 +24,9 @@ spec:
           autoattachMemBalloon: false
           disks:
             - name: systemdisk
-              bootOrder: 2
+              bootOrder: 1
               disk:
                 bus: scsi
-            - name: install-media
-              bootOrder: 1
-              cdrom:
-                bus: sata
-            - name: virtio-drivers
-              cdrom:
-                bus: sata
           interfaces:
             - name: default
               masquerade: {}
@@ -54,9 +47,3 @@ spec:
         - name: systemdisk
           persistentVolumeClaim:
             claimName: windows-xp-systemdisk
-        - name: install-media
-          persistentVolumeClaim:
-            claimName: windows-xp-install-media
-        - name: virtio-drivers
-          containerDisk:
-            image: quay.io/kubevirt/virtio-container-disk:v1.7.1
