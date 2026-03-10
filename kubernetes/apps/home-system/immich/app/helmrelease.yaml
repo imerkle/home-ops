@@ -13,6 +13,9 @@ spec:
         name: immich-charts
   interval: 1h
   values:
+    podAnnotations:
+      reloader.stakater.com/auto: "true"
+      vault.security.banzaicloud.io/vault-role: "default"
     image:
       tag: v1.124.0
     immich:
@@ -20,12 +23,11 @@ spec:
         library:
           existingClaim: immich-library
     env:
-      REDIS_HOSTNAME: redis.db.svc.cluster.local
-      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+      REDIS_HOSTNAME: dragonfly.db.svc.cluster.local
       DB_DATABASE_NAME: immich
-      DB_HOSTNAME: pg-default-rw.db.svc.cluster.local
-      DB_USERNAME: postgres
-      DB_PASSWORD: supersecretpas
+      DB_HOSTNAME: pg-vector-rw.db.svc.cluster.local
+      DB_USERNAME: app
+      DB_PASSWORD: vault:secret/data/pg_default#PASSWORD
       DB_PORT: "5432"
       LOG_LEVEL: log
     server:
