@@ -37,6 +37,8 @@ spec:
         firmware:
           bootloader:
             bios: {}
+        machine:
+          type: pc
         resources:
           requests:
             memory: 1024Mi

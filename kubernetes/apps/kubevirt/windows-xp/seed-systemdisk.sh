@@ -3,7 +3,7 @@ set -euo pipefail
 
 namespace="${1:-kubevirt}"
 claim="${2:-windows-xp-systemdisk}"
-size="${3:-20G}"
+size="${3:-40G}"
 pod="windows-xp-systemdisk-seed"
 image="alpine:3.20"
 

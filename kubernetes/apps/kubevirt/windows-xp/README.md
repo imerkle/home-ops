@@ -17,10 +17,12 @@ The VM is created with `running: false` so Flux can reconcile it before the PVC 
 
 Use a preinstalled Windows XP image instead of a stock XP installer ISO. A stock ISO usually fails on KubeVirt with `STOP 0x0000007B` during setup because XP text-mode setup does not have the needed storage driver.
 
-If your preinstalled image is an OVA, extract and import its VMDK into the system PVC:
+If your preinstalled image is an OVA or a VMDK, import it into the system PVC:
 
 ```bash
 ./kubernetes/apps/kubevirt/windows-xp/import-ova.sh /path/to/windows-xp.ova
+# or
+./kubernetes/apps/kubevirt/windows-xp/import-ova.sh /path/to/windows-xp.vmdk
 ```
 
 Then start the VM:
@@ -35,6 +37,7 @@ virtctl vnc -n kubevirt windows-xp
 Because this cluster does not currently use CDI `DataVolume` uploads, the system PVC must be prepared manually before the first boot:
 
 - `windows-xp-systemdisk` must contain a raw disk at `/disk.img`
+- the PVC must be at least as large as the guest virtual disk; the current preinstalled image is `40 GiB`, so this repo now requests `50Gi`
 
 KubeVirt expects filesystem PVC-backed disk content at the root of the volume with the filename `disk.img`.
 
@@ -57,6 +60,8 @@ If you still want to seed a blank disk manually:
 ```bash
 ./kubernetes/apps/kubevirt/windows-xp/seed-systemdisk.sh
 ```
+
+The helper now defaults to a `40G` raw disk so it matches the imported XP image size.
 
 2. Import a prepared disk image into the PVC or use a separately customized installer workflow.
 
