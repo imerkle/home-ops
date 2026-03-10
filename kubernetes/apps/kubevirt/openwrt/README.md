@@ -1,71 +1,94 @@
 # OpenWrt Router-On-A-Stick
 
-This app assumes a managed switch and a single Kubernetes node acting as the physical router uplink.
+This app implements the first cutover with native management on the Talos node and two tagged VLANs for OpenWrt WAN/LAN.
 
-## Topology
+## Repo Defaults
 
-- `MGMT VLAN`: node management, cluster access, switch management
-- `WAN VLAN`: switch trunk to the router node, bridged to the ISP modem/router in bridge mode
-- `LAN VLAN`: switch trunk to the router node, access ports for downstream clients
+The Flux kustomization in [ks.yaml](./ks.yaml) now targets the live router node:
+
+- router node: `talos-0d4c1`
+- native management: untagged `enp5s0` on `10.0.0.99`
+- WAN link: `enp5s0.100`
+- LAN link: `enp5s0.200`
+- OpenWrt LAN IP: `192.168.10.1/24`
 
 The OpenWrt VM consumes:
 
 - `wan-net` on `${OPENWRT_WAN_LINK}`
 - `lan-net` on `${OPENWRT_LAN_LINK}`
 
-Do not attach `lan-net` to the raw parent NIC. Keep node management on a separate VLAN/interface so OpenWrt and the node are not competing on the same L2 segment.
+The VM bootstrap explicitly configures:
 
-## Repo Defaults
+- PPPoE on OpenWrt `eth1`
+- static LAN on OpenWrt `eth2`
+- DHCP service on the LAN interface
 
-The Flux kustomization sets conservative defaults in [ks.yaml](./ks.yaml):
+## Switch VLANs
 
-- router node: `k8s-0`
-- WAN link: `enp5s0.100`
-- LAN link: `enp5s0.200`
-- OpenWrt LAN IP: `192.168.10.1/24`
+Use these VLANs for the first migration:
 
-Adjust those values before cutover if your trunk, VLAN IDs, or router node differ.
+- `VLAN 1`: native management
+- `VLAN 100`: WAN
+- `VLAN 200`: OpenWrt LAN
 
-## Talos Example
+Physical ports for the first staged cutover:
 
-Create VLAN subinterfaces on the router node before applying the VM. This follows the same resource style already commented in [talos/machineconfig.yaml.j2](/home/slim/repos/home-ops/talos/machineconfig.yaml.j2).
+- `Port 2`: ISP router/modem
+- `Port 6`: Talos node uplink
+- `Port 8`: admin port, stays on native management
+- `Port 1`: isolated OpenWrt test client
+- `Ports 3,4,5,7`: remain on the old native network until OpenWrt is proven stable
 
-```yaml
-# ---
-# apiVersion: v1alpha1
-# kind: VLANConfig
-# name: enp5s0.100
-# vlanID: 100
-# parent: enp5s0
-# ---
-# apiVersion: v1alpha1
-# kind: VLANConfig
-# name: enp5s0.200
-# vlanID: 200
-# parent: enp5s0
-```
+Membership:
 
-Recommended switch layout:
+- `VLAN 1`
+  - `Port 6` = `Untagged`
+  - `Port 8` = `Untagged`
+  - `Ports 3,4,5,7` = `Untagged`
+  - `Port 2` = `Not Member`
+  - `Port 1` = `Not Member`
+- `VLAN 100`
+  - `Port 6` = `Tagged`
+  - `Port 2` = `Untagged`
+  - `Ports 1,3,4,5,7,8` = `Not Member`
+- `VLAN 200`
+  - `Port 6` = `Tagged`
+  - `Port 1` = `Untagged`
+  - `Port 2` = `Not Member`
+  - `Ports 3,4,5,7,8` = `Not Member`
 
-- ISP modem/bridge port: access VLAN `100`
-- router node port: trunk VLANs `10,100,200`
-- downstream client ports: access VLAN `200`
-- one admin port: access VLAN `10`
+If the switch has per-port PVID settings, use:
+
+- `Port 6` PVID = `1`
+- `Port 2` PVID = `100`
+- `Port 1` PVID = `200`
+- `Port 8` PVID = `1`
+- `Ports 3,4,5,7` PVID = `1`
 
 ## Cutover Sequence
 
-1. Confirm the router node has the VLAN subinterfaces present.
-2. Confirm the switch trunk and access ports are in place.
-3. Deploy OpenWrt and verify LAN-side DHCP/admin access from a single test port on the `LAN VLAN`.
-4. Put the ISP device into bridge mode and verify PPPoE from OpenWrt.
-5. Move the remaining client ports to the `LAN VLAN`.
+1. Confirm the Talos node still has native management on `10.0.0.99`.
+2. Confirm the Talos node exposes `enp5s0.100` and `enp5s0.200` before moving the switch.
+3. Apply the OpenWrt manifests and wait for the VM to land on `talos-0d4c1`.
+4. Program the switch VLANs exactly as above, but leave the ISP router/modem in router mode first.
+5. Keep your admin laptop on `Port 8` so the switch UI and native management network remain reachable.
+6. Put one test device on `Port 1` in `VLAN 200`.
+7. Verify the test device receives `192.168.10.x` from OpenWrt and reaches `192.168.10.1`.
+8. Verify Talos and cluster access still work over the native management path on `10.0.0.99`.
+9. Put the ISP router/modem on `Port 2` into bridge mode.
+10. Verify OpenWrt establishes PPPoE on `WAN`.
+11. Move the remaining client devices from `Ports 3,4,5,7` onto `VLAN 200` one by one.
 
 ## Rollback
 
-Rollback is primarily a switch and ISP-router action, not a Kubernetes action.
+Rollback is switch- and ISP-side:
 
-1. Restore the switch profile that points client ports back to the ISP router path.
-2. Disable bridge mode on the ISP router.
-3. Only then use [gateway-switch.sh](./gateway-switch.sh) if the router node itself also needs its host route changed.
+1. Disable bridge mode on the ISP router/modem.
+2. Restore `Port 1` and any migrated client ports back to the old native network.
+3. Remove `Port 6` from `VLAN 100` and `VLAN 200` if you want the node fully out of the router path.
+4. Leave Talos on native management at `10.0.0.99`.
+5. Stop or scale down the OpenWrt VM after traffic is back on the ISP router path.
 
-The attached `openwrt-state` PVC gives the VM a persistent disk, but OpenWrt still needs guest-side storage configuration if you want to migrate runtime state fully off the container disk.
+## Verification Notes
+
+The current repo expects the Talos node to provide `enp5s0.100` and `enp5s0.200`, but you should confirm those links are visible on the live node before changing the switch. Do not move the switch ports until the node-side VLAN interfaces exist.

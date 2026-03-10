@@ -68,6 +68,7 @@ spec:
               #cloud-config
               runcmd:
                 - |
+                  # Bind the KubeVirt secondary NICs to OpenWrt WAN/LAN.
                   uci set network.wan.device='eth1'
                   uci set network.wan.proto='pppoe'
                   uci set network.wan.username='vault:secret/data/wan#username'
@@ -81,6 +82,16 @@ spec:
                   uci add_list network.wan.dns='1.1.1.1'
                   uci add_list network.wan.dns='1.0.0.1'
                   uci commit network
+                  uci set dhcp.lan='dhcp'
+                  uci set dhcp.lan.interface='lan'
+                  uci set dhcp.lan.start='100'
+                  uci set dhcp.lan.limit='150'
+                  uci set dhcp.lan.leasetime='12h'
+                  uci commit dhcp
+                  /etc/init.d/dnsmasq enable
+                  /etc/init.d/dnsmasq restart
+                  /etc/init.d/odhcpd enable
+                  /etc/init.d/odhcpd restart
                   /etc/init.d/network restart
         - name: state
           persistentVolumeClaim:

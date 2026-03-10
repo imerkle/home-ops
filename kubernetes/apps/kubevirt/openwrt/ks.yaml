@@ -13,7 +13,7 @@ spec:
   path: ./kubernetes/apps/kubevirt/openwrt/app
   postBuild:
     substitute:
-      OPENWRT_ROUTER_NODE: k8s-0
+      OPENWRT_ROUTER_NODE: talos-0d4c1
       OPENWRT_WAN_LINK: enp5s0.100
       OPENWRT_LAN_LINK: enp5s0.200
       OPENWRT_LAN_IP: 192.168.10.1

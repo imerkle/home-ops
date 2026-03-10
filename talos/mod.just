@@ -9,8 +9,6 @@ cluster_dir := talos_dir + '/' + cluster
 
 controller_cmd := "talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.endpoints[0]'"
 
-export TALOSCONFIG := cluster_dir + "/talosconfig"
-
 [private]
 default:
     just -l talos
@@ -18,6 +16,24 @@ default:
 [doc('Apply Talos config to a node')]
 apply-node node *args:
     just talos render-config "{{ node }}" | talosctl -n "{{ node }}" apply-config -f /dev/stdin {{ args }}
+
+[doc('Apply the router VLAN resources to a live node')]
+apply-router-vlans node *args:
+    editor_script="$(mktemp)"; \
+    trap 'rm -f "$editor_script"' EXIT; \
+    printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' 'file="$1"' "printf '\\n' >>\"\$file\"" "cat \"{{ talos_dir }}/router-vlans.yaml\" >>\"\$file\"" > "$editor_script"; \
+    chmod +x "$editor_script"; \
+    TALOS_EDITOR="$editor_script" talosctl edit machineconfig -n "{{ node }}" {{ args }}
+
+[doc('Fetch live Talos machine config for a node')]
+fetch-config node:
+    endpoint="$(talosctl config info -o yaml | yq -r '.endpoints[0]')"; \
+    talosctl get machineconfigs -n "{{ node }}" -e "$endpoint" -o yaml | yq -r '.spec'
+
+[doc('Render Talos config using the live node config as the base')]
+render-live-config node:
+    talosctl machineconfig patch <(just talos fetch-config "{{ node }}") \
+        -p @<(cat "{{ cluster_dir }}/nodes/{{ node }}.yaml.j2")
 
 [doc('Download Talos machine image')]
 download-image version schematic=shell("just talos gen-schematic-id"):
@@ -38,9 +54,13 @@ reboot-node node:
 
 [doc('Render Talos config for a node')]
 render-config node:
-    export IS_CONTROLPLANE="$(just talos machine-controlplane {{ node }})"; \
-    talosctl machineconfig patch <(just template talos "{{ cluster_dir }}/machineconfig.yaml.j2") \
-        -p @<(just template talos "{{ cluster_dir }}/nodes/{{ node }}.yaml.j2")
+    if command -v envconsul >/dev/null && command -v minijinja-cli >/dev/null; then \
+        export IS_CONTROLPLANE="$(just talos machine-controlplane {{ node }})"; \
+        talosctl machineconfig patch <(just template talos "{{ cluster_dir }}/machineconfig.yaml.j2") \
+            -p @<(cat "{{ cluster_dir }}/nodes/{{ node }}.yaml.j2"); \
+    else \
+        just talos render-live-config "{{ node }}"; \
+    fi
 
 [doc('Reset a node')]
 reset-node node:
@@ -62,7 +82,7 @@ upgrade-node node:
 
 [private]
 machine-controlplane node:
-    just template talos "{{ cluster_dir }}/nodes/{{ node }}.yaml.j2" | yq -e 'select(.machine) | (.machine.type == "controlplane") // ""'
+    cat "{{ cluster_dir }}/nodes/{{ node }}.yaml.j2" | yq -e 'select(.machine) | (.machine.type == "controlplane") // ""'
 
 [private]
 machine-image:
