@@ -26,14 +26,14 @@ spec:
             - name: systemdisk
               bootOrder: 2
               disk:
-                bus: ide
+                bus: scsi
             - name: install-media
               bootOrder: 1
               cdrom:
-                bus: ide
+                bus: sata
             - name: virtio-drivers
               cdrom:
-                bus: ide
+                bus: sata
           interfaces:
             - name: default
               masquerade: {}
