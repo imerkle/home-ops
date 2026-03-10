@@ -35,9 +35,13 @@ spec:
             - name: default
               masquerade: {}
             - name: wan
-              bridge: {}
+              macAddress: "02:00:00:00:00:01"
+              binding:
+                name: macvtap
             - name: lan
-              bridge: {}
+              macAddress: "02:00:00:00:00:02"
+              binding:
+                name: macvtap
         resources:
           requests:
             memory: 512Mi
