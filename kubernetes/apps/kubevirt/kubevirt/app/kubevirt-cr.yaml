@@ -8,7 +8,7 @@ spec:
   configuration:
     architectureConfiguration:
       amd64:
-        machineType: pc
+        machineType: q35
         emulatedMachines:
           - q35*
           - pc-q35*

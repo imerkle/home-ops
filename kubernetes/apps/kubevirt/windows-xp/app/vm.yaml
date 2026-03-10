@@ -38,7 +38,7 @@ spec:
           bootloader:
             bios: {}
         machine:
-          type: pc-1440fx-3.1
+          type: pc-i440fx-rhel7.6.0
         resources:
           requests:
             memory: 1024Mi
