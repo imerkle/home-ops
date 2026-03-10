@@ -6,6 +6,12 @@ metadata:
 spec:
   certificateRotateStrategy: {}
   configuration:
+    architectureConfiguration:
+      amd64:
+        machineType: pc
+        emulatedMachines:
+          - pc-q35-.*
+          - pc-.*
     developerConfiguration:
       featureGates: []
     imagePullPolicy: IfNotPresent

@@ -36,8 +36,9 @@ spec:
           apic: {}
         firmware:
           bootloader:
-            efi:
-              secureBoot: true
+            bios: {}
+        machine:
+          type: pc
         resources:
           requests:
             memory: 1024Mi

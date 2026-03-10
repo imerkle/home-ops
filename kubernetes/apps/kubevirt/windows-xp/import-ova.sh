@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ $# -lt 1 ]]; then
-  echo "usage: $0 /path/to/windows-xp.ova|/path/to/windows-xp.vmdk [namespace] [claim]"
+  echo "usage: $0 /path/to/windows-xp.ova|/path/to/windows-xp.vmdk|/path/to/windows-xp.vdi [namespace] [claim]"
   exit 1
 fi
 
@@ -18,7 +18,8 @@ if [[ ! -f "$source_path" ]]; then
 fi
 
 tmpdir="$(mktemp -d)"
-vmdk_path=""
+disk_path=""
+disk_name=""
 
 cleanup() {
   kubectl -n "$namespace" delete pod "$pod" --ignore-not-found >/dev/null 2>&1 || true
@@ -39,14 +40,20 @@ case "$source_path" in
       exit 1
     fi
     tar -xf "$source_path" -C "$tmpdir" "$vmdk_name"
-    vmdk_path="$tmpdir/$vmdk_name"
+    disk_path="$tmpdir/$vmdk_name"
+    disk_name="source.vmdk"
     ;;
   *.vmdk)
-    vmdk_path="$source_path"
+    disk_path="$source_path"
+    disk_name="source.vmdk"
+    ;;
+  *.vdi)
+    disk_path="$source_path"
+    disk_name="source.vdi"
     ;;
   *)
     echo "unsupported input: $source_path"
-    echo "expected a .ova or .vmdk file"
+    echo "expected a .ova, .vmdk, or .vdi file"
     exit 1
     ;;
 esac
@@ -97,12 +104,12 @@ spec:
 EOF
 
 kubectl -n "$namespace" wait --for=condition=Ready pod/"$pod" --timeout=120s >/dev/null
-kubectl -n "$namespace" cp "$vmdk_path" "$pod:/workspace/source.vmdk"
+kubectl -n "$namespace" cp "$disk_path" "$pod:/workspace/$disk_name"
 kubectl -n "$namespace" exec "$pod" -- /bin/sh -ec '
   rm -f /rootdisk/disk.img
   echo "== source image =="
-  qemu-img info /workspace/source.vmdk
-  qemu-img convert -f vmdk -O raw /workspace/source.vmdk /rootdisk/disk.img
+  qemu-img info /workspace/'"$disk_name"'
+  qemu-img convert -O raw /workspace/'"$disk_name"' /rootdisk/disk.img
   sync
   echo "== converted image =="
   qemu-img info /rootdisk/disk.img

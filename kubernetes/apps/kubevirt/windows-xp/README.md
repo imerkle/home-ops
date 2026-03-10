@@ -17,12 +17,14 @@ The VM is created with `running: false` so Flux can reconcile it before the PVC 
 
 Use a preinstalled Windows XP image instead of a stock XP installer ISO. A stock ISO usually fails on KubeVirt with `STOP 0x0000007B` during setup because XP text-mode setup does not have the needed storage driver.
 
-If your preinstalled image is an OVA or a VMDK, import it into the system PVC:
+If your preinstalled image is an OVA, VMDK, or VDI, import it into the system PVC:
 
 ```bash
 ./kubernetes/apps/kubevirt/windows-xp/import-ova.sh /path/to/windows-xp.ova
 # or
 ./kubernetes/apps/kubevirt/windows-xp/import-ova.sh /path/to/windows-xp.vmdk
+# or
+./kubernetes/apps/kubevirt/windows-xp/import-ova.sh /path/to/windows-xp.vdi
 ```
 
 Then start the VM:
