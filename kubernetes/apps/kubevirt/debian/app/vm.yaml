@@ -22,11 +22,11 @@ spec:
           autoattachMemBalloon: false
           disks:
             - name: install-media
-              bootOrder: 1
+              bootOrder: 2
               cdrom:
                 bus: sata
             - name: systemdisk
-              bootOrder: 2
+              bootOrder: 1
               disk:
                 bus: sata
           interfaces:
