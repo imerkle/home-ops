@@ -41,6 +41,19 @@ spec:
       ingress:
         main:
           enabled: false
+      route:
+        main:
+          annotations:
+            gethomepage.dev/enabled: "true"
+            gethomepage.dev/name: Immich
+            gethomepage.dev/description: Photo Management
+            gethomepage.dev/group: Home
+            gethomepage.dev/icon: immich.png
+          hostnames:
+            - "{{ .Release.Name }}.${DOMAIN1}"
+          parentRefs:
+            - name: envoy-internal
+              namespace: network
     microservices:
       resources:
         requests:
@@ -60,16 +73,3 @@ spec:
       enabled: false
     redis:
       enabled: false
-    route:
-      app:
-        annotations:
-          gethomepage.dev/enabled: "true"
-          gethomepage.dev/name: Immich
-          gethomepage.dev/description: Photo Management
-          gethomepage.dev/group: Home
-          gethomepage.dev/icon: immich.png
-        hostnames:
-          - "{{ .Release.Name }}.${DOMAIN1}"
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
