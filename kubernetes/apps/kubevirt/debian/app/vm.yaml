@@ -18,6 +18,7 @@ spec:
       domain:
         cpu:
           cores: 2
+          model: host-passthrough
         devices:
           autoattachMemBalloon: false
           disks:
