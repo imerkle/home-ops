@@ -38,11 +38,11 @@ spec:
         features:
           acpi: {}
           apic: {}
-        firmware:
-          bootloader:
-            bios: {}
+        # firmware:
+        #   bootloader:
+        #     bios: {}
         machine:
-          type: pc-i440fx-rhel7.6.0
+          type: q35
         resources:
           requests:
             memory: 2048Mi
