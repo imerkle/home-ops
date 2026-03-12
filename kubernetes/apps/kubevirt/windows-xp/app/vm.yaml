@@ -20,6 +20,38 @@ spec:
       domain:
         cpu:
           cores: 4
+        clock:
+          utc: {}
+          timer:
+            hpet:
+              present: false
+            pit:
+              tickPolicy: delay
+            rtc:
+              tickPolicy: catchup
+            hyperv: {}
+        features:
+          acpi: {}
+          apic: {}
+          smm: {}
+          hyperv:
+            relaxed: {}
+            vapic: {}
+            vpindex: {}
+            spinlocks:
+              spinlocks: 8191
+            synic: {}
+            synictimer:
+              direct: {}
+            tlbflush: {}
+            frequencies: {}
+            reenlightenment: {}
+            ipi: {}
+            runtime: {}
+            reset: {}
+        firmware:
+          bootloader:
+            bios: {}
         devices:
           autoattachMemBalloon: false
           disks:
@@ -39,14 +71,8 @@ spec:
             - type: tablet
               bus: usb
               name: tablet1
-        features:
-          acpi: {}
-          apic: {}
-        # firmware:
-        #   bootloader:
-        #     bios: {}
         machine:
-          type: pc
+          type: q35
         resources:
           requests:
             memory: 2048Mi
