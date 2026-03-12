@@ -24,6 +24,7 @@ spec:
               - "-1"
               - --xff-src
               - "lan"
+              - -ed
             resources:
               requests:
                 cpu: 10m
