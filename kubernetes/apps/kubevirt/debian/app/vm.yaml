@@ -1,0 +1,60 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kubevirt.io/virtualmachine_v1.json
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: debian
+  labels:
+    app.kubernetes.io/name: debian
+spec:
+  running: false
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: debian
+        kubevirt.io/vm: debian
+    spec:
+      terminationGracePeriodSeconds: 0
+      domain:
+        cpu:
+          cores: 2
+        devices:
+          autoattachMemBalloon: false
+          disks:
+            - name: install-media
+              bootOrder: 1
+              cdrom:
+                bus: sata
+            - name: systemdisk
+              bootOrder: 2
+              disk:
+                bus: sata
+          interfaces:
+            - name: default
+              masquerade: {}
+              model: e1000
+          inputs:
+            - type: tablet
+              bus: usb
+              name: tablet1
+        features:
+          acpi: {}
+          apic: {}
+        firmware:
+          bootloader:
+            bios: {}
+        machine:
+          type: pc-q35-rhel9.6.0
+        resources:
+          requests:
+            memory: 2048Mi
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - name: install-media
+          persistentVolumeClaim:
+            claimName: debian-install-media
+        - name: systemdisk
+          persistentVolumeClaim:
+            claimName: debian-systemdisk

@@ -13,4 +13,5 @@ resources:
   - ./namespace.yaml
   - ./kubevirt/ks.yaml
   - ./openwrt/ks.yaml
+  - ./debian/ks.yaml
   - ./windows-xp/ks.yaml
