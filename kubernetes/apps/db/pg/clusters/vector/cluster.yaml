@@ -8,6 +8,8 @@ metadata:
 spec:
   instances: 1
   imageName: ghcr.io/immich-app/postgres:16-vectorchord0.3.0-pgvectors0.3.0
+  postgresUID: 999
+  postgresGID: 999
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: restart
   storage:
