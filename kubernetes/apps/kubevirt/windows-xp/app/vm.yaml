@@ -38,7 +38,7 @@ spec:
           bootloader:
             bios: {}
         machine:
-          type: pc-i440fx-rhel7.6.0
+          type: pc-q35-rhel9.6.0
         resources:
           requests:
             memory: 1024Mi
