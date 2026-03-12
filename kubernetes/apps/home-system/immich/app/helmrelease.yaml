@@ -91,4 +91,4 @@ spec:
         existingClaim: syncthing-data
         globalMounts:
           - path: /usr/src/app/upload
-            subPath: /data/immich
+            subPath: immich
