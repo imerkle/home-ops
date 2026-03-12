@@ -19,12 +19,16 @@ spec:
       terminationGracePeriodSeconds: 0
       domain:
         cpu:
-          cores: 1
+          cores: 4
         devices:
           autoattachMemBalloon: false
           disks:
-            - name: systemdisk
+            - name: install-media
               bootOrder: 1
+              cdrom:
+                bus: sata
+            - name: systemdisk
+              bootOrder: 2
               disk:
                 bus: sata
           interfaces:
@@ -41,11 +45,14 @@ spec:
           type: pc-q35-rhel9.6.0
         resources:
           requests:
-            memory: 1024Mi
+            memory: 4028Mi
       networks:
         - name: default
           pod: {}
       volumes:
+        - name: install-media
+          persistentVolumeClaim:
+            claimName: windows-xp-install-media
         - name: systemdisk
           persistentVolumeClaim:
             claimName: windows-xp-systemdisk

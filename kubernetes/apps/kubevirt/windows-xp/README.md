@@ -15,7 +15,22 @@ The VM is created with `running: false` so Flux can reconcile it before the PVC 
 
 ## Preferred Workflow
 
-Use a preinstalled Windows XP image instead of a stock XP installer ISO. A stock ISO usually fails on KubeVirt with `STOP 0x0000007B` during setup because XP text-mode setup does not have the needed storage driver.
+Use a preinstalled Windows XP image instead of a stock XP installer ISO if possible. A stock ISO can still fail on KubeVirt with `STOP 0x0000007B` during setup because XP text-mode setup may not have the needed storage driver.
+
+If you want to try an ISO install anyway, stage the ISO into the install-media PVC and boot from that first:
+
+```bash
+./kubernetes/apps/kubevirt/windows-xp/stage-install-media.sh /home/slim/Downloads/Windows_XP_Professional_x64.iso
+kubectl -n kubevirt patch vm windows-xp --type merge -p '{"spec":{"running":true}}'
+virtctl vnc -n kubevirt windows-xp
+```
+
+The VM is currently sized to match the working QEMU test you described:
+
+- 4 vCPU cores
+- 4028 MiB RAM
+
+The VM intentionally stays on a supported `q35` machine type in KubeVirt, because every `i440fx/pc` attempt on this cluster has failed before guest boot with a libvirt PCI-root mismatch.
 
 If your preinstalled image is an OVA, VMDK, or VDI, import it into the system PVC:
 
