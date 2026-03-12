@@ -45,7 +45,7 @@ spec:
           type: pc-q35-rhel9.6.0
         resources:
           requests:
-            memory: 4028Mi
+            memory: 2048Mi
       networks:
         - name: default
           pod: {}
