@@ -19,7 +19,7 @@ spec:
               tag: latest
             args:
               - -v
-              - /w::rw
+              - /data::rw
               - --rproxy
               - "-1"
               - --xff-src
@@ -42,9 +42,9 @@ spec:
         globalMounts:
           - path: /cfg
       data:
-        existingClaim: copyparty-data
+        existingClaim: syncthing-data
         globalMounts:
-          - path: /w
+          - path: /data
     route:
       app:
         labels:
