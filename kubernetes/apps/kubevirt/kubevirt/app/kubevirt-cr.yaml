@@ -14,7 +14,10 @@ spec:
           - pc-q35*
           - pc*
     developerConfiguration:
-      featureGates: []
+      featureGates:
+        - CPUManager
+        - SupportContainerProcesses
+    cpuModel: "host-passthrough"
     imagePullPolicy: IfNotPresent
   customizeComponents: {}
   imagePullPolicy: IfNotPresent
