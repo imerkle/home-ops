@@ -10,3 +10,25 @@ kind: VLANConfig
 name: enp5s0.200
 vlanID: 200
 parent: enp5s0
+---
+apiVersion: v1alpha1
+kind: BridgeConfig
+name: br-openwrt-wan
+links:
+  - enp5s0.100
+stp:
+  enabled: false
+vlan:
+  filtering: false
+up: true
+---
+apiVersion: v1alpha1
+kind: BridgeConfig
+name: br-openwrt-lan
+links:
+  - enp5s0.200
+stp:
+  enabled: false
+vlan:
+  filtering: false
+up: true

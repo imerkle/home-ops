@@ -8,18 +8,11 @@ spec:
   config: '{
       "cniVersion": "0.3.1",
       "name": "wan-net",
-      "plugins": [
-        {
-          "type": "macvlan",
-          "master": "${OPENWRT_WAN_LINK}",
-          "mode": "passthru",
-          "ipam": {}
-        },
-        {
-          "type": "tuning",
-          "capabilities": {"mac": true}
-        }
-      ]
+      "type": "bridge",
+      "bridge": "${OPENWRT_WAN_LINK}",
+      "promiscMode": true,
+      "hairpinMode": true,
+      "ipam": {}
     }'
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/k8s.cni.cncf.io/networkattachmentdefinition_v1.json
@@ -31,16 +24,9 @@ spec:
   config: '{
       "cniVersion": "0.3.1",
       "name": "lan-net",
-      "plugins": [
-        {
-          "type": "macvlan",
-          "master": "${OPENWRT_LAN_LINK}",
-          "mode": "passthru",
-          "ipam": {}
-        },
-        {
-          "type": "tuning",
-          "capabilities": {"mac": true}
-        }
-      ]
+      "type": "bridge",
+      "bridge": "${OPENWRT_LAN_LINK}",
+      "promiscMode": true,
+      "hairpinMode": true,
+      "ipam": {}
     }'

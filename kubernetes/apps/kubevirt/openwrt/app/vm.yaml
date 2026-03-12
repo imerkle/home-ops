@@ -36,12 +36,10 @@ spec:
               masquerade: {}
             - name: wan
               macAddress: "02:00:00:00:00:01"
-              binding:
-                name: macvtap
+              bridge: {}
             - name: lan
               macAddress: "02:00:00:00:00:02"
-              binding:
-                name: macvtap
+              bridge: {}
         resources:
           requests:
             memory: 512Mi

@@ -8,20 +8,40 @@ The Flux kustomization in [ks.yaml](./ks.yaml) now targets the live router node:
 
 - router node: `talos-0d4c1`
 - native management: untagged `enp5s0` on `10.0.0.99`
-- WAN link: `enp5s0.100`
-- LAN link: `enp5s0.200`
+- WAN VLAN: `enp5s0.100` bridged into `br-openwrt-wan`
+- LAN VLAN: `enp5s0.200` bridged into `br-openwrt-lan`
 - OpenWrt LAN IP: `192.168.10.1/24`
 
 The OpenWrt VM consumes:
 
-- `wan-net` on `${OPENWRT_WAN_LINK}`
-- `lan-net` on `${OPENWRT_LAN_LINK}`
+- `wan-net` on host bridge `${OPENWRT_WAN_LINK}`
+- `lan-net` on host bridge `${OPENWRT_LAN_LINK}`
 
 The VM now boots from the persistent PVC `openwrt-state` instead of a transient `containerDisk`.
 That means once you fix OpenWrt from inside the guest, the changes survive VM restarts.
 
 This repo no longer relies on `cloudInitNoCloud` for OpenWrt bootstrap because the current
 `containercraft/openwrt:24` image does not apply that config in KubeVirt.
+
+## Why The Old Layout Failed
+
+Talos/KubeVirt/Multus can attach extra VM NICs in several ways, but the combination matters.
+
+The previous repo state mixed:
+
+- Multus `macvlan` secondary networks
+- KubeVirt VM secondary interfaces intended for VM exposure
+
+According to the Sidero Multus guide and the linked KubeVirt behavior notes, that is the wrong
+pattern for VMs you want to expose externally. For KubeVirt secondary interfaces, use a host
+`bridge` network on the node and attach the VM with KubeVirt `bridge` interfaces.
+
+This repo now follows that model:
+
+- Talos creates VLAN links `enp5s0.100` and `enp5s0.200`
+- Talos creates host bridges `br-openwrt-wan` and `br-openwrt-lan` over those VLAN links
+- Multus NADs use CNI `type: bridge`
+- OpenWrt uses KubeVirt `bridge` interfaces for `wan` and `lan`
 
 ## Root Disk Seeding
 
@@ -147,4 +167,11 @@ Rollback is switch- and ISP-side:
 
 ## Verification Notes
 
-The current repo expects the Talos node to provide `enp5s0.100` and `enp5s0.200`, but you should confirm those links are visible on the live node before changing the switch. Do not move the switch ports until the node-side VLAN interfaces exist.
+The current repo expects the Talos node to provide:
+
+- `enp5s0.100`
+- `enp5s0.200`
+- `br-openwrt-wan`
+- `br-openwrt-lan`
+
+Do not move the switch ports until those links exist on the live node.
