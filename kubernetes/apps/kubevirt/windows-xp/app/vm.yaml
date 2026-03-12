@@ -27,10 +27,10 @@ spec:
               bootOrder: 1
               cdrom:
                 bus: scsi
-            - name: systemdisk
-              bootOrder: 2
-              disk:
-                bus: scsi
+            # - name: systemdisk
+            #   bootOrder: 2
+            #   disk:
+            #     bus: scsi
           interfaces:
             - name: default
               masquerade: {}
