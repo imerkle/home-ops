@@ -17,7 +17,7 @@ spec:
       reloader.stakater.com/auto: "true"
       vault.security.banzaicloud.io/vault-role: "default"
     image:
-      tag: v1.124.0
+      tag: v1.133.0
     immich:
       persistence:
         library:
