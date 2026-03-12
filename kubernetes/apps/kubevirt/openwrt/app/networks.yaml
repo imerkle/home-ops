@@ -11,7 +11,6 @@ spec:
       "type": "bridge",
       "bridge": "${OPENWRT_WAN_LINK}",
       "promiscMode": true,
-      "hairpinMode": true,
       "ipam": {}
     }'
 ---
@@ -27,6 +26,5 @@ spec:
       "type": "bridge",
       "bridge": "${OPENWRT_LAN_LINK}",
       "promiscMode": true,
-      "hairpinMode": true,
       "ipam": {}
     }'
