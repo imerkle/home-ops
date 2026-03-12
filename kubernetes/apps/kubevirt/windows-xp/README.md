@@ -32,7 +32,7 @@ The VM is currently sized to match the working QEMU test you described:
 
 The VM intentionally stays on a supported `q35` machine type in KubeVirt, because every `i440fx/pc` attempt on this cluster has failed before guest boot with a libvirt PCI-root mismatch.
 
-If your preinstalled image is an OVA, VMDK, or VDI, import it into the system PVC:
+If your preinstalled image is an OVA, VMDK, VDI, or QCOW2, import it into the system PVC:
 
 ```bash
 ./kubernetes/apps/kubevirt/windows-xp/import-ova.sh /path/to/windows-xp.ova
@@ -40,6 +40,8 @@ If your preinstalled image is an OVA, VMDK, or VDI, import it into the system PV
 ./kubernetes/apps/kubevirt/windows-xp/import-ova.sh /path/to/windows-xp.vmdk
 # or
 ./kubernetes/apps/kubevirt/windows-xp/import-ova.sh /path/to/windows-xp.vdi
+# or
+./kubernetes/apps/kubevirt/windows-xp/import-ova.sh /path/to/windows-xp.qcow2
 ```
 
 Then start the VM:

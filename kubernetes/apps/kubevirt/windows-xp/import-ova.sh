@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ $# -lt 1 ]]; then
-  echo "usage: $0 /path/to/windows-xp.ova|/path/to/windows-xp.vmdk|/path/to/windows-xp.vdi [namespace] [claim]"
+  echo "usage: $0 /path/to/windows-xp.ova|/path/to/windows-xp.vmdk|/path/to/windows-xp.vdi|/path/to/windows-xp.qcow2 [namespace] [claim]"
   exit 1
 fi
 
@@ -51,9 +51,13 @@ case "$source_path" in
     disk_path="$source_path"
     disk_name="source.vdi"
     ;;
+  *.qcow2)
+    disk_path="$source_path"
+    disk_name="source.qcow2"
+    ;;
   *)
     echo "unsupported input: $source_path"
-    echo "expected a .ova, .vmdk, or .vdi file"
+    echo "expected a .ova, .vmdk, .vdi, or .qcow2 file"
     exit 1
     ;;
 esac

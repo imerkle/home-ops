@@ -23,14 +23,14 @@ spec:
         devices:
           autoattachMemBalloon: false
           disks:
-            - name: install-media
-              bootOrder: 1
-              cdrom:
-                bus: scsi
-            # - name: systemdisk
-            #   bootOrder: 2
-            #   disk:
+            # - name: install-media
+            #   bootOrder: 1
+            #   cdrom:
             #     bus: scsi
+            - name: systemdisk
+              bootOrder: 1
+              disk:
+                bus: scsi
           interfaces:
             - name: default
               masquerade: {}
@@ -50,9 +50,9 @@ spec:
         - name: default
           pod: {}
       volumes:
-        - name: install-media
-          persistentVolumeClaim:
-            claimName: windows-xp-install-media
-        # - name: systemdisk
+        # - name: install-media
         #   persistentVolumeClaim:
-        #     claimName: windows-xp-systemdisk
+        #     claimName: windows-xp-install-media
+        - name: systemdisk
+          persistentVolumeClaim:
+            claimName: windows-xp-systemdisk
