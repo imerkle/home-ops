@@ -26,11 +26,11 @@ spec:
             - name: install-media
               bootOrder: 1
               cdrom:
-                bus: sata
+                bus: scsi
             - name: systemdisk
               bootOrder: 2
               disk:
-                bus: sata
+                bus: scsi
           interfaces:
             - name: default
               masquerade: {}
@@ -42,7 +42,7 @@ spec:
           bootloader:
             bios: {}
         machine:
-          type: pc-q35-rhel9.6.0
+          type: q35
         resources:
           requests:
             memory: 2048Mi
@@ -53,6 +53,6 @@ spec:
         - name: install-media
           persistentVolumeClaim:
             claimName: windows-xp-install-media
-        - name: systemdisk
-          persistentVolumeClaim:
-            claimName: windows-xp-systemdisk
+        # - name: systemdisk
+        #   persistentVolumeClaim:
+        #     claimName: windows-xp-systemdisk
