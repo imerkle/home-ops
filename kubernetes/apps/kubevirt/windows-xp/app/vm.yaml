@@ -35,6 +35,10 @@ spec:
             - name: default
               masquerade: {}
               model: e1000
+          inputs:
+            - type: tablet
+              bus: usb
+              name: tablet1
         features:
           acpi: {}
           apic: {}
