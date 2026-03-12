@@ -29,6 +29,7 @@ spec:
       DB_USERNAME: postgres
       DB_PASSWORD: vault:secret/data/pg_default#PASSWORD
       DB_PORT: "5432"
+      DB_VECTOR_EXTENSION: vectorchord
       LOG_LEVEL: log
     server:
       resources:
