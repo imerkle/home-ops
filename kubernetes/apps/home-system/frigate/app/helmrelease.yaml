@@ -98,9 +98,10 @@ spec:
           - path: /config
             subPath: config
       media:
-        existingClaim: frigate-media
+        existingClaim: syncthing-data
         globalMounts:
           - path: /media
+            subPath: frigate
       config-file:
         type: configMap
         name: frigate-configmap
