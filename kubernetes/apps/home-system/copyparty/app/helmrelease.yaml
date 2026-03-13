@@ -52,6 +52,7 @@ spec:
         existingClaim: frigate-media
         globalMounts:
           - path: /frigate
+            subPath: frigate
     route:
       app:
         labels:
