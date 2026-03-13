@@ -51,6 +51,8 @@ spec:
               DB_PORT: "5432"
               DB_VECTOR_EXTENSION: vectorchord
               LOG_LEVEL: log
+              IMMICH_ALLOW_SETUP: false
+
             probes:
               liveness:
                 enabled: true
