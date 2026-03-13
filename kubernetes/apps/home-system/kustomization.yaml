@@ -30,5 +30,6 @@ resources:
   - ./blocky/ks.yaml
   - ./stalwart/ks.yaml
   - ./mail-relay/ks.yaml
+  - ./dashboards/ks.yaml
   - ./vaultwarden/ks.yaml
   - ./yt2009/ks.yaml
