@@ -16,6 +16,27 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
           vault.security.banzaicloud.io/vault-role: "default"
+        initContainers:
+          init-storage:
+            image:
+              repository: busybox
+              tag: "1.36"
+            command:
+              - /bin/sh
+              - -c
+              - |
+                set -eu
+                mkdir -p \
+                  /usr/src/app/upload/upload \
+                  /usr/src/app/upload/thumbs \
+                  /usr/src/app/upload/backups \
+                  /usr/src/app/upload/library \
+                  /usr/src/app/upload/profile \
+                  /usr/src/app/upload/encoded-video
+                : > /usr/src/app/upload/.immich
+                for dir in upload thumbs backups library profile encoded-video; do
+                  : > "/usr/src/app/upload/${dir}/.immich"
+                done
         containers:
           app:
             image:
