@@ -1,0 +1,3 @@
+volumes:
+  - name: frigate
+    capacity: 5Gi

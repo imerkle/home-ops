@@ -10,6 +10,9 @@ configMapGenerator:
   - name: frigate-configmap
     files:
       - ./config/config.yml
+  - name: ${APP}-volsync-values
+    files:
+      - values.yaml=volsync.values.yaml
   # - name: frigate-ptz-mosaic
   #   files:
   #     - ./config/ptz_mosaic.py
