@@ -12,4 +12,60 @@ spec:
   datasources:
     - datasourceName: prometheus
       inputName: DS_PROMETHEUS
-  url: https://grafana.com/api/dashboards/13877/revisions/1/download
+  json: >
+    {
+      "title": "Ethereum Gas Details",
+      "refresh": "1m",
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "uid": "eth-gas-custom",
+      "schemaVersion": 39,
+      "panels": [
+        {
+          "type": "stat",
+          "title": "Current Gas Price (Gwei)",
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "targets": [
+            {
+              "expr": "eth_gas_price_gwei",
+              "refId": "A",
+              "instant": true
+            }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "Gas Price History (Gwei)",
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 0
+          },
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "targets": [
+            {
+              "expr": "eth_gas_price_gwei",
+              "refId": "A"
+            }
+          ],
+          "options": {
+            "tooltip": {
+              "mode": "single"
+            }
+          }
+        }
+      ]
+    }
