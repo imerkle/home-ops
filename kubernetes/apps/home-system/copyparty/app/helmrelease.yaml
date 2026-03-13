@@ -20,6 +20,8 @@ spec:
             args:
               - -v
               - /data::rw
+              - -v
+              - /frigate::r
               - -ed
               - --rproxy
               - "-1"
@@ -46,6 +48,10 @@ spec:
         existingClaim: syncthing-data
         globalMounts:
           - path: /data
+      frigate:
+        existingClaim: frigate-media
+        globalMounts:
+          - path: /frigate
     route:
       app:
         labels:
