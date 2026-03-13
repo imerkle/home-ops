@@ -1,0 +1,27 @@
+---
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: immich-zitadel-oidc
+spec:
+  interval: 1h
+  approvePlan: auto
+  path: ./terraform/zitadel-oidc
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  vars:
+    - name: app_name
+      value: "immich-oidc"
+    - name: redirect_uris
+      value:
+        - "https://immich.${DOMAIN1}/auth/login"
+        - "https://immich.${DOMAIN1}/user-settings"
+        - "https://immich.${DOMAIN1}/api/oauth/mobile-redirect"
+        - "app.immich:///oauth-callback"
+  writeOutputsToSecret:
+    name: immich-oidc-creds
+    outputs:
+      - client_id
+      - client_secret

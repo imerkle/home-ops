@@ -39,6 +39,21 @@ spec:
         - ports:
             - port: "6379"
               protocol: TCP
+    # Allow access to Zitadel inside the cluster
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: zitadel
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    # Allow HTTPS egress for OIDC discovery and callback flows
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
     # Allow DNS
     - toEndpoints:
         - matchLabels:

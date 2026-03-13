@@ -43,6 +43,7 @@ spec:
               repository: ghcr.io/immich-app/immich-server
               tag: v2.5.6
             env:
+              IMMICH_CONFIG_FILE: /config/immich-config.yaml
               REDIS_HOSTNAME: dragonfly.db.svc.cluster.local
               DB_DATABASE_NAME: immich
               DB_HOSTNAME: pg-vector-rw.db.svc.cluster.local
@@ -52,7 +53,6 @@ spec:
               DB_VECTOR_EXTENSION: vectorchord
               LOG_LEVEL: log
               IMMICH_ALLOW_SETUP: false
-
             probes:
               liveness:
                 enabled: true
@@ -110,6 +110,15 @@ spec:
           - name: envoy-internal
             namespace: network
     persistence:
+      config:
+        type: secret
+        name: immich-config
+        advancedMounts:
+          immich:
+            app:
+              - path: /config/immich-config.yaml
+                subPath: immich-config.yaml
+                readOnly: true
       library:
         existingClaim: syncthing-data
         globalMounts:

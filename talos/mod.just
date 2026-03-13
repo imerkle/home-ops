@@ -25,6 +25,14 @@ apply-router-vlans node *args:
     chmod +x "$editor_script"; \
     TALOS_EDITOR="$editor_script" talosctl edit machineconfig -n "{{ node }}" {{ args }}
 
+[doc('Apply only the router bridge resources to a live node')]
+apply-router-bridges node *args:
+    editor_script="$(mktemp)"; \
+    trap 'rm -f "$editor_script"' EXIT; \
+    printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' 'file="$1"' "printf '\\n' >>\"\$file\"" "awk 'BEGIN { RS=\"---\\n\"; ORS=\"\" } /kind: BridgeConfig/ { print \"---\\n\" \$0 }' \"{{ talos_dir }}/router-vlans.yaml\" >>\"\$file\"" > "$editor_script"; \
+    chmod +x "$editor_script"; \
+    TALOS_EDITOR="$editor_script" talosctl edit machineconfig -n "{{ node }}" {{ args }}
+
 [doc('Fetch live Talos machine config for a node')]
 fetch-config node:
     endpoint="$(talosctl config info -o yaml | yq -r '.endpoints[0]')"; \

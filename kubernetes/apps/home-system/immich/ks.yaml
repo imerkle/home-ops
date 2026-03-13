@@ -3,6 +3,27 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
+  name: immich-oidc
+spec:
+  targetNamespace: home-system
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: immich-oidc
+  dependsOn:
+    - name: vault
+      namespace: vault
+  path: ./kubernetes/apps/home-system/immich/oidc
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: home-ops
+  wait: true
+  interval: 30m
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
   name: &app immich
 spec:
   components:
@@ -16,6 +37,7 @@ spec:
       namespace: rook-ceph
     - name: vault
       namespace: vault
+    - name: immich-oidc
   path: ./kubernetes/apps/home-system/immich/app
   prune: true
   sourceRef:
@@ -27,3 +49,6 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CAPACITY: 50Gi
+    substituteFrom:
+      - kind: Secret
+        name: immich-oidc-creds
