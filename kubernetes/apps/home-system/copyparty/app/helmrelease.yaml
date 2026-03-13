@@ -21,7 +21,7 @@ spec:
               - -v
               - /data::rw
               - -v
-              - /frigate::r
+              - /frigate:/frigate:r
               - -ed
               - --rproxy
               - "-1"
@@ -52,7 +52,6 @@ spec:
         existingClaim: frigate-media
         globalMounts:
           - path: /frigate
-            subPath: frigate
     route:
       app:
         labels:
