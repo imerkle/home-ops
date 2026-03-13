@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${APP}-volsync-defaults
+data:
+  values.yaml: |
+    volumes:
+      - name: ${APP}
+        capacity: ${VOLSYNC_CAPACITY:=5Gi}

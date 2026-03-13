@@ -1,0 +1,3 @@
+volumes:
+  - name: home-assistant
+    capacity: 5Gi

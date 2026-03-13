@@ -31,6 +31,19 @@ class VolsyncChartTests(unittest.TestCase):
         )
         return [doc for doc in yaml.safe_load_all(result.stdout) if doc]
 
+    def render_merged(self, fixture_names: list[str], app: str):
+        cmd = ["helm", "template", f"{app}-volsync", str(CHART)]
+        for fixture_name in fixture_names:
+            cmd.extend(["-f", str(FIXTURES / fixture_name)])
+        cmd.extend(["--set", f"app={app}"])
+        result = subprocess.run(
+            cmd,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return [doc for doc in yaml.safe_load_all(result.stdout) if doc]
+
     def test_renders_single_pvc_bundle(self):
         documents = self.render("volsync-single.yaml", "forgejo")
 
@@ -85,6 +98,19 @@ class VolsyncChartTests(unittest.TestCase):
             source_documents["home-assistant-cache"]["spec"]["kopia"]["repository"],
             "home-assistant-cache-volsync-secret",
         )
+
+    def test_custom_values_replace_default_single_volume_list(self):
+        documents = self.render_merged(
+            ["volsync-default-single.yaml", "volsync-multi.yaml"],
+            "home-assistant",
+        )
+
+        pvc_names = {
+            doc["metadata"]["name"]
+            for doc in documents
+            if doc["kind"] == "PersistentVolumeClaim"
+        }
+        self.assertEqual(pvc_names, {"home-assistant", "home-assistant-cache"})
 
 
 if __name__ == "__main__":

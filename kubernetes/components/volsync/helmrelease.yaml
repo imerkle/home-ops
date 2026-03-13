@@ -15,9 +15,6 @@ spec:
       interval: 1h
   values:
     app: ${APP}
-    volumes:
-      - name: ${APP}
-        capacity: ${VOLSYNC_CAPACITY:=5Gi}
     defaults:
       schedule: "0 * * * *"
       accessModes:
@@ -44,6 +41,9 @@ spec:
         KOPIA_S3_DISABLE_TLS: "true"
         AWS_S3_DISABLE_TLS: "true"
   valuesFrom:
+    - kind: ConfigMap
+      name: ${APP}-volsync-defaults
+      valuesKey: values.yaml
     - kind: ConfigMap
       name: ${APP}-volsync-values
       valuesKey: values.yaml
