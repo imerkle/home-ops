@@ -5,4 +5,3 @@ modules:
       - name: eth_gas_price_gwei
         path: "{$.result.ProposeGasPrice}"
         help: "Ethereum projected proposed gas price (Gwei)"
-        type: gauge
