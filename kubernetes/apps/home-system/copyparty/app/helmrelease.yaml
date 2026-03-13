@@ -19,7 +19,7 @@ spec:
               tag: latest
             args:
               - -v
-              - /data::rw
+              - /data:/data:rw
               - -v
               - /frigate:/frigate:r
               - -ed
