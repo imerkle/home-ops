@@ -31,8 +31,8 @@ spec:
             image:
               repository: dock.mau.dev/mautrix/telegram
               tag: v0.15.3
-            command: ["/usr/bin/mautrix-telegram"]
-            args: [ "-c", "/data/config.yaml", "--no-update" ]
+            # command: ["/usr/bin/mautrix-telegram"]
+            # args: [ "-c", "/data/config.yaml", "--no-update" ]
             env:
               TZ: ${TIMEZONE}
             securityContext:
