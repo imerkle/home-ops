@@ -219,7 +219,7 @@ bridge:
   permissions:
     "*": relay
     "matrix.${DOMAIN1}": user
-    "@drag0n141:matrix.${DOMAIN1}": admin
+    "@zitadel-admin:matrix.${DOMAIN1}": admin
 
 # Config for the bridge's database.
 database:
