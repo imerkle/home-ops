@@ -74,7 +74,6 @@ spec:
         name: mautrix-telegram-config
         globalMounts:
           - path: /data
-            readOnly: true
       tmpfs:
         type: emptyDir
         advancedMounts:
