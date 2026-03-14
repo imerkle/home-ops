@@ -1,5 +1,5 @@
 # The ID doesn't really matter, put whatever you want.
-id: doublepuppet
+id: doublepuppet_tg
 # The URL is intentionally left empty (null), as the homeserver shouldn't
 # push events anywhere for this extra appservice. If you use a
 # non-spec-compliant server, you may need to put some fake URL here.
