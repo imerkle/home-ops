@@ -13,5 +13,10 @@ configMapGenerator:
       - ./whatsapp/config.yaml
       - ./whatsapp/registration.yaml
       - ./whatsapp/doublepuppet.yaml
+  - name: mautrix-telegram-config
+    files:
+      - ./telegram/config.yaml
+      - ./telegram/registration.yaml
+      - ./telegram/doublepuppet.yaml
 generatorOptions:
   disableNameSuffixHash: true

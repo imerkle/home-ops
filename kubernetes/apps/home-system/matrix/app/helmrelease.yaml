@@ -96,6 +96,11 @@ spec:
             app_service_config_files:
               - /data/whatsapp/registration.yaml
               - /data/whatsapp/doublepuppet.yaml
+        telegram-appservice.yaml:
+          config: |
+            app_service_config_files:
+              - /data/telegram/registration.yaml
+              - /data/telegram/doublepuppet.yaml
         forbidden_username.yaml:
           config: |
             forbidden_username_re: []
@@ -108,9 +113,20 @@ spec:
                 path: registration.yaml
               - key: doublepuppet.yaml
                 path: doublepuppet.yaml
+        - name: telegram-registration
+          configMap:
+            name: mautrix-telegram-config
+            items:
+              - key: registration.yaml
+                path: registration.yaml
+              - key: doublepuppet.yaml
+                path: doublepuppet.yaml
       extraVolumeMounts:
         - name: whatsapp-registration
           mountPath: /data/whatsapp
+          readOnly: true
+        - name: telegram-registration
+          mountPath: /data/telegram
           readOnly: true
     matrixAuthenticationService:
       enabled: true
