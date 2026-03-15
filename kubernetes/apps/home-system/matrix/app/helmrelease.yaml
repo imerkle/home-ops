@@ -10,7 +10,7 @@ spec:
     kind: OCIRepository
     name: matrix-stack
   values:
-    serverName: matrix.${DOMAIN1}
+    serverName: ${DOMAIN1}
     labels:
       app.kubernetes.io/instance: matrix
 

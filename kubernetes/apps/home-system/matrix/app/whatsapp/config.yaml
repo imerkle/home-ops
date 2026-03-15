@@ -246,7 +246,7 @@ homeserver:
   # but https also works if they run on different machines.
   address: http://matrix-synapse:8008
   # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
-  domain: "matrix.${DOMAIN1}"
+  domain: "${DOMAIN1}"
 
   # What software is the homeserver running?
   # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
@@ -282,7 +282,7 @@ appservice:
   # A public address that external services can use to reach this appservice.
   # This is only needed for things like public media. A reverse proxy is generally necessary when using this field.
   # This value doesn't affect the registration file.
-  public_address: "https://mautrix-whatsapp.matrix.${DOMAIN1}"
+  public_address: "https://mautrix-whatsapp.${DOMAIN1}"
 
   # The hostname and port where this appservice should listen.
   # For Docker, you generally have to change the hostname to 0.0.0.0.
@@ -438,7 +438,7 @@ double_puppet:
   # Shared secrets for automatic double puppeting.
   # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
   secrets:
-    matrix.${DOMAIN1}: as_token:$${vault:secret/data/mautrix#as_token}
+    ${DOMAIN1}: as_token:$${vault:secret/data/mautrix#as_token}
 
 # End-to-bridge encryption support options.
 #
