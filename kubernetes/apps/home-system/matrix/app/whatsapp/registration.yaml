@@ -6,9 +6,13 @@ sender_localpart: whatsappbot
 rate_limited: false
 namespaces:
   users:
-    - regex: ^@whatsappbot:matrix\.${DOMAIN1_ESCAPED}$
+    # - regex: ^@whatsappbot:matrix\.${DOMAIN1_ESCAPED}$
+    #   exclusive: true
+    # - regex: ^@whatsapp_.*:matrix\.${DOMAIN1_ESCAPED}$
+    #   exclusive: true
+
+    - regex: ^@whatsappbot:${DOMAIN1/./\\.}$
       exclusive: true
-    - regex: ^@whatsapp_.*:matrix\.${DOMAIN1_ESCAPED}$
-      exclusive: true
+    - regex: ^@whatsapp_.*:${DOMAIN1/./\\.}$
 de.sorunome.msc2409.push_ephemeral: true
 receive_ephemeral: true

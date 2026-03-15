@@ -50,7 +50,6 @@ spec:
     substitute:
       OIDC_PROVIDER_ID: 01HFVBY12TMNTYTBV8W921M5FB
       DOMAIN1_ESCAPED: x3y\.space
-      DOMAIN1: x3y.space
     substituteFrom:
       - kind: Secret
         name: matrix-oidc-creds
