@@ -175,7 +175,7 @@ bridge:
   relay:
     # Whether relay mode should be allowed. If allowed, the set-relay command can be used to turn any
     # authenticated user into a relaybot for that chat.
-    enabled: false
+    enabled: true
     # Should only admins be allowed to set themselves as relay users?
     # If true, non-admins can only set users listed in default_relays as relays in a room.
     admin_only: true
