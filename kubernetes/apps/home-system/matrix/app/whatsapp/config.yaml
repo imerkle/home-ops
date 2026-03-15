@@ -413,7 +413,7 @@ backfill:
   # Beeper as standard Matrix servers don't support inserting messages into history.
   queue:
     # Should the backfill queue be enabled?
-    enabled: false
+    enabled: true
     # Number of messages to backfill in one batch.
     batch_size: 100
     # Delay between batches in seconds.
