@@ -218,8 +218,8 @@ bridge:
   #     mxid - Specific user
   permissions:
     "*": relay
-    "matrix.${DOMAIN1}": user
-    "@zitadel-admin:matrix.${DOMAIN1}": admin
+    "${DOMAIN1}": user
+    "@zitadel-admin:${DOMAIN1}": admin
 
 # Config for the bridge's database.
 database:
