@@ -16,7 +16,7 @@ rate_limited: false
 namespaces:
   users:
   # Replace your\.domain with your server name (escape dots for regex)
-  - regex: ^@.*:matrix\.${DOMAIN1_ESCAPED}$
+  - regex: ^@.*:${DOMAIN1_ESCAPED}$
   # - regex: ^@.*:${DOMAIN1/./\\.}$
     # This must be false so the appservice doesn't take over all users completely.
     exclusive: false
