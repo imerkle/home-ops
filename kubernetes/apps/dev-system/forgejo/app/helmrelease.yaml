@@ -42,7 +42,6 @@ spec:
               FORGEJO__database__PASSWD: "vault:secret/data/pg_default#PASSWORD"
               FORGEJO__security__INSTALL_LOCK: "true"
               FORGEJO__server__OFFLINE_MODE: "true"
-              FORGEJO__server__ALLOWED_HOST_LIST: "*"
             command:
               - /bin/bash
               - -c
@@ -85,6 +84,7 @@ spec:
               FORGEJO__server__SSH_DOMAIN: "ssh.forgejo.${DOMAIN1}"
               FORGEJO__server__SSH_PORT: "22"
               FORGEJO__server__SSH_LISTEN_PORT: "2222"
+              FORGEJO__server__ALLOWED_HOST_LIST: "*"
               # OIDC
               OIDC_CLIENT_ID:
                 valueFrom:
