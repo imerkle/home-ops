@@ -109,7 +109,7 @@ spec:
           http:
             port: 3000
           ssh:
-            port: 2222
+            port: 22
     route:
       app:
         enabled: true
