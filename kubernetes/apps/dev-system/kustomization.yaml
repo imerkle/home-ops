@@ -20,5 +20,4 @@ resources:
   - ./headlamp/ks.yaml
   - ./forgejo/ks.yaml
   - ./open-webui/ks.yaml
-  - ./tekton/ks.yaml
   - ./zot/ks.yaml
