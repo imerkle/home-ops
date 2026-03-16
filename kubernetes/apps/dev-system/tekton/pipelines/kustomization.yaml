@@ -5,3 +5,4 @@ kind: Kustomization
 resources:
   - ../repo.yaml
   - ./helmrelease.yaml
+  - ./webhook-rbac-patch.yaml

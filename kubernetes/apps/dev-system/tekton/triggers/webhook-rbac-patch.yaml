@@ -1,0 +1,44 @@
+---
+# Patch: Allow tekton-triggers-webhook to access the dev-system namespace.
+# The upstream release manifest hardcodes resourceNames: [tekton-pipelines] for namespace
+# access, but we install into dev-system, so the webhook can't read its own namespace.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tekton-triggers-webhook-dev-system-ns
+  labels:
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/part-of: tekton-triggers
+rules:
+  - apiGroups:
+      - ""
+    resourceNames:
+      - dev-system
+    resources:
+      - namespaces
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resourceNames:
+      - dev-system
+    resources:
+      - namespaces/finalizers
+    verbs:
+      - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tekton-triggers-webhook-dev-system-ns
+  labels:
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/part-of: tekton-triggers
+subjects:
+  - kind: ServiceAccount
+    name: tekton-triggers-webhook
+    namespace: dev-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-webhook-dev-system-ns
