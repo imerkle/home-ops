@@ -84,8 +84,7 @@ spec:
               FORGEJO__server__SSH_DOMAIN: "ssh.forgejo.${DOMAIN1}"
               FORGEJO__server__SSH_PORT: "22"
               FORGEJO__server__SSH_LISTEN_PORT: "2222"
-              FORGEJO__server__ALLOWED_HOST_LIST: "*"
-              ALLOWED_HOST_LIST: "*"
+              FORGEJO__webhook__ALLOWED_HOST_LIST: "*"
               # OIDC
               OIDC_CLIENT_ID:
                 valueFrom:
