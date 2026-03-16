@@ -5,8 +5,6 @@ kind: TCPRoute
 metadata:
   name: forgejo-ssh
 spec:
-  hostnames:
-    - "ssh.forgejo.${DOMAIN1}"
   parentRefs:
     - name: envoy-internal
       namespace: network
