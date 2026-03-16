@@ -197,7 +197,7 @@ spec:
            if [ "$${PARAM_CRT_FILENAME}" != "" ] ; then
               export GIT_SSL_CAINFO="$${WORKSPACE_SSL_CA_DIRECTORY_PATH}/$${PARAM_CRT_FILENAME}"
            fi
-        fi`
+        fi
         CHECKOUT_DIR="$${WORKSPACE_OUTPUT_PATH}/$${PARAM_SUBDIRECTORY}"
 
         cleandir() {
