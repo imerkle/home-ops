@@ -48,8 +48,6 @@ spec:
           value: $(params.repo-url)
         - name: revision
           value: $(params.revision)
-        - name: sslVerify
-          value: false
     - name: build-push
       runAfter:
         - fetch-source
