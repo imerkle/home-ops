@@ -1,0 +1,118 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app CHANGE_ME_APP_NAME
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  maxHistory: 2
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    controllers:
+      app:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          vault.security.banzaicloud.io/vault-role: "default"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: "16.4"
+            env:
+              INIT_POSTGRES_DBNAME: CHANGE_ME_APP_NAME
+              INIT_POSTGRES_HOST: "vault:secret/data/pg_default#HOST"
+              INIT_POSTGRES_USER: "vault:secret/data/pg_default#USER"
+              INIT_POSTGRES_PASS: "vault:secret/data/pg_default#PASSWORD"
+              INIT_POSTGRES_SUPER_PASS: "vault:secret/data/pg_default#PASSWORD"
+        containers:
+          app:
+            image:
+              # Image from Zot registry, updated by CI pipeline
+              repository: zot.${DOMAIN1}/apps/CHANGE_ME_APP_NAME
+              tag: latest
+            env:
+              # Database connection
+              DATABASE_URL: "vault:secret/data/pg_default#URL"
+              # OpenTelemetry
+              OTEL_EXPORTER_OTLP_ENDPOINT: "http://opentelemetry-collector.observability.svc.cluster.local:4318"
+              OTEL_SERVICE_NAME: CHANGE_ME_APP_NAME
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: &port 3000
+                  initialDelaySeconds: 10
+                  periodSeconds: 30
+              readiness: *probe
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+                  failureThreshold: 30
+                  periodSeconds: 5
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 256Mi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        controller: app
+        ports:
+          http:
+            port: *port
+    serviceMonitor:
+      app:
+        enabled: true
+        endpoints:
+          - port: http
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 10s
+        serviceName: *app
+    route:
+      app:
+        hostnames:
+          - "CHANGE_ME_APP_NAME.${DOMAIN1}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - port: *port
+                name: *app

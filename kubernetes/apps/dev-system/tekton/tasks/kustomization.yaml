@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./task-git-clone.yaml
+  - ./task-kaniko.yaml
+  - ./pipeline-build-push.yaml
+  - ./trigger-template.yaml
+  - ./trigger-binding.yaml
+  - ./event-listener.yaml
+  - ./rbac.yaml

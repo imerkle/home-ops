@@ -1,0 +1,42 @@
+---
+# EventListener: forgejo-webhook
+# Listens for Forgejo push webhooks and triggers the build-and-push pipeline
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: forgejo-webhook
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  serviceAccountName: tekton-triggers-sa
+  triggers:
+    - name: forgejo-push-trigger
+      interceptors:
+        - ref:
+            name: "cel"
+          params:
+            - name: "filter"
+              # Only trigger on push events to the main/master branch
+              value: >-
+                body.ref == 'refs/heads/main' || body.ref == 'refs/heads/master'
+            - name: "overlays"
+              value:
+                - key: truncated_sha
+                  expression: "body.after.truncate(7)"
+      bindings:
+        - ref: forgejo-push
+      template:
+        ref: build-and-push
+  resources:
+    kubernetesResource:
+      spec:
+        template:
+          spec:
+            serviceAccountName: tekton-triggers-sa
+            containers:
+              - resources:
+                  requests:
+                    cpu: 50m
+                    memory: 64Mi
+                  limits:
+                    memory: 128Mi

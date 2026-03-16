@@ -1,0 +1,76 @@
+---
+# Tekton Task: git-clone
+# Clones a git repository into a workspace
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: git-clone
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  description: >-
+    Clones a git repository at a specific revision into the output workspace.
+  workspaces:
+    - name: output
+      description: The git repo will be cloned onto the volume backing this Workspace.
+  params:
+    - name: url
+      description: Repository URL to clone from.
+      type: string
+    - name: revision
+      description: Revision to checkout (branch, tag, sha, ref).
+      type: string
+      default: main
+    - name: subdirectory
+      description: Subdirectory inside the output workspace to clone the repo into.
+      type: string
+      default: ""
+    - name: deleteExisting
+      description: Clean out the contents of the destination directory if it already exists.
+      type: string
+      default: "true"
+  results:
+    - name: commit
+      description: The precise commit SHA that was fetched by this Task.
+    - name: url
+      description: The precise URL that was fetched by this Task.
+    - name: committer-date
+      description: The epoch timestamp of the commit.
+  steps:
+    - name: clone
+      image: alpine/git:2.45.2
+      env:
+        - name: PARAM_URL
+          value: $(params.url)
+        - name: PARAM_REVISION
+          value: $(params.revision)
+        - name: PARAM_SUBDIRECTORY
+          value: $(params.subdirectory)
+        - name: PARAM_DELETE_EXISTING
+          value: $(params.deleteExisting)
+        - name: WORKSPACE_OUTPUT_PATH
+          value: $(workspaces.output.path)
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+      script: |
+        #!/usr/bin/env sh
+        set -eu
+
+        CHECKOUT_DIR="${WORKSPACE_OUTPUT_PATH}/${PARAM_SUBDIRECTORY}"
+
+        if [ "${PARAM_DELETE_EXISTING}" = "true" ] && [ -d "${CHECKOUT_DIR}" ]; then
+          rm -rf "${CHECKOUT_DIR:?}/"*
+          rm -rf "${CHECKOUT_DIR:?}/".* 2>/dev/null || true
+        fi
+
+        git clone "${PARAM_URL}" "${CHECKOUT_DIR}"
+        cd "${CHECKOUT_DIR}"
+        git checkout "${PARAM_REVISION}"
+
+        RESULT_SHA=$(git rev-parse HEAD)
+        RESULT_DATE=$(git log -1 --format=%ct)
+
+        printf "%s" "${RESULT_SHA}" > "$(results.commit.path)"
+        printf "%s" "${PARAM_URL}" > "$(results.url.path)"
+        printf "%s" "${RESULT_DATE}" > "$(results.committer-date.path)"

@@ -1,0 +1,19 @@
+---
+# TriggerBinding: forgejo-push
+# Extracts fields from Forgejo push webhook payload
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: forgejo-push
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  params:
+    - name: git-repo-url
+      value: $(body.repository.clone_url)
+    - name: git-revision
+      value: $(body.after)
+    - name: git-repo-name
+      value: $(body.repository.name)
+    - name: image-tag
+      value: $(body.after)

@@ -1,0 +1,75 @@
+---
+# Tekton Pipeline: build-and-push
+# Full CI pipeline: git clone → kaniko build → push to Zot registry
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: build-and-push
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  description: >-
+    Clones a Forgejo repo, builds a Docker image with Kaniko,
+    and pushes it to the Zot registry.
+  params:
+    - name: repo-url
+      description: The git repository URL.
+      type: string
+    - name: revision
+      description: The git revision to build.
+      type: string
+      default: main
+    - name: image
+      description: Full image reference including registry (e.g., zot.example.com/apps/myapp:latest).
+      type: string
+    - name: dockerfile
+      description: Path to the Dockerfile relative to repo root.
+      type: string
+      default: ./Dockerfile
+    - name: context
+      description: Build context directory relative to repo root.
+      type: string
+      default: ./
+  workspaces:
+    - name: shared-workspace
+      description: Workspace shared between git-clone and kaniko-build tasks.
+    - name: dockerconfig
+      description: Docker config for registry authentication.
+      optional: true
+  tasks:
+    - name: fetch-source
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: $(params.repo-url)
+        - name: revision
+          value: $(params.revision)
+    - name: build-push
+      runAfter:
+        - fetch-source
+      taskRef:
+        name: kaniko-build
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: IMAGE
+          value: $(params.image)
+        - name: DOCKERFILE
+          value: $(params.dockerfile)
+        - name: CONTEXT
+          value: $(params.context)
+  results:
+    - name: image-digest
+      description: The digest of the built image.
+      value: $(tasks.build-push.results.IMAGE_DIGEST)
+    - name: image-url
+      description: The URL of the built image.
+      value: $(tasks.build-push.results.IMAGE_URL)
+    - name: commit-sha
+      description: The exact commit SHA that was built.
+      value: $(tasks.fetch-source.results.commit)
