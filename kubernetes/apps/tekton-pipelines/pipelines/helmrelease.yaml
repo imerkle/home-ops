@@ -26,7 +26,7 @@ spec:
     keepHistory: false
   values:
     namespace:
-      name: dev-system
+      name: tekton-pipelines
       create: false
       labels:
         app.kubernetes.io/part-of: tekton-pipelines
