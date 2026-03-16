@@ -15,3 +15,17 @@ spec:
     - backendRefs:
         - name: forgejo
           port: 2222
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: forgejo-ssh-dns
+spec:
+  endpoints:
+  - dnsName: ssh.forgejo.${DOMAIN1}
+    recordType: A
+    targets:
+    - 10.0.0.81  # Your Envoy VIP
+    providerSpecific:
+    - name: cloudflare-proxied
+      value: "false" # <--- CRITICAL: Must be false for SSH
