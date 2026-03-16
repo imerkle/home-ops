@@ -85,6 +85,7 @@ spec:
               FORGEJO__server__SSH_PORT: "22"
               FORGEJO__server__SSH_LISTEN_PORT: "2222"
               FORGEJO__webhook__ALLOWED_HOST_LIST: "*"
+              FORGEJO__webhook__SKIP_TLS_VERIFY: "true"
               # OIDC
               OIDC_CLIENT_ID:
                 valueFrom:
