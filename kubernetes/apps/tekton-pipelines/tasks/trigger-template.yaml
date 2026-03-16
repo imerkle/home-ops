@@ -36,7 +36,7 @@ spec:
           - name: revision
             value: $(tt.params.git-revision)
           - name: image
-            value: "zot.${DOMAIN1}/apps/$(tt.params.git-repo-name):$(tt.params.image-tag)"
+            value: "zot.dev-system.svc.cluster.local:5000/$(tt.params.git-repo-name):$(tt.params.image-tag)"
         workspaces:
           - name: shared-workspace
             volumeClaimTemplate:
