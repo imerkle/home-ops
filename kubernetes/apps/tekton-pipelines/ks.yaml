@@ -10,7 +10,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/tekton-pipelines/tekton/pipelines
+  path: ./kubernetes/apps/tekton-pipelines/pipelines
   prune: true
   sourceRef:
     kind: GitRepository
@@ -34,7 +34,7 @@ spec:
       app.kubernetes.io/name: tekton-triggers
   dependsOn:
     - name: tekton-pipelines
-  path: ./kubernetes/apps/tekton-pipelines/tekton/triggers
+  path: ./kubernetes/apps/tekton-pipelines/triggers
   prune: true
   sourceRef:
     kind: GitRepository
@@ -58,7 +58,7 @@ spec:
       app.kubernetes.io/name: tekton-dashboard
   dependsOn:
     - name: tekton-pipelines
-  path: ./kubernetes/apps/tekton-pipelines/tekton/dashboard
+  path: ./kubernetes/apps/tekton-pipelines/dashboard
   prune: true
   sourceRef:
     kind: GitRepository
@@ -83,7 +83,7 @@ spec:
   dependsOn:
     - name: tekton-pipelines
     - name: tekton-triggers
-  path: ./kubernetes/apps/tekton-pipelines/tekton/tasks
+  path: ./kubernetes/apps/tekton-pipelines/tasks
   prune: true
   sourceRef:
     kind: GitRepository
