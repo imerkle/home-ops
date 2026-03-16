@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: kaniko
+  name: kaniko-build
   labels:
     app.kubernetes.io/version: "0.7"
   annotations:

@@ -4,18 +4,18 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app tekton-pipelines
-  namespace: &namespace dev-system
+  namespace: &namespace tekton-pipelines
 spec:
   targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/dev-system/tekton/pipelines
+  path: ./kubernetes/apps/tekton-pipelines/tekton/pipelines
   prune: true
   sourceRef:
     kind: GitRepository
     name: home-kubernetes
-    namespace: flux-system
+    namespace: flux-system`
   wait: true
   interval: 1h
   retryInterval: 1m
@@ -26,7 +26,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: tekton-triggers
-  namespace: &namespace dev-system
+  namespace: &namespace tekton-pipelines
 spec:
   targetNamespace: *namespace
   commonMetadata:
@@ -34,7 +34,7 @@ spec:
       app.kubernetes.io/name: tekton-triggers
   dependsOn:
     - name: tekton-pipelines
-  path: ./kubernetes/apps/dev-system/tekton/triggers
+  path: ./kubernetes/apps/tekton-pipelines/tekton/triggers
   prune: true
   sourceRef:
     kind: GitRepository
@@ -50,7 +50,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: tekton-dashboard
-  namespace: &namespace dev-system
+  namespace: &namespace tekton-pipelines
 spec:
   targetNamespace: *namespace
   commonMetadata:
@@ -58,7 +58,7 @@ spec:
       app.kubernetes.io/name: tekton-dashboard
   dependsOn:
     - name: tekton-pipelines
-  path: ./kubernetes/apps/dev-system/tekton/dashboard
+  path: ./kubernetes/apps/tekton-pipelines/tekton/dashboard
   prune: true
   sourceRef:
     kind: GitRepository
@@ -74,7 +74,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: tekton-tasks
-  namespace: &namespace dev-system
+  namespace: &namespace tekton-pipelines
 spec:
   targetNamespace: *namespace
   commonMetadata:
@@ -83,7 +83,7 @@ spec:
   dependsOn:
     - name: tekton-pipelines
     - name: tekton-triggers
-  path: ./kubernetes/apps/dev-system/tekton/tasks
+  path: ./kubernetes/apps/tekton-pipelines/tekton/tasks
   prune: true
   sourceRef:
     kind: GitRepository

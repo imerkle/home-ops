@@ -7,12 +7,12 @@ resources:
   - https://storage.googleapis.com/tekton-releases/triggers/latest/release.yaml
   # Tekton Triggers interceptors
   - https://storage.googleapis.com/tekton-releases/triggers/latest/interceptors.yaml
-  - ./webhook-rbac-patch.yaml
+  # - ./webhook-rbac-patch.yaml
 
-patches:
-  - patch: |-
-      - op: replace
-        path: /spec/clientConfig/service/namespace
-        value: dev-system
-    target:
-      kind: ClusterInterceptor
+# patches:
+#   - patch: |-
+#       - op: replace
+#         path: /spec/clientConfig/service/namespace
+#         value: dev-system
+#     target:
+#       kind: ClusterInterceptor
