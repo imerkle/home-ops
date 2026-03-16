@@ -165,9 +165,9 @@ spec:
         value: $(workspaces.ssl-ca-directory.bound)
       - name: WORKSPACE_SSL_CA_DIRECTORY_PATH
         value: $(workspaces.ssl-ca-directory.path)
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 65532
+      # securityContext:
+      #   runAsNonRoot: true
+      #   runAsUser: 65532
       volumeMounts:
         - name: user-home
           mountPath: $(params.userHome)
