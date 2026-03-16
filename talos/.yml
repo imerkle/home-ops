@@ -1,6 +1,0 @@
----
-apiVersion: v1alpha1
-kind: VLANConfig
-name: enp5s0.200
-vlanID: 200
-parent: enp5s0
