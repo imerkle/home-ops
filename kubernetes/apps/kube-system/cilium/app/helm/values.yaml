@@ -32,7 +32,7 @@ envoy:
   # log:
   #   defaultLevel: "trace"
 gatewayAPI:
-  enabled: true
+  enabled: false
   enableAlpn: true
   xffNumTrustedHops: 1
   # hostNetwork:
