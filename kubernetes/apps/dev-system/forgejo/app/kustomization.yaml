@@ -11,3 +11,4 @@ resources:
   - secret-ssh.yaml
   - servicemonitor.yaml
   - grafanadashboard.yaml
+  - tcproute.yaml
