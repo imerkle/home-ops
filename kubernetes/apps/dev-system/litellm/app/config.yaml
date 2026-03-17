@@ -1,16 +1,14 @@
 model_list:
-  - model_name: "proxy/*"
+  - model_name: "openai/*"
     litellm_params:
-      model: "openai/proxy/*"
+      model: "openai/*"
       api_key: your-api-key-here
-      custom_llm_provider: "openai"
       api_base: http://cliproxyapi:8317/v1
-  # - model_name: "openai/*"
-  #   litellm_params:
-  #     model: "openai/*"
-  #     api_key: your-api-key-here
-  #     custom_llm_provider: "openai"
-  #     api_base: http://cliproxyapi:8317/v1
+  - model_name: "qwen/*"
+    litellm_params:
+      model: "openai/qwen/*"
+      api_key: your-api-key-here
+      api_base: http://cliproxyapi:8317/v1
   # - model_name: "antigravity/*"
   #   litellm_params:
   #     model: "antigravity/*"
