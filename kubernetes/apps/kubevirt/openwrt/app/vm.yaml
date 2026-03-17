@@ -7,7 +7,7 @@ metadata:
   labels:
     app.kubernetes.io/name: openwrt
 spec:
-  running: true
+  running: false
   template:
     metadata:
       labels:
