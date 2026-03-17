@@ -1,0 +1,3 @@
+volumes:
+  - name: omniroute
+    capacity: 2Gi
