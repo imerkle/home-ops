@@ -28,7 +28,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/pingpong
-              tag: latest
+              tag: cc6715c009d37bc5312d20cb9791253f23eff159
             env:
               PORT: "3000"
             probes:
