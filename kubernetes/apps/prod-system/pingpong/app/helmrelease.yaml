@@ -27,7 +27,7 @@ spec:
         containers:
           app:
             image:
-              repository: zot.${DOMAIN1}/apps/pingpong
+              repository: zot.${DOMAIN1}/pingpong
               tag: latest
             env:
               PORT: "3000"
