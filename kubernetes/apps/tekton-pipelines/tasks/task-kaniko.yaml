@@ -28,6 +28,9 @@ spec:
     - name: EXTRA_ARGS
       type: array
       default: []
+    - name: PROTOCOL
+      description: Protocol to use for the image URL (http or https).
+      default: https
     - name: BUILDER_IMAGE
       description: The image on which builds will run (default is v1.5.1)
       default: gcr.io/kaniko-project/executor:v1.23.2
@@ -51,7 +54,7 @@ spec:
       workingDir: $(workspaces.source.path)
       image: $(params.BUILDER_IMAGE)
       args:
-        - $(params.EXTRA_ARGS)
+        - $(params.EXTRA_ARGS[*])
         - --dockerfile=$(params.DOCKERFILE)
         - --context=$(workspaces.source.path)/$(params.CONTEXT) # The user does not need to care the workspace and the source.
         - --destination=$(params.IMAGE)
@@ -66,4 +69,5 @@ spec:
       script: |
         set -e
         image="$(params.IMAGE)"
-        printf "%s" "$${image}" | tee "$(results.IMAGE_URL.path)"
+        protocol="$(params.PROTOCOL)"
+        printf "%s://%s" "$${protocol}" "$${image}" | tee "$(results.IMAGE_URL.path)"

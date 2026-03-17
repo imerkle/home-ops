@@ -30,6 +30,14 @@ spec:
       description: Build context directory relative to repo root.
       type: string
       default: ./
+    - name: extra-args
+      description: Extra arguments to pass to Kaniko.
+      type: array
+      default: ["--insecure", "--skip-tls-verify"]
+    - name: protocol
+      description: Protocol to use for the image URL (http or https).
+      type: string
+      default: http
   workspaces:
     - name: shared-workspace
       description: Workspace shared between git-clone and kaniko-build tasks.
@@ -63,6 +71,10 @@ spec:
           value: $(params.dockerfile)
         - name: CONTEXT
           value: $(params.context)
+        - name: EXTRA_ARGS
+          value: ["$(params.extra-args[*])"]
+        - name: PROTOCOL
+          value: $(params.protocol)
   results:
     - name: image-digest
       description: The digest of the built image.
