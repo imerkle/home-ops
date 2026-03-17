@@ -1,7 +1,7 @@
 model_list:
-  - model_name: "qwen/*"
+  - model_name: "proxy/*"
     litellm_params:
-      model: "openai/qwen/*"
+      model: "openai/proxy/*"
       api_key: your-api-key-here
       custom_llm_provider: "openai"
       api_base: http://cliproxyapi:8317/v1
