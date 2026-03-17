@@ -10,5 +10,8 @@ configMapGenerator:
   - name: zot
     files:
       - ./resources/config.json
+  - name: ${APP}-volsync-values
+    files:
+      - values.yaml=volsync.values.yaml
 generatorOptions:
   disableNameSuffixHash: true
