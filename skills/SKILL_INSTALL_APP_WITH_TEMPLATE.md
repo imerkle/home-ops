@@ -43,6 +43,9 @@ spec:
   wait: false
   components:
     - ../../../../components/volsync
+  postBuild:
+    substitute:
+      APP: *app
 ```
 
 ### 3. Application Kustomization File
