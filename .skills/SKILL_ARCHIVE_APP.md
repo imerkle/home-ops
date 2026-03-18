@@ -114,12 +114,44 @@ git commit -m "chore: restore <app-name> to <namespace>"
 
 ---
 
+---
+
+## Archiving Only a Sub-Directory of an App
+
+Some apps share a single `ks.yaml` with multiple sub-components (e.g. `app/` and `coder/` both live under `code-server/` with one `ks.yaml`). In this case you may want to archive only one sub-component while keeping the others live.
+
+### Steps
+
+1. **Copy only the target sub-directory** into the archive, preserving the path structure:
+   ```bash
+   mkdir -p archive/<namespace>/<app-name>
+   cp -r kubernetes/apps/<namespace>/<app-name>/<sub-dir> archive/<namespace>/<app-name>/<sub-dir>
+   ```
+
+2. **Clean up `ks.yaml`**: If the archived sub-component had its own Kustomization block in the shared `ks.yaml` (even if commented out), remove that block entirely so the file only contains the still-active Kustomization(s).
+
+3. **Do NOT modify the parent kustomization** — the `ks.yaml` reference in the parent `kustomization.yaml` still points to the remaining active components.
+
+4. **Delete only the target sub-directory** from the live path:
+   ```bash
+   rm -rf kubernetes/apps/<namespace>/<app-name>/<sub-dir>
+   ```
+
+5. **Commit**:
+   ```bash
+   git add archive/<namespace>/<app-name>/<sub-dir> kubernetes/apps/<namespace>/<app-name>/ks.yaml
+   git rm -r kubernetes/apps/<namespace>/<app-name>/<sub-dir>
+   git commit -m "chore: archive <sub-dir> from <app-name> in <namespace>"
+   ```
+
+---
+
 ## Checklist
 
 - [ ] Identify app path: `kubernetes/apps/<namespace>/[subdir/]<app-name>`
 - [ ] Identify parent kustomization that references the app's `ks.yaml`
 - [ ] `cp -r` app directory to `archive/<namespace>/[subdir/]<app-name>`
 - [ ] Verify archive copy with `find archive/... -type f`
-- [ ] Remove the `ks.yaml` resource line from parent `kustomization.yaml`
-- [ ] Delete the original app directory
+- [ ] Remove the `ks.yaml` resource line from parent `kustomization.yaml` (or clean up `ks.yaml` if archiving a sub-component)
+- [ ] Delete the original app directory (or sub-directory if partial archive)
 - [ ] Commit with message `chore: archive <app-name> from <namespace>`
