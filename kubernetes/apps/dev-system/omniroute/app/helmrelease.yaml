@@ -51,6 +51,7 @@ spec:
                 name: omniroute
     persistence:
       data:
-        existingClaim: "{{ .Release.Name }}"
+        type: emptyDir
+        # existingClaim: "{{ .Release.Name }}"
         globalMounts:
           - path: /app/data
