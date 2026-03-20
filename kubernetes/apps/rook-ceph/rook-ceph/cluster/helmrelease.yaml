@@ -53,6 +53,7 @@ spec:
         count: 1
         allowMultiplePerNode: true
       mgr:
+        count: 1
         modules:
           - name: diskprediction_local
             enabled: true
