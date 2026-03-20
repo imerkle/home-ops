@@ -82,12 +82,12 @@ spec:
         useAllDevices: false
         devices:
           - name: /dev/disk/by-id/ata-WDC_WDS240G2G0A-00JH30_19226D800608
-          - name: /dev/disk/by-id/ata-TOSHIBA_DT01ACA100_557358URS
-            config:
-              deviceClass: hdd-cephfs-1tb
-          - name: /dev/disk/by-id/ata-ST1000LM024_HN-M101MBB_S32XJ9JGB12737
-            config:
-              deviceClass: hdd-cephfs-1tb
+          # - name: /dev/disk/by-id/ata-TOSHIBA_DT01ACA100_557358URS
+          #   config:
+          #     deviceClass: hdd-cephfs-1tb
+          # - name: /dev/disk/by-id/ata-ST1000LM024_HN-M101MBB_S32XJ9JGB12737
+          #   config:
+          #     deviceClass: hdd-cephfs-1tb
         config:
           osdsPerDevice: "1"
       disruptionManagement:
@@ -173,54 +173,54 @@ spec:
             csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
             csi.storage.k8s.io/node-stage-secret-namespace: "{{ .Release.Namespace }}"
             csi.storage.k8s.io/fstype: ext4
-      - name: &cephFileSystemHddName ceph-filesystem-hdd
-        spec:
-          metadataPool:
-            deviceClass: hdd-cephfs-1tb
-            replicated:
-              size: 1
-          dataPools:
-            - failureDomain: host
-              deviceClass: hdd-cephfs-1tb
-              replicated:
-                size: 1
-              name: data0
-          metadataServer:
-            activeCount: 1
-            activeStandby: true
-            priorityClassName: system-cluster-critical
-            placement:
-              topologySpreadConstraints:
-                - maxSkew: 1
-                  topologyKey: kubernetes.io/hostname
-                  whenUnsatisfiable: DoNotSchedule
-                  labelSelector:
-                    matchLabels:
-                      app.kubernetes.io/name: ceph-mds
-                      app.kubernetes.io/part-of: *cephFileSystemHddName
-            resources:
-              requests:
-                cpu: 100m
-                memory: 120Mi
-              limits:
-                memory: 200Mi
-        storageClass:
-          enabled: true
-          isDefault: false
-          name: ceph-filesystem-hdd
-          pool: data0
-          fsName: *cephFileSystemHddName
-          reclaimPolicy: Delete
-          allowVolumeExpansion: true
-          volumeBindingMode: Immediate
-          parameters:
-            csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
-            csi.storage.k8s.io/provisioner-secret-namespace: "{{ .Release.Namespace }}"
-            csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
-            csi.storage.k8s.io/controller-expand-secret-namespace: "{{ .Release.Namespace }}"
-            csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
-            csi.storage.k8s.io/node-stage-secret-namespace: "{{ .Release.Namespace }}"
-            csi.storage.k8s.io/fstype: ext4
+      # - name: &cephFileSystemHddName ceph-filesystem-hdd
+      #   spec:
+      #     metadataPool:
+      #       deviceClass: hdd-cephfs-1tb
+      #       replicated:
+      #         size: 1
+      #     dataPools:
+      #       - failureDomain: host
+      #         deviceClass: hdd-cephfs-1tb
+      #         replicated:
+      #           size: 1
+      #         name: data0
+      #     metadataServer:
+      #       activeCount: 1
+      #       activeStandby: true
+      #       priorityClassName: system-cluster-critical
+      #       placement:
+      #         topologySpreadConstraints:
+      #           - maxSkew: 1
+      #             topologyKey: kubernetes.io/hostname
+      #             whenUnsatisfiable: DoNotSchedule
+      #             labelSelector:
+      #               matchLabels:
+      #                 app.kubernetes.io/name: ceph-mds
+      #                 app.kubernetes.io/part-of: *cephFileSystemHddName
+      #       resources:
+      #         requests:
+      #           cpu: 100m
+      #           memory: 120Mi
+      #         limits:
+      #           memory: 200Mi
+      #   storageClass:
+      #     enabled: true
+      #     isDefault: false
+      #     name: ceph-filesystem-hdd
+      #     pool: data0
+      #     fsName: *cephFileSystemHddName
+      #     reclaimPolicy: Delete
+      #     allowVolumeExpansion: true
+      #     volumeBindingMode: Immediate
+      #     parameters:
+      #       csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+      #       csi.storage.k8s.io/provisioner-secret-namespace: "{{ .Release.Namespace }}"
+      #       csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+      #       csi.storage.k8s.io/controller-expand-secret-namespace: "{{ .Release.Namespace }}"
+      #       csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+      #       csi.storage.k8s.io/node-stage-secret-namespace: "{{ .Release.Namespace }}"
+      #       csi.storage.k8s.io/fstype: ext4
     cephFileSystemVolumeSnapshotClass:
       enabled: true
       name: csi-ceph-filesystem
