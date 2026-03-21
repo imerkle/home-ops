@@ -69,10 +69,12 @@ spec:
           compression: bzip2
           maxParallel: 8
         destinationPath: s3://pg-default
-        endpointURL: "https://s3.us-west-002.backblazeb2.com"
+        # endpointURL: "https://s3.us-west-002.backblazeb2.com"
+        endpointURL: "http://rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80"
         s3Credentials:
           accessKeyId:
-            name: &secret pg-default-s3
+            name: &secret pg-default
+            # name: &secret pg-default-s3 #backblaze
             key: AWS_ACCESS_KEY_ID
           secretAccessKey:
             name: *secret
