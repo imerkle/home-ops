@@ -24,9 +24,9 @@ spec:
           gethomepage.dev/group: Storage
           gethomepage.dev/icon: ceph.png
         host:
-          - ceph.${DOMAIN1}
-        path: /
-        pathType: PathPrefix
+          name: ceph.${DOMAIN1}
+          path: /
+          pathType: PathPrefix
         parentRefs:
           - name: envoy-internal
             namespace: network
