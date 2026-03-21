@@ -12,6 +12,8 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
     - name: rook-ceph-cluster
       namespace: rook-ceph
   path: ./kubernetes/apps/home-system/copyparty/app

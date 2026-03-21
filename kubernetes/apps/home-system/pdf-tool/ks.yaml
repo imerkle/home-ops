@@ -5,6 +5,9 @@ kind: Kustomization
 metadata:
   name: pdf-tool
 spec:
+  dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
   components:
     - ../../../../components/volsync
   interval: 1h

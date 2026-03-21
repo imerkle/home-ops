@@ -10,6 +10,8 @@ spec:
     labels:
       app.kubernetes.io/name: vaultwarden-oidc
   dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
     - name: vault
       namespace: vault
   path: ./kubernetes/apps/home-system/vaultwarden/oidc
@@ -31,6 +33,8 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
     - name: vault
       namespace: vault
     - name: vaultwarden-oidc

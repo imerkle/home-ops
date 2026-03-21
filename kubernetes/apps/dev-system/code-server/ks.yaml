@@ -10,6 +10,8 @@ spec:
   targetNamespace: *namespace
   path: ./kubernetes/apps/dev-system/code-server/coder
   dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
     - name: vault
       namespace: vault
     - name: pg-clusters-default

@@ -10,6 +10,8 @@ spec:
     labels:
       app.kubernetes.io/name: matrix-oidc
   dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
     - name: vault
       namespace: vault
   path: ./kubernetes/apps/home-system/matrix/oidc
@@ -34,6 +36,8 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
     - name: rook-ceph-cluster
       namespace: rook-ceph
     - name: vault
@@ -66,6 +70,8 @@ spec:
     labels:
       app.kubernetes.io/name: mautrix-whatsapp
   dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
     - name: matrix
   path: ./kubernetes/apps/home-system/matrix/mautrix-whatsapp
   prune: true
@@ -91,6 +97,8 @@ spec:
     labels:
       app.kubernetes.io/name: mautrix-telegram
   dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
     - name: matrix
   path: ./kubernetes/apps/home-system/matrix/mautrix-telegram
   prune: true
@@ -116,6 +124,8 @@ spec:
     labels:
       app.kubernetes.io/name: mautrix-slack
   dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
     - name: matrix
   path: ./kubernetes/apps/home-system/matrix/mautrix-slack
   prune: true

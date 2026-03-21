@@ -8,6 +8,8 @@ spec:
   components:
     - ../../../../components/volsync
   dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
     - name: rook-ceph-cluster
       namespace: rook-ceph
     - name: vault

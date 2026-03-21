@@ -21,6 +21,8 @@ metadata:
   namespace: dev-system
 spec:
   dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
     - name: forgejo-oidc
   components:
     - ../../../../components/volsync

@@ -5,6 +5,9 @@ metadata:
   name: &app unifi
   namespace: &namespace home-system
 spec:
+  dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app

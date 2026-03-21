@@ -10,6 +10,8 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn: []
+    - name: zitadel-app
+      namespace: zitadel
   interval: 10m
   path: ./kubernetes/apps/home-system/homepage/app
   prune: true

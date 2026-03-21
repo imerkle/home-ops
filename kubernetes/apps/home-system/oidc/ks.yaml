@@ -29,6 +29,8 @@ spec:
     labels:
       app.kubernetes.io/name: internal-oidc-policy
   dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
     - name: internal-oidc-infra
   path: ./kubernetes/apps/home-system/oidc/app
   prune: true
