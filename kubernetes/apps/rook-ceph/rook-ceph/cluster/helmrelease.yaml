@@ -23,7 +23,7 @@ spec:
           gethomepage.dev/description: Storage Dashboard
           gethomepage.dev/group: Storage
           gethomepage.dev/icon: ceph.png
-        hostnames:
+        host:
           - ceph.${DOMAIN1}
         path: /
         pathType: PathPrefix
