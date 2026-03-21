@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn: []
+  dependsOn:
     - name: zitadel-app
       namespace: zitadel
   interval: 10m
