@@ -32,18 +32,24 @@ spec:
       secretData:
         KOPIA_FS_PATH: /repository
         KOPIA_PASSWORD: "vault:secret/data/volsync#RESTIC_PASSWORD"
-        KOPIA_S3_BUCKET: test
-        KOPIA_REPOSITORY: s3:http://rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80/test
+        KOPIA_S3_BUCKET: "${APP}-volsync"
+        KOPIA_REPOSITORY: s3:http://rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80/${APP}-volsync
         KOPIA_S3_ENDPOINT: rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80
         AWS_S3_ENDPOINT: rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80
-        AWS_ACCESS_KEY_ID: KNJOTGE7Q7BRRDHBCS4X
-        AWS_SECRET_ACCESS_KEY: dG7hHBysokmVgkvIjCnl5L2pHwlc2cpoT4wen6Vb
         KOPIA_S3_DISABLE_TLS: "true"
         AWS_S3_DISABLE_TLS: "true"
   valuesFrom:
     - kind: ConfigMap
       name: ${APP}-volsync-defaults
       valuesKey: values.yaml
+    - kind: Secret
+      name: ${APP}-volsync
+      valuesKey: AWS_ACCESS_KEY_ID
+      targetPath: defaults.secretData.AWS_ACCESS_KEY_ID
+    - kind: Secret
+      name: ${APP}-volsync
+      valuesKey: AWS_SECRET_ACCESS_KEY
+      targetPath: defaults.secretData.AWS_SECRET_ACCESS_KEY
     - kind: ConfigMap
       name: ${APP}-volsync-values
       valuesKey: values.yaml
