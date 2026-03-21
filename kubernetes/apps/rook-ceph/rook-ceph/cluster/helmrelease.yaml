@@ -270,11 +270,14 @@ spec:
           deviceClass: ssd
           replicated:
             size: 1
+          parameters:
+            pg_num_min: "1"
         dataPool:
           deviceClass: ssd
           replicated:
             size: 1
           failureDomain: host
+
           # erasureCoded:
           #   dataChunks: 2
           #   codingChunks: 1
