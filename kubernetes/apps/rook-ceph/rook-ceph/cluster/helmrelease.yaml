@@ -82,9 +82,9 @@ spec:
         mgr:
           requests:
             cpu: 100m
-            memory: 256Mi
-          limits:
             memory: 512Mi
+          limits:
+            memory: 1Gi
         osd:
           requests:
             cpu: 100m
@@ -314,7 +314,7 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
-            sectionName: https
+            # sectionName: https
       # ingress:
       #   enabled: true
       #   annotations:
