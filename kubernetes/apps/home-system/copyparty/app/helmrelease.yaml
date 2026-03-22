@@ -49,12 +49,7 @@ spec:
         globalMounts:
           - path: /data
       ceph-filesystem-hdd:
-        enabled: true
-        nameOverride: hdd
-        type: persistentVolumeClaim
-        accessMode: ReadWriteMany
-        size: 100Gi
-        storageClass: ceph-filesystem-hdd
+        existingClaim: copyparty-hdd
         globalMounts:
           - path: /ceph-filesystem-hdd
     route:
