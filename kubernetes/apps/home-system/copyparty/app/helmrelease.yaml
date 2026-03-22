@@ -49,10 +49,7 @@ spec:
         globalMounts:
           - path: /data
       ceph-filesystem-hdd:
-        type: persistentVolumeClaim
-        accessMode: ReadWriteMany
-        size: 100Gi
-        storageClass: ceph-filesystem-hdd
+        existingClaim: _1tb_hdd
         globalMounts:
           - path: /ceph-filesystem-hdd
     route:

@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: _1tb_hdd
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ceph-filesysystem-hdd
+  resources:
+    requests:
+      storage: 100Gi
