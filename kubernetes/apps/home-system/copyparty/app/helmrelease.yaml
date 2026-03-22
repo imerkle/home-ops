@@ -19,7 +19,7 @@ spec:
               tag: latest
             args:
               - -v
-              - /data:/data:rw
+              - /data:/data:rwmda
               - -v
               - /ceph-filesystem-hdd:/ceph-filesystem-hdd:rwmda
               - -ed
