@@ -6,7 +6,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ceph-filesysystem-hdd
+  storageClassName: ceph-filesystem-hdd
   resources:
     requests:
       storage: 100Gi
