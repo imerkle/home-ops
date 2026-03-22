@@ -49,6 +49,7 @@ spec:
         globalMounts:
           - path: /data
       ceph-filesystem-hdd:
+        enabled: true
         nameOverride: hdd
         type: persistentVolumeClaim
         accessMode: ReadWriteMany
