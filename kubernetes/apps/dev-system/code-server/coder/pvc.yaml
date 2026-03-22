@@ -1,29 +1,29 @@
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: syncthing-data-coder-pv
-spec:
-  accessModes:
-  - ReadWriteMany
-  capacity:
-    storage: 10Gi
-  csi:
-    driver: rook-ceph.cephfs.csi.ceph.com
-    nodeStageSecretRef:
-      name: rook-csi-cephfs-node
-      namespace: rook-ceph
-    volumeAttributes:
-      clusterID: rook-ceph
-      fsName: ceph-filesystem
-      pool: ceph-filesystem-data0
-      staticVolume: "true"
-      rootPath: /volumes/csi/csi-vol-dd5084b4-3a9b-4d2d-9983-ad00086ed9e9/9c8ec4a0-d634-4732-a062-898bb2bca41e
-    volumeHandle: syncthing-data-coder-pv
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: ceph-filesystem
-  volumeMode: Filesystem
----
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: syncthing-data-coder-pv
+# spec:
+#   accessModes:
+#   - ReadWriteMany
+#   capacity:
+#     storage: 10Gi
+#   csi:
+#     driver: rook-ceph.cephfs.csi.ceph.com
+#     nodeStageSecretRef:
+#       name: rook-csi-cephfs-node
+#       namespace: rook-ceph
+#     volumeAttributes:
+#       clusterID: rook-ceph
+#       fsName: ceph-filesystem
+#       pool: ceph-filesystem-data0
+#       staticVolume: "true"
+#       rootPath: /volumes/csi/csi-vol-dd5084b4-3a9b-4d2d-9983-ad00086ed9e9/9c8ec4a0-d634-4732-a062-898bb2bca41e
+#     volumeHandle: syncthing-data-coder-pv
+#   persistentVolumeReclaimPolicy: Retain
+#   storageClassName: ceph-filesystem
+#   volumeMode: Filesystem
+# ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -32,7 +32,7 @@ spec:
   accessModes:
     - ReadWriteMany  # CephFS supports this
   storageClassName: ceph-filesystem # Match your CephFS storage class
-  volumeName: syncthing-data-coder-pv
+  # volumeName: syncthing-data-coder-pv
   resources:
     requests:
       storage: 10Gi
