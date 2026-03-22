@@ -35,6 +35,7 @@ spec:
                 memory: 512Mi
     service:
       app:
+        type: LoadBalancer
         annotations:
           io.cilium/lb-ipam-ips: 10.0.0.29
         controller: copyparty
