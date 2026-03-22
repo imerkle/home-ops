@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./netpol.yaml
+  - ./pvc-data.yaml
 generatorOptions:
   disableNameSuffixHash: true
 configMapGenerator:
