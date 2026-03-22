@@ -21,7 +21,7 @@ spec:
               - -v
               - /data:/data:rw
               - -v
-              - /ceph-filesystem-hdd:/ceph-filesystem-hdd:rw
+              - /ceph-filesystem-hdd:/ceph-filesystem-hdd:rwmda
               - -ed
               - --rproxy
               - "-1"
