@@ -20,6 +20,8 @@ spec:
             args:
               - -v
               - /data:/data:rw
+              - -v
+              - /ceph-filesystem-hdd:/ceph-filesystem-hdd:rw
               - -ed
               - --rproxy
               - "-1"
@@ -46,6 +48,13 @@ spec:
         existingClaim: syncthing-data
         globalMounts:
           - path: /data
+      ceph-filesystem-hdd:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteMany
+        size: 100Gi
+        storageClass: ceph-filesystem-hdd
+        globalMounts:
+          - path: /ceph-filesystem-hdd
     route:
       app:
         labels:
