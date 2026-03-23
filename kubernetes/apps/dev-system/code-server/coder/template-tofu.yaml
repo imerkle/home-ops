@@ -21,4 +21,4 @@ spec:
           value: "https://coder.${DOMAIN1}"
         - name: CODER_SESSION_TOKEN
           # value: "vault:secret/data/coder#SESSION_TOKEN"
-          value: "AqY3zlzjst-VPC9li95Mthj3jByRs2yQl"
+          value: "gEnjsAIRO4-4aGEKewMTnV0sztFBeZYCe"
