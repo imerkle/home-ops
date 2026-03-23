@@ -120,7 +120,7 @@ spec:
       config-file:
           enabled: true
           type: configMap
-          name: '{{ .Release.Name }}-config'
+          name: '{{ .Release.Name }}'
           advancedMounts:
             home-assistant:
               app:
