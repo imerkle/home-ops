@@ -61,13 +61,13 @@ spec:
                 cpu: 10m
               limits:
                 memory: 1Gi
-    defaultPodOptions:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 0
-        runAsGroup: 0
-        fsGroup: 0
-        fsGroupChangePolicy: OnRootMismatch
+    # defaultPodOptions:
+    #   securityContext:
+    #     runAsNonRoot: true
+    #     runAsUser: 0
+    #     runAsGroup: 0
+    #     fsGroup: 0
+    #     fsGroupChangePolicy: OnRootMismatch
     service:
       app:
         ports:
