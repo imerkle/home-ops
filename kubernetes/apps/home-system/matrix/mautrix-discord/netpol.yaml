@@ -1,0 +1,40 @@
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mautrix-discord
+spec:
+  description: "Network policy for Mautrix Discord bridge"
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: mautrix-discord
+  ingress:
+    # Allow ingress from Synapse
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/part-of: matrix-stack
+  egress:
+    # Allow traffic to Synapse
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/part-of: matrix-stack
+    # Allow traffic to PostgreSQL
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: db
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    # Allow Internet Access (Discord servers)
+    - toEntities:
+        - world
+    # Allow DNS
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP

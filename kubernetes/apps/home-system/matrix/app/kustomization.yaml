@@ -18,5 +18,10 @@ configMapGenerator:
       - ./telegram/config.yaml
       - ./telegram/registration.yaml
       - ./telegram/doublepuppet.yaml
+  - name: mautrix-discord-config
+    files:
+      - ./discord/config.yaml
+      - ./discord/registration.yaml
+      - ./discord/doublepuppet.yaml
 generatorOptions:
   disableNameSuffixHash: true

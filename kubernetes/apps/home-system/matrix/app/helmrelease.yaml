@@ -101,6 +101,11 @@ spec:
             app_service_config_files:
               - /data/telegram/registration.yaml
               - /data/telegram/doublepuppet.yaml
+        discord-appservice.yaml:
+          config: |
+            app_service_config_files:
+              - /data/discord/registration.yaml
+              - /data/discord/doublepuppet.yaml
         forbidden_username.yaml:
           config: |
             forbidden_username_re: []
@@ -121,12 +126,23 @@ spec:
                 path: registration.yaml
               - key: doublepuppet.yaml
                 path: doublepuppet.yaml
+        - name: discord-registration
+          configMap:
+            name: mautrix-discord-config
+            items:
+              - key: registration.yaml
+                path: registration.yaml
+              - key: doublepuppet.yaml
+                path: doublepuppet.yaml
       extraVolumeMounts:
         - name: whatsapp-registration
           mountPath: /data/whatsapp
           readOnly: true
         - name: telegram-registration
           mountPath: /data/telegram
+          readOnly: true
+        - name: discord-registration
+          mountPath: /data/discord
           readOnly: true
     matrixAuthenticationService:
       enabled: true

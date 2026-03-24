@@ -1,0 +1,75 @@
+# Network-specific config options
+network:
+  displayname_template: "{{or .GlobalName .Username}}{{if .Bot}} (bot){{end}}"
+  channel_name_template: "{{if or (eq .Type 3) (eq .Type 4)}}{{.Name}}{{else}}#{{.Name}}{{end}}"
+  guild_name_template: "{{.Name}}"
+
+  # Should incoming calls send a message to the Matrix room?
+  call_start_notices: true
+
+  # Settings for converting animated stickers.
+  animated_sticker:
+    target: webp
+    args:
+      width: 320
+      height: 320
+      fps: 25
+
+# Config options that affect the central bridge module.
+bridge:
+  # The prefix for commands. Only required in non-management rooms.
+  command_prefix: '!discord'
+
+  # Whether the bridge should set names and avatars explicitly for DM portals.
+  private_chat_portal_meta: default
+
+  # Permissions for using the bridge.
+  permissions:
+    "*": relay
+    "${DOMAIN1}": user
+    "@zitadel-admin:${DOMAIN1}": admin
+
+# Config for the bridge's database.
+database:
+  type: postgres
+  uri: "postgres://$${vault:secret/data/pg_default#USER}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/mautrix-discord"
+  max_open_conns: 20
+  max_idle_conns: 2
+
+# Homeserver details.
+homeserver:
+  address: http://matrix-synapse:8008
+  domain: "${DOMAIN1}"
+  software: standard
+
+# Application service host/registration related details.
+appservice:
+  address: http://mautrix-discord:8000
+  hostname: 0.0.0.0
+  port: 8000
+
+  # The unique ID of this appservice.
+  id: discord
+  # Appservice bot details.
+  bot:
+    username: discordbot
+    displayname: Discord bridge bot
+    avatar: mxc://maunium.net/nIdEykemnwdisvHbpxflpDlC
+
+  as_token: $${vault:secret/data/mautrix#hs_token}
+  hs_token: $${vault:secret/data/mautrix#hs_token}
+
+  # Localpart template of MXIDs for remote users.
+  username_template: "discord_{{.}}"
+
+# Double puppeting
+double_puppet:
+  secrets:
+    ${DOMAIN1}: as_token:$${vault:secret/data/mautrix#hs_token}
+
+# Logging config.
+logging:
+  min_level: info
+  writers:
+    - type: stdout
+      format: pretty-colored

@@ -138,3 +138,30 @@ spec:
     substitute:
       APP: mautrix-slack
       VOLSYNC_CAPACITY: 1Gi
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: matrix-mautrix-discord
+spec:
+  components:
+    - ../../../../components/volsync
+  targetNamespace: home-system
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: mautrix-discord
+  dependsOn:
+    - name: zitadel-app
+      namespace: zitadel
+    - name: matrix
+  path: ./kubernetes/apps/home-system/matrix/mautrix-discord
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: home-ops
+  wait: true
+  interval: 30m
+  postBuild:
+    substitute:
+      APP: mautrix-discord
+      VOLSYNC_CAPACITY: 1Gi
