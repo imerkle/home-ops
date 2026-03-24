@@ -11,4 +11,4 @@ spec:
     type: tempo
     name: tempo
     access: proxy
-    url: http://tempo-query-frontend.observability.svc.cluster.local:3100
+    url: http://tempo-gateway.observability.svc.cluster.local:80
