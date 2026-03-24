@@ -23,6 +23,9 @@ spec:
               - observability
             names:
               - "fluent-bit-*"
+              - "node-exporter-*"
+              - "smartctl-exporter-*"
+              # - "snmp-exporter-*"
       validate:
         podSecurity:
           level: baseline
