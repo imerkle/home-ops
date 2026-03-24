@@ -545,9 +545,8 @@ bridge:
     #     mxid - Specific user
     permissions:
         "*": "relaybot"
-        "public.example.com": "user"
-        "example.com": "full"
-        "@admin:example.com": "admin"
+        "${DOMAIN1}": user
+        "@zitadel-admin:${DOMAIN1}": admin
 
     # Options related to the message relay Telegram bot.
     relaybot:
