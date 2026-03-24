@@ -4,6 +4,7 @@ apiVersion: grafana.integreatly.org/v1beta1
 kind: Grafana
 metadata:
   name: grafana
+  namespace: observability
   labels:
     grafana.internal/instance: grafana
 spec:
@@ -24,9 +25,9 @@ spec:
       allow_sign_up: "true"
       scopes: "openid profile email"
       # Zitadel specific endpoints
-      auth_url: "https://zitadel.${DOMAIN1}/oauth/v2/authorize"
-      token_url: "https://zitadel.${DOMAIN1}/oauth/v2/token"
-      api_url: "https://zitadel.${DOMAIN1}/oidc/v1/userinfo"
+      auth_url: "https://zitadel.x3y.space/oauth/v2/authorize"
+      token_url: "https://zitadel.x3y.space/oauth/v2/token"
+      api_url: "https://zitadel.x3y.space/oidc/v1/userinfo"
     log:
       mode: console
     metrics:
@@ -39,7 +40,7 @@ spec:
       angular_support_enabled: "true"
     server:
       enable_gzip: "true"
-      root_url: https://grafana.${DOMAIN1}
+      root_url: https://grafana.x3y.space
   deployment:
     spec:
       strategy:
@@ -65,6 +66,8 @@ spec:
                     secretKeyRef:
                       name: grafana-oidc-creds
                       key: client_secret
+                - name: GF_INSTALL_PLUGINS
+                  value: "victoriametrics-logs-datasource"
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
@@ -86,5 +89,5 @@ spec:
       resources:
         requests:
           storage: 10Gi
-      storageClassName: ${STORE1}
+      storageClassName: ceph-block
   disableDefaultSecurityContext: All
