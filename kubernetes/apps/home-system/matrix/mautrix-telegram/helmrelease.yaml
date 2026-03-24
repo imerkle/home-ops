@@ -26,16 +26,26 @@ spec:
               INIT_POSTGRES_USER: "vault:secret/data/pg_default#USER"
               INIT_POSTGRES_PASS: "vault:secret/data/pg_default#PASSWORD"
               INIT_POSTGRES_SUPER_PASS: "vault:secret/data/pg_default#PASSWORD"
+          copy-config:
+            image:
+              repository: public.ecr.aws/docker/library/busybox
+              tag: latest
+            command: ["/bin/sh", "-c"]
+            args:
+              - cp /tmp/config/* /data/
         containers:
           app:
             image:
               repository: dock.mau.dev/mautrix/telegram
               tag: v0.15.3
-            # command: ["/usr/bin/mautrix-telegram"]
-            # args: [ "-c", "/data/config.yaml", "--no-update" ]
+            command: ["python3", "-m", "mautrix_telegram"]
+            args: [ "-c", "/data/config.yaml", "--no-update" ]
             env:
-              TZ: ${TIMEZONE}
-              MAUTRIX_DIRECT_STARTUP: false
+              TZ: America/New_York
+              # MAUTRIX_DIRECT_STARTUP: false
+              # DB_USER: "vault:secret/data/pg_default#USER"
+              # DB_PASS: "vault:secret/data/pg_default#PASSWORD"
+              # DB_HOST: "vault:secret/data/pg_default#HOST"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -64,7 +74,7 @@ spec:
           gatus.home-operations.com/endpoint: |-
             conditions: ["[STATUS] == 404"]
         hostnames:
-          - "{{ .Release.Name }}.${DOMAIN1}"
+          - "{{ .Release.Name }}.x3y.space"
         parentRefs:
           - name: envoy-internal
             namespace: networking
@@ -72,6 +82,12 @@ spec:
       config:
         type: configMap
         name: mautrix-telegram-config
+        advancedMounts:
+          mautrix-telegram:
+            copy-config:
+              - path: /tmp/config
+      data:
+        existingClaim: mautrix-telegram
         globalMounts:
           - path: /data
       tmpfs:

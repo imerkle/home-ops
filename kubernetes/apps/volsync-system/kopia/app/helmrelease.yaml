@@ -23,9 +23,11 @@ spec:
                 export HOME=/tmp
                 export USER=kopia
                 # Initialize repository if it doesn't exist (KOPIA_PASSWORD env var is read automatically)
-                if ! kopia repository connect filesystem --path=/repository --override-hostname=volsync.volsync-system.svc.cluster.local --override-username=volsync 2>/dev/null; then
+                if ! kopia repository connect filesystem --path=/repository/kopia --override-hostname=volsync.volsync-system.svc.cluster.local --override-username=volsync --password=$KOPIA_PASSWORD 2>/dev/null; then
                   echo "Initializing new Kopia repository..."
-                  kopia repository create filesystem --path=/repository --override-hostname=volsync.volsync-system.svc.cluster.local --override-username=volsync
+                  # Clear the subdirectory if it's partially initialized and connect failed
+                  rm -rf /repository/kopia/*
+                  kopia repository create filesystem --path=/repository/kopia --override-hostname=volsync.volsync-system.svc.cluster.local --override-username=volsync --password=$KOPIA_PASSWORD
                 fi
                 # Start the server (disable CSRF for reverse proxy compatibility)
                 exec kopia server start --address=0.0.0.0:80 --without-password --insecure --disable-csrf-token-checks --override-hostname=volsync.volsync-system.svc.cluster.local --override-username=volsync
@@ -36,6 +38,7 @@ spec:
               KOPIA_WEB_ENABLED: true
               KOPIA_WEB_PORT: &port 80
               TZ: America/New_York
+              KOPIA_CONFIG_PATH: /tmp/repository.config
               KOPIA_PASSWORD: vault:secret/data/volsync#KOPIA_PASSWORD
             # args:
             #   - --without-password
@@ -47,7 +50,7 @@ spec:
                   httpGet:
                     path: /
                     port: *port
-                  initialDelaySeconds: 0
+                  initialDelaySeconds: 30
                   periodSeconds: 10
                   timeoutSeconds: 1
                   failureThreshold: 3
@@ -61,13 +64,13 @@ spec:
                 cpu: 10m
               limits:
                 memory: 1Gi
-    # defaultPodOptions:
-    #   securityContext:
-    #     runAsNonRoot: true
-    #     runAsUser: 0
-    #     runAsGroup: 0
-    #     fsGroup: 0
-    #     fsGroupChangePolicy: OnRootMismatch
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
     service:
       app:
         ports:
@@ -82,7 +85,7 @@ spec:
           gethomepage.dev/group: Storage
           gethomepage.dev/icon: kopia.png
         hostnames:
-          - "{{ .Release.Name }}.${DOMAIN1}"
+          - "{{ .Release.Name }}.x3y.space"
         parentRefs:
           - name: envoy-internal
             namespace: network
@@ -94,7 +97,7 @@ spec:
               "storage": {
                 "type": "filesystem",
                 "config": {
-                  "path": "/repository"
+                  "path": "/repository/kopia"
                 }
               },
               "hostname": "volsync.{{ .Release.Namespace }}.svc.cluster.local",
@@ -103,15 +106,15 @@ spec:
               "enableActions": false
             }
     persistence:
-      config-file:
-        type: configMap
-        identifier: config
-        globalMounts:
-          - path: /config/repository.config
-            subPath: repository.config
+      # config-file:
+      #   type: configMap
+      #   identifier: config
+      #   globalMounts:
+      #     - path: /config/repository.config
+      #       subPath: repository.config
       repository:
         enabled: true
-        storageClass: ${STORE1}
+        storageClass: ceph-block
         type: persistentVolumeClaim
         accessMode: ReadWriteOnce
         size: 20Gi
