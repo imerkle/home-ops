@@ -30,8 +30,8 @@ spec:
         verbosity: detailed
       prometheus:
         endpoint: "0.0.0.0:8889"
-      otlp:
-        endpoint: "victoria-logs-single-server.observability.svc.cluster.local:4317"
+      otlp/tempo:
+        endpoint: "tempo-distributor.observability.svc.cluster.local:4317"
         tls:
           insecure: true
 
@@ -40,7 +40,7 @@ spec:
         traces:
           receivers: [otlp]
           processors: [memory_limiter, batch]
-          exporters: [debug, otlp]
+          exporters: [debug, otlp/tempo]
         metrics:
           receivers: [otlp]
           processors: [memory_limiter, batch]
