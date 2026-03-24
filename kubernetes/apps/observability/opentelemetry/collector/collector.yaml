@@ -35,7 +35,7 @@ spec:
         tls:
           insecure: true
       otlphttp/victorialogs:
-        endpoint: "http://victoria-logs-server.observability.svc.cluster.local:9428/opentelemetry/v1/logs"
+        endpoint: "http://victoria-logs-server.observability.svc.cluster.local:9428/opentelemetry"
         tls:
           insecure: true
 
