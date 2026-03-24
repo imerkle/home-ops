@@ -7,3 +7,4 @@ resources:
   - ./helmrelease.yaml
   - ./netpol.yaml
   - ./ocirepository.yaml
+  - ./kyverno-policy.yaml

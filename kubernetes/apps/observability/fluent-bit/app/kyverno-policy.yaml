@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/kyverno/main/config/crds/kyverno/kyverno.io_clusterpolicies.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: observability-baseline-security
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: enforce-baseline
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+            namespaces:
+              - observability
+      exclude:
+        any:
+        - resources:
+            namespaces:
+              - observability
+            names:
+              - "fluent-bit-*"
+      validate:
+        podSecurity:
+          level: baseline
+          version: latest
