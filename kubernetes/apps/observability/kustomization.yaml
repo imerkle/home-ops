@@ -24,3 +24,4 @@ resources:
   - ./opentelemetry/ks.yaml
   - ./vpa/ks.yaml
   - ./goldilocks/ks.yaml
+  - ./tempo/ks.yaml
