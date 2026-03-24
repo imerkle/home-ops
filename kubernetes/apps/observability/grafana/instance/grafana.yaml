@@ -87,6 +87,4 @@ spec:
         requests:
           storage: 10Gi
       storageClassName: ${STORE1}
-  externalPlugins:
-    - name: victorialogs-datasource
   disableDefaultSecurityContext: All
