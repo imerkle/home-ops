@@ -3,7 +3,7 @@ id: doublepuppet_discord
 # The URL is intentionally left empty (null), as the homeserver shouldn't
 # push events anywhere for this extra appservice.
 url:
-as_token: $${vault:secret/data/mautrix#as_token2}
+as_token: $${vault:secret/data/mautrix#hs_token2}
 hs_token: $${vault:secret/data/mautrix#hs_token2}
 sender_localpart: sender_localpart
 rate_limited: false
