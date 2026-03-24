@@ -47,7 +47,7 @@ appservice:
   address: http://mautrix-discord:8000
   hostname: 0.0.0.0
   port: 8000
-
+  database: "postgres://$${vault:secret/data/pg_default#USER}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/mautrix-telegram"
   # The unique ID of this appservice.
   id: discord
   # Appservice bot details.
