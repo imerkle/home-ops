@@ -38,7 +38,8 @@ spec:
         endpoint: "http://victoria-logs-server.observability.svc.cluster.local:9428/insert/opentelemetry"
         tls:
           insecure: true
-
+        headers:
+          VL-Stream-Fields: "service.name,severity"
     service:
       pipelines:
         logs:
