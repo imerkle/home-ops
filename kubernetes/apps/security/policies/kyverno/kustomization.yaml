@@ -5,4 +5,4 @@ kind: Kustomization
 namespace: kyverno
 resources:
   - ./ks.yaml
-  - ./namespace.yaml
+  # - ./namespace.yaml
