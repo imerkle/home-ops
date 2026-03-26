@@ -5,7 +5,7 @@ metadata:
   name: blocky
 spec:
   components:
-    - ../../../../components/volsync
+    - ../../../../../components/volsync
   postBuild:
     substitute:
       APP: blocky
