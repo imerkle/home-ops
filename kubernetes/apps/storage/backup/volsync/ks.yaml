@@ -8,7 +8,7 @@ spec:
   dependsOn:
     - name: snapshot-controller
       namespace: kube-system
-  path: ./kubernetes/apps/volsync-system/volsync/app
+  path: ./kubernetes/apps/storage/backup/volsync/app
   targetNamespace: volsync-system
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
@@ -19,5 +19,5 @@ metadata:
 spec:
   dependsOn:
     - name: volsync
-  path: ./kubernetes/apps/volsync-system/volsync/maintenance
+  path: ./kubernetes/apps/storage/backup/volsync/maintenance
   targetNamespace: volsync-system

@@ -14,7 +14,7 @@ spec:
       namespace: zitadel
     - name: vault
       namespace: vault
-  path: ./kubernetes/apps/home-system/immich/oidc
+  path: ./kubernetes/apps/home/media/immich/oidc
   prune: true
   sourceRef:
     kind: GitRepository
@@ -42,7 +42,7 @@ spec:
     - name: vault
       namespace: vault
     - name: immich-oidc
-  path: ./kubernetes/apps/home-system/immich/app
+  path: ./kubernetes/apps/home/media/immich/app
   prune: true
   sourceRef:
     kind: GitRepository

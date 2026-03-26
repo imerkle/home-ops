@@ -11,7 +11,7 @@ spec:
   components:
     - ../../../../components/volsync
   interval: 1h
-  path: ./kubernetes/apps/home-system/pdf-tool/app
+  path: ./kubernetes/apps/home/tools/pdf-tool/app
   postBuild:
     substitute:
       APP: pdf-tool

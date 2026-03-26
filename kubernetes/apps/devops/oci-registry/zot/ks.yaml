@@ -12,7 +12,7 @@ spec:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/volsync
-  path: ./kubernetes/apps/dev-system/zot/app
+  path: ./kubernetes/apps/devops/oci-registry/zot/app
   prune: true
   sourceRef:
     kind: GitRepository

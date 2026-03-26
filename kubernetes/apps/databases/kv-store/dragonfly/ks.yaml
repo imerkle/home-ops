@@ -5,7 +5,7 @@ kind: Kustomization
 metadata:
   name: dragonfly
 spec:
-  path: ./kubernetes/apps/db/dragonfly/app
+  path: ./kubernetes/apps/databases/kv-store/dragonfly/app
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -23,7 +23,7 @@ kind: Kustomization
 metadata:
   name: dragonfly-cluster
 spec:
-  path: ./kubernetes/apps/db/dragonfly/cluster
+  path: ./kubernetes/apps/databases/kv-store/dragonfly/cluster
   sourceRef:
     kind: GitRepository
     name: flux-system

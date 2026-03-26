@@ -6,7 +6,7 @@ metadata:
   namespace: &ns home-system
 spec:
   targetNamespace: *ns
-  path: ./kubernetes/apps/home-system/syncthing/app
+  path: ./kubernetes/apps/home/file-management/syncthing/app
   dependsOn: []
   components:
     - ../../../../components/volsync

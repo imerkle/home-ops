@@ -13,7 +13,7 @@ spec:
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
-  path: ./kubernetes/apps/home-system/home-assistant/app
+  path: ./kubernetes/apps/home/automation/home-assistant/app
   postBuild:
     substitute:
       APP: home-assistant

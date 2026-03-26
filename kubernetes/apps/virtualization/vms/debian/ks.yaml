@@ -10,4 +10,4 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: kubevirt
-  path: ./kubernetes/apps/kubevirt/debian/app
+  path: ./kubernetes/apps/virtualization/vms/debian/app

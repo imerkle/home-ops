@@ -12,7 +12,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 1h
-  path: ./kubernetes/apps/kube-system/cilium/app
+  path: ./kubernetes/apps/kube-system/cni/cilium/app
   prune: true
   retryInterval: 2m
   sourceRef:
@@ -37,7 +37,7 @@ spec:
     - name: cert-manager
       namespace: cert-manager
   interval: 1h
-  path: ./kubernetes/apps/kube-system/cilium/gateway
+  path: ./kubernetes/apps/kube-system/cni/cilium/gateway
   prune: true
   sourceRef:
     kind: GitRepository

@@ -8,7 +8,7 @@ spec:
   components:
     - ../../../../components/volsync
   targetNamespace: *namespace
-  path: ./kubernetes/apps/dev-system/code-server/coder
+  path: ./kubernetes/apps/devops/ide/code-server/
   dependsOn:
     - name: zitadel-app
       namespace: zitadel

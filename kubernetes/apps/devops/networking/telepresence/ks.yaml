@@ -6,7 +6,7 @@ metadata:
   namespace: &namespace dev-system
 spec:
   targetNamespace: *namespace
-  path: ./kubernetes/apps/dev-system/telepresence/app
+  path: ./kubernetes/apps/devops/networking/telepresence/app
   dependsOn: []
   postBuild:
     substitute:

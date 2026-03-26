@@ -14,7 +14,7 @@ spec:
   dependsOn:
     - name: flux-operator
       namespace: *namespace
-  path: ./kubernetes/apps/flux-system/flux-instance/app
+  path: ./kubernetes/apps/gitops/flux-instance/app
   targetNamespace: *namespace
   wait: false
 ---
@@ -31,7 +31,7 @@ spec:
   dependsOn:
     - name: flux-operator
       namespace: *namespace
-  path: ./kubernetes/apps/flux-system/flux-instance/mcp
+  path: ./kubernetes/apps/gitops/flux-instance/mcp
   targetNamespace: *namespace
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
@@ -47,5 +47,5 @@ spec:
   dependsOn:
     - name: flux-operator
       namespace: *namespace
-  path: ./kubernetes/apps/flux-system/flux-instance/github-mcp
+  path: ./kubernetes/apps/gitops/flux-instance/github-mcp
   targetNamespace: *namespace

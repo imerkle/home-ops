@@ -14,7 +14,7 @@ spec:
   dependsOn:
     - name: vault
       namespace: vault
-  path: ./kubernetes/apps/home-system/zealot/app
+  path: ./kubernetes/apps/home/tools/zealot/app
   prune: true
   sourceRef:
     kind: GitRepository

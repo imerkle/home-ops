@@ -11,7 +11,7 @@ spec:
   components:
     - ../../../../components/volsync
   interval: 1h
-  path: ./kubernetes/apps/home-system/esphome/app
+  path: ./kubernetes/apps/home/automation/esphome/app
   postBuild:
     substitute:
       APP: esphome

@@ -16,7 +16,7 @@ spec:
       namespace: zitadel
     - name: rook-ceph-cluster
       namespace: rook-ceph
-  path: ./kubernetes/apps/home-system/copyparty/app
+  path: ./kubernetes/apps/home/file-management/copyparty/app
   prune: true
   sourceRef:
     kind: GitRepository

@@ -14,7 +14,7 @@ spec:
   interval: 1h
   retryInterval: 1m
   timeout: 5m
-  path: ./kubernetes/apps/dev-system/mcp/context7/app
+  path: ./kubernetes/apps/devops/ai/mcp/context7/app
   prune: true
   sourceRef:
     kind: GitRepository

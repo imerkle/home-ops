@@ -10,4 +10,4 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: stalwart
-  path: ./kubernetes/apps/home-system/stalwart/app
+  path: ./kubernetes/apps/home/communication/stalwart/app

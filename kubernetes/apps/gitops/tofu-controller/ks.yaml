@@ -10,7 +10,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn: []
-  path: ./kubernetes/apps/flux-system/tofu-controller/app
+  path: ./kubernetes/apps/gitops/tofu-controller/app
   sourceRef:
     kind: GitRepository
     name: flux-system

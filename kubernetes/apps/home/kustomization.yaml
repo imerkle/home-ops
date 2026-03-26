@@ -1,0 +1,45 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: home-system
+metadata:
+  labels:
+    helm.flux.home.fluxvars: "true"
+components:
+  - ../../components/alerts
+  - ../../components/repos
+resources:
+  - ./namespace.yaml
+  # automation
+  - ./automation/home-assistant/ks.yaml
+  - ./automation/esphome/ks.yaml
+  # communication
+  - ./communication/matrix/ks.yaml
+  - ./communication/stalwart/ks.yaml
+  - ./communication/mail-relay/ks.yaml
+  # media
+  - ./media/immich/ks.yaml
+  - ./media/frigate/ks.yaml
+  - ./media/yt2009/ks.yaml
+  # file-management
+  - ./file-management/syncthing/ks.yaml
+  - ./file-management/copyparty/ks.yaml
+  # - ./file-management/filebrowser/ks.yaml
+  # dashboard
+  - ./dashboard/homepage/ks.yaml
+  - ./dashboard/dashboards/ks.yaml
+  # security
+  - ./security/vaultwarden/ks.yaml
+  # networking
+  - ./networking/unifi/ks.yaml
+  - ./networking/blocky/ks.yaml
+  # remote-access
+  - ./remote-access/rustdesk/ks.yaml
+  # tools
+  # - ./tools/pdf-tool/ks.yaml
+  - ./tools/atuin/ks.yaml
+  - ./tools/zealot/ks.yaml
+  - ./tools/json-exporter/ks.yaml
+  # oidc
+  - ./oidc/oidc/ks.yaml

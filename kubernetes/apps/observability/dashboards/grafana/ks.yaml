@@ -6,7 +6,7 @@ metadata:
   name: grafana
 spec:
   interval: 1h
-  path: ./kubernetes/apps/observability/grafana/app
+  path: ./kubernetes/apps/observability/dashboards/grafana/app
   prune: true
   sourceRef:
     kind: GitRepository
@@ -28,7 +28,7 @@ spec:
     # - name: rook-ceph-cluster
     #   namespace: rook-ceph
   interval: 1h
-  path: ./kubernetes/apps/observability/grafana/instance
+  path: ./kubernetes/apps/observability/dashboards/grafana/instance
   prune: true
   sourceRef:
     kind: GitRepository

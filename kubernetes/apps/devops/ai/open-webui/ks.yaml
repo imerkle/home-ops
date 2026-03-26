@@ -8,7 +8,7 @@ metadata:
 spec:
   dependsOn: []
   interval: 1h
-  path: ./kubernetes/apps/dev-system/open-webui/app
+  path: ./kubernetes/apps/devops/ai/open-webui/app
   prune: true
   sourceRef:
     kind: GitRepository

@@ -6,7 +6,7 @@ metadata:
   namespace: &namespace zitadel
 spec:
   targetNamespace: *namespace
-  path: ./kubernetes/apps/zitadel/app
+  path: ./kubernetes/apps/security/auth/zitadel/app
   dependsOn:
     - name: vault
       namespace: vault

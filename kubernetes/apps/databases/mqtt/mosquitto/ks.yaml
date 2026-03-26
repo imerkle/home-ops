@@ -9,7 +9,7 @@ spec:
   components:
     - ../../../../components/volsync
   interval: 1h
-  path: ./kubernetes/apps/db/mosquitto/app
+  path: ./kubernetes/apps/databases/mqtt/mosquitto/app
   postBuild:
     substitute:
       APP: mosquitto

@@ -14,4 +14,4 @@ spec:
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
-  path: ./kubernetes/apps/home-system/blocky/app
+  path: ./kubernetes/apps/home/networking/blocky/app

@@ -10,4 +10,4 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: mail-relay
-  path: ./kubernetes/apps/home-system/mail-relay/app
+  path: ./kubernetes/apps/home/communication/mail-relay/app

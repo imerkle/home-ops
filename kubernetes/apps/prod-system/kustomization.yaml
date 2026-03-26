@@ -11,4 +11,4 @@ components:
   - ../../components/repos
 resources:
   - ./namespace.yaml
-  - ./pingpong/ks.yaml
+  - ./apps/pingpong/ks.yaml

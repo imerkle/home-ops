@@ -7,5 +7,5 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/kubevirt/kubevirt/app
+  path: ./kubernetes/apps/virtualization/platform/kubevirt/app
   targetNamespace: *namespace

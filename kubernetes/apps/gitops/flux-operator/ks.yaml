@@ -14,5 +14,5 @@ spec:
       kind: HelmRelease
       name: *app
       namespace: *namespace
-  path: ./kubernetes/apps/flux-system/flux-operator/app
+  path: ./kubernetes/apps/gitops/flux-operator/app
   targetNamespace: flux-system

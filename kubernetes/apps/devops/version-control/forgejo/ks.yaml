@@ -7,7 +7,7 @@ metadata:
 spec:
   targetNamespace: dev-system
   interval: 1h
-  path: ./kubernetes/apps/dev-system/forgejo/oidc
+  path: ./kubernetes/apps/devops/version-control/forgejo/oidc
   prune: true
   sourceRef:
     kind: GitRepository
@@ -28,7 +28,7 @@ spec:
     - ../../../../components/volsync
   targetNamespace: dev-system
   interval: 1h
-  path: ./kubernetes/apps/dev-system/forgejo/app
+  path: ./kubernetes/apps/devops/version-control/forgejo/
   prune: true
   sourceRef:
     kind: GitRepository

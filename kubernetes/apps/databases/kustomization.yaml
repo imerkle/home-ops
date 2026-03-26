@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: db
+components:
+  - ../../components/alerts
+  - ../../components/repos
+resources:
+  - namespace.yaml
+  # sql
+  - sql/pg/repo.yaml
+  - sql/pg/pg.sops.yaml
+  - sql/pg/ks.yaml
+  # kv-store
+  - kv-store/dragonfly/ks.yaml
+  # mqtt
+  - mqtt/mosquitto/ks.yaml

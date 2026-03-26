@@ -9,10 +9,13 @@ components:
 
 resources:
   - ./namespace.yaml
-  - ./certificates/ks.yaml
-  # - ./cloudflare-tunnel/ks.yaml
-  - ./cloudflare-dns/ks.yaml
-  # - ./echo/ks.yaml
-  - ./envoy-gateway/ks.yaml
-
-  # - ./unifi-dns/ks.yaml
+  # gateway
+  - ./gateway/envoy-gateway/ks.yaml
+  # dns
+  - ./dns/cloudflare-dns/ks.yaml
+  # - ./dns/unifi-dns/ks.yaml
+  # certificates
+  - ./certs/certificates/ks.yaml
+  # tunnel
+  # - ./tunnel/cloudflare-tunnel/ks.yaml
+  # - ./tunnel/echo/ks.yaml

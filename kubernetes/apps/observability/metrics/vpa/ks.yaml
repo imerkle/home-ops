@@ -6,7 +6,7 @@ metadata:
   name: vpa
 spec:
   interval: 1h
-  path: ./kubernetes/apps/observability/vpa/app
+  path: ./kubernetes/apps/observability/metrics/vpa/app
   prune: true
   sourceRef:
     kind: GitRepository

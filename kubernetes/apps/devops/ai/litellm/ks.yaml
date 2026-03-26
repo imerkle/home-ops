@@ -7,7 +7,7 @@ metadata:
 spec:
   dependsOn: []
   interval: 1h
-  path: ./kubernetes/apps/dev-system/litellm/app
+  path: ./kubernetes/apps/devops/ai/litellm/app
   prune: true
   sourceRef:
     kind: GitRepository

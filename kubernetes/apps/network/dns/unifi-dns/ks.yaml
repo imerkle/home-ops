@@ -6,7 +6,7 @@ metadata:
   name: unifi-dns
 spec:
   interval: 1h
-  path: ./kubernetes/apps/network/unifi-dns/app
+  path: ./kubernetes/apps/network/dns/unifi-dns/app
   prune: true
   sourceRef:
     kind: GitRepository

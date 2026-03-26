@@ -14,7 +14,7 @@ spec:
       namespace: zitadel
     - name: vault
       namespace: vault
-  path: ./kubernetes/apps/home-system/matrix/oidc
+  path: ./kubernetes/apps/home/communication/matrix/oidc
   prune: true
   sourceRef:
     kind: GitRepository
@@ -43,7 +43,7 @@ spec:
     - name: vault
       namespace: vault
     - name: matrix-oidc
-  path: ./kubernetes/apps/home-system/matrix/app
+  path: ./kubernetes/apps/home/communication/matrix/app
   prune: true
   sourceRef:
     kind: GitRepository
@@ -73,7 +73,7 @@ spec:
     - name: zitadel-app
       namespace: zitadel
     - name: matrix
-  path: ./kubernetes/apps/home-system/matrix/mautrix-whatsapp
+  path: ./kubernetes/apps/home/communication/matrix/mautrix-whatsapp
   prune: true
   sourceRef:
     kind: GitRepository
@@ -100,7 +100,7 @@ spec:
     - name: zitadel-app
       namespace: zitadel
     - name: matrix
-  path: ./kubernetes/apps/home-system/matrix/mautrix-telegram
+  path: ./kubernetes/apps/home/communication/matrix/mautrix-telegram
   prune: true
   sourceRef:
     kind: GitRepository
@@ -127,7 +127,7 @@ spec:
     - name: zitadel-app
       namespace: zitadel
     - name: matrix
-  path: ./kubernetes/apps/home-system/matrix/mautrix-slack
+  path: ./kubernetes/apps/home/communication/matrix/mautrix-slack
   prune: true
   sourceRef:
     kind: GitRepository
@@ -154,7 +154,7 @@ spec:
     - name: zitadel-app
       namespace: zitadel
     - name: matrix
-  path: ./kubernetes/apps/home-system/matrix/mautrix-discord
+  path: ./kubernetes/apps/home/communication/matrix/mautrix-discord
   prune: true
   sourceRef:
     kind: GitRepository

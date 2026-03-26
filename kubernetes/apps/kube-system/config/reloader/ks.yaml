@@ -10,7 +10,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 1h
-  path: ./kubernetes/apps/kube-system/reloader/app
+  path: ./kubernetes/apps/kube-system/config/reloader/app
   prune: true
   retryInterval: 2m
   sourceRef:

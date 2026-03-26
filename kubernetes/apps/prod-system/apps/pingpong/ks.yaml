@@ -10,7 +10,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/prod-system/pingpong/app
+  path: ./kubernetes/apps/prod-system/apps/pingpong/app
   prune: true
   sourceRef:
     kind: GitRepository

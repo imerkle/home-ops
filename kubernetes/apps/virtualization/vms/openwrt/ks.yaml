@@ -10,7 +10,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: kubevirt
-  path: ./kubernetes/apps/kubevirt/openwrt/app
+  path: ./kubernetes/apps/virtualization/vms/openwrt/app
   postBuild:
     substitute:
       OPENWRT_ROUTER_NODE: talos-0d4c1

@@ -10,7 +10,7 @@ spec:
     - ../../../../components/volsync
   targetNamespace: dev-system
   interval: 1h
-  path: ./kubernetes/apps/dev-system/omniroute/app
+  path: ./kubernetes/apps/devops/ai/omniroute/app
   prune: true
   sourceRef:
     kind: GitRepository

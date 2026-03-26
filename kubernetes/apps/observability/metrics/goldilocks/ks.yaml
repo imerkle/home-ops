@@ -10,7 +10,7 @@ spec:
     - name: vpa
       namespace: observability
   interval: 1h
-  path: ./kubernetes/apps/observability/goldilocks/app
+  path: ./kubernetes/apps/observability/metrics/goldilocks/app
   prune: true
   sourceRef:
     kind: GitRepository

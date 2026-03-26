@@ -15,4 +15,4 @@ spec:
   dependsOn:
     - name: vault
       namespace: vault
-  path: ./kubernetes/apps/home-system/atuin/app
+  path: ./kubernetes/apps/home/tools/atuin/app

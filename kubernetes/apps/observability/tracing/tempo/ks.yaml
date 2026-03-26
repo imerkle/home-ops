@@ -6,7 +6,7 @@ metadata:
   name: tempo
 spec:
   interval: 1h
-  path: ./kubernetes/apps/observability/tempo/app
+  path: ./kubernetes/apps/observability/tracing/tempo/app
   prune: true
   sourceRef:
     kind: GitRepository

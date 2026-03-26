@@ -8,7 +8,7 @@ metadata:
     kustomization.flux.fast/default: "false"
 spec:
   targetNamespace: *namespace
-  path: ./kubernetes/apps/db/pg/app
+  path: ./kubernetes/apps/databases/sql/pg/app
   dependsOn: []
   healthChecks:
     - name: cloudnative-pg
@@ -27,7 +27,7 @@ metadata:
     helm.flux.home.fluxvars: "true"
 spec:
   targetNamespace: *namespace
-  path: ./kubernetes/apps/db/pg/clusters/default
+  path: ./kubernetes/apps/databases/sql/pg/clusters/default
   dependsOn:
     - name: pg-app
   healthChecks:
@@ -45,7 +45,7 @@ metadata:
     flux.home.arpa/wait: disabled
 spec:
   targetNamespace: *namespace
-  path: ./kubernetes/apps/db/pg/clusters/replica
+  path: ./kubernetes/apps/databases/sql/pg/clusters/replica
   dependsOn:
     - name: pg-app
     # - name: 1-core-storage-minio-app
@@ -60,7 +60,7 @@ metadata:
     flux.home.arpa/wait: disabled
 spec:
   targetNamespace: *namespace
-  path: ./kubernetes/apps/db/pg/clusters/vector
+  path: ./kubernetes/apps/databases/sql/pg/clusters/vector
   dependsOn:
     - name: pg-app
   healthChecks:
@@ -75,7 +75,7 @@ spec:
 #   name: pg-clusters-enc
 #   namespace: flux-system
 # spec:
-#   path: ./kubernetes/apps/db/pg/clusters/enc
+#   path: ./kubernetes/apps/databases/sql/pg/clusters/enc
 #   dependsOn:
 #     - name: pg-app
 ---
@@ -88,7 +88,7 @@ metadata:
     flux.home.arpa/wait: disabled
 spec:
   targetNamespace: *namespace
-  path: ./kubernetes/apps/db/pg/pgadmin
+  path: ./kubernetes/apps/databases/sql/pg/pgadmin
   dependsOn:
     - name: pg-app
     - name: vault

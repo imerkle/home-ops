@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: internal-oidc-infra
-  path: ./kubernetes/apps/home-system/oidc/infra
+  path: ./kubernetes/apps/home/oidc/oidc/infra
   prune: true
   sourceRef:
     kind: GitRepository
@@ -32,7 +32,7 @@ spec:
     - name: zitadel-app
       namespace: zitadel
     - name: internal-oidc-infra
-  path: ./kubernetes/apps/home-system/oidc/app
+  path: ./kubernetes/apps/home/oidc/oidc/app
   prune: true
   sourceRef:
     kind: GitRepository

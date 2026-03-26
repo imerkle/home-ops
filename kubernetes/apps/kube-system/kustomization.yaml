@@ -8,13 +8,21 @@ components:
 resources:
   - ./namespace.yaml
   - ./vars.sops.yaml
-  - ./cilium/ks.yaml
-  - ./coredns/ks.yaml
-  # - ./csi-driver-nfs/ks.yaml
-  - ./descheduler/ks.yaml
-  # - ./intel-device-plugin-operator/ks.yaml
-  - ./metrics-server/ks.yaml
-  - ./snapshot-controller/ks.yaml
-  - ./reloader/ks.yaml
-  - ./spegel/ks.yaml
-  - ./multus/ks.yaml
+  # cni
+  - ./cni/cilium/ks.yaml
+  # dns
+  - ./dns/coredns/ks.yaml
+  # scheduling
+  - ./scheduling/descheduler/ks.yaml
+  - ./scheduling/metrics-server/ks.yaml
+  # storage
+  - ./storage/snapshot-controller/ks.yaml
+  # - ./storage/csi-driver-nfs/ks.yaml
+  # networking
+  - ./networking/multus/ks.yaml
+  # images
+  - ./images/spegel/ks.yaml
+  # config
+  - ./config/reloader/ks.yaml
+  # devices
+  # - ./devices/intel-device-plugin-operator/ks.yaml

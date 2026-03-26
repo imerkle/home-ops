@@ -14,7 +14,7 @@ spec:
       namespace: zitadel
     - name: vault
       namespace: vault
-  path: ./kubernetes/apps/home-system/vaultwarden/oidc
+  path: ./kubernetes/apps/home/security/vaultwarden/oidc
   prune: true
   sourceRef:
     kind: GitRepository
@@ -38,7 +38,7 @@ spec:
     - name: vault
       namespace: vault
     - name: vaultwarden-oidc
-  path: ./kubernetes/apps/home-system/vaultwarden/app
+  path: ./kubernetes/apps/home/security/vaultwarden/app
   prune: true
   sourceRef:
     kind: GitRepository

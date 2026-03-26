@@ -9,19 +9,27 @@ components:
 
 resources:
   - ./namespace.yaml
-  - ./blackbox-exporter/ks.yaml
-  - ./fluent-bit/ks.yaml
-  - ./gatus/ks.yaml
-  - ./grafana/ks.yaml
-  - ./keda/ks.yaml
-  - ./kromgo/ks.yaml
-  - ./kube-prometheus-stack/ks.yaml
-  # - ./silence-operator/ks.yaml
-  - ./smartctl-exporter/ks.yaml
-  - ./snmp-exporter/ks.yaml
-  # - ./unpoller/ks.yaml
-  - ./victoria-logs/ks.yaml
-  - ./opentelemetry/ks.yaml
-  - ./vpa/ks.yaml
-  - ./goldilocks/ks.yaml
-  - ./tempo/ks.yaml
+  # metrics
+  - ./metrics/kube-prometheus-stack/ks.yaml
+  - ./metrics/vpa/ks.yaml
+  - ./metrics/goldilocks/ks.yaml
+  - ./metrics/keda/ks.yaml
+  # logs
+  - ./logs/fluent-bit/ks.yaml
+  - ./logs/victoria-logs/ks.yaml
+  # tracing
+  - ./tracing/tempo/ks.yaml
+  # collector
+  - ./collector/opentelemetry/ks.yaml
+  # dashboards
+  - ./dashboards/grafana/ks.yaml
+  - ./dashboards/kromgo/ks.yaml
+  # exporters
+  - ./exporters/blackbox-exporter/ks.yaml
+  - ./exporters/smartctl-exporter/ks.yaml
+  - ./exporters/snmp-exporter/ks.yaml
+  # - ./exporters/unpoller/ks.yaml
+  # alerting
+  # - ./alerting/silence-operator/ks.yaml
+  # uptime
+  - ./uptime/gatus/ks.yaml

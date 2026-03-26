@@ -6,7 +6,7 @@ metadata:
   name: fluent-bit
 spec:
   interval: 1h
-  path: ./kubernetes/apps/observability/fluent-bit/app
+  path: ./kubernetes/apps/observability/logs/fluent-bit/app
   prune: true
   sourceRef:
     kind: GitRepository

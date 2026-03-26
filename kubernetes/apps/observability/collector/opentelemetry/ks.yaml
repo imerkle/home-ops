@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: opentelemetry-operator
-  path: ./kubernetes/apps/observability/opentelemetry/operator
+  path: ./kubernetes/apps/observability/collector/opentelemetry/operator
   prune: true
   sourceRef:
     kind: GitRepository
@@ -29,7 +29,7 @@ spec:
   dependsOn:
     - name: opentelemetry-operator
       namespace: observability
-  path: ./kubernetes/apps/observability/opentelemetry/collector
+  path: ./kubernetes/apps/observability/collector/opentelemetry/collector
   prune: true
   sourceRef:
     kind: GitRepository

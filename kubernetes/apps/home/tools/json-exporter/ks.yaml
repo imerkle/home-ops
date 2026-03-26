@@ -9,5 +9,5 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/home-system/json-exporter/app
+  path: ./kubernetes/apps/home/tools/json-exporter/app
   targetNamespace: *namespace
