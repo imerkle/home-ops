@@ -16,8 +16,6 @@ kind: Kustomization
 metadata:
   name: &app kyverno-app
 spec:
-  components:
-    - ../../../../../components/common
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
