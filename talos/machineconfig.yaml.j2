@@ -39,6 +39,24 @@ machine:
         devices {
            global_filter = [ "r|^/dev/drbd.*|", "r|^/dev/dm-.*|", "r|^/dev/zd.*|" ]
         }
+    - path: /usr/local/bin/lvs
+      permissions: 0755
+      op: create
+      content: |
+        #!/bin/sh
+        exit 5
+    - path: /usr/local/bin/vgs
+      permissions: 0755
+      op: create
+      content: |
+        #!/bin/sh
+        exit 5
+    - path: /usr/local/bin/pvs
+      permissions: 0755
+      op: create
+      content: |
+        #!/bin/sh
+        exit 5
   install:
     disk: /dev/nvme0n1
     image: factory.talos.dev/installer/cbc20e313ea99869a01aba9ea3301f1cc29dc73e0a6987662b96a33538a25cc2:v1.12.1
