@@ -14,3 +14,4 @@ resources:
   - ./virtualization/
   - ./kube-system/
   - ./prod-system/
+  - ./storage/
