@@ -114,6 +114,8 @@ spec:
           limits:
             memory: 128Mi
       storage:
+        store:
+          type: bluestore
         useAllNodes: true
         useAllDevices: false
         devices:
@@ -121,11 +123,14 @@ spec:
           - name: /dev/disk/by-id/ata-TOSHIBA_DT01ACA100_557358URS
             config:
               deviceClass: hdd-cephfs-1tb
+              storeType: bluestore
           - name: /dev/disk/by-id/ata-ST1000LM024_HN-M101MBB_S32XJ9JGB12737
             config:
               deviceClass: hdd-cephfs-1tb
+              storeType: bluestore
         config:
           osdsPerDevice: "1"
+          storeType: bluestore
       disruptionManagement:
         managePodBudgets: false
     cephBlockPools:
