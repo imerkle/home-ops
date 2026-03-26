@@ -4,6 +4,8 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: rook-ceph
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: "false"
 spec:
   interval: 1h
   path: ./kubernetes/apps/storage/rook-ceph/app
