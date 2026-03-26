@@ -6,7 +6,7 @@ metadata:
   name: rustdesk
 spec:
   components:
-    - ../../../../components/volsync
+    - ../../../components/volsync
   postBuild:
     substitute:
       APP: rustdesk
