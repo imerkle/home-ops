@@ -6,3 +6,4 @@ resources:
   - ./bucket.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml
+  - ./rook-config.yaml
