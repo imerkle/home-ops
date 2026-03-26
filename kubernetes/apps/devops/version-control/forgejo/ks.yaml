@@ -32,3 +32,7 @@ spec:
     substituteFrom:
       - kind: Secret
         name: forgejo-oidc-creds
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
