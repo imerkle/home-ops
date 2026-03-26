@@ -5,7 +5,7 @@ kind: Kustomization
 metadata:
   name: rook-ceph
   labels:
-    flux.home.arpa/prune: "false"
+    flux.home.arpa/prune: disabled
 spec:
   interval: 1h
   path: ./kubernetes/apps/storage/rook-ceph/app
@@ -23,7 +23,7 @@ kind: Kustomization
 metadata:
   name: rook-ceph-cluster
   labels:
-    flux.home.arpa/prune: "false"
+    flux.home.arpa/prune: disabled
 spec:
   dependsOn:
     - name: rook-ceph
