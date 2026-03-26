@@ -9,7 +9,7 @@ spec:
   path: ./kubernetes/apps/home/file-management/syncthing/app
   dependsOn: []
   components:
-    - ../../../components/volsync
+    - ../../../../../components/volsync
   postBuild:
     substitute:
       APP: syncthing
