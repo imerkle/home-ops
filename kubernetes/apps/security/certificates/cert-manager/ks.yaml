@@ -5,6 +5,8 @@ kind: Kustomization
 metadata:
   name: &app cert-manager
 spec:
+  components:
+    - ../../../../../components/common
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
