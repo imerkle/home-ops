@@ -49,6 +49,12 @@ spec:
               Password: vault:secret/data/pg_default#PASSWORD
               SSL:
                 Mode: disable
+        OIDC:
+          DefaultAccessTokenLifetime: 24h
+          DefaultIdTokenLifetime: 24h
+          DefaultRefreshTokenIdleExpiration: 720h
+          DefaultRefreshTokenExpiration: 2160h
+
     ingress:
       enabled: false
       className: "internal"
