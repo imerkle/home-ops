@@ -17,7 +17,7 @@ spec:
       namespace: zitadel
     - name: forgejo-oidc
   components:
-    - ../../../../components/volsync
+    - ../../../../../components/volsync
   targetNamespace: dev-system
   path: ./kubernetes/apps/devops/version-control/forgejo/app
   postBuild:
