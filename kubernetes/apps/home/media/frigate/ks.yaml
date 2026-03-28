@@ -6,7 +6,7 @@ metadata:
   name: frigate
 spec:
   components:
-    - ../../../../components/volsync
+    - ../../../../../components/volsync
   dependsOn:
     - name: zitadel-app
       namespace: zitadel
