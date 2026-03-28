@@ -23,7 +23,7 @@ spec:
     - ../../../../components/volsync
   targetNamespace: dev-system
   interval: 1h
-  path: ./kubernetes/apps/devops/version-control/forgejo/
+  path: ./kubernetes/apps/devops/version-control/forgejo/app
   prune: true
   wait: true
   postBuild:
@@ -32,7 +32,3 @@ spec:
     substituteFrom:
       - kind: Secret
         name: forgejo-oidc-creds
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
