@@ -29,7 +29,7 @@ metadata:
   name: &app immich
 spec:
   components:
-    - ../../../../components/volsync
+    - ../../../../../components/volsync
   targetNamespace: home-system
   commonMetadata:
     labels:
