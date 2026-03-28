@@ -54,6 +54,11 @@ spec:
           DefaultIdTokenLifetime: 24h
           DefaultRefreshTokenIdleExpiration: 720h
           DefaultRefreshTokenExpiration: 2160h
+        LoginPolicy:
+          PasswordCheckLifetime: 360h
+          ExternalLoginCheckLifetime: 360h
+          SecondFactorCheckLifetime: 100h
+          MultiFactorCheckLifetime: 100h
 
     ingress:
       enabled: false
