@@ -26,11 +26,11 @@ spec:
         ExternalSecure: false
         TLS:
           Enabled: false
-        OIDC:
-          DefaultAccessTokenLifetime: 24h
-          DefaultIdTokenLifetime: 24h
-          DefaultRefreshTokenIdleExpiration: 720h
-          DefaultRefreshTokenExpiration: 2160h
+        OIDCSettings:
+          AccessTokenLifetime: 24h
+          IdTokenLifetime: 24h
+          RefreshTokenIdleExpiration: 720h
+          RefreshTokenExpiration: 2160h
         LoginPolicy:
           PasswordCheckLifetime: 360h
           ExternalLoginCheckLifetime: 360h
@@ -60,10 +60,10 @@ spec:
               SSL:
                 Mode: disable
         OIDC:
-          DefaultAccessTokenLifetime: 24h
-          DefaultIdTokenLifetime: 24h
-          DefaultRefreshTokenIdleExpiration: 720h
-          DefaultRefreshTokenExpiration: 2160h
+          AccessTokenLifetime: 24h
+          IdTokenLifetime: 24h
+          RefreshTokenIdleExpiration: 720h
+          RefreshTokenExpiration: 2160h
         LoginPolicy:
           PasswordCheckLifetime: 360h
           ExternalLoginCheckLifetime: 360h
