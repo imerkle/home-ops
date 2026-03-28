@@ -64,7 +64,7 @@ metadata:
   name: matrix-mautrix-whatsapp
 spec:
   components:
-    - ../../../../components/volsync
+    - ../../../../../components/volsync
   targetNamespace: home-system
   commonMetadata:
     labels:
@@ -91,7 +91,7 @@ metadata:
   name: matrix-mautrix-telegram
 spec:
   components:
-    - ../../../../components/volsync
+    - ../../../../../components/volsync
   targetNamespace: home-system
   commonMetadata:
     labels:
@@ -118,7 +118,7 @@ metadata:
   name: matrix-mautrix-slack
 spec:
   components:
-    - ../../../../components/volsync
+    - ../../../../../components/volsync
   targetNamespace: home-system
   commonMetadata:
     labels:
@@ -145,7 +145,7 @@ metadata:
   name: matrix-mautrix-discord
 spec:
   components:
-    - ../../../../components/volsync
+    - ../../../../../components/volsync
   targetNamespace: home-system
   commonMetadata:
     labels:
