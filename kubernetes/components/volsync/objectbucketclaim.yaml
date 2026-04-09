@@ -5,4 +5,4 @@ metadata:
   name: ${APP}-volsync
 spec:
   bucketName: ${APP}-volsync
-  storageClassName: ceph-bucket
+  storageClassName: ceph-bucket-retain

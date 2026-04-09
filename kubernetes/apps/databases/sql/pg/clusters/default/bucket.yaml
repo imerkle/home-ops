@@ -4,4 +4,4 @@ metadata:
   name: pg-default
 spec:
   bucketName: pg-default
-  storageClassName: ceph-bucket
+  storageClassName: ceph-bucket-retain

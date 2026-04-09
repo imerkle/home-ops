@@ -5,4 +5,4 @@ metadata:
   name: "main-s3"
 spec:
   bucketName: "test"
-  storageClassName: "ceph-bucket"
+  storageClassName: "ceph-bucket-retain"

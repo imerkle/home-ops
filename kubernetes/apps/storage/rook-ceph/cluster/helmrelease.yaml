@@ -305,7 +305,7 @@ spec:
       storageClass:
         enabled: true
         name: ceph-bucket
-        reclaimPolicy: Retain
+        reclaimPolicy: Delete
         volumeBindingMode: Immediate
         parameters:
           region: us-east-1
