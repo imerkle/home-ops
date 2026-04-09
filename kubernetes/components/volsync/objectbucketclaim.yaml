@@ -3,6 +3,8 @@ apiVersion: objectbucket.io/v1alpha1
 kind: ObjectBucketClaim
 metadata:
   name: ${APP}-volsync
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   bucketName: ${APP}-volsync
   storageClassName: ceph-bucket-retain

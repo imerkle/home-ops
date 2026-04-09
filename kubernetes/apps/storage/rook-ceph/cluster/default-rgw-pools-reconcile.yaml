@@ -1,0 +1,89 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/batch/v1/cronjob.json
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: rook-ceph-default-rgw-pools-reconcile
+spec:
+  schedule: "17 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 3600
+      template:
+        spec:
+          serviceAccountName: rook-ceph-default
+          hostNetwork: true
+          dnsPolicy: ClusterFirstWithHostNet
+          restartPolicy: OnFailure
+          containers:
+            - name: reconcile
+              image: quay.io/ceph/ceph:v19.2.3
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/bash
+                - -ec
+                - |
+                  CEPH_CONFIG="/etc/ceph/ceph.conf"
+                  MON_CONFIG="/etc/rook/mon-endpoints"
+                  KEYRING_FILE="/etc/ceph/keyring"
+
+                  endpoints="$(cat "${MON_CONFIG}")"
+                  mon_endpoints="$(echo "${endpoints}" | sed 's/[a-z0-9_-]\+=//g')"
+                  ceph_secret="$(cat /var/lib/rook-ceph-mon/secret.keyring)"
+
+                  cat <<EOF > "${KEYRING_FILE}"
+                  [client.admin]
+                  key = ${ceph_secret}
+                  EOF
+
+                  cat <<EOF > "${CEPH_CONFIG}"
+                  [global]
+                  mon_host = ${mon_endpoints}
+
+                  [client.admin]
+                  keyring = ${KEYRING_FILE}
+                  EOF
+
+                  for pool in default.rgw.log default.rgw.control default.rgw.meta; do
+                    if ceph osd pool ls | grep -qx "${pool}"; then
+                      ceph osd pool set "${pool}" min_size 1
+                      ceph osd pool set "${pool}" size 1 --yes-i-really-mean-it
+                    fi
+                  done
+              resources:
+                requests:
+                  cpu: 25m
+                  memory: 64Mi
+                limits:
+                  memory: 256Mi
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 2016
+                runAsGroup: 2016
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: ceph-config
+                  mountPath: /etc/ceph
+                - name: mon-endpoint-volume
+                  mountPath: /etc/rook
+                - name: ceph-admin-secret
+                  mountPath: /var/lib/rook-ceph-mon
+          volumes:
+            - name: ceph-admin-secret
+              secret:
+                secretName: rook-ceph-mon
+                items:
+                  - key: ceph-secret
+                    path: secret.keyring
+            - name: mon-endpoint-volume
+              configMap:
+                name: rook-ceph-mon-endpoints
+                items:
+                  - key: data
+                    path: mon-endpoints
+            - name: ceph-config
+              emptyDir: {}

@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 1h
   approvePlan: auto  # Automatically apply changes (GitOps mode)
-  path: ./kubernetes/apps/devops/ide/code-server/coder/deploy-template
+  path: ./kubernetes/apps/devops/ide/coder/deploy-template
   sourceRef:
     kind: GitRepository
     name: flux-system
