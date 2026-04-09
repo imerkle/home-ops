@@ -47,11 +47,13 @@ spec:
                   keyring = ${KEYRING_FILE}
                   EOF
 
-                  for pool in default.rgw.log default.rgw.control default.rgw.meta; do
-                    if ceph osd pool ls | grep -qx "${pool}"; then
-                      ceph osd pool set "${pool}" min_size 1
-                      ceph osd pool set "${pool}" size 1 --yes-i-really-mean-it
-                    fi
+                  ceph osd pool ls | while read -r pool; do
+                    case "${pool}" in
+                      .rgw.root|default.rgw.*|ceph-objectstore.rgw.*)
+                        ceph osd pool set "${pool}" min_size 1
+                        ceph osd pool set "${pool}" size 1 --yes-i-really-mean-it
+                        ;;
+                    esac
                   done
               resources:
                 requests:
