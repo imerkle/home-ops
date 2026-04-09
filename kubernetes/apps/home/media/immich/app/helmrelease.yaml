@@ -35,7 +35,7 @@ spec:
                   /usr/src/app/upload/encoded-video
                 : > /usr/src/app/upload/.immich
                 for dir in upload thumbs backups library profile encoded-video; do
-                  : > "/usr/src/app/upload/${dir}/.immich"
+                  : > "/usr/src/app/upload/$${dir}/.immich"
                 done
         containers:
           app:
