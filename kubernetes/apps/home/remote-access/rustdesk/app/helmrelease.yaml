@@ -27,15 +27,15 @@ spec:
             env:
               DB_URL: /db/db_v2.sqlite3
               ENCRYPTED_ONLY: "1"
-              RELAY: "10.0.0.90:21117"
-            command: ["hbbs", "-r 10.0.0.90:21117"]
+              RELAY: "10.0.0.92:21117"
+            command: ["hbbs", "-r 10.0.0.92:21117"]
     service:
       relay:
         controller: hbbr
         type: LoadBalancer
         annotations:
           external-dns.alpha.kubernetes.io/hostname: "rustdesk-relay.${DOMAIN1}"
-          lbipam.cilium.io/ips: "10.0.0.90"
+          lbipam.cilium.io/ips: "10.0.0.92"
         ports:
           rustdesk-5:
             enabled: true
