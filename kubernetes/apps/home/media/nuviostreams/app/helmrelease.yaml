@@ -48,6 +48,7 @@ spec:
               ENABLE_SOAPERTV_PROVIDER: "true"
               USE_EXTERNAL_PROVIDERS: "false"
               PORT: &port "7777"
+              TMDB_API_KEY: "vault:secret/data/tmdb#API_KEY"
             envFrom:
               - secretRef:
                   name: nuviostreams-secret
