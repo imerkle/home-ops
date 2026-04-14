@@ -22,6 +22,7 @@ resources:
   - ./media/immich/ks.yaml
   - ./media/frigate/ks.yaml
   - ./media/yt2009/ks.yaml
+  - ./media/nuviostreams/ks.yaml
   # file-management
   - ./file-management/syncthing/ks.yaml
   - ./file-management/copyparty/ks.yaml

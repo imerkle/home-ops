@@ -6,6 +6,8 @@ resources:
   - ./helmrelease.yaml
   - ./cronjob.yaml
   - ./job.yaml
+  - ./nuviostreams-cronjob.yaml
+  - ./nuviostreams-job.yaml
 configMapGenerator:
   - name: zot
     files:
