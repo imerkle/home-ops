@@ -5,6 +5,8 @@ metadata:
   name: coder-template-dev
 spec:
   interval: 1h
+  retryInterval: 1h
+  retryStrategy: StaticInterval
   approvePlan: auto  # Automatically apply changes (GitOps mode)
   path: ./kubernetes/apps/devops/ide/coder/deploy-template
   sourceRef:

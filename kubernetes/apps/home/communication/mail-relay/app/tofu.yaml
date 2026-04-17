@@ -6,6 +6,8 @@ metadata:
   name: mail-relay-gcp-headscale
 spec:
   interval: 10m
+  retryInterval: 10m
+  retryStrategy: StaticInterval
   path: ./terraform/mail-relay-gcp-headscale
   sourceRef:
     kind: GitRepository

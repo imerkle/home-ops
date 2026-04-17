@@ -22,7 +22,7 @@ variable "zitadel_domain" {
 variable "app_name" {
   type        = string
   description = "The name of the OIDC application (e.g., vault, grafana)"
-  default = "default_app"
+  default     = "default_app"
 }
 
 variable "redirect_uris" {
@@ -30,7 +30,20 @@ variable "redirect_uris" {
   description = "List of allowed callback URLs"
 }
 
+variable "existing_app_import_id" {
+  type        = string
+  description = "Optional Zitadel import ID for an existing OIDC app. When set, OpenTofu will import and adopt the app instead of trying to create a duplicate."
+  default     = null
+  nullable    = true
+}
 
+variable "existing_client_secret" {
+  type        = string
+  description = "Optional client secret for an adopted app. Use this when importing an existing app whose secret cannot be read back from Zitadel."
+  default     = null
+  nullable    = true
+  sensitive   = true
+}
 
 data "kubernetes_secret_v1" "zitadel_iam_admin" {
   metadata {
@@ -58,8 +71,16 @@ data "kubernetes_secret_v1" "bootstrap_ids" {
 }
 
 locals {
-  org_id     = data.kubernetes_secret_v1.bootstrap_ids.data["org_id"]
-  project_id = data.kubernetes_secret_v1.bootstrap_ids.data["project_id"]
+  org_id             = data.kubernetes_secret_v1.bootstrap_ids.data["org_id"]
+  project_id         = data.kubernetes_secret_v1.bootstrap_ids.data["project_id"]
+  app_import_id      = trimspace(coalesce(var.existing_app_import_id, ""))
+  adopted_app_secret = trimspace(coalesce(var.existing_client_secret, "")) != "" ? var.existing_client_secret : null
+}
+
+import {
+  for_each = local.app_import_id != "" ? { app = local.app_import_id } : {}
+  to       = zitadel_application_oidc.app
+  id       = each.value
 }
 
 resource "zitadel_application_oidc" "app" {
@@ -96,6 +117,6 @@ output "client_id" {
 }
 
 output "client_secret" {
-  value     = zitadel_application_oidc.app.client_secret
+  value     = local.adopted_app_secret != null ? local.adopted_app_secret : zitadel_application_oidc.app.client_secret
   sensitive = true
 }

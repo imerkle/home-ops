@@ -5,6 +5,8 @@ metadata:
   name: forgejo-zitadel-oidc
 spec:
   interval: 1h
+  retryInterval: 1h
+  retryStrategy: StaticInterval
   approvePlan: auto
   path: ./terraform/zitadel-oidc
   sourceRef:

@@ -6,6 +6,8 @@ metadata:
   name: coder-zitadel-oidc
 spec:
   interval: 1h
+  retryInterval: 1h
+  retryStrategy: StaticInterval
   approvePlan: auto  # Automatically apply changes (GitOps mode)
   path: ./terraform/zitadel-oidc
 
