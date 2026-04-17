@@ -73,8 +73,8 @@ data "kubernetes_secret_v1" "bootstrap_ids" {
 locals {
   org_id             = data.kubernetes_secret_v1.bootstrap_ids.data["org_id"]
   project_id         = data.kubernetes_secret_v1.bootstrap_ids.data["project_id"]
-  app_import_id      = trimspace(coalesce(var.existing_app_import_id, ""))
-  adopted_app_secret = trimspace(coalesce(var.existing_client_secret, "")) != "" ? var.existing_client_secret : null
+  app_import_id      = var.existing_app_import_id != null ? trimspace(var.existing_app_import_id) : ""
+  adopted_app_secret = var.existing_client_secret != null && trimspace(var.existing_client_secret) != "" ? var.existing_client_secret : null
 }
 
 import {
