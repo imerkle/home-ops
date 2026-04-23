@@ -6,3 +6,4 @@ resources:
   - ./rook-ceph/
   - ./backup/
   - ./piraeus/
+  - ./fio-benchmark.yaml
