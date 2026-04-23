@@ -13,6 +13,12 @@ cluster := shell("if [ -s " + justfile_dir() + "/.current-cluster ] && [ \"$(cat
 default:
     just -l
 
+tf-in-cluster namespace="dev-system" path command="plan":
+    ./scripts/verify/terraform-in-cluster.sh --namespace {{ namespace }} --path {{ path }} --command {{ command }}
+
+zitadel-list-apps *names:
+    ./scripts/verify/zitadel-list-apps.sh {{ names }}
+
 [private]
 log lvl msg *args:
     gum log -t rfc3339 -s -l "{{ lvl }}" "{{ msg }}" {{ args }}

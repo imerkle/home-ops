@@ -15,6 +15,18 @@
 {{- $runAsUser := default $defaults.runAsUser $volume.runAsUser -}}
 {{- $runAsGroup := default $defaults.runAsGroup $volume.runAsGroup -}}
 {{- $fsGroup := default $defaults.fsGroup $volume.fsGroup -}}
+{{- $offsiteDefaults := default (dict) $defaults.offsite -}}
+{{- $volumeOffsite := default (dict) $volume.offsite -}}
+{{- $offsiteSecretName := default "volsync-offsite" (default $offsiteDefaults.repositorySecretName $volumeOffsite.repositorySecretName) -}}
+{{- $offsiteSchedule := default $schedule (default $offsiteDefaults.schedule $volumeOffsite.schedule) -}}
+{{- $offsiteSecretData := mergeOverwrite (deepCopy (default (dict) $offsiteDefaults.secretData)) (default (dict) $volumeOffsite.secretData) -}}
+{{- $offsiteRequested := default false (default $offsiteDefaults.enabled $volumeOffsite.enabled) -}}
+{{- $offsiteConfigured := and
+      $offsiteRequested
+      (hasKey $offsiteSecretData "AWS_ACCESS_KEY_ID")
+      (hasKey $offsiteSecretData "AWS_SECRET_ACCESS_KEY")
+      (hasKey $offsiteSecretData "KOPIA_PASSWORD")
+      (hasKey $offsiteSecretData "KOPIA_REPOSITORY") -}}
 ---
 apiVersion: v1
 kind: Secret
@@ -25,6 +37,18 @@ stringData:
   {{- range $key, $value := $defaults.secretData }}
   {{ $key }}: {{ $value | quote }}
   {{- end }}
+{{- if $offsiteConfigured }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $offsiteSecretName }}
+type: Opaque
+stringData:
+  {{- range $key, $value := $offsiteSecretData }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -101,4 +125,35 @@ spec:
       daily: 7
     storageClassName: {{ $storageClassName }}
     volumeSnapshotClassName: {{ $snapshotClassName }}
+{{- if $offsiteConfigured }}
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: {{ printf "%s-offsite" $name }}
+spec:
+  sourcePVC: {{ $claimName }}
+  trigger:
+    schedule: {{ $offsiteSchedule | quote }}
+  kopia:
+    accessModes:
+      {{- toYaml $sourceAccessModes | nindent 6 }}
+    cacheAccessModes:
+      {{- toYaml $cacheAccessModes | nindent 6 }}
+    cacheCapacity: {{ $capacity }}
+    cacheStorageClassName: {{ $cacheStorageClassName }}
+    compression: zstd-fastest
+    copyMethod: Snapshot
+    moverSecurityContext:
+      runAsUser: {{ $runAsUser }}
+      runAsGroup: {{ $runAsGroup }}
+      fsGroup: {{ $fsGroup }}
+    parallelism: 2
+    repository: {{ $offsiteSecretName }}
+    retain:
+      hourly: 24
+      daily: 7
+    storageClassName: {{ $storageClassName }}
+    volumeSnapshotClassName: {{ $snapshotClassName }}
+{{- end }}
 {{ end }}

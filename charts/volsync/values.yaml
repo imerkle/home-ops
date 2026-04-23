@@ -15,5 +15,10 @@ defaults:
   runAsGroup: 1000
   fsGroup: 1000
   secretData: {}
+  offsite:
+    enabled: false
+    schedule: ""
+    repositorySecretName: volsync-offsite
+    secretData: {}
 
 volumes: []
