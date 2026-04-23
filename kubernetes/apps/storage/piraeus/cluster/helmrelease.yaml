@@ -1,0 +1,23 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: linstor-cluster
+spec:
+  interval: 2h
+  chart:
+    spec:
+      chart: linstor-cluster
+      version: '*'
+      sourceRef:
+        kind: HelmRepository
+        name: piraeus-charts
+        namespace: piraeus-datastore
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3

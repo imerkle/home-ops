@@ -6,4 +6,5 @@ metadata:
   name: piraeus
 spec:
   interval: 2h
-  url: https://piraeus.io/helm-charts/
+  type: oci
+  url: oci://ghcr.io/piraeusdatastore/piraeus-operator
