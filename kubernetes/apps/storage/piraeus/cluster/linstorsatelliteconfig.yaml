@@ -6,12 +6,44 @@ metadata:
 spec:
   storagePools:
     - name: hdd-pool
-      zfsThinPool:
-        zPool: linstor_zfs
-      properties:
-        - name: StorDriver/ZpoolCreateOptions
-          value: "mirror"
+      lvmThinPool:
+        volumeGroup: linstor-hdd-vg
+        thinPool: linstor-hdd-thinpool
       source:
         hostDevices:
           - /dev/disk/by-id/ata-TOSHIBA_DT01ACA100_557358URS
           - /dev/disk/by-id/ata-ST1000LM024_HN-M101MBB_S32XJ9JGB12737
+---
+apiVersion: piraeus.io/v1
+kind: LinstorSatelliteConfiguration
+metadata:
+  name: talos-loader-override
+spec:
+  podTemplate:
+    spec:
+      initContainers:
+        - name: drbd-shutdown-guard
+          $patch: delete
+        - name: drbd-module-loader
+          $patch: delete
+        - name: setup-lvm-configuration
+          $patch: delete
+      volumes:
+        - name: run-systemd-system
+          $patch: delete
+        - name: run-drbd-shutdown-guard
+          $patch: delete
+        - name: systemd-bus-socket
+          $patch: delete
+        - name: lib-modules
+          $patch: delete
+        - name: usr-src
+          $patch: delete
+        - name: etc-lvm-backup
+          hostPath:
+            path: /var/etc/lvm/backup
+            type: DirectoryOrCreate
+        - name: etc-lvm-archive
+          hostPath:
+            path: /var/etc/lvm/archive
+            type: DirectoryOrCreate
