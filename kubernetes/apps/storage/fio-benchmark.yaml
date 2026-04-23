@@ -1,0 +1,150 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: piraeus-storage
+provisioner: linstor.csi.linbit.com
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  linstor.csi.linbit.com/storagePool: hdd-pool
+---
+# Ceph Block
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-ceph-block
+spec:
+  storageClassName: ceph-block
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fio-ceph-block
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+      - name: fio
+        image: dmonakhov/alpine-fio
+        command: ["fio"]
+        args: ["--name=benchtest", "--filename=/volume/testfile", "--size=2G", "--rw=randrw", "--rwmixread=75", "--bs=4k", "--ioengine=libaio", "--iodepth=16", "--numjobs=1", "--time_based", "--runtime=60", "--group_reporting", "--direct=1"]
+        volumeMounts:
+        - name: vol
+          mountPath: /volume
+      restartPolicy: Never
+      volumes:
+      - name: vol
+        persistentVolumeClaim:
+          claimName: pvc-ceph-block
+---
+# Ceph Filesystem (SSD)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-ceph-filesystem
+spec:
+  storageClassName: ceph-filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fio-ceph-filesystem
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+      - name: fio
+        image: dmonakhov/alpine-fio
+        command: ["fio"]
+        args: ["--name=benchtest", "--filename=/volume/testfile", "--size=2G", "--rw=randrw", "--rwmixread=75", "--bs=4k", "--ioengine=libaio", "--iodepth=16", "--numjobs=1", "--time_based", "--runtime=60", "--group_reporting", "--direct=1"]
+        volumeMounts:
+        - name: vol
+          mountPath: /volume
+      restartPolicy: Never
+      volumes:
+      - name: vol
+        persistentVolumeClaim:
+          claimName: pvc-ceph-filesystem
+---
+# Ceph Filesystem (HDD)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-ceph-filesystem-hdd
+spec:
+  storageClassName: ceph-filesystem-hdd
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fio-ceph-filesystem-hdd
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+      - name: fio
+        image: dmonakhov/alpine-fio
+        command: ["fio"]
+        args: ["--name=benchtest", "--filename=/volume/testfile", "--size=2G", "--rw=randrw", "--rwmixread=75", "--bs=4k", "--ioengine=libaio", "--iodepth=16", "--numjobs=1", "--time_based", "--runtime=60", "--group_reporting", "--direct=1"]
+        volumeMounts:
+        - name: vol
+          mountPath: /volume
+      restartPolicy: Never
+      volumes:
+      - name: vol
+        persistentVolumeClaim:
+          claimName: pvc-ceph-filesystem-hdd
+---
+# Piraeus Storage (LINSTOR)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-piraeus-storage
+spec:
+  storageClassName: piraeus-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fio-piraeus-storage
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+      - name: fio
+        image: dmonakhov/alpine-fio
+        command: ["fio"]
+        args: ["--name=benchtest", "--filename=/volume/testfile", "--size=2G", "--rw=randrw", "--rwmixread=75", "--bs=4k", "--ioengine=libaio", "--iodepth=16", "--numjobs=1", "--time_based", "--runtime=60", "--group_reporting", "--direct=1"]
+        volumeMounts:
+        - name: vol
+          mountPath: /volume
+      restartPolicy: Never
+      volumes:
+      - name: vol
+        persistentVolumeClaim:
+          claimName: pvc-piraeus-storage

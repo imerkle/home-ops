@@ -1,0 +1,37 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: piraeus
+  labels:
+    flux.home.arpa/prune: disabled
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/storage/piraeus/app
+  prune: false
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: piraeus-datastore
+  wait: true
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: piraeus-cluster
+  labels:
+    flux.home.arpa/prune: disabled
+spec:
+  dependsOn:
+    - name: piraeus
+  interval: 1h
+  path: ./kubernetes/apps/storage/piraeus/cluster
+  prune: false
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: piraeus-datastore

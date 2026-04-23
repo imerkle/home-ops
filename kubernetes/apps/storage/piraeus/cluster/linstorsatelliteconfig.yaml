@@ -1,0 +1,17 @@
+# ---
+# apiVersion: piraeus.io/v1
+# kind: LinstorSatelliteConfiguration
+# metadata:
+#   name: hdd-storage-pool
+# spec:
+#   storagePools:
+#     - name: hdd-pool
+#       zfsThinPool:
+#         zPool: linstor_zfs
+#       properties:
+#         - name: StorDriver/ZpoolCreateOptions
+#           value: "mirror"
+#       source:
+#         hostDevices:
+#           - /dev/disk/by-id/ata-TOSHIBA_DT01ACA100_557358URS
+#           - /dev/disk/by-id/ata-ST1000LM024_HN-M101MBB_S32XJ9JGB12737

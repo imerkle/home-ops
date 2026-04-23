@@ -2,7 +2,9 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: piraeus-datastore
+components:
+  - ../../../components/common
 resources:
-  - ./rook-ceph/
-  - ./backup/
-  - ./piraeus/
+  - ./ks.yaml
+  - ./namespace.yaml

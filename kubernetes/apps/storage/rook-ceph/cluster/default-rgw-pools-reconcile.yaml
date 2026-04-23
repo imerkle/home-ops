@@ -48,10 +48,7 @@ spec:
                   EOF
 
                   ceph dashboard set-rgw-credentials
-                  ceph dashboard set-rgw-api-host rook-ceph-rgw-ceph-objectstore.rook-ceph.svc.cluster.local
-                  ceph dashboard set-rgw-api-port 80
-                  ceph dashboard set-rgw-api-scheme http
-                  ceph dashboard set-rgw-api-ssl-verify False
+                  ceph dashboard set-rgw-api-ssl-verify false
                   ceph dashboard set-rest-requests-timeout 120
 
                   ceph osd pool ls | while read -r pool; do
