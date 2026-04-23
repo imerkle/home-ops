@@ -9,3 +9,4 @@ resources:
   - ./ocirepository.yaml
   - ./rook-config.yaml
   - ./storageclass-retain.yaml
+  - ./fio-benchmark.yaml
