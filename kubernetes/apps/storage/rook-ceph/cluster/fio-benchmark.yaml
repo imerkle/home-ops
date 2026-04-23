@@ -78,41 +78,41 @@ spec:
       - name: vol
         persistentVolumeClaim:
           claimName: pvc-ceph-filesystem
----
-# Ceph Filesystem (HDD)
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-ceph-filesystem-hdd
-spec:
-  storageClassName: ceph-filesystem-hdd
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: fio-ceph-filesystem-hdd
-spec:
-  backoffLimit: 0
-  template:
-    spec:
-      containers:
-      - name: fio
-        image: dmonakhov/alpine-fio
-        command: ["fio"]
-        args: ["--name=benchtest", "--filename=/volume/testfile", "--size=2G", "--rw=randrw", "--rwmixread=75", "--bs=4k", "--ioengine=libaio", "--iodepth=16", "--numjobs=1", "--time_based", "--runtime=60", "--group_reporting", "--direct=1"]
-        volumeMounts:
-        - name: vol
-          mountPath: /volume
-      restartPolicy: Never
-      volumes:
-      - name: vol
-        persistentVolumeClaim:
-          claimName: pvc-ceph-filesystem-hdd
+# ---
+# # Ceph Filesystem (HDD)
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: pvc-ceph-filesystem-hdd
+# spec:
+#   storageClassName: ceph-filesystem-hdd
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 5Gi
+# ---
+# apiVersion: batch/v1
+# kind: Job
+# metadata:
+#   name: fio-ceph-filesystem-hdd
+# spec:
+#   backoffLimit: 0
+#   template:
+#     spec:
+#       containers:
+#       - name: fio
+#         image: dmonakhov/alpine-fio
+#         command: ["fio"]
+#         args: ["--name=benchtest", "--filename=/volume/testfile", "--size=2G", "--rw=randrw", "--rwmixread=75", "--bs=4k", "--ioengine=libaio", "--iodepth=16", "--numjobs=1", "--time_based", "--runtime=60", "--group_reporting", "--direct=1"]
+#         volumeMounts:
+#         - name: vol
+#           mountPath: /volume
+#       restartPolicy: Never
+#       volumes:
+#       - name: vol
+#         persistentVolumeClaim:
+#           claimName: pvc-ceph-filesystem-hdd
 # ---
 # # Piraeus Storage (LINSTOR)
 # apiVersion: v1
