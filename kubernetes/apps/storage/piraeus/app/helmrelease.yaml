@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: piraeus
-      version: '*'
+      version: 2.10.5
       sourceRef:
         kind: HelmRepository
         name: piraeus
