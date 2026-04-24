@@ -59,18 +59,23 @@ machine:
         exit 5
   install:
     disk: /dev/nvme0n1
-    image: factory.talos.dev/installer/cbc20e313ea99869a01aba9ea3301f1cc29dc73e0a6987662b96a33538a25cc2:v1.12.1
+    # image: factory.talos.dev/installer/cbc20e313ea99869a01aba9ea3301f1cc29dc73e0a6987662b96a33538a25cc2:v1.12.1
+    image: factory.talos.dev/metal-installer/3ee01a14dde715136c598aa018beb4863245e204e4e0716eb83e14fcbb9d1b51:v1.12.6
     wipe: false
   kernel:
     modules:
       - name: openvswitch
-      - name: drbd
-        parameters:
-          - usermode_helper=disabled
+      # - name: drbd
+      #   parameters:
+      #     - usermode_helper=disabled
       - name: zfs
       - name: spl
       - name: vfio_pci
       - name: vfio_iommu_type1
+      - name: drbd
+        parameters:
+          - usermode_helper=disabled
+      - name: drbd_transport_tcp
   kubelet:
     defaultRuntimeSeccompProfileEnabled: true
     disableManifestsDirectory: true
