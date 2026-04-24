@@ -43,7 +43,7 @@ spec:
         schedule: "${VOLSYNC_OFFSITE_SCHEDULE:=30 * * * *}"
         repositorySecretName: "${VOLSYNC_OFFSITE_SECRET_NAME:=${APP}-volsync-offsite}"
         secretData:
-          KOPIA_S3_BUCKET: "${VOLSYNC_OFFSITE_BUCKET:=homeops-volsync}"
+          KOPIA_S3_BUCKET: "${VOLSYNC_OFFSITE_BUCKET:=homeops-volsync-67}"
           KOPIA_REPOSITORY: "${VOLSYNC_OFFSITE_REPOSITORY:=s3:https://${VOLSYNC_OFFSITE_ENDPOINT:=s3.us-west-002.backblazeb2.com}/${APP}}"
           KOPIA_S3_ENDPOINT: "${VOLSYNC_OFFSITE_ENDPOINT:=s3.us-west-002.backblazeb2.com}"
           AWS_S3_ENDPOINT: "${VOLSYNC_OFFSITE_ENDPOINT:=s3.us-west-002.backblazeb2.com}"
