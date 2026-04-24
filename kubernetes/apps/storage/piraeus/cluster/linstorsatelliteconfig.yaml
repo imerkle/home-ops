@@ -6,7 +6,8 @@ metadata:
 spec:
   storagePools:
     - name: hdd-pool
-      zfsPool: linstor-hdd-zpool
+      zfsPool:
+        zPool: linstor-hdd-zpool
       source:
         hostDevices:
           - /dev/disk/by-id/ata-TOSHIBA_DT01ACA100_557358URS
