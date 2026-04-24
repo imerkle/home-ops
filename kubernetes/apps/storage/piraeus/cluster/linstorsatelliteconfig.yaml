@@ -6,9 +6,7 @@ metadata:
 spec:
   storagePools:
     - name: hdd-pool
-      lvmThinPool:
-        volumeGroup: linstor-hdd-vg
-        thinPool: linstor-hdd-thinpool
+      zfsPool: linstor-hdd-zpool
       source:
         hostDevices:
           - /dev/disk/by-id/ata-TOSHIBA_DT01ACA100_557358URS
@@ -21,6 +19,12 @@ metadata:
 spec:
   podTemplate:
     spec:
+      containers:
+        - name: linstor-satellite
+          volumeMounts:
+            - mountPath: /lib/modules
+              name: lib-modules
+              readOnly: true
       initContainers:
         - name: drbd-shutdown-guard
           $patch: delete
@@ -34,8 +38,6 @@ spec:
         - name: run-drbd-shutdown-guard
           $patch: delete
         - name: systemd-bus-socket
-          $patch: delete
-        - name: lib-modules
           $patch: delete
         - name: usr-src
           $patch: delete
