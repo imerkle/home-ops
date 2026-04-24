@@ -52,7 +52,7 @@ spec:
         globalMounts:
           - path: /data
       ceph-filesystem-hdd:
-        existingClaim: copyparty-hdd
+        existingClaim: piraeus-storage
         globalMounts:
           - path: /ceph-filesystem-hdd
     route:
