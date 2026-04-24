@@ -6,7 +6,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ceph-filesystem-hdd
+  storageClassName: piraeus-storage
   resources:
     requests:
       storage: 100Gi
