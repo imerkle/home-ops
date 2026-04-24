@@ -90,8 +90,8 @@ upgrade-node node:
 
 [private]
 machine-controlplane node:
-    cat "{{ cluster_dir }}/nodes/{{ node }}.yaml.j2" | yq -e 'select(.machine) | (.machine.type == "controlplane") // ""'
+    cat "{{ talos_dir }}/nodes/{{ node }}.yaml.j2" | yq -e 'select(.machine) | (.machine.type == "controlplane") // ""'
 
 [private]
 machine-image:
-    just template talos "{{ cluster_dir }}/machineconfig.yaml.j2" | yq -e 'select(.machine) | .machine.install.image'
+    just template talos "{{ talos_dir }}/machineconfig.yaml.j2" | yq -e 'select(.machine) | .machine.install.image'

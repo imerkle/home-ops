@@ -53,6 +53,21 @@ My Kubernetes cluster is deployed with [Talos](https://www.talos.dev). This is a
 
 There is a template over at [onedr0p/cluster-template](https://github.com/onedr0p/cluster-template) if you want to try and follow along with some of the practices I use here.
 
+### Talos Upgrade Notes
+
+- Upgrade command: `just talos upgrade-node talos-0d4c1`
+- The `upgrade-node` recipe uses `talosctl -n "{{ node }}" upgrade -i "$(just talos machine-image)" -m powercycle --timeout=10m`.
+- The target install image comes from the rendered Talos machine config. Check it with `just talos machine-image` before upgrading.
+- This cluster is currently a single-node hyperconverged Talos + Rook-Ceph setup. A Talos upgrade is a full control-plane and storage interruption, not a rolling upgrade.
+- Temporary Ceph client disconnect noise such as `libceph: osd socket error on write` is expected while the node is rebooting. The important check is that Ceph returns to healthy service after the node comes back.
+- Before upgrading, verify at least:
+  - `kubectl get nodes`
+  - `kubectl -n rook-ceph exec deploy/rook-ceph-tools -- ceph -s`
+  - `kubectl -n rook-ceph exec deploy/rook-ceph-tools -- ceph fs status ceph-filesystem`
+- Current known-good pre-upgrade storage state for this single-node cluster is `HEALTH_WARN` with:
+  - `mon a is low on available space`
+  - pools with no redundancy because the cluster is intentionally single-node
+
 ### Core Components
 
 - [actions-runner-controller](https://github.com/actions/actions-runner-controller): Self-hosted Github runners.
