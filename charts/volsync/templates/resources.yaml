@@ -17,7 +17,7 @@
 {{- $fsGroup := default $defaults.fsGroup $volume.fsGroup -}}
 {{- $offsiteDefaults := default (dict) $defaults.offsite -}}
 {{- $volumeOffsite := default (dict) $volume.offsite -}}
-{{- $offsiteSecretName := default "volsync-offsite" (default $offsiteDefaults.repositorySecretName $volumeOffsite.repositorySecretName) -}}
+{{- $offsiteSecretName := default (printf "%s-volsync-offsite" $name) (default $offsiteDefaults.repositorySecretName $volumeOffsite.repositorySecretName) -}}
 {{- $offsiteSchedule := default $schedule (default $offsiteDefaults.schedule $volumeOffsite.schedule) -}}
 {{- $offsiteSecretData := mergeOverwrite (deepCopy (default (dict) $offsiteDefaults.secretData)) (default (dict) $volumeOffsite.secretData) -}}
 {{- $offsiteRequested := default false (default $offsiteDefaults.enabled $volumeOffsite.enabled) -}}

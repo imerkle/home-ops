@@ -41,7 +41,7 @@ spec:
       offsite:
         enabled: ${VOLSYNC_OFFSITE_ENABLED:=true}
         schedule: "${VOLSYNC_OFFSITE_SCHEDULE:=30 * * * *}"
-        repositorySecretName: "${VOLSYNC_OFFSITE_SECRET_NAME:=volsync-offsite}"
+        repositorySecretName: "${VOLSYNC_OFFSITE_SECRET_NAME:=${APP}-volsync-offsite}"
         secretData:
           KOPIA_S3_BUCKET: "${VOLSYNC_OFFSITE_BUCKET:=homeops-volsync}"
           KOPIA_REPOSITORY: "${VOLSYNC_OFFSITE_REPOSITORY:=s3:https://${VOLSYNC_OFFSITE_ENDPOINT:=s3.us-west-002.backblazeb2.com}/${APP}}"
@@ -62,17 +62,17 @@ spec:
       valuesKey: AWS_SECRET_ACCESS_KEY
       targetPath: defaults.secretData.AWS_SECRET_ACCESS_KEY
     - kind: Secret
-      name: ${VOLSYNC_OFFSITE_SECRET_NAME:=volsync-offsite}
+      name: ${VOLSYNC_OFFSITE_SECRET_NAME:=${APP}-volsync-offsite}
       valuesKey: AWS_ACCESS_KEY_ID
       targetPath: defaults.offsite.secretData.AWS_ACCESS_KEY_ID
       optional: true
     - kind: Secret
-      name: ${VOLSYNC_OFFSITE_SECRET_NAME:=volsync-offsite}
+      name: ${VOLSYNC_OFFSITE_SECRET_NAME:=${APP}-volsync-offsite}
       valuesKey: AWS_SECRET_ACCESS_KEY
       targetPath: defaults.offsite.secretData.AWS_SECRET_ACCESS_KEY
       optional: true
     - kind: Secret
-      name: ${VOLSYNC_OFFSITE_SECRET_NAME:=volsync-offsite}
+      name: ${VOLSYNC_OFFSITE_SECRET_NAME:=${APP}-volsync-offsite}
       valuesKey: KOPIA_PASSWORD
       targetPath: defaults.offsite.secretData.KOPIA_PASSWORD
       optional: true
