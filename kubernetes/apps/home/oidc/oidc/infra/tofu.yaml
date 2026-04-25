@@ -25,6 +25,7 @@ spec:
         - "https://homepage.${DOMAIN1}/oauth2/callback"
         - "https://pdf-tool.${DOMAIN1}/oauth2/callback"
         - "https://copyparty.${DOMAIN1}/oauth2/callback"
+        - "https://jdownloader.${DOMAIN1}/oauth2/callback"
 
   writeOutputsToSecret:
     name: internal-oidc-creds
