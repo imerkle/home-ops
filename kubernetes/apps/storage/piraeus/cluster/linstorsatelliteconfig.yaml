@@ -42,6 +42,10 @@ spec:
           $patch: delete
         - name: usr-src
           $patch: delete
+        - name: lib-modules
+          hostPath:
+            path: /lib/modules
+            type: Directory
         - name: etc-lvm-backup
           hostPath:
             path: /var/etc/lvm/backup
