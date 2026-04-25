@@ -57,4 +57,4 @@ spec:
         existingClaim: copyparty-hdd
         globalMounts:
           - path: /output
-            subPath: /downloads
+            subPath: downloads
