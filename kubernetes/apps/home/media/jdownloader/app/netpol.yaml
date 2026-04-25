@@ -1,0 +1,33 @@
+# # yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cilium.io/ciliumnetworkpolicy_v2.json
+# ---
+# apiVersion: cilium.io/v2
+# kind: CiliumNetworkPolicy
+# metadata:
+#   name: jdownloader
+# spec:
+#   description: "Network policy for JDownloader"
+#   endpointSelector:
+#     matchLabels:
+#       app.kubernetes.io/name: jdownloader
+#   ingress:
+#     # Allow ingress from envoy-gateway
+#     - fromEndpoints:
+#       - matchLabels:
+#           io.kubernetes.pod.namespace: network
+#   egress:
+#     # Allow same namespace traffic
+#     - toEndpoints:
+#       - matchLabels:
+#           io.kubernetes.pod.namespace: home-system
+#     # Allow DNS
+#     - toEndpoints:
+#       - matchLabels:
+#           io.kubernetes.pod.namespace: kube-system
+#           k8s-app: kube-dns
+#       toPorts:
+#       - ports:
+#         - port: "53"
+#           protocol: UDP
+#     # JDownloader needs internet access to download files
+#     - toEntities:
+#       - world

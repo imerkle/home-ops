@@ -1,0 +1,4 @@
+---
+volumes:
+  - name: jdownloader
+    capacity: 5Gi
