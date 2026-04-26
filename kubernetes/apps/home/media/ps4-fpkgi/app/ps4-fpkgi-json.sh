@@ -67,16 +67,11 @@ cleanup_json() {
     deleted_keys=""
 
     # For every key (PKG name) in the JSON, checks if file exists
+    local base_url="${SERVER_URL%/}"
     while IFS= read -r key; do
-        # Extract relative path from URL
-        # Assuming SERVER_URL is a prefix
-        full_path="${key#$SERVER_URL}"
-        
-        # Ensure path starts with / for joining with INPUT_DIR
-        local check_path="$full_path"
-        if [[ "$check_path" != /* ]]; then
-            check_path="/$check_path"
-        fi
+        # Use sed to strip the base_url prefix safely
+        local rel_path=$(echo "$key" | sed "s|^$base_url/||")
+        local check_path="/$rel_path"
 
         if [ -f "$INPUT_DIR$check_path" ]; then
             kept_keys+="$key"$'\n'
@@ -115,7 +110,8 @@ while read -r pkg; do
     pkg_dir=$(dirname "$pkg")
     
     # Relative path from current dir (which is INPUT_DIR)
-    rel_pkg_path="${pkg#./}"
+    # Use ${pkg:2} to avoid glob issues with [ ] in filenames
+    rel_pkg_path="${pkg:2}"
 
     # Check if pkg is already in jsons
     if pkg_exists_in_json "$rel_pkg_path" "$JSON_GAMES" || pkg_exists_in_json "$rel_pkg_path" "$JSON_UPDATES" || pkg_exists_in_json "$rel_pkg_path" "$JSON_DLC"; then
@@ -158,9 +154,10 @@ while read -r pkg; do
         region="null"
     fi
 
-    cover_url="${SERVER_URL%/}"
-    cover_url+="/_img/$title_id.png"
-    pkg_url="${SERVER_URL%/}/$rel_pkg_path"
+    # Ensure SERVER_URL doesn't have trailing slash for consistent joining
+    local base_url="${SERVER_URL%/}"
+    cover_url="${base_url}/_img/${title_id}.png"
+    pkg_url="${base_url}/${rel_pkg_path}"
     
     coverexists=0
     if [[ -e "./_img/$title_id.png" ]]; then
