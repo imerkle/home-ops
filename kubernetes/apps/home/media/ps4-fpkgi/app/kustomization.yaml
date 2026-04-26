@@ -8,5 +8,8 @@ configMapGenerator:
   - name: ps4-fpkgi-scripts
     files:
       - ps4-fpkgi-json.sh
+  - name: ps4-fpkgi-nginx
+    files:
+      - default.conf=nginx.conf
 generatorOptions:
   disableNameSuffixHash: true

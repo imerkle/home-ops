@@ -18,7 +18,7 @@ spec:
               repository: openorbisofficial/toolchain
               tag: latest
             env:
-              SERVER_URL: "http://copyparty.home-system.svc.cluster.local:3923/ceph-filesystem-hdd/downloads/"
+              SERVER_URL: "https://ps4-fpkgi.$DOMAIN1/"
             securityContext:
               runAsUser: 0
               runAsGroup: 0
@@ -35,14 +35,48 @@ spec:
                 memory: 128Mi
               limits:
                 memory: 512Mi
+          nginx:
+            image:
+              repository: nginx
+              tag: alpine
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+    service:
+      app:
+        controller: ps4-fpkgi
+        ports:
+          http:
+            port: 80
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.$DOMAIN1"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
     persistence:
       scripts:
         type: configMap
         name: ps4-fpkgi-scripts
-        globalMounts:
-          - path: /workspace/ps4-fpkgi-json.sh
-            subPath: ps4-fpkgi-json.sh
-            readOnly: true
+        advancedMounts:
+          ps4-fpkgi:
+            app:
+              - path: /workspace/ps4-fpkgi-json.sh
+                subPath: ps4-fpkgi-json.sh
+                readOnly: true
+      nginx-config:
+        type: configMap
+        name: ps4-fpkgi-nginx
+        advancedMounts:
+          ps4-fpkgi:
+            nginx:
+              - path: /etc/nginx/conf.d/default.conf
+                subPath: default.conf
+                readOnly: true
       workspace:
         existingClaim: copyparty-hdd
         globalMounts:
