@@ -23,7 +23,7 @@ spec:
         containers:
           app:
             image:
-              repository: zot.x3y.space/devops/ai/mcp/artifacthub-mcp
+              repository: zot.x3y.space/artifacthub-mcp
               tag: latest
               pullPolicy: Always
             env:
