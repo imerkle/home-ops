@@ -20,8 +20,12 @@ spec:
       type: string
       default: main
     - name: image
-      description: Full image reference including registry (e.g., zot.example.com/apps/myapp:latest).
+      description: Full image reference including registry (e.g., zot.example.com/apps/myapp:sha).
       type: string
+    - name: image-latest
+      description: Additional image reference for the latest tag (e.g., zot.example.com/apps/myapp:latest).
+      type: string
+      default: ""
     - name: dockerfile
       description: Path to the Dockerfile relative to repo root.
       type: string
@@ -72,7 +76,9 @@ spec:
         - name: CONTEXT
           value: $(params.context)
         - name: EXTRA_ARGS
-          value: ["$(params.extra-args[*])"]
+          value:
+            - --destination=$(params.image-latest)
+            - $(params.extra-args[*])
         - name: PROTOCOL
           value: $(params.protocol)
   results:
