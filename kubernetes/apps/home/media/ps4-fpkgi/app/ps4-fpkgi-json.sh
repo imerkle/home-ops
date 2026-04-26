@@ -6,6 +6,9 @@ if [ -z "$SERVER_URL" ]; then
     exit 1
 fi
 
+# Ensure SERVER_URL has a trailing slash (matching reference script behaviour)
+[[ "$SERVER_URL" != */ ]] && SERVER_URL="${SERVER_URL}/"
+
 INPUT_DIR="/workspace"
 JSON_GAMES="GAMES.json"
 JSON_UPDATES="UPDATES.json"
@@ -33,6 +36,7 @@ update_json() {
 }
 
 # Function to check if a PKG is already listed in a JSON
+# Matches reference: checks by pkg_name (basename only)
 pkg_exists_in_json() {
     local pkg_name="$1"
     local json_file="$2"
@@ -43,40 +47,36 @@ pkg_exists_in_json() {
 
     result=$(grep -Fo "$pkg_name" "$json_file" | wc -l)
 
-    # If found, return true (0) else false (1)
     if [ "$result" -gt 0 ]; then
         return 0
     else
-        return 1 
+        return 1
     fi
 }
 
 cleanup_json() {
     local json_file="$1"
 
-    # Se il file JSON non esiste o è vuoto, esci
     if [ ! -f "$json_file" ] || [ ! -s "$json_file" ]; then
         echo "JSON file $json_file not found or empty. Skipping cleanup."
         return
     fi
 
-    # Read keys (PKG names) from JSON
+    # Read keys (full URLs) from JSON
     original_keys=$(jq -r '.DATA | keys[]' "$json_file")
 
     kept_keys=""
     deleted_keys=""
 
-    # For every key (PKG name) in the JSON, checks if file exists
-    local base_url="${SERVER_URL%/}"
+    # For every key (full URL), strip SERVER_URL to get relative path, check if file exists
     while IFS= read -r key; do
-        # Use sed to strip the base_url prefix safely
-        local rel_path=$(echo "$key" | sed "s|^$base_url/||")
-        local check_path="/$rel_path"
+        # Strip SERVER_URL prefix to get relative path (same as reference)
+        full_path="${key#$SERVER_URL}"
 
-        if [ -f "$INPUT_DIR$check_path" ]; then
+        if [ -f "$INPUT_DIR/$full_path" ]; then
             kept_keys+="$key"$'\n'
         else
-            echo "Record deleted (not found) in $json_file: $INPUT_DIR$check_path"
+            echo "Record deleted (not found) in $json_file: $INPUT_DIR/$full_path"
             deleted_keys+="$key"$'\n'
         fi
     done <<< "$(echo "$original_keys")"
@@ -89,9 +89,10 @@ cleanup_json() {
     echo "Cleanup completed for $json_file"
 }
 
-# Create json files if they dont exist
+# cd into INPUT_DIR — all relative paths and find . will work from here
 cd "$INPUT_DIR" || exit 1
 
+# Create json files if they dont exist
 if [ ! -f "$JSON_GAMES" ]; then
     echo '{"DATA": {}}' > "$JSON_GAMES"
 fi
@@ -108,20 +109,26 @@ mkdir -p _img
 while read -r pkg; do
     pkg_name=$(basename "$pkg")
     pkg_dir=$(dirname "$pkg")
-    
-    # Relative path from current dir (which is INPUT_DIR)
-    # Use ${pkg:2} to avoid glob issues with [ ] in filenames
-    rel_pkg_path="${pkg:2}"
 
-    # Check if pkg is already in jsons
-    if pkg_exists_in_json "$rel_pkg_path" "$JSON_GAMES" || pkg_exists_in_json "$rel_pkg_path" "$JSON_UPDATES" || pkg_exists_in_json "$rel_pkg_path" "$JSON_DLC"; then
-        echo "Skip: $rel_pkg_path already listed in JSONs."
+    # Build relative path including subdir (mirrors reference script logic)
+    # INPUT_DIR has no trailing slash; pkg_dir is like ./subdir
+    # Strip leading ./ from pkg_dir to get the subdir portion
+    pkg_dir_rel="${pkg_dir#./}"
+    if [[ -n "$pkg_dir_rel" && "$pkg_dir_rel" != "." ]]; then
+        rel_pkg_path="${pkg_dir_rel}/${pkg_name}"
+    else
+        rel_pkg_path="${pkg_name}"
+    fi
+
+    # Check if pkg is already in jsons — use basename only (matches reference)
+    if pkg_exists_in_json "$pkg_name" "$JSON_GAMES" || pkg_exists_in_json "$pkg_name" "$JSON_UPDATES" || pkg_exists_in_json "$pkg_name" "$JSON_DLC"; then
+        echo "Skip: $pkg_name already listed in JSONs."
         continue
     fi
 
     echo "Processing: $rel_pkg_path"
 
-    # Execute command and saves output in tempfile1
+    # Execute command and saves output in tmpfile1
     if ! "$PKG_TOOL" pkg_listentries "$pkg" > ./tmpfile1; then
         echo "ERROR: PkgTool failed for $pkg"
         continue
@@ -136,29 +143,28 @@ while read -r pkg; do
 
     category=$(grep "^CATEGORY " ./tmpfile | awk -F'=' '{print $2}' | tr -d ' ')
     title_id=$(grep "^TITLE_ID " ./tmpfile | awk -F'=' '{print $2}' | tr -d ' ')
-    title=$(grep "^TITLE " ./tmpfile | awk -F'=' '{print $2}' | sed 's/^ *//;s/ *$//')    
+    title=$(grep "^TITLE " ./tmpfile | awk -F'=' '{print $2}' | sed 's/^ *//;s/ *$//')
     version=$(grep "^APP_VER " ./tmpfile | awk -F'=' '{print $2}' | tr -d ' ')
     release_tmp=$(grep "^PUBTOOLINFO " ./tmpfile | grep -o "c_date=[0-9]*" | cut -d'=' -f2)
     release=$(echo "$release_tmp" | sed 's/\([0-9]\{4\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)/\2-\3-\1/')
     size=$(stat -c %s "$pkg")
     content_id=$(grep "^CONTENT_ID " ./tmpfile | awk -F'=' '{print $2}' | tr -d ' ')
-    
+
     region="${content_id:0:1}"
-    if [[ "$region" == "J" ]]; then 
+    if [[ "$region" == "J" ]]; then
         region="JAP"
     elif [[ "$region" == "E" ]]; then
         region="EUR"
     elif [[ "$region" == "U" ]]; then
         region="USA"
-    else 
+    else
         region="null"
     fi
 
-    # Ensure SERVER_URL doesn't have trailing slash for consistent joining
-    local base_url="${SERVER_URL%/}"
-    cover_url="${base_url}/_img/${title_id}.png"
-    pkg_url="${base_url}/${rel_pkg_path}"
-    
+    # Build URLs — SERVER_URL already has trailing slash
+    cover_url="${SERVER_URL}_img/${title_id}.png"
+    pkg_url="${SERVER_URL}${rel_pkg_path}"
+
     coverexists=0
     if [[ -e "./_img/$title_id.png" ]]; then
         coverexists=1
@@ -170,29 +176,35 @@ while read -r pkg; do
         fi
     fi
 
-    echo "DEBUG: Category=$category, TitleID=$title_id, Title=$title"
-
     echo "========================="
+    echo "DEBUG: category=$category title_id=$title_id pkg_url=$pkg_url"
+
     # Create json entry for the element
-    json_entry=$(jq -n --arg title_id "$title_id" --arg region "$region" --arg name "$title" --arg version "$version" \
-                      --arg release "$release" --argjson size $size --arg cover_url "$cover_url" \
-                      '{title_id: $title_id, region: $region, name: $name, version: $version, release: $release, size: $size, cover_url: $cover_url}')
+    json_entry=$(jq -n \
+        --arg title_id "$title_id" \
+        --arg region "$region" \
+        --arg name "$title" \
+        --arg version "$version" \
+        --arg release "$release" \
+        --argjson size "$size" \
+        --arg cover_url "$cover_url" \
+        '{title_id: $title_id, region: $region, name: $name, version: $version, release: $release, size: $size, cover_url: $cover_url}')
 
     case "$category" in
-        "gd") 
-            echo "CATEGORY: GAME"            
+        "gd")
+            echo "CATEGORY: GAME"
             if [[ $coverexists -eq 0 && -n "$icon0_index" ]]; then
                 "$PKG_TOOL" pkg_extractentry "$pkg" "$icon0_index" "./_img/$title_id.png"
             fi
             update_json "$JSON_GAMES" "$pkg_url" "$json_entry"
             cGames=$((cGames + 1))
             ;;
-        "gp") 
+        "gp")
             echo "CATEGORY: UPDATE"
             update_json "$JSON_UPDATES" "$pkg_url" "$json_entry"
             cUpd=$((cUpd + 1))
             ;;
-        "ac") 
+        "ac")
             echo "CATEGORY: DLC"
             update_json "$JSON_DLC" "$pkg_url" "$json_entry"
             cDlc=$((cDlc + 1))
@@ -208,7 +220,7 @@ while read -r pkg; do
     echo "PKG_URL: $pkg_url"
     echo "COVER_URL: $cover_url"
 
-    #Remove tmp files
+    # Remove tmp files
     rm -f "$sfo_file" ./tmpfile ./tmpfile1
 
 done < <(find . -type f -iname "*.pkg")
@@ -226,9 +238,9 @@ cleanup_json "$JSON_UPDATES"
 echo "Cleaning $JSON_DLC..."
 cleanup_json "$JSON_DLC"
 echo ""
-echo "URLs of the JSONs:" 
-echo "${SERVER_URL%/}/$JSON_GAMES"
-echo "${SERVER_URL%/}/$JSON_UPDATES"
-echo "${SERVER_URL%/}/$JSON_DLC"
+echo "URLs of the JSONs:"
+echo "${SERVER_URL}${JSON_GAMES}"
+echo "${SERVER_URL}${JSON_UPDATES}"
+echo "${SERVER_URL}${JSON_DLC}"
 echo ""
 echo "Processing completed."
