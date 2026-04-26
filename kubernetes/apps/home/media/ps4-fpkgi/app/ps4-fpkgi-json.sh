@@ -7,7 +7,7 @@ if [ -z "$SERVER_URL" ]; then
 fi
 
 # Ensure SERVER_URL has a trailing slash (matching reference script behaviour)
-[[ "$SERVER_URL" != */ ]] && SERVER_URL="${SERVER_URL}/"
+[[ "$SERVER_URL" != */ ]] && SERVER_URL="$SERVER_URL/"
 
 INPUT_DIR="/workspace"
 JSON_GAMES="GAMES.json"
@@ -71,7 +71,8 @@ cleanup_json() {
     # For every key (full URL), strip SERVER_URL to get relative path, check if file exists
     while IFS= read -r key; do
         # Strip SERVER_URL prefix to get relative path (same as reference)
-        full_path="${key#$SERVER_URL}"
+        # Avoid curly braces to prevent Flux substitution
+        full_path=$(echo "$key" | sed "s|^$SERVER_URL||")
 
         if [ -f "$INPUT_DIR/$full_path" ]; then
             kept_keys+="$key"$'\n'
@@ -113,11 +114,11 @@ while read -r pkg; do
     # Build relative path including subdir (mirrors reference script logic)
     # INPUT_DIR has no trailing slash; pkg_dir is like ./subdir
     # Strip leading ./ from pkg_dir to get the subdir portion
-    pkg_dir_rel="${pkg_dir#./}"
+    pkg_dir_rel=$(echo "$pkg_dir" | sed 's|^\./||')
     if [[ -n "$pkg_dir_rel" && "$pkg_dir_rel" != "." ]]; then
-        rel_pkg_path="${pkg_dir_rel}/${pkg_name}"
+        rel_pkg_path="$pkg_dir_rel/$pkg_name"
     else
-        rel_pkg_path="${pkg_name}"
+        rel_pkg_path="$pkg_name"
     fi
 
     # Check if pkg is already in jsons — use basename only (matches reference)
@@ -150,7 +151,7 @@ while read -r pkg; do
     size=$(stat -c %s "$pkg")
     content_id=$(grep "^CONTENT_ID " ./tmpfile | awk -F'=' '{print $2}' | tr -d ' ')
 
-    region="${content_id:0:1}"
+    region=$(echo "$content_id" | cut -c1)
     if [[ "$region" == "J" ]]; then
         region="JAP"
     elif [[ "$region" == "E" ]]; then
@@ -162,8 +163,9 @@ while read -r pkg; do
     fi
 
     # Build URLs — SERVER_URL already has trailing slash
-    cover_url="${SERVER_URL}_img/${title_id}.png"
-    pkg_url="${SERVER_URL}${rel_pkg_path}"
+    # Avoid curly braces to prevent Flux substitution
+    cover_url="${SERVER_URL}_img/$title_id.png"
+    pkg_url="$SERVER_URL$rel_pkg_path"
 
     coverexists=0
     if [[ -e "./_img/$title_id.png" ]]; then
@@ -239,8 +241,8 @@ echo "Cleaning $JSON_DLC..."
 cleanup_json "$JSON_DLC"
 echo ""
 echo "URLs of the JSONs:"
-echo "${SERVER_URL}${JSON_GAMES}"
-echo "${SERVER_URL}${JSON_UPDATES}"
-echo "${SERVER_URL}${JSON_DLC}"
+echo "$SERVER_URL$JSON_GAMES"
+echo "$SERVER_URL$JSON_UPDATES"
+echo "$SERVER_URL$JSON_DLC"
 echo ""
 echo "Processing completed."
