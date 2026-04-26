@@ -15,7 +15,7 @@ cDlc=0
 cUpd=0
 
 # PkgTool path
-PKG_TOOL="/toolchain/OpenOrbisSDK/bin/linux/PkgTool.Core"
+PKG_TOOL="/lib/OpenOrbisSDK/bin/linux/PkgTool.Core"
 
 # Function to update JSON
 update_json() {
@@ -73,14 +73,15 @@ cleanup_json() {
         full_path="${key#$SERVER_URL}"
         
         # Ensure path starts with / for joining with INPUT_DIR
-        if [[ "$full_path" != /* ]]; then
-            full_path="/$full_path"
+        local check_path="$full_path"
+        if [[ "$check_path" != /* ]]; then
+            check_path="/$check_path"
         fi
 
-        if [ -f "$INPUT_DIR$full_path" ]; then
+        if [ -f "$INPUT_DIR$check_path" ]; then
             kept_keys+="$key"$'\n'
         else
-            echo "Record deleted (not found) in $json_file: $INPUT_DIR$full_path"
+            echo "Record deleted (not found) in $json_file: $INPUT_DIR$check_path"
             deleted_keys+="$key"$'\n'
         fi
     done <<< "$(echo "$original_keys")"
@@ -113,8 +114,8 @@ while read -r pkg; do
     pkg_name=$(basename "$pkg")
     pkg_dir=$(dirname "$pkg")
     
-    # Relative path from INPUT_DIR
-    rel_pkg_path="${pkg#$INPUT_DIR/}"
+    # Relative path from current dir (which is INPUT_DIR)
+    rel_pkg_path="${pkg#./}"
 
     # Check if pkg is already in jsons
     if pkg_exists_in_json "$rel_pkg_path" "$JSON_GAMES" || pkg_exists_in_json "$rel_pkg_path" "$JSON_UPDATES" || pkg_exists_in_json "$rel_pkg_path" "$JSON_DLC"; then
@@ -213,7 +214,7 @@ while read -r pkg; do
     #Remove tmp files
     rm -f "$sfo_file" ./tmpfile ./tmpfile1
 
-done < <(find "$INPUT_DIR" -type f -iname "*.pkg")
+done < <(find . -type f -iname "*.pkg")
 
 echo "========================="
 echo "PKGs added to jsons:"

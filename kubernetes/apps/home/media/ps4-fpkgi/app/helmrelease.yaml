@@ -12,28 +12,18 @@ spec:
   values:
     controllers:
       ps4-fpkgi:
-        initContainers:
-          toolchain-init:
-            image:
-              repository: openorbisofficial/toolchain
-              tag: latest
-            command:
-              - /bin/sh
-              - -c
-              - |
-                cp -a /lib/OpenOrbisSDK /toolchain/
         containers:
           app:
             image:
-              repository: alpine
-              tag: "3.21"
+              repository: openorbisofficial/toolchain
+              tag: latest
             env:
               SERVER_URL: "http://copyparty.home-system.svc.cluster.local:3923/ceph-filesystem-hdd/downloads/"
             command:
               - /bin/sh
               - -c
               - |
-                apk add --no-cache bash jq gcompat libc6-compat
+                apt-get update && apt-get install -y jq
                 # Keep container running for testing
                 sleep infinity
             resources:
@@ -50,10 +40,6 @@ spec:
           - path: /workspace/ps4-fpkgi-json.sh
             subPath: ps4-fpkgi-json.sh
             readOnly: true
-      toolchain:
-        type: emptyDir
-        globalMounts:
-          - path: /toolchain
       workspace:
         existingClaim: copyparty-hdd
         globalMounts:
