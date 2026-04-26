@@ -47,7 +47,7 @@ spec:
         type: configMap
         name: ps4-fpkgi-scripts
         globalMounts:
-          - path: /scripts/ps4-fpkgi-json.sh
+          - path: /workspace/ps4-fpkgi-json.sh
             subPath: ps4-fpkgi-json.sh
             readOnly: true
       toolchain:
