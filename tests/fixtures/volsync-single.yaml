@@ -1,3 +1,0 @@
-volumes:
-  - name: forgejo
-    capacity: 5Gi
