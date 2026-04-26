@@ -12,13 +12,6 @@ spec:
   values:
     controllers:
       ps4-fpkgi:
-        # type: cronjob
-        # cronjob:
-        #   schedule: "0 0 * * *"
-        #   backoffLimit: 0
-        #   concurrencyPolicy: Forbid
-        #   failedJobsHistory: 1
-        #   successfulJobsHistory: 1
         initContainers:
           toolchain-init:
             image:
@@ -41,7 +34,8 @@ spec:
               - -c
               - |
                 apk add --no-cache bash jq
-                bash /scripts/ps4-fpkgi-json.sh
+                # Keep container running for testing
+                sleep infinity
             resources:
               requests:
                 cpu: 10m
