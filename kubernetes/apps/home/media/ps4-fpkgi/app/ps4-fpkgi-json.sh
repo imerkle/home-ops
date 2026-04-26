@@ -125,7 +125,10 @@ while read -r pkg; do
     echo "Processing: $rel_pkg_path"
 
     # Execute command and saves output in tempfile1
-    "$PKG_TOOL" pkg_listentries "$pkg" > ./tmpfile1
+    if ! "$PKG_TOOL" pkg_listentries "$pkg" > ./tmpfile1; then
+        echo "ERROR: PkgTool failed for $pkg"
+        continue
+    fi
 
     param_sfo_index=$(grep "PARAM_SFO" ./tmpfile1 | awk '{print $4}')
 
@@ -169,6 +172,8 @@ while read -r pkg; do
         fi
     fi
 
+    echo "DEBUG: Category=$category, TitleID=$title_id, Title=$title"
+
     echo "========================="
     # Create json entry for the element
     json_entry=$(jq -n --arg title_id "$title_id" --arg region "$region" --arg name "$title" --arg version "$version" \
@@ -208,7 +213,7 @@ while read -r pkg; do
     #Remove tmp files
     rm -f "$sfo_file" ./tmpfile ./tmpfile1
 
-done < <(find "$INPUT_DIR" -type f -name "*.pkg")
+done < <(find "$INPUT_DIR" -type f -iname "*.pkg")
 
 echo "========================="
 echo "PKGs added to jsons:"
