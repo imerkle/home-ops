@@ -79,6 +79,7 @@ spec:
               FORGEJO__database__PASSWD: "vault:secret/data/pg_default#PASSWORD"
               FORGEJO__metrics__ENABLED: "true"
               FORGEJO__security__INSTALL_LOCK: "true"
+              FORGEJO__security__ENABLE_PUSH_CREATE_USER: "true"
               FORGEJO__server__DOMAIN: "forgejo.${DOMAIN1}"
               FORGEJO__server__ROOT_URL: "https://forgejo.${DOMAIN1}/"
               FORGEJO__server__SSH_DOMAIN: "ssh.forgejo.${DOMAIN1}"
