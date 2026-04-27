@@ -102,9 +102,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(pingpong_pings_total{service_name=\"pingpong\"}[5m])) by (hostname)",
+          "expr": "sum(rate(pingpong_pings_total{service_name=\"pingpong\"}[5m])) by (host_name)",
           "instant": false,
-          "legendFormat": "{{hostname}}",
+          "legendFormat": "{{host_name}}",
           "range": true,
           "refId": "A"
         }
@@ -194,9 +194,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum(rate(pingpong_request_duration_seconds_bucket{service_name=\"pingpong\"}[5m])) by (le, hostname))",
+          "expr": "histogram_quantile(0.95, sum(rate(pingpong_request_duration_seconds_bucket{service_name=\"pingpong\"}[5m])) by (le, host_name))",
           "instant": false,
-          "legendFormat": "{{hostname}} p95",
+          "legendFormat": "{{host_name}} p95",
           "range": true,
           "refId": "A"
         },
@@ -206,10 +206,10 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum(rate(pingpong_request_duration_seconds_bucket{service_name=\"pingpong\"}[5m])) by (le, hostname))",
+          "expr": "histogram_quantile(0.99, sum(rate(pingpong_request_duration_seconds_bucket{service_name=\"pingpong\"}[5m])) by (le, host_name))",
           "hide": false,
           "instant": false,
-          "legendFormat": "{{hostname}} p99",
+          "legendFormat": "{{host_name}} p99",
           "range": true,
           "refId": "B"
         }
