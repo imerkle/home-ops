@@ -1,0 +1,98 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: pingpong
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  values:
+    controllers:
+      pingpong:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          vault.security.banzaicloud.io/vault-role: "default"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: "16.4"
+            env:
+              INIT_POSTGRES_DBNAME: "pingpong"
+              INIT_POSTGRES_HOST: "vault:secret/data/pg_default#HOST"
+              INIT_POSTGRES_USER: "vault:secret/data/pg_default#USER"
+              INIT_POSTGRES_PASS: "vault:secret/data/pg_default#PASSWORD"
+              INIT_POSTGRES_SUPER_PASS: "vault:secret/data/pg_default#PASSWORD"
+        containers:
+          app:
+            image:
+              repository: zot.x3y.space/pingpong
+              tag: latest
+            env:
+              PORT: "3000"
+              DATABASE_URL: "postgresql://$${vault:secret/data/pg_default#USER}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/pingpong"
+              OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.observability.svc.cluster.local:4317"
+              OTEL_SERVICE_NAME: "pingpong"
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 3000
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 3000
+                  initialDelaySeconds: 5
+                  periodSeconds: 5
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 128Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+    service:
+      app:
+        controller: pingpong
+        ports:
+          http:
+            port: 3000
+    route:
+      app:
+        enabled: true
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        hostnames:
+          - "pingpong.${DOMAIN1}"
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: PingPong
+          gethomepage.dev/description: Example Go app with full dev stack
+          gethomepage.dev/group: Development
+          gethomepage.dev/icon: mdi-ping-pong
+        rules:
+          - backendRefs:
+              - port: 3000
+                name: pingpong
+    persistence:
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp

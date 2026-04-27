@@ -14,3 +14,4 @@ resources:
   - ./oci-registry/
   - ./dashboard/
   - ./networking/
+  - ./pingpong/
