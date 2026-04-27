@@ -4,7 +4,6 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: pingpong
-  namespace: flux-system
 spec:
   targetNamespace: dev-system
   interval: 1h
