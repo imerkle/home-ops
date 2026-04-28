@@ -102,7 +102,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(pingpong_pings_total{service_name=\"pingpong\"}[5m])) by (host_name)",
+          "expr": "sum(rate(pingpong_pings_total{exported_job=\"pingpong\"}[5m])) by (host_name)",
           "instant": false,
           "legendFormat": "{{host_name}}",
           "range": true,
@@ -194,7 +194,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum(rate(pingpong_request_duration_seconds_bucket{service_name=\"pingpong\"}[5m])) by (le, host_name))",
+          "expr": "histogram_quantile(0.95, sum(rate(pingpong_request_duration_seconds_bucket{exported_job=\"pingpong\"}[5m])) by (le, host_name))",
           "instant": false,
           "legendFormat": "{{host_name}} p95",
           "range": true,
@@ -206,7 +206,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum(rate(pingpong_request_duration_seconds_bucket{service_name=\"pingpong\"}[5m])) by (le, host_name))",
+          "expr": "histogram_quantile(0.99, sum(rate(pingpong_request_duration_seconds_bucket{exported_job=\"pingpong\"}[5m])) by (le, host_name))",
           "hide": false,
           "instant": false,
           "legendFormat": "{{host_name}} p99",
