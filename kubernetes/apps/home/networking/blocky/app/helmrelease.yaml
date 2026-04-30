@@ -120,8 +120,7 @@ spec:
             log:
               level: info
     serviceMonitor:
-      app:
-        serviceName: app
+      main:
         endpoints:
           - port: http
             path: /metrics

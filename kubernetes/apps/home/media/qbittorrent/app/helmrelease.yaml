@@ -106,4 +106,4 @@ spec:
         existingClaim: copyparty-hdd
         globalMounts:
           - path: /downloads
-            subPath: qbittorrent
+            subPath: downloads
