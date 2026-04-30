@@ -14,7 +14,6 @@ spec:
       qbittorrent:
         annotations:
           reloader.stakater.com/auto: "true"
-          vault.security.banzaicloud.io/vault-role: "default"
         pod:
           securityContext:
             runAsUser: 1000
