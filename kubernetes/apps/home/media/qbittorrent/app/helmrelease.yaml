@@ -64,6 +64,7 @@ spec:
               QBITTORRENT__PORT: &port 8080
               QBITTORRENT__BT_PORT: 50413
             resources:
+              requests:
                 cpu: 10m
                 memory: 250Mi
               limits:
