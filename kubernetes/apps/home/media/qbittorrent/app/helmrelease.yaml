@@ -18,10 +18,10 @@ spec:
         initContainers:
           init-config:
             image:
-              repository: ghcr.io/home-operations/qbittorrent
-              tag: 5.0.4
+              repository: public.ecr.aws/docker/library/python
+              tag: 3.11-alpine
             command:
-              - /usr/bin/python3
+              - /usr/local/bin/python3
               - -c
               - |
                 import configparser
@@ -64,7 +64,7 @@ spec:
           app:
             image:
               repository: ghcr.io/home-operations/qbittorrent
-              tag: 5.0.4
+              tag: 5.1.4
             env:
               TZ: America/New_York
               QBITTORRENT__PORT: &port 8080
