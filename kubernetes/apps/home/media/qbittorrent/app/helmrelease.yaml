@@ -28,23 +28,32 @@ spec:
                 mkdir -p /config/qBittorrent
                 touch /config/qBittorrent/qBittorrent.conf
 
-                # Use sed to update or add WebUI settings
-                update_config() {
-                  section=$1
-                  key=$2
-                  value=$3
+                # Ensure [Preferences] section exists
+                if ! grep -q "\[Preferences\]" /config/qBittorrent/qBittorrent.conf; then
+                  echo "" >> /config/qBittorrent/qBittorrent.conf
+                  echo "[Preferences]" >> /config/qBittorrent/qBittorrent.conf
+                fi
 
-                  # Check if key exists in any section (simplified for single-level keys)
-                  if grep -q "^${key}=" /config/qBittorrent/qBittorrent.conf; then
-                    sed -i "s|^${key}=.*|${key}=${value}|" /config/qBittorrent/qBittorrent.conf
+                update_config() {
+                  key=$1
+                  value=$2
+                  conf_file="/config/qBittorrent/qBittorrent.conf"
+
+                  if [ -z "$value" ]; then
+                    echo "Value for $key is empty, skipping..."
+                    return
+                  fi
+
+                  if grep -q "^${key}=" "$conf_file"; then
+                    sed -i "s|^${key}=.*|${key}=${value}|" "$conf_file"
                   else
-                    # Add to end of file if it doesn't exist
-                    echo "${key}=${value}" >> /config/qBittorrent/qBittorrent.conf
+                    # Insert after [Preferences] section
+                    sed -i "/\[Preferences\]/a ${key}=${value}" "$conf_file"
                   fi
                 }
 
-                update_config "Preferences" "WebUI\Username" "$${QBIT_USERNAME}"
-                update_config "Preferences" "WebUI\Password_PBKDF2" "$${QBIT_PASSWORD}"
+                update_config "WebUI\\Username" "$${QBIT_USERNAME}"
+                update_config "WebUI\\Password_PBKDF2" "$${QBIT_PASSWORD}"
             env:
               QBIT_USERNAME: "vault:secret/data/qbittorrent#USERNAME"
               QBIT_PASSWORD: "vault:secret/data/qbittorrent#PASSWORD"
@@ -63,6 +72,9 @@ spec:
               TZ: America/New_York
               QBITTORRENT__PORT: &port 8080
               QBITTORRENT__BT_PORT: 50413
+              # Required for vault injector to provide secrets to this container too if needed
+              QBIT_USERNAME: "vault:secret/data/qbittorrent#USERNAME"
+              QBIT_PASSWORD: "vault:secret/data/qbittorrent#PASSWORD"
             resources:
               requests:
                 cpu: 10m
