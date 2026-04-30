@@ -54,7 +54,8 @@ spec:
             env:
               QBIT_USERNAME: "vault:secret/data/qbittorrent#USERNAME"
               QBIT_PASSWORD: "vault:secret/data/qbittorrent#PASSWORD"
-        pod:          securityContext:
+        pod:
+          securityContext:
             runAsUser: 1000
             runAsGroup: 1000
             fsGroup: 1000
