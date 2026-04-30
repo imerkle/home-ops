@@ -28,6 +28,7 @@ spec:
               pullPolicy: Always
             env:
               NODE_ENV: "production"
+              PORT: 3000
             # securityContext:
             #   allowPrivilegeEscalation: false
             #   readOnlyRootFilesystem: false
