@@ -1,0 +1,4 @@
+---
+volumes:
+  - name: qbittorrent
+    capacity: 5Gi

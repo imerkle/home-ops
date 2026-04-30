@@ -25,6 +25,7 @@ resources:
   - ./media/nuviostreams/ks.yaml
   - ./media/jdownloader/ks.yaml
   - ./media/ps4-fpkgi/ks.yaml
+  - ./media/qbittorrent/ks.yaml
   # file-management
   - ./file-management/syncthing/ks.yaml
   - ./file-management/copyparty/ks.yaml
