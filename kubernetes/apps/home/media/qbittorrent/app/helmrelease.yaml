@@ -30,7 +30,7 @@ spec:
               QBITTORRENT__PORT: &port 8080
               QBITTORRENT__BT_PORT: 50413
               QBITTORRENT__WebUI__Username: "vault:secret/data/qbittorrent#USERNAME"
-              QBITTORRENT__WebUI__Password_PBKDF2: "vault:secret/data/qbittorrent#PASSWORD"
+              # QBITTORRENT__WebUI__Password_PBKDF2: "vault:secret/data/qbittorrent#PASSWORD"
             resources:
               requests:
                 cpu: 10m
