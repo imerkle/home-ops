@@ -18,8 +18,8 @@ spec:
         initContainers:
           init-config:
             image:
-              repository: ghcr.io/onedr0p/qbittorrent
-              tag: 4.6.4
+              repository: ghcr.io/home-operations/qbittorrent
+              tag: 5.0.4
             command:
               - /usr/bin/python3
               - -c
@@ -63,8 +63,8 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/onedr0p/qbittorrent
-              tag: 4.6.4
+              repository: ghcr.io/home-operations/qbittorrent
+              tag: 5.0.4
             env:
               TZ: America/New_York
               QBITTORRENT__PORT: &port 8080
