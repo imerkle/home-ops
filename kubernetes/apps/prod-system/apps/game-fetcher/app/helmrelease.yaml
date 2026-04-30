@@ -31,26 +31,6 @@ spec:
               tag: latest
             env:
               PORT: "3000"
-            probes:
-              liveness: &probe
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /health
-                    port: &port 3000
-                  initialDelaySeconds: 5
-                  periodSeconds: 30
-              readiness: *probe
-              startup:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /health
-                    port: *port
-                  failureThreshold: 10
-                  periodSeconds: 3
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
