@@ -84,4 +84,4 @@ spec:
         existingClaim: copyparty-hdd
         globalMounts:
           - path: /workspace
-            subPath: downloads
+            subPath: downloads/ps4
