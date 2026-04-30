@@ -25,35 +25,40 @@ spec:
               - -c
               - |
                 set -e
+                echo "Starting init-config..."
                 mkdir -p /config/qBittorrent
-                touch /config/qBittorrent/qBittorrent.conf
+                conf_file="/config/qBittorrent/qBittorrent.conf"
+                touch "$conf_file"
 
                 # Ensure [Preferences] section exists
-                if ! grep -q "\[Preferences\]" /config/qBittorrent/qBittorrent.conf; then
-                  echo "" >> /config/qBittorrent/qBittorrent.conf
-                  echo "[Preferences]" >> /config/qBittorrent/qBittorrent.conf
+                if ! grep -q "^\[Preferences\]" "$conf_file"; then
+                  echo "" >> "$conf_file"
+                  echo "[Preferences]" >> "$conf_file"
+                  echo "Section [Preferences] added."
                 fi
 
                 update_config() {
                   key=$1
                   value=$2
-                  conf_file="/config/qBittorrent/qBittorrent.conf"
 
                   if [ -z "$value" ]; then
                     echo "Value for $key is empty, skipping..."
                     return
                   fi
 
-                  if grep -q "^${key}=" "$conf_file"; then
-                    sed -i "s|^${key}=.*|${key}=${value}|" "$conf_file"
-                  else
-                    # Insert after [Preferences] section
-                    sed -i "/\[Preferences\]/a ${key}=${value}" "$conf_file"
-                  fi
+                  # Remove any existing line with this key to avoid duplicates or misplacements
+                  sed -i "/^${key}=/d" "$conf_file"
+
+                  # Insert after [Preferences] section
+                  sed -i "/^\[Preferences\]/a ${key}=${value}" "$conf_file"
+                  echo "Updated $key."
                 }
 
                 update_config "WebUI\\Username" "$${QBIT_USERNAME}"
                 update_config "WebUI\\Password_PBKDF2" "$${QBIT_PASSWORD}"
+
+                echo "Final config content:"
+                cat "$conf_file"
             env:
               QBIT_USERNAME: "vault:secret/data/qbittorrent#USERNAME"
               QBIT_PASSWORD: "vault:secret/data/qbittorrent#PASSWORD"
