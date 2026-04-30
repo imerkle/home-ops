@@ -18,52 +18,43 @@ spec:
         initContainers:
           init-config:
             image:
-              repository: alpine
-              tag: "3.20"
+              repository: ghcr.io/onedr0p/qbittorrent
+              tag: 4.6.4
             command:
-              - /bin/sh
+              - /usr/bin/python3
               - -c
               - |
-                set -e
-                echo "Starting init-config..."
-                mkdir -p /config/qBittorrent
-                conf_file="/config/qBittorrent/qBittorrent.conf"
-                touch "$conf_file"
+                import configparser
+                import os
 
-                # Ensure [Preferences] section exists
-                if ! grep -q "^\[Preferences\]" "$conf_file"; then
-                  echo "" >> "$conf_file"
-                  echo "[Preferences]" >> "$conf_file"
-                  echo "Section [Preferences] added."
-                fi
+                conf_file = "/config/qBittorrent/qBittorrent.conf"
+                os.makedirs(os.path.dirname(conf_file), exist_ok=True)
 
-                update_config() {
-                  key=$1
-                  value=$2
+                config = configparser.ConfigParser(interpolation=None)
+                config.optionxform = str # Preserve case
 
-                  if [ -z "$value" ]; then
-                    echo "Value for $key is empty, skipping..."
-                    return
-                  fi
+                if os.path.exists(conf_file):
+                    config.read(conf_file)
 
-                  # Remove any existing line with this key to avoid duplicates or misplacements
-                  sed -i "/^${key}=/d" "$conf_file"
+                if 'Preferences' not in config:
+                    config['Preferences'] = {}
 
-                  # Insert after [Preferences] section
-                  sed -i "/^\[Preferences\]/a ${key}=${value}" "$conf_file"
-                  echo "Updated $key."
-                }
+                username = os.environ.get('QBIT_USERNAME')
+                password = os.environ.get('QBIT_PASSWORD')
 
-                update_config "WebUI\\Username" "$${QBIT_USERNAME}"
-                update_config "WebUI\\Password_PBKDF2" "$${QBIT_PASSWORD}"
+                if username:
+                    config['Preferences']['WebUI\\Username'] = username
+                if password:
+                    config['Preferences']['WebUI\\Password_PBKDF2'] = password
 
-                echo "Final config content:"
-                cat "$conf_file"
+                with open(conf_file, 'w') as f:
+                    config.write(f, space_around_delimiters=False)
+
+                print(f"Configuration updated in {conf_file}")
             env:
               QBIT_USERNAME: "vault:secret/data/qbittorrent#USERNAME"
               QBIT_PASSWORD: "vault:secret/data/qbittorrent#PASSWORD"
-        pod:
-          securityContext:
+        pod:          securityContext:
             runAsUser: 1000
             runAsGroup: 1000
             fsGroup: 1000
