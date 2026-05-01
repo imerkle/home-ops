@@ -1,0 +1,115 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: game-fetcher-dashboard
+spec:
+  allowCrossNamespaceImport: true
+  instanceSelector:
+    matchLabels:
+      grafana.internal/instance: grafana
+  datasources:
+    - datasourceName: prometheus
+      inputName: DS_PROMETHEUS
+  json: >
+    {
+      "title": "Game Fetcher App",
+      "refresh": "1m",
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "uid": "game-fetcher-dashboard",
+      "schemaVersion": 39,
+      "panels": [
+        {
+          "type": "stat",
+          "title": "Total Searches",
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "targets": [
+            {
+              "expr": "sum(gamefetcher_searches_total)",
+              "refId": "A",
+              "instant": true
+            }
+          ]
+        },
+        {
+          "type": "stat",
+          "title": "Downloads Started",
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 0
+          },
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "targets": [
+            {
+              "expr": "sum(gamefetcher_downloads_started_total)",
+              "refId": "A",
+              "instant": true
+            }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "Search Activity Over Time",
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 8
+          },
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "targets": [
+            {
+              "expr": "rate(gamefetcher_searches_total[5m])",
+              "refId": "A"
+            }
+          ],
+          "options": {
+            "tooltip": {
+              "mode": "single"
+            }
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "Downloads Activity Over Time",
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 16
+          },
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "targets": [
+            {
+              "expr": "rate(gamefetcher_downloads_started_total[5m])",
+              "refId": "A"
+            }
+          ],
+          "options": {
+            "tooltip": {
+              "mode": "single"
+            }
+          }
+        }
+      ]
+    }
