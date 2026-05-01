@@ -31,7 +31,7 @@ spec:
               tag: latest
             env:
               PORT: &port "3000"
-              rawg: "vault:secret/data/ext_services#RAWG"
+              RAWG: "vault:secret/data/ext_services#RAWG"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
