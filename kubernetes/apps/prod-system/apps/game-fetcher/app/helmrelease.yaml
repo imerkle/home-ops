@@ -30,7 +30,7 @@ spec:
               repository: zot.${DOMAIN1}/game-fetcher
               tag: latest
             env:
-              PORT: "3000"
+              PORT: &port "3000"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
