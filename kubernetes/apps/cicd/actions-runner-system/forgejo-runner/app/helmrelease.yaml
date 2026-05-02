@@ -23,10 +23,17 @@ spec:
             env:
               FORGEJO_INSTANCE_URL: "http://forgejo.dev-system.svc.cluster.local:3000"
               FORGEJO_RUNNER_SECRET: "vault:secret/data/forgejo#TOKEN"
+              DOCKER_HOST: "unix:///var/run/docker.sock"
             command:
               - /bin/sh
               - -c
               - |
+                # Wait for Docker to be ready
+                while ! docker info >/dev/null 2>&1; do
+                  echo "Waiting for Docker daemon to be ready..."
+                  sleep 2
+                done
+
                 if [ ! -f /data/.runner ]; then
                   echo "Registering runner..."
                   forgejo-runner register \
@@ -45,9 +52,27 @@ spec:
                 memory: 128Mi
               limits:
                 memory: 512Mi
+          dind:
+            image:
+              repository: docker
+              tag: 24-dind
+            env:
+              DOCKER_TLS_CERTDIR: ""
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
 
     persistence:
       data:
         type: emptyDir
         globalMounts:
           - path: /data
+      docker-socket:
+        type: emptyDir
+        globalMounts:
+          - path: /var/run
