@@ -29,7 +29,7 @@ spec:
               - -c
               - |
                 # Wait for Docker to be ready
-                while ! docker info >/dev/null 2>&1; do
+                while [ ! -S /var/run/docker.sock ]; do
                   echo "Waiting for Docker daemon to be ready..."
                   sleep 2
                 done
@@ -43,8 +43,7 @@ spec:
                     --no-interactive
                 fi
                 echo "Starting runner..."
-                forgejo-runner daemon
-            securityContext:
+                forgejo-runner daemon            securityContext:
               privileged: true
             resources:
               requests:
