@@ -43,7 +43,8 @@ spec:
                     --no-interactive
                 fi
                 echo "Starting runner..."
-                forgejo-runner daemon            securityContext:
+                forgejo-runner daemon
+            securityContext:
               privileged: true
             resources:
               requests:
