@@ -47,6 +47,7 @@ spec:
                     --instance "$FORGEJO_INSTANCE_URL" \
                     --token "$FORGEJO_RUNNER_SECRET" \
                     --name "forgejo-runner-k8s" \
+                    --labels "ubuntu-latest:docker://node:20-bookworm" \
                     --no-interactive
                 fi
 
