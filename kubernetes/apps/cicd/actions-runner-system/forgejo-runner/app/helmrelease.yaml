@@ -22,21 +22,24 @@ spec:
               tag: 12
             env:
               FORGEJO_INSTANCE_URL: "http://forgejo.dev-system.svc.cluster.local:3000"
-              FORGEJO_RUNNER_SECRET:
-                valueFrom:
-                  secretKeyRef:
-                    name: forgejo-runner-secret
-                    key: token
-              DOCKER_HOST: "tcp://localhost:2375"
+              FORGEJO_RUNNER_SECRET: "vault:secret/data/forgejo#TOKEN"
+              DOCKER_HOST: "unix:///socket/docker.sock"
             command:
               - /bin/sh
               - -c
               - |
-                # Wait for Docker to be ready
-                echo "Waiting for Docker daemon to be ready on port 2375..."
-                while ! nc -z localhost 2375 >/dev/null 2>&1; do
+                # Wait for Docker socket to be ready
+                echo "Waiting for Docker daemon to be ready at /socket/docker.sock..."
+                while [ ! -S /socket/docker.sock ]; do
                   sleep 2
                 done
+
+                if [ ! -f /data/config.yaml ]; then
+                  echo "Generating config..."
+                  forgejo-runner generate-config > /data/config.yaml
+                  # Update the docker_host in config to point to the shared socket
+                  sed -i 's|docker_host: "-"|docker_host: "unix:///socket/docker.sock"|g' /data/config.yaml
+                fi
 
                 if [ ! -f /data/.runner ]; then
                   echo "Registering runner..."
@@ -46,8 +49,9 @@ spec:
                     --name "forgejo-runner-k8s" \
                     --no-interactive
                 fi
+
                 echo "Starting runner..."
-                forgejo-runner daemon
+                forgejo-runner daemon --config /data/config.yaml
             securityContext:
               privileged: true
             resources:
@@ -62,6 +66,9 @@ spec:
               tag: 24-dind
             env:
               DOCKER_TLS_CERTDIR: ""
+            args:
+              - dockerd
+              - --host=unix:///socket/docker.sock
             securityContext:
               privileged: true
             resources:
@@ -79,4 +86,4 @@ spec:
       docker-socket:
         type: emptyDir
         globalMounts:
-          - path: /var/run
+          - path: /socket
