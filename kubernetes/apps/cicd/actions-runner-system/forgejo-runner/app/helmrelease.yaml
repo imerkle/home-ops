@@ -22,15 +22,19 @@ spec:
               tag: 12
             env:
               FORGEJO_INSTANCE_URL: "http://forgejo.dev-system.svc.cluster.local:3000"
-              FORGEJO_RUNNER_SECRET: "vault:secret/data/forgejo#TOKEN"
-              DOCKER_HOST: "unix:///var/run/docker.sock"
+              FORGEJO_RUNNER_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: forgejo-runner-secret
+                    key: token
+              DOCKER_HOST: "tcp://localhost:2375"
             command:
               - /bin/sh
               - -c
               - |
                 # Wait for Docker to be ready
-                while [ ! -S /var/run/docker.sock ]; do
-                  echo "Waiting for Docker daemon to be ready..."
+                echo "Waiting for Docker daemon to be ready on port 2375..."
+                while ! nc -z localhost 2375 >/dev/null 2>&1; do
                   sleep 2
                 done
 
