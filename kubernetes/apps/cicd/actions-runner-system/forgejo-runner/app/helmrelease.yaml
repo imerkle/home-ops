@@ -28,11 +28,12 @@ spec:
               - -c
               - |
                 if [ ! -f /data/.runner ]; then
-                  echo "Creating runner registration file..."
-                  forgejo-runner create-runner-file \
+                  echo "Registering runner..."
+                  forgejo-runner register \
                     --instance "$FORGEJO_INSTANCE_URL" \
-                    --secret "$FORGEJO_RUNNER_SECRET" \
-                    --connect
+                    --token "$FORGEJO_RUNNER_SECRET" \
+                    --name "forgejo-runner-k8s" \
+                    --no-interactive
                 fi
                 echo "Starting runner..."
                 forgejo-runner daemon
