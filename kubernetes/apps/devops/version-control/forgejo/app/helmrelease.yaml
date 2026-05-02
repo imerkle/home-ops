@@ -72,7 +72,7 @@ spec:
               repository: codeberg.org/forgejo/forgejo
               tag: 9.0.3
             env:
-              FORGEJO__actions__DEFAULT_ACTIONS_URL: "https://github.com/"
+              FORGEJO__actions__DEFAULT_ACTIONS_URL: "https://forgejo.${DOMAIN1}/"
               FORGEJO__database__DB_TYPE: postgres
               FORGEJO__database__HOST: "vault:secret/data/pg_default#HOST"
               FORGEJO__database__NAME: forgejo
