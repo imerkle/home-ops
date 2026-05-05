@@ -9,4 +9,4 @@ spec:
   storageClassName: piraeus-storage
   resources:
     requests:
-      storage: 100Gi
+      storage: 200Gi

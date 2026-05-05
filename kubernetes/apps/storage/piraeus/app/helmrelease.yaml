@@ -24,3 +24,13 @@ spec:
       retries: 3
   values:
     installCRDs: true
+    operator:
+      monitoring:
+        enabled: true
+      serviceMonitor:
+        enabled: true
+    linstor:
+      monitoring:
+        enabled: true
+      serviceMonitor:
+        enabled: true
