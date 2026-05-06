@@ -67,3 +67,43 @@ spec:
           for: 5m
           labels:
             severity: critical
+
+        - alert: SmartDeviceNonZeroExitStatus
+          expr: |-
+            smartctl_device_smartctl_exit_status > 0
+          for: 5m
+          annotations:
+            summary: >-
+              smartctl tool exited with a non-zero status for device {{ $labels.device }} on instance {{ $labels.instance }}. Check device error logs.
+          labels:
+            severity: critical
+
+        - alert: SmartDevicePendingSectors
+          expr: |-
+            smartctl_device_attribute{attribute_name="Current_Pending_Sector", attribute_value_type="raw"} > 0
+          for: 5m
+          annotations:
+            summary: >-
+              Device {{ $labels.device }} on instance {{ $labels.instance }} has pending bad sectors. Drive failure is imminent.
+          labels:
+            severity: critical
+
+        - alert: SmartDeviceReallocatedSectors
+          expr: |-
+            smartctl_device_attribute{attribute_name="Reallocated_Sector_Ct", attribute_value_type="raw"} > 0
+          for: 5m
+          annotations:
+            summary: >-
+              Device {{ $labels.device }} on instance {{ $labels.instance }} has reallocated bad sectors.
+          labels:
+            severity: critical
+
+        - alert: SmartDeviceErrorLogsIncreasing
+          expr: |-
+            increase(smartctl_device_error_log_count[15m]) > 0
+          for: 5m
+          annotations:
+            summary: >-
+              Device {{ $labels.device }} on instance {{ $labels.instance }} is logging new hardware errors.
+          labels:
+            severity: critical
