@@ -1,0 +1,3 @@
+volumes:
+  - name: temporal
+    capacity: 2Gi
