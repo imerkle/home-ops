@@ -57,7 +57,7 @@ spec:
               repository: temporalio/ui
               tag: 2.27.0
             env:
-              TEMPORAL_ADDRESS: "127.0.0.1:7233"
+              TEMPORAL_ADDRESS: "temporal:7233"
             resources:
               requests:
                 cpu: 50m
