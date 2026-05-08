@@ -14,16 +14,38 @@ spec:
       temporal:
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: "16.4"
+            env:
+              INIT_POSTGRES_DBNAME: "temporal"
+              INIT_POSTGRES_HOST: "vault:secret/data/pg_default#HOST"
+              INIT_POSTGRES_USER: "vault:secret/data/pg_default#USER"
+              INIT_POSTGRES_PASS: "vault:secret/data/pg_default#PASSWORD"
+              INIT_POSTGRES_SUPER_PASS: "vault:secret/data/pg_default#PASSWORD"
+          init-visibility-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: "16.4"
+            env:
+              INIT_POSTGRES_DBNAME: "temporal_visibility"
+              INIT_POSTGRES_HOST: "vault:secret/data/pg_default#HOST"
+              INIT_POSTGRES_USER: "vault:secret/data/pg_default#USER"
+              INIT_POSTGRES_PASS: "vault:secret/data/pg_default#PASSWORD"
+              INIT_POSTGRES_SUPER_PASS: "vault:secret/data/pg_default#PASSWORD"
         containers:
           app:
             image:
               repository: temporalio/auto-setup
               tag: 1.24.2
             env:
-              DB: sqlite
-              SQLITE_DATABASE: /etc/temporal/data/temporal.db
-              VISIBILITY_DB: sqlite
-              SQLITE_VISIBILITY_DATABASE: /etc/temporal/data/visibility.db
+              DB: postgres12
+              DB_PORT: "5432"
+              POSTGRES_USER: "vault:secret/data/pg_default#USER"
+              POSTGRES_PWD: "vault:secret/data/pg_default#PASSWORD"
+              POSTGRES_SEEDS: "vault:secret/data/pg_default#HOST"
               DYNAMIC_CONFIG_FILE_PATH: config/dynamicconfig/development-sql.yaml
             resources:
               requests:
@@ -68,8 +90,3 @@ spec:
           - backendRefs:
               - port: 8080
                 name: temporal
-    persistence:
-      data:
-        existingClaim: "${APP}"
-        globalMounts:
-          - path: /etc/temporal/data

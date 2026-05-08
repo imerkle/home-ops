@@ -9,9 +9,6 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn: []
-  components:
-    - ../../../../components/volsync
   interval: 1h
   path: ./kubernetes/apps/devops/temporal/app
   prune: true
@@ -19,6 +16,3 @@ spec:
     kind: GitRepository
     name: flux-system
   wait: false
-  postBuild:
-    substitute:
-      APP: *app
