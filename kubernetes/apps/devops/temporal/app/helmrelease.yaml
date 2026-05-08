@@ -46,7 +46,6 @@ spec:
               POSTGRES_USER: "vault:secret/data/pg_default#USER"
               POSTGRES_PWD: "vault:secret/data/pg_default#PASSWORD"
               POSTGRES_SEEDS: "vault:secret/data/pg_default#HOST"
-              DYNAMIC_CONFIG_FILE_PATH: config/dynamicconfig/development-sql.yaml
             resources:
               requests:
                 cpu: 100m
