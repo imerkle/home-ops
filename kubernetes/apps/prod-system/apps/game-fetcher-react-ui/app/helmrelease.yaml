@@ -32,6 +32,7 @@ spec:
             image:
               repository: zot.${DOMAIN1}/game-fetcher
               tag: react-ui
+              pullPolicy: Always
             env:
               PORT: &port "8081"
               RAWG: "vault:secret/data/ext_services#RAWG"
