@@ -1,0 +1,85 @@
+---
+# Tekton Task: cleanup-preview
+# Removes branch-preview manifests from home-ops and commits the deletion,
+# so Flux prunes the deployed resources automatically.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: cleanup-preview
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  description: >-
+    Removes branch-preview manifests from the home-ops GitOps repo
+    when a branch is deleted from Forgejo.
+  params:
+    - name: repo-name
+      description: Repository/app name (e.g. game-fetcher).
+      type: string
+    - name: branch
+      description: Sanitized branch name (e.g. feature-cool).
+      type: string
+    - name: home-ops-url
+      description: SSH URL of the home-ops repository.
+      type: string
+      default: git@github.com:imerkle/home-ops.git
+    - name: apps-base-path
+      description: Path within home-ops where prod-system apps live.
+      type: string
+      default: kubernetes/apps/prod-system
+  workspaces:
+    - name: ssh-credentials
+      description: >-
+        Secret volume containing identity (private key), identity.pub,
+        and known_hosts for SSH push access to home-ops.
+      mountPath: /root/.ssh-secret
+  steps:
+    - name: clone-and-cleanup
+      image: alpine/git:2.43.0
+      script: |
+        #!/bin/sh
+        set -eu
+
+        REPO_NAME="$(params.repo-name)"
+        BRANCH="$(params.branch)"
+        HOME_OPS_URL="$(params.home-ops-url)"
+        APPS_BASE="$(params.apps-base-path)"
+
+        DEPLOY_DIR="${APPS_BASE}/apps/${REPO_NAME}-${BRANCH}"
+        KS_FILE="${APPS_BASE}/kustomization.yaml"
+
+        # ── SSH setup ──────────────────────────────────────────────────────────
+        mkdir -p /root/.ssh
+        cp /root/.ssh-secret/identity     /root/.ssh/id_ed25519
+        cp /root/.ssh-secret/identity.pub /root/.ssh/id_ed25519.pub
+        cp /root/.ssh-secret/known_hosts  /root/.ssh/known_hosts
+        chmod 600 /root/.ssh/id_ed25519
+        chmod 644 /root/.ssh/id_ed25519.pub /root/.ssh/known_hosts
+
+        git config --global user.email "tekton-preview@cluster.local"
+        git config --global user.name  "Tekton Preview Bot"
+
+        # ── Clone home-ops ─────────────────────────────────────────────────────
+        git clone --depth=1 "${HOME_OPS_URL}" /workspace/home-ops
+        cd /workspace/home-ops
+
+        # ── Nothing to clean up ────────────────────────────────────────────────
+        if [ ! -d "${DEPLOY_DIR}" ]; then
+          echo "No preview found at ${DEPLOY_DIR} — nothing to clean up."
+          exit 0
+        fi
+
+        # ── Remove preview directory ───────────────────────────────────────────
+        git rm -rf "${DEPLOY_DIR}"
+
+        # ── Remove the ks.yaml reference from prod-system/kustomization.yaml ───
+        KS_ENTRY="  - ./apps/${REPO_NAME}-${BRANCH}/ks.yaml"
+        # Use a temp file to avoid in-place sed portability issues
+        grep -v "${KS_ENTRY}" "${KS_FILE}" > "${KS_FILE}.tmp"
+        mv "${KS_FILE}.tmp" "${KS_FILE}"
+        git add "${KS_FILE}"
+
+        # ── Commit and push ────────────────────────────────────────────────────
+        git commit -m "chore(preview): remove ${REPO_NAME}:${BRANCH} preview (branch deleted)"
+        git push origin HEAD
+        echo "Preview cleaned up: ${DEPLOY_DIR}"

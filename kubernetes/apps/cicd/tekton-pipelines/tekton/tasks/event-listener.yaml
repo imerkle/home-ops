@@ -1,6 +1,6 @@
 ---
 # EventListener: forgejo-webhook
-# Listens for Forgejo push webhooks and triggers the build-and-push pipeline
+# Listens for Forgejo push & branch-delete webhooks
 apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
 metadata:
@@ -17,7 +17,7 @@ spec:
             kind: ClusterInterceptor
           params:
             - name: "filter"
-              # Only trigger on push events to branches
+              # Only trigger on push events to branches (not tags)
               value: >-
                 body.ref.startsWith('refs/heads/')
             - name: "overlays"
@@ -28,6 +28,27 @@ spec:
         - ref: forgejo-push
       template:
         ref: build-and-push
+
+    - name: forgejo-delete-trigger
+      interceptors:
+        - ref:
+            name: "cel"
+            kind: ClusterInterceptor
+          params:
+            - name: "filter"
+              # Only trigger on branch delete events (not tag deletes)
+              value: >-
+                header.match('X-Gitea-Event', 'delete') && body.ref_type == 'branch'
+            - name: "overlays"
+              value:
+                # Sanitize: replace all '/' with '-' to form a valid preview name
+                - key: sanitized_branch
+                  expression: "body.ref.replace('/', '-')"
+      bindings:
+        - ref: forgejo-delete
+      template:
+        ref: cleanup-preview
+
   resources:
     kubernetesResource:
       spec:

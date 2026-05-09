@@ -5,8 +5,14 @@ kind: Kustomization
 resources:
   - ./task-git-clone.yaml
   - ./task-kaniko.yaml
+  - ./task-deploy-preview.yaml
+  - ./task-cleanup-preview.yaml
   - ./pipeline-build-push.yaml
+  - ./pipeline-cleanup-preview.yaml
   - ./trigger-template.yaml
+  - ./trigger-template-cleanup.yaml
   - ./trigger-binding.yaml
+  - ./trigger-binding-delete.yaml
   - ./event-listener.yaml
   - ./rbac.yaml
+  - ./tekton-github-ssh.sops.yaml

@@ -33,6 +33,13 @@ spec:
       description: The git reference (e.g., refs/heads/main).
       type: string
       default: refs/heads/main
+    - name: repo-name
+      description: Repository/app name for preview deployment (e.g. game-fetcher).
+      type: string
+    - name: home-ops-url
+      description: SSH URL of the home-ops GitHub repository.
+      type: string
+      default: git@github.com:imerkle/home-ops.git
     - name: dockerfile
       description: Path to the Dockerfile relative to repo root.
       type: string
@@ -55,11 +62,14 @@ spec:
     - name: dockerconfig
       description: Docker config for registry authentication.
       optional: true
+    - name: ssh-credentials
+      description: SSH key for pushing preview manifests to home-ops on GitHub.
   tasks:
     - name: prepare
       taskSpec:
         results:
           - name: branch-image
+          - name: branch
         params:
           - name: ref
             type: string
@@ -71,6 +81,7 @@ spec:
             script: |
               BRANCH=$(echo "$(params.ref)" | sed 's|^refs/heads/||' | sed 's|/|-|g')
               echo -n "$(params.base-image):$BRANCH" > $(results.branch-image.path)
+              echo -n "$BRANCH" > $(results.branch.path)
       params:
         - name: ref
           value: $(params.git-ref)
@@ -120,3 +131,24 @@ spec:
     - name: commit-sha
       description: The exact commit SHA that was built.
       value: $(tasks.fetch-source.results.commit)
+  finally:
+    - name: deploy-preview
+      # Only deploy previews for non-main/master branches
+      when:
+        - input: $(params.git-ref)
+          operator: notin
+          values:
+            - refs/heads/main
+            - refs/heads/master
+      taskRef:
+        name: deploy-preview
+      workspaces:
+        - name: ssh-credentials
+          workspace: ssh-credentials
+      params:
+        - name: repo-name
+          value: $(params.repo-name)
+        - name: branch
+          value: $(tasks.prepare.results.branch)
+        - name: home-ops-url
+          value: $(params.home-ops-url)

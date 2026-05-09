@@ -1,0 +1,40 @@
+---
+# TriggerTemplate: cleanup-preview
+# Creates a PipelineRun when triggered by a Forgejo branch-delete webhook.
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: cleanup-preview
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  params:
+    - name: git-repo-name
+      description: The repository name (used to locate preview manifests).
+    - name: git-ref
+      description: >-
+        The branch name from the delete event. For delete events Forgejo sends
+        the raw branch name (without refs/heads/ prefix), so we sanitize here.
+      default: main
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1
+      kind: PipelineRun
+      metadata:
+        generateName: cleanup-$(tt.params.git-repo-name)-
+        labels:
+          app.kubernetes.io/part-of: tekton-tasks
+          tekton.dev/pipeline: cleanup-preview
+      spec:
+        pipelineRef:
+          name: cleanup-preview
+        params:
+          - name: repo-name
+            value: $(tt.params.git-repo-name)
+          # Sanitize: replace '/' with '-'
+          # CEL overlays run before bindings so we handle it in the task script
+          - name: branch
+            value: $(tt.params.git-ref)
+        workspaces:
+          - name: ssh-credentials
+            secret:
+              secretName: tekton-github-ssh

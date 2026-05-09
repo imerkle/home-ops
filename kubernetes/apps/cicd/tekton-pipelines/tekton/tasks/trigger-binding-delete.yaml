@@ -1,0 +1,18 @@
+---
+# TriggerBinding: forgejo-delete
+# Extracts fields from Forgejo branch-delete webhook payload.
+# Forgejo delete events have: body.ref (branch name), body.repository.name
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: forgejo-delete
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  params:
+    - name: git-repo-name
+      value: $(body.repository.name)
+    - name: git-ref
+      # Use the sanitized_branch overlay computed by CEL in the EventListener
+      # (forward slashes already replaced with hyphens)
+      value: $(extensions.sanitized_branch)

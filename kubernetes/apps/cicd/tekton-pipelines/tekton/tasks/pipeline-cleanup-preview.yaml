@@ -1,0 +1,42 @@
+---
+# Tekton Pipeline: cleanup-preview
+# Triggered by Forgejo branch-delete webhooks.
+# Removes the preview manifests from home-ops so Flux prunes the deployment.
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: cleanup-preview
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  description: >-
+    Removes branch-preview manifests from the home-ops GitOps repo
+    when a branch is deleted from Forgejo.
+  params:
+    - name: repo-name
+      description: Repository/app name (e.g. game-fetcher).
+      type: string
+    - name: branch
+      description: Sanitized branch name (e.g. feature-cool).
+      type: string
+    - name: home-ops-url
+      description: SSH URL of the home-ops repository.
+      type: string
+      default: git@github.com:imerkle/home-ops.git
+  workspaces:
+    - name: ssh-credentials
+      description: SSH key for pushing to home-ops on GitHub.
+  tasks:
+    - name: cleanup
+      taskRef:
+        name: cleanup-preview
+      workspaces:
+        - name: ssh-credentials
+          workspace: ssh-credentials
+      params:
+        - name: repo-name
+          value: $(params.repo-name)
+        - name: branch
+          value: $(params.branch)
+        - name: home-ops-url
+          value: $(params.home-ops-url)
