@@ -58,7 +58,10 @@ spec:
     - name: extra-args
       description: Extra arguments to pass to Kaniko.
       type: array
-      default: ["--insecure", "--skip-tls-verify"]
+      default: 
+        - "--insecure"
+        - "--skip-tls-verify"
+        - "--cache=true"
     - name: protocol
       description: Protocol to use for the image URL (http or https).
       type: string
@@ -125,6 +128,7 @@ spec:
           value:
             - --destination=$(params.image-latest)
             - --destination=$(tasks.prepare.results.branch-image)
+            - --cache-repo=$(params.base-image)-cache
             - $(params.extra-args[*])
         - name: PROTOCOL
           value: $(params.protocol)
