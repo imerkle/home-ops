@@ -45,10 +45,10 @@ spec:
         HOME_OPS_URL="$(params.home-ops-url)"
         APPS_BASE="$(params.apps-base-path)"
 
-        PREVIEW_DIR="${APPS_BASE}/apps/${REPO_NAME}/preview"
-        TEMPLATE_FILE="${PREVIEW_DIR}/helmrelease.tmpl.yaml"
-        DEPLOY_DIR="${APPS_BASE}/apps/${REPO_NAME}-${BRANCH}"
-        KS_FILE="${APPS_BASE}/kustomization.yaml"
+        PREVIEW_DIR="$${APPS_BASE}/apps/$${REPO_NAME}/preview"
+        TEMPLATE_FILE="$${PREVIEW_DIR}/helmrelease.tmpl.yaml"
+        DEPLOY_DIR="$${APPS_BASE}/apps/$${REPO_NAME}-$${BRANCH}"
+        KS_FILE="$${APPS_BASE}/kustomization.yaml"
 
         # ── SSH setup ──────────────────────────────────────────────────────────
         mkdir -p /root/.ssh
@@ -62,28 +62,28 @@ spec:
         git config --global user.name  "Tekton Preview Bot"
 
         # ── Clone home-ops ─────────────────────────────────────────────────────
-        git clone --depth=1 "${HOME_OPS_URL}" /workspace/home-ops
+        git clone --depth=1 "$${HOME_OPS_URL}" /workspace/home-ops
         cd /workspace/home-ops
 
         # ── Opt-in check ───────────────────────────────────────────────────────
-        if [ ! -f "${TEMPLATE_FILE}" ]; then
-          echo "No preview template found at ${TEMPLATE_FILE} — skipping."
+        if [ ! -f "$${TEMPLATE_FILE}" ]; then
+          echo "No preview template found at $${TEMPLATE_FILE} — skipping."
           exit 0
         fi
 
         # ── Idempotent: skip if already deployed ───────────────────────────────
-        if [ -d "${DEPLOY_DIR}" ]; then
-          echo "Preview ${DEPLOY_DIR} already exists — skipping."
+        if [ -d "$${DEPLOY_DIR}" ]; then
+          echo "Preview $${DEPLOY_DIR} already exists — skipping."
           exit 0
         fi
 
         # ── Generate preview manifests ─────────────────────────────────────────
-        mkdir -p "${DEPLOY_DIR}/app"
+        mkdir -p "$${DEPLOY_DIR}/app"
 
-        sed "s/__BRANCH__/${BRANCH}/g" "${TEMPLATE_FILE}" \
-          > "${DEPLOY_DIR}/app/helmrelease.yaml"
+        sed "s/__BRANCH__/$${BRANCH}/g" "$${TEMPLATE_FILE}" \
+          > "$${DEPLOY_DIR}/app/helmrelease.yaml"
 
-        cat > "${DEPLOY_DIR}/app/kustomization.yaml" << EOF
+        cat > "$${DEPLOY_DIR}/app/kustomization.yaml" << EOF
         ---
         # yaml-language-server: \$schema=https://json.schemastore.org/kustomization
         apiVersion: kustomize.config.k8s.io/v1beta1
@@ -92,20 +92,20 @@ spec:
           - ./helmrelease.yaml
         EOF
 
-        cat > "${DEPLOY_DIR}/ks.yaml" << EOF
+        cat > "$${DEPLOY_DIR}/ks.yaml" << EOF
         ---
         # yaml-language-server: \$schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
         apiVersion: kustomize.toolkit.fluxcd.io/v1
         kind: Kustomization
         metadata:
-          name: &app ${REPO_NAME}-${BRANCH}
+          name: &app $${REPO_NAME}-$${BRANCH}
           namespace: &namespace prod-system
         spec:
           targetNamespace: *namespace
           commonMetadata:
             labels:
               app.kubernetes.io/name: *app
-          path: ./${DEPLOY_DIR}/app
+          path: ./$${DEPLOY_DIR}/app
           prune: true
           sourceRef:
             kind: GitRepository
@@ -121,13 +121,13 @@ spec:
         EOF
 
         # ── Patch prod-system/kustomization.yaml ───────────────────────────────
-        KS_ENTRY="  - ./apps/${REPO_NAME}-${BRANCH}/ks.yaml"
-        if ! grep -qF "${KS_ENTRY}" "${KS_FILE}"; then
-          echo "${KS_ENTRY}" >> "${KS_FILE}"
+        KS_ENTRY="  - ./apps/$${REPO_NAME}-$${BRANCH}/ks.yaml"
+        if ! grep -qF "$${KS_ENTRY}" "$${KS_FILE}"; then
+          echo "$${KS_ENTRY}" >> "$${KS_FILE}"
         fi
 
         # ── Commit and push ────────────────────────────────────────────────────
-        git add "${DEPLOY_DIR}" "${KS_FILE}"
-        git commit -m "feat(preview): deploy ${REPO_NAME}:${BRANCH} preview"
+        git add "$${DEPLOY_DIR}" "$${KS_FILE}"
+        git commit -m "feat(preview): deploy $${REPO_NAME}:$${BRANCH} preview"
         git push origin HEAD
-        echo "Preview deployed: ${DEPLOY_DIR}"
+        echo "Preview deployed: $${DEPLOY_DIR}"

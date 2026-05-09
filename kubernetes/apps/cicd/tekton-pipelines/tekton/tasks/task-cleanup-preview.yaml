@@ -45,8 +45,8 @@ spec:
         HOME_OPS_URL="$(params.home-ops-url)"
         APPS_BASE="$(params.apps-base-path)"
 
-        DEPLOY_DIR="${APPS_BASE}/apps/${REPO_NAME}-${BRANCH}"
-        KS_FILE="${APPS_BASE}/kustomization.yaml"
+        DEPLOY_DIR="$${APPS_BASE}/apps/$${REPO_NAME}-$${BRANCH}"
+        KS_FILE="$${APPS_BASE}/kustomization.yaml"
 
         # ── SSH setup ──────────────────────────────────────────────────────────
         mkdir -p /root/.ssh
@@ -60,26 +60,26 @@ spec:
         git config --global user.name  "Tekton Preview Bot"
 
         # ── Clone home-ops ─────────────────────────────────────────────────────
-        git clone --depth=1 "${HOME_OPS_URL}" /workspace/home-ops
+        git clone --depth=1 "$${HOME_OPS_URL}" /workspace/home-ops
         cd /workspace/home-ops
 
         # ── Nothing to clean up ────────────────────────────────────────────────
-        if [ ! -d "${DEPLOY_DIR}" ]; then
-          echo "No preview found at ${DEPLOY_DIR} — nothing to clean up."
+        if [ ! -d "$${DEPLOY_DIR}" ]; then
+          echo "No preview found at $${DEPLOY_DIR} — nothing to clean up."
           exit 0
         fi
 
         # ── Remove preview directory ───────────────────────────────────────────
-        git rm -rf "${DEPLOY_DIR}"
+        git rm -rf "$${DEPLOY_DIR}"
 
         # ── Remove the ks.yaml reference from prod-system/kustomization.yaml ───
-        KS_ENTRY="  - ./apps/${REPO_NAME}-${BRANCH}/ks.yaml"
+        KS_ENTRY="  - ./apps/$${REPO_NAME}-$${BRANCH}/ks.yaml"
         # Use a temp file to avoid in-place sed portability issues
-        grep -v "${KS_ENTRY}" "${KS_FILE}" > "${KS_FILE}.tmp"
-        mv "${KS_FILE}.tmp" "${KS_FILE}"
-        git add "${KS_FILE}"
+        grep -v "$${KS_ENTRY}" "$${KS_FILE}" > "$${KS_FILE}.tmp"
+        mv "$${KS_FILE}.tmp" "$${KS_FILE}"
+        git add "$${KS_FILE}"
 
         # ── Commit and push ────────────────────────────────────────────────────
-        git commit -m "chore(preview): remove ${REPO_NAME}:${BRANCH} preview (branch deleted)"
+        git commit -m "chore(preview): remove $${REPO_NAME}:$${BRANCH} preview (branch deleted)"
         git push origin HEAD
-        echo "Preview cleaned up: ${DEPLOY_DIR}"
+        echo "Preview cleaned up: $${DEPLOY_DIR}"
