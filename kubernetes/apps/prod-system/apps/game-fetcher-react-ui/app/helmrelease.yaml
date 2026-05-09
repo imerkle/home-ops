@@ -33,7 +33,7 @@ spec:
               repository: zot.${DOMAIN1}/game-fetcher
               tag: react-ui
             env:
-              PORT: &port "3000"
+              PORT: &port "8081"
               RAWG: "vault:secret/data/ext_services#RAWG"
               OIDC_CLIENT_ID: "vault:secret/data/ext_services#OIDC_CLIENT_ID"
               OIDC_CLIENT_SECRET: "vault:secret/data/ext_services#OIDC_CLIENT_SECRET"
@@ -62,7 +62,7 @@ spec:
         controller: game-fetcher-react-ui
         ports:
           http:
-            port: *port
+            port: 3000
     route:
       app:
         hostnames:
@@ -72,5 +72,5 @@ spec:
             namespace: network
         rules:
           - backendRefs:
-              - port: *port
+              - port: 3000
                 name: *app
