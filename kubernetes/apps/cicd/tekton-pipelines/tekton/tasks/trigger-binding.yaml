@@ -19,3 +19,6 @@ spec:
       value: $(body.after)
     - name: git-ref
       value: $(body.ref)
+    - name: sanitized_branch
+      # Populated by the CEL overlay in the EventListener (refs/heads/ stripped, / → -)
+      value: $(extensions.sanitized_branch)

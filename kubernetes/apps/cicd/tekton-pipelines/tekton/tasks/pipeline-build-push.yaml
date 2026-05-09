@@ -40,6 +40,13 @@ spec:
       description: SSH URL of the home-ops GitHub repository.
       type: string
       default: git@github.com:imerkle/home-ops.git
+    - name: sanitized-branch
+      description: >-
+        Pre-sanitized branch name (refs/heads/ stripped, / replaced with -).
+        Passed in from the trigger so finally tasks can use it without
+        depending on task results (which are unavailable in finally).
+      type: string
+      default: main
     - name: dockerfile
       description: Path to the Dockerfile relative to repo root.
       type: string
@@ -149,6 +156,6 @@ spec:
         - name: repo-name
           value: $(params.repo-name)
         - name: branch
-          value: $(tasks.prepare.results.branch)
+          value: $(params.sanitized-branch)
         - name: home-ops-url
           value: $(params.home-ops-url)

@@ -25,6 +25,9 @@ spec:
     - name: home-ops-url
       description: SSH URL of the home-ops GitHub repository.
       default: git@github.com:imerkle/home-ops.git
+    - name: sanitized_branch
+      description: Pre-sanitized branch name (refs/heads/ stripped, / replaced with -).
+      default: main
   resourcetemplates:
     - apiVersion: tekton.dev/v1
       kind: PipelineRun
@@ -53,6 +56,8 @@ spec:
             value: $(tt.params.git-repo-name)
           - name: home-ops-url
             value: $(tt.params.home-ops-url)
+          - name: sanitized-branch
+            value: $(tt.params.sanitized_branch)
         workspaces:
           - name: shared-workspace
             volumeClaimTemplate:

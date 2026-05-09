@@ -24,6 +24,10 @@ spec:
               value:
                 - key: truncated_sha
                   expression: "body.after.truncate(7)"
+                # Sanitize branch: strip refs/heads/ prefix, replace '/' with '-'
+                - key: sanitized_branch
+                  expression: >-
+                    body.ref.replace('refs/heads/', '').replace('/', '-')
       bindings:
         - ref: forgejo-push
       template:
