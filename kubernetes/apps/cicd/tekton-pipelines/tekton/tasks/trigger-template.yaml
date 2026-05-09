@@ -19,6 +19,9 @@ spec:
     - name: image-tag
       description: The image tag to use (defaults to commit SHA).
       default: latest
+    - name: git-ref
+      description: The git reference (e.g., refs/heads/main).
+      default: refs/heads/main
   resourcetemplates:
     - apiVersion: tekton.dev/v1
       kind: PipelineRun
@@ -39,6 +42,10 @@ spec:
             value: "zot.dev-system.svc.cluster.local:5000/$(tt.params.git-repo-name):$(tt.params.image-tag)"
           - name: image-latest
             value: "zot.dev-system.svc.cluster.local:5000/$(tt.params.git-repo-name):latest"
+          - name: git-ref
+            value: $(tt.params.git-ref)
+          - name: base-image
+            value: "zot.dev-system.svc.cluster.local:5000/$(tt.params.git-repo-name)"
         workspaces:
           - name: shared-workspace
             volumeClaimTemplate:

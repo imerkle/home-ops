@@ -17,9 +17,9 @@ spec:
             kind: ClusterInterceptor
           params:
             - name: "filter"
-              # Only trigger on push events to the main/master branch
+              # Only trigger on push events to branches
               value: >-
-                body.ref == 'refs/heads/main' || body.ref == 'refs/heads/master'
+                body.ref.startsWith('refs/heads/')
             - name: "overlays"
               value:
                 - key: truncated_sha

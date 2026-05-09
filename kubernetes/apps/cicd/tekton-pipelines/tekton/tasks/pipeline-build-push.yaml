@@ -26,6 +26,13 @@ spec:
       description: Additional image reference for the latest tag (e.g., zot.example.com/apps/myapp:latest).
       type: string
       default: ""
+    - name: base-image
+      description: The base image repository (e.g., zot.../myapp).
+      type: string
+    - name: git-ref
+      description: The git reference (e.g., refs/heads/main).
+      type: string
+      default: refs/heads/main
     - name: dockerfile
       description: Path to the Dockerfile relative to repo root.
       type: string
@@ -49,6 +56,26 @@ spec:
       description: Docker config for registry authentication.
       optional: true
   tasks:
+    - name: prepare
+      taskSpec:
+        results:
+          - name: branch-image
+        params:
+          - name: ref
+            type: string
+          - name: base-image
+            type: string
+        steps:
+          - name: sanitize
+            image: docker.io/library/alpine:3.18
+            script: |
+              BRANCH=$(echo "$(params.ref)" | sed 's|^refs/heads/||' | sed 's|/|-|g')
+              echo -n "$(params.base-image):$BRANCH" > $(results.branch-image.path)
+      params:
+        - name: ref
+          value: $(params.git-ref)
+        - name: base-image
+          value: $(params.base-image)
     - name: fetch-source
       taskRef:
         name: git-clone
@@ -63,6 +90,7 @@ spec:
     - name: build-push
       runAfter:
         - fetch-source
+        - prepare
       taskRef:
         name: kaniko-build
       workspaces:
@@ -78,6 +106,7 @@ spec:
         - name: EXTRA_ARGS
           value:
             - --destination=$(params.image-latest)
+            - --destination=$(tasks.prepare.results.branch-image)
             - $(params.extra-args[*])
         - name: PROTOCOL
           value: $(params.protocol)
