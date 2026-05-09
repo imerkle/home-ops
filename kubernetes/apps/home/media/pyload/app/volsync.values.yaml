@@ -1,0 +1,4 @@
+---
+volumes:
+  - name: pyload
+    capacity: 5Gi
