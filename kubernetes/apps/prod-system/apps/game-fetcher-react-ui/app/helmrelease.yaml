@@ -35,8 +35,8 @@ spec:
             env:
               PORT: &port "3000"
               RAWG: "vault:secret/data/ext_services#RAWG"
-              OIDC_CLIENT_ID: "vault:secret/data/ext_services#GAME_FETCHER_OIDC_CLIENT_ID"
-              OIDC_CLIENT_SECRET: "vault:secret/data/ext_services#GAME_FETCHER_OIDC_CLIENT_SECRET"
+              OIDC_CLIENT_ID: "vault:secret/data/ext_services#OIDC_CLIENT_ID"
+              OIDC_CLIENT_SECRET: "vault:secret/data/ext_services#CLIENT_SECRET"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
