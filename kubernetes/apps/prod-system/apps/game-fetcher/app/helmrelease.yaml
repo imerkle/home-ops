@@ -34,7 +34,7 @@ spec:
               RAWG: "vault:secret/data/ext_services#RAWG"
               OIDC_CLIENT_ID: "vault:secret/data/ext_services#GAME_FETCHER_OIDC_CLIENT_ID"
               OIDC_CLIENT_SECRET: "vault:secret/data/ext_services#GAME_FETCHER_OIDC_CLIENT_SECRET"
-              OIDC_SESSION_KEY: "vault:secret/data/ext_services#GAME_FETCHER_OIDC_SESSION_KEY"
+              # OIDC_SESSION_KEY: "vault:secret/data/ext_services#GAME_FETCHER_OIDC_SESSION_KEY"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
