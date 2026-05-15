@@ -35,7 +35,7 @@ spec:
       - name: ZITADEL_DEFAULTINSTANCE_LOGINPOLICY_SECONDFACTORCHECKLIFETIME
         value: 18h
       - name: ZITADEL_DEFAULTINSTANCE_LOGINPOLICY_MULTIFACTORCHECKLIFETIME
-        value: 12h
+        value: 22h
     replicaCount: 1
     zitadel:
       masterkey: vault:secret/data/zitadel#MASTERKEY
