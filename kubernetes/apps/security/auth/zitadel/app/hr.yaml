@@ -30,7 +30,7 @@ spec:
           AccessTokenLifetime: 24h
           IdTokenLifetime: 24h
           RefreshTokenIdleExpiration: 720h
-          RefreshTokenExpiration: 2160h
+          RefreshTokenExpiration: 2500h
         LoginPolicy:
           PasswordCheckLifetime: 360h
           ExternalLoginCheckLifetime: 360h
