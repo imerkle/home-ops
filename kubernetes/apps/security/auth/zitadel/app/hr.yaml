@@ -26,16 +26,17 @@ spec:
         ExternalSecure: false
         TLS:
           Enabled: false
-        OIDCSettings:
-          AccessTokenLifetime: 24h
-          IdTokenLifetime: 24h
-          RefreshTokenIdleExpiration: 720h
-          RefreshTokenExpiration: 2500h
-        LoginPolicy:
-          PasswordCheckLifetime: 360h
-          ExternalLoginCheckLifetime: 360h
-          SecondFactorCheckLifetime: 100h
-          MultiFactorCheckLifetime: 100h
+        DefaultInstance:
+          OIDCSettings:
+            AccessTokenLifetime: 24h
+            IdTokenLifetime: 24h
+            RefreshTokenIdleExpiration: 720h
+            RefreshTokenExpiration: 2500h
+          LoginPolicy:
+            PasswordCheckLifetime: 360h
+            ExternalLoginCheckLifetime: 360h
+            SecondFactorCheckLifetime: 100h
+            MultiFactorCheckLifetime: 100h
       secretConfig:
         ExternalDomain: *host
         ExternalSecure: true
