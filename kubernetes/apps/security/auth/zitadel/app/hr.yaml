@@ -18,6 +18,24 @@ spec:
       - name: ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD
         value: RootPassword1!
         #new RootPassword1!!
+      - name: ZITADEL_OIDC_DEFAULTACCESSTOKENLIFETIME
+        value: 12h
+      - name: ZITADEL_OIDC_DEFAULTIDTOKENLIFETIME
+        value: 12h
+      - name: ZITADEL_OIDC_DEFAULTREFRESHTOKENIDLEEXPIRATION
+        value: 720h
+      - name: ZITADEL_OIDC_DEFAULTREFRESHTOKENEXPIRATION
+        value: 2160h
+      - name: ZITADEL_DEFAULTINSTANCE_LOGINPOLICY_PASSWORDCHECKLIFETIME
+        value: 240h
+      - name: ZITADEL_DEFAULTINSTANCE_LOGINPOLICY_EXTERNALLOGINCHECKLIFETIME
+        value: 240h
+      - name: ZITADEL_DEFAULTINSTANCE_LOGINPOLICY_MFAINITSKIPLIFETIME
+        value: 720h
+      - name: ZITADEL_DEFAULTINSTANCE_LOGINPOLICY_SECONDFACTORCHECKLIFETIME
+        value: 18h
+      - name: ZITADEL_DEFAULTINSTANCE_LOGINPOLICY_MULTIFACTORCHECKLIFETIME
+        value: 12h
     replicaCount: 1
     zitadel:
       masterkey: vault:secret/data/zitadel#MASTERKEY
@@ -26,17 +44,6 @@ spec:
         ExternalSecure: false
         TLS:
           Enabled: false
-        DefaultInstance:
-          OIDCSettings:
-            AccessTokenLifetime: 24h
-            IdTokenLifetime: 24h
-            RefreshTokenIdleExpiration: 720h
-            RefreshTokenExpiration: 2500h
-          LoginPolicy:
-            PasswordCheckLifetime: 360h
-            ExternalLoginCheckLifetime: 360h
-            SecondFactorCheckLifetime: 100h
-            MultiFactorCheckLifetime: 100h
       secretConfig:
         ExternalDomain: *host
         ExternalSecure: true
@@ -60,16 +67,6 @@ spec:
               Password: vault:secret/data/pg_default#PASSWORD
               SSL:
                 Mode: disable
-        OIDC:
-          AccessTokenLifetime: 24h
-          IdTokenLifetime: 24h
-          RefreshTokenIdleExpiration: 720h
-          RefreshTokenExpiration: 2160h
-        LoginPolicy:
-          PasswordCheckLifetime: 360h
-          ExternalLoginCheckLifetime: 360h
-          SecondFactorCheckLifetime: 100h
-          MultiFactorCheckLifetime: 100h
 
     ingress:
       enabled: false
