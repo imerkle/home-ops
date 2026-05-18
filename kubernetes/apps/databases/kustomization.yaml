@@ -16,3 +16,5 @@ resources:
   - kv-store/dragonfly/ks.yaml
   # mqtt
   - mqtt/mosquitto/ks.yaml
+  # search
+  - meilisearch/ks.yaml
