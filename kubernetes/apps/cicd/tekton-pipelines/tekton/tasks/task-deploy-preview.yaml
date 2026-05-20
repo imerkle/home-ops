@@ -70,27 +70,41 @@ spec:
         git clone --depth=1 "$${HOME_OPS_URL}" /workspace/home-ops
         cd /workspace/home-ops
 
-        # ── Opt-in check ───────────────────────────────────────────────────────
-        if [ ! -f "$${TEMPLATE_FILE}" ]; then
-          echo "No preview template found at $${TEMPLATE_FILE} — skipping."
-          exit 0
-        fi
-
-        # ── Check directory status ─────────────────────────────────────────────
-        if [ -d "$${DEPLOY_DIR}" ]; then
-          echo "Updating existing preview deployment at $${DEPLOY_DIR}"
+        # ── Branch-specific routing ───────────────────────────────────────────
+        if [ "$${BRANCH}" = "main" ] || [ "$${BRANCH}" = "master" ]; then
+          echo "Branch is $${BRANCH} — updating production deployment."
+          PROD_FILE="$${APPS_BASE}/apps/$${REPO_NAME}/app/helmrelease.yaml"
+          if [ ! -f "$${PROD_FILE}" ]; then
+            echo "Production helmrelease not found at $${PROD_FILE} — skipping."
+            exit 0
+          fi
+          # Replace tag in production helmrelease
+          TAG="$${COMMIT_SHA}"
+          sed -i "s/\(tag: \).*/\1$${TAG}/g" "$${PROD_FILE}"
+          git add "$${PROD_FILE}"
         else
-          echo "Creating new preview deployment at $${DEPLOY_DIR}"
-        fi
+          echo "Branch is $${BRANCH} — updating preview deployment."
+          # ── Opt-in check ───────────────────────────────────────────────────────
+          if [ ! -f "$${TEMPLATE_FILE}" ]; then
+            echo "No preview template found at $${TEMPLATE_FILE} — skipping."
+            exit 0
+          fi
 
-        # ── Generate preview manifests ─────────────────────────────────────────
-        mkdir -p "$${DEPLOY_DIR}/app"
+          # ── Check directory status ─────────────────────────────────────────────
+          if [ -d "$${DEPLOY_DIR}" ]; then
+            echo "Updating existing preview deployment at $${DEPLOY_DIR}"
+          else
+            echo "Creating new preview deployment at $${DEPLOY_DIR}"
+          fi
 
-        TAG="$${COMMIT_SHA:-$${BRANCH}}"
-        sed -e "s/__BRANCH__/$${BRANCH}/g" -e "s/__COMMIT_SHA__/$${TAG}/g" "$${TEMPLATE_FILE}" \
-          > "$${DEPLOY_DIR}/app/helmrelease.yaml"
+          # ── Generate preview manifests ─────────────────────────────────────────
+          mkdir -p "$${DEPLOY_DIR}/app"
 
-        cat > "$${DEPLOY_DIR}/app/kustomization.yaml" << EOF
+          TAG="$${COMMIT_SHA:-$${BRANCH}}"
+          sed -e "s/__BRANCH__/$${BRANCH}/g" -e "s/__COMMIT_SHA__/$${TAG}/g" "$${TEMPLATE_FILE}" \
+            > "$${DEPLOY_DIR}/app/helmrelease.yaml"
+
+          cat > "$${DEPLOY_DIR}/app/kustomization.yaml" << EOF
         ---
         # yaml-language-server: \$schema=https://json.schemastore.org/kustomization
         apiVersion: kustomize.config.k8s.io/v1beta1
@@ -99,7 +113,7 @@ spec:
           - ./helmrelease.yaml
         EOF
 
-        cat > "$${DEPLOY_DIR}/ks.yaml" << EOF
+          cat > "$${DEPLOY_DIR}/ks.yaml" << EOF
         ---
         # yaml-language-server: \$schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
         apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -127,18 +141,24 @@ spec:
               APP: *app
         EOF
 
-        # ── Patch prod-system/kustomization.yaml ───────────────────────────────
-        KS_ENTRY="  - ./apps/$${REPO_NAME}-$${BRANCH}/ks.yaml"
-        if ! grep -qF "$${KS_ENTRY}" "$${KS_FILE}"; then
-          echo "$${KS_ENTRY}" >> "$${KS_FILE}"
+          # ── Patch prod-system/kustomization.yaml ───────────────────────────────
+          KS_ENTRY="  - ./apps/$${REPO_NAME}-$${BRANCH}/ks.yaml"
+          if ! grep -qF "$${KS_ENTRY}" "$${KS_FILE}"; then
+            echo "$${KS_ENTRY}" >> "$${KS_FILE}"
+          fi
+          git add "$${DEPLOY_DIR}" "$${KS_FILE}"
         fi
 
         # ── Commit and push ────────────────────────────────────────────────────
-        git add "$${DEPLOY_DIR}" "$${KS_FILE}"
         if [ -n "$(git status --porcelain)" ]; then
-          git commit -m "feat(preview): deploy/update $${REPO_NAME}:$${BRANCH} preview to $${TAG}"
+          if [ "$${BRANCH}" = "main" ] || [ "$${BRANCH}" = "master" ]; then
+            MSG="flux(prod): update $${REPO_NAME} production to $${TAG}"
+          else
+            MSG="feat(preview): deploy/update $${REPO_NAME}:$${BRANCH} preview to $${TAG}"
+          fi
+          git commit -m "$${MSG}"
           git push origin HEAD
-          echo "Preview deployed/updated: $${DEPLOY_DIR} to $${TAG}"
+          echo "Deployed/updated: $${REPO_NAME}:$${BRANCH} to $${TAG}"
         else
           echo "No changes in deployment manifest detected."
         fi

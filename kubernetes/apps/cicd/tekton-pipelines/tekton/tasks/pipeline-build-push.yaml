@@ -144,13 +144,6 @@ spec:
       value: $(tasks.fetch-source.results.commit)
   finally:
     - name: deploy-preview
-      # Only deploy previews for non-main/master branches
-      when:
-        - input: $(params.git-ref)
-          operator: notin
-          values:
-            - refs/heads/main
-            - refs/heads/master
       taskRef:
         name: deploy-preview
       workspaces:
