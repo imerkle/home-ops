@@ -52,6 +52,13 @@ spec:
               JDOWNLOADER_DEVICE_ID: "my-jdownloader"
               MEILISEARCH_URL: "http://meilisearch.db.svc.cluster.local:7700"
               MEILISEARCH_API_KEY: "super-secret-master-key"
+              VITE_OIDC_ISSUER: "https://zitadel.${DOMAIN1}"
+              VITE_OIDC_CLIENT_ID: "372151555379429384"
+              VITE_OIDC_REDIRECT_URI: "https://zitadel.${DOMAIN1}"
+              VITE_OIDC_POST_LOGOUT_REDIRECT_URI: "https://zitadel.${DOMAIN1}"
+              VITE_OIDC_SCOPE: "openid profile email offline_access"
+
+              
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
