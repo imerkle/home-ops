@@ -31,10 +31,9 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/game-fetcher
-              tag: react-ui
-              pullPolicy: Always
+              tag: 9cd1a189a6ddd13a49476f88c5042175d1164651
             env:
-              PORT: &port "8081"
+              PORT: &port "3000"
               RAWG: "vault:secret/data/ext_services#RAWG"
               OIDC_CLIENT_ID: "vault:secret/data/ext_services#OIDC_CLIENT_ID"
               OIDC_CLIENT_SECRET: "vault:secret/data/ext_services#OIDC_CLIENT_SECRET"
@@ -63,7 +62,7 @@ spec:
         controller: game-fetcher-react-ui
         ports:
           http:
-            port: 3000
+            port: *port
     route:
       app:
         hostnames:
@@ -73,10 +72,5 @@ spec:
             namespace: network
         rules:
           - backendRefs:
-              - port: 3000
+              - port: *port
                 name: *app
-    persistence:
-      tmp:
-        type: emptyDir
-        globalMounts:
-          - path: /tmp
