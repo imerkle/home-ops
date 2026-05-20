@@ -19,6 +19,10 @@ spec:
     - name: branch
       description: Sanitized branch name (e.g. feature-cool).
       type: string
+    - name: commit-sha
+      description: The commit SHA to deploy (used as image tag).
+      type: string
+      default: ""
     - name: home-ops-url
       description: SSH URL of the home-ops repository.
       type: string
@@ -42,6 +46,7 @@ spec:
 
         REPO_NAME="$(params.repo-name)"
         BRANCH="$(params.branch)"
+        COMMIT_SHA="$(params.commit-sha)"
         HOME_OPS_URL="$(params.home-ops-url)"
         APPS_BASE="$(params.apps-base-path)"
 
@@ -71,16 +76,18 @@ spec:
           exit 0
         fi
 
-        # ── Idempotent: skip if already deployed ───────────────────────────────
+        # ── Check directory status ─────────────────────────────────────────────
         if [ -d "$${DEPLOY_DIR}" ]; then
-          echo "Preview $${DEPLOY_DIR} already exists — skipping."
-          exit 0
+          echo "Updating existing preview deployment at $${DEPLOY_DIR}"
+        else
+          echo "Creating new preview deployment at $${DEPLOY_DIR}"
         fi
 
         # ── Generate preview manifests ─────────────────────────────────────────
         mkdir -p "$${DEPLOY_DIR}/app"
 
-        sed "s/__BRANCH__/$${BRANCH}/g" "$${TEMPLATE_FILE}" \
+        TAG="$${COMMIT_SHA:-$${BRANCH}}"
+        sed -e "s/__BRANCH__/$${BRANCH}/g" -e "s/__COMMIT_SHA__/$${TAG}/g" "$${TEMPLATE_FILE}" \
           > "$${DEPLOY_DIR}/app/helmrelease.yaml"
 
         cat > "$${DEPLOY_DIR}/app/kustomization.yaml" << EOF
@@ -128,6 +135,10 @@ spec:
 
         # ── Commit and push ────────────────────────────────────────────────────
         git add "$${DEPLOY_DIR}" "$${KS_FILE}"
-        git commit -m "feat(preview): deploy $${REPO_NAME}:$${BRANCH} preview"
-        git push origin HEAD
-        echo "Preview deployed: $${DEPLOY_DIR}"
+        if [ -n "$(git status --porcelain)" ]; then
+          git commit -m "feat(preview): deploy/update $${REPO_NAME}:$${BRANCH} preview to $${TAG}"
+          git push origin HEAD
+          echo "Preview deployed/updated: $${DEPLOY_DIR} to $${TAG}"
+        else
+          echo "No changes in deployment manifest detected."
+        fi

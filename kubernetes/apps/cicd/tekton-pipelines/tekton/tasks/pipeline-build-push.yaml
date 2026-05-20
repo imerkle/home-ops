@@ -161,5 +161,7 @@ spec:
           value: $(params.repo-name)
         - name: branch
           value: $(params.sanitized-branch)
+        - name: commit-sha
+          value: $(params.revision)
         - name: home-ops-url
           value: $(params.home-ops-url)

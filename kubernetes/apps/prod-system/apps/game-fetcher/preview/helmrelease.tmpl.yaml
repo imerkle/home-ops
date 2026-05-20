@@ -31,7 +31,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/game-fetcher
-              tag: __BRANCH__
+              tag: __COMMIT_SHA__
             env:
               PORT: &port "3000"
               RAWG: "vault:secret/data/ext_services#RAWG"
