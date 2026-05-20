@@ -34,6 +34,24 @@ spec:
               RAWG: "vault:secret/data/ext_services#RAWG"
               OIDC_CLIENT_ID: "vault:secret/data/ext_services#OIDC_CLIENT_ID"
               OIDC_CLIENT_SECRET: "vault:secret/data/ext_services#OIDC_CLIENT_SECRET"
+              BASE_URL: "https://game-fetcher.${DOMAIN1}"
+              SOURCES: '[{"name":"FitGirl Local","url":"file://sources/fitgirl.json"}, {"name":"Dodi Local","url":"file://sources/dodi.json"}, {"name":"Kazumi Local","url":"file://sources/kazumi.json"}, {"name":"Xatab Local","url":"file://sources/xatab.json"}]'
+              INDEX_INTERVAL: "1h"
+              OIDC_ISSUER: "https://zitadel.${DOMAIN1}"
+              OIDC_REDIRECT_URL: "https://game-fetcher.${DOMAIN1}/auth/callback"
+              OIDC_SESSION_KEY: "super-secret-session-key-change-me"
+              DATABASE_URL: "postgres://$${vault:secret/data/pg_default#USER}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/gamefetcher?sslmode=disable"
+              TEMPORAL_HOST: "temporal.dev-system.svc.cluster.local:7233"
+              TEMPORAL_NAMESPACE: "default"
+              TEMPORAL_TASK_QUEUE: "game-fetcher"
+              QBITTORRENT_URL: "http://qbittorrent.home-system.svc.cluster.local:8080"
+              QBITTORRENT_USERNAME: "admin"
+              QBITTORRENT_PASSWORD: "adminadmin"
+              JDOWNLOADER_EMAIL: "user@example.com"
+              JDOWNLOADER_PASSWORD: "password"
+              JDOWNLOADER_DEVICE_ID: "my-jdownloader"
+              MEILISEARCH_URL: "http://meilisearch.db.svc.cluster.local:7700"
+              MEILISEARCH_API_KEY: "super-secret-master-key"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
