@@ -67,12 +67,21 @@ spec:
         fi
         echo "[prepare] Injecting build args from .build-args into /tekton/env:"
         while IFS= read -r line || [ -n "$line" ]; do
-          # Skip blank lines and comments
+          # Strip carriage returns (CRLF support)
+          line=$(echo "$line" | tr -d '\r')
+          # Skip empty/comment lines
           case "$line" in ''|'#'*) continue ;; esac
+          # Ensure line contains '='
+          case "$line" in *=*) ;; *) continue ;; esac
+          
           KEY="${line%%=*}"
           VAL="${line#*=}"
-          echo "  $KEY=***"
-          printf '%s' "$VAL" > "/tekton/env/$KEY"
+          # Strip leading/trailing whitespaces from KEY
+          KEY=$(echo "$KEY" | tr -d '[:space:]')
+          if [ -n "$KEY" ]; then
+            echo "  $KEY=***"
+            printf '%s' "$VAL" > "/tekton/env/$KEY"
+          fi
         done < "$BUILD_ARGS_FILE"
     # Step 2: Run Kaniko. Uses args (not script) so Tekton can expand EXTRA_ARGS[*].
     # Env vars from /tekton/env are automatically available here, so Dockerfile
