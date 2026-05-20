@@ -53,15 +53,33 @@ spec:
     - name: build-and-push
       workingDir: $(workspaces.source.path)
       image: $(params.BUILDER_IMAGE)
-      args:
-        - $(params.EXTRA_ARGS[*])
-        - --dockerfile=$(params.DOCKERFILE)
-        - --context=$(workspaces.source.path)/$(params.CONTEXT) # The user does not need to care the workspace and the source.
-        - --destination=$(params.IMAGE)
-        - --digest-file=$(results.IMAGE_DIGEST.path)
-      # kaniko assumes it is running as root, which means this example fails on platforms
-      # that default to run containers as random uid (like OpenShift). Adding this securityContext
-      # makes it explicit that it needs to run as root.
+      # Use a script instead of args so we can dynamically read .build-args from the repo.
+      # If <context>/.build-args exists, each non-empty/non-comment line (KEY=VAL)
+      # becomes a --build-arg flag passed to /kaniko/executor.
+      script: |
+        #!/busybox/sh
+        set -e
+
+        CONTEXT_DIR="$(workspaces.source.path)/$(params.CONTEXT)"
+        BUILD_ARGS_FILE="$${CONTEXT_DIR}/.build-args"
+        BUILD_ARGS=""
+        if [ -f "$${BUILD_ARGS_FILE}" ]; then
+          echo "[kaniko] Found .build-args, injecting build-arg flags:"
+          while IFS= read -r line || [ -n "$${line}" ]; do
+            # Skip empty lines and comments
+            case "$${line}" in ''|\#*) continue ;; esac
+            echo "  --build-arg=$${line}"
+            BUILD_ARGS="$${BUILD_ARGS} --build-arg=$${line}"
+          done < "$${BUILD_ARGS_FILE}"
+        fi
+
+        /kaniko/executor \
+          $(params.EXTRA_ARGS[*]) \
+          --dockerfile=$(params.DOCKERFILE) \
+          --context=$${CONTEXT_DIR} \
+          --destination=$(params.IMAGE) \
+          --digest-file=$(results.IMAGE_DIGEST.path) \
+          $${BUILD_ARGS}
       securityContext:
         runAsUser: 0
     - name: write-url

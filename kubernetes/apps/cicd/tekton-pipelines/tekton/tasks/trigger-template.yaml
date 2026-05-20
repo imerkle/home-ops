@@ -28,11 +28,6 @@ spec:
     - name: sanitized_branch
       description: Pre-sanitized branch name (refs/heads/ stripped, / replaced with -).
       default: main
-    - name: build-args
-      description: >
-        Docker --build-arg flags forwarded to Kaniko for baking vars into the image.
-        Pass as a JSON array: ["--build-arg", "KEY=val", "--build-arg", "KEY2=val2"]
-      default: "[]"
   resourcetemplates:
     - apiVersion: tekton.dev/v1
       kind: PipelineRun
@@ -63,8 +58,6 @@ spec:
             value: $(tt.params.home-ops-url)
           - name: sanitized-branch
             value: $(tt.params.sanitized_branch)
-          - name: build-args
-            value: $(tt.params.build-args)
         workspaces:
           - name: shared-workspace
             volumeClaimTemplate:
