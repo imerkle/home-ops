@@ -74,3 +74,8 @@ spec:
           - backendRefs:
               - port: *port
                 name: *app
+    persistence:
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
