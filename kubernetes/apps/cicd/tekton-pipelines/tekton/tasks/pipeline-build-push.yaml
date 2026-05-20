@@ -62,6 +62,13 @@ spec:
         - "--insecure"
         - "--skip-tls-verify"
         - "--cache=true"
+    - name: build-args
+      description: >
+        Docker --build-arg flags to bake into the image at build time.
+        Use for VITE_* vars that Vite reads at build time.
+        Example: ["--build-arg", "VITE_OIDC_ISSUER=https://zitadel.example.com"]
+      type: array
+      default: []
     - name: protocol
       description: Protocol to use for the image URL (http or https).
       type: string
@@ -130,6 +137,7 @@ spec:
             - --destination=$(tasks.prepare.results.branch-image)
             - --cache-repo=$(params.base-image)-cache
             - $(params.extra-args[*])
+            - $(params.build-args[*])
         - name: PROTOCOL
           value: $(params.protocol)
   results:
