@@ -84,6 +84,7 @@ spec:
           fi
         done < "$BUILD_ARGS_FILE"
         # Always inject a unique CACHEBUST to force fresh npm install of git deps
+        mkdir -p /tekton/env
         CACHEBUST=$(date +%s)
         echo "  CACHEBUST=$CACHEBUST"
         printf '%s' "$CACHEBUST" > "/tekton/env/CACHEBUST"
