@@ -83,6 +83,10 @@ spec:
             printf '%s' "$VAL" > "/tekton/env/$KEY"
           fi
         done < "$BUILD_ARGS_FILE"
+        # Always inject a unique CACHEBUST to force fresh npm install of git deps
+        CACHEBUST=$(date +%s)
+        echo "  CACHEBUST=$CACHEBUST"
+        printf '%s' "$CACHEBUST" > "/tekton/env/CACHEBUST"
     # Step 2: Run Kaniko. Uses args (not script) so Tekton can expand EXTRA_ARGS[*].
     # Env vars from /tekton/env are automatically available here, so Dockerfile
     # ARG declarations without a default pick them up from the environment.
