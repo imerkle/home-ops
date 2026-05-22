@@ -107,7 +107,7 @@ spec:
 
         # Save EXTRA_ARGS (passed via Tekton args as "$@") to a temp file
         # before we overwrite $@ with the kaniko command.
-        EXTRA_FILE="/tmp/tekton-extra-args"
+        EXTRA_FILE="$(workspaces.source.path)/.tekton-extra-args"
         : > "$EXTRA_FILE"
         for arg in "$@"; do
           printf '%s\n' "$arg" >> "$EXTRA_FILE"
