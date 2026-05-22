@@ -139,7 +139,7 @@ spec:
           done < "$KANIKO_ARGS_FILE"
         fi
 
-        echo "[build] Executing kaniko with $(($# - 1)) flags..."
+        echo "$@ [build] Executing kaniko with $(($# - 1)) flags..."
         exec "$@"
       securityContext:
         runAsUser: 0
