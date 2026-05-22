@@ -33,7 +33,7 @@ spec:
       default: https
     - name: BUILDER_IMAGE
       description: The image on which builds will run (default is v1.5.1)
-      default: gcr.io/kaniko-project/executor:v1.23.2
+      default: gcr.io/kaniko-project/executor:v1.23.2-debug
     - name: WRITER_IMAGE
       description: The image on which the write-url step will run (default is docker.io/library/bash:5.1.4@sha256:c523c636b722339f41b6a431b44588ab2f762c5de5ec3bd7964420ff982fb1d9)
       default: docker.io/library/bash:5.1.4@sha256:c523c636b722339f41b6a431b44588ab2f762c5de5ec3bd7964420ff982fb1d9
@@ -50,22 +50,25 @@ spec:
     - name: IMAGE_URL
       description: URL of the image just built.
   steps:
-    # Step 1: If the repo contains a .build-args file at the context root,
-    # write each KEY=VAL line into /tekton/env/ so the next step inherits them
-    # as environment variables. Kaniko then satisfies Dockerfile ARG declarations
-    # that have no default value from the environment (same as --build-arg KEY).
-    # This keeps the pipeline fully generic — any repo just drops a .build-args file.
+    # Step 1: Parse .build-args into --build-arg flags for Kaniko.
+    # Writes a file to the shared workspace so the next step can consume it.
     - name: prepare-build-args
       image: docker.io/library/alpine:3.18
       script: |
         #!/bin/sh
         set -e
         BUILD_ARGS_FILE="$(workspaces.source.path)/$(params.CONTEXT)/.build-args"
+        KANIKO_ARGS_FILE="$(workspaces.source.path)/.tekton-kaniko-build-args"
+
+        # Always create the file (empty if no .build-args exists)
+        : > "$KANIKO_ARGS_FILE"
+
         if [ ! -f "$BUILD_ARGS_FILE" ]; then
           echo "[prepare] No .build-args file found, skipping."
           exit 0
         fi
-        echo "[prepare] Injecting build args from .build-args into /tekton/env:"
+
+        echo "[prepare] Parsing .build-args into Kaniko --build-arg flags:"
         while IFS= read -r line || [ -n "$line" ]; do
           # Strip carriage returns (CRLF support)
           line=$(echo "$line" | tr -d '\r')
@@ -73,28 +76,57 @@ spec:
           case "$line" in ''|'#'*) continue ;; esac
           # Ensure line contains '='
           case "$line" in *=*) ;; *) continue ;; esac
-          
-          KEY=$(echo "$line" | cut -d'=' -f1)
+
+          KEY=$(echo "$line" | cut -d'=' -f1 | tr -d '[:space:]')
           VAL=$(echo "$line" | cut -d'=' -f2-)
-          # Strip leading/trailing whitespaces from KEY
-          KEY=$(echo "$KEY" | tr -d '[:space:]')
           if [ -n "$KEY" ]; then
-            echo "  $KEY=***"
-            printf '%s' "$VAL" > "/tekton/env/$KEY"
+            echo "  --build-arg $KEY=***"
+            printf '%s\n' "--build-arg=${KEY}=${VAL}" >> "$KANIKO_ARGS_FILE"
           fi
         done < "$BUILD_ARGS_FILE"
-    # Step 2: Run Kaniko. Uses args (not script) so Tekton can expand EXTRA_ARGS[*].
-    # Env vars from /tekton/env are automatically available here, so Dockerfile
-    # ARG declarations without a default pick them up from the environment.
+
+        echo "[prepare] Wrote $(wc -l < "$KANIKO_ARGS_FILE") build-arg flags."
+    # Step 2: Run Kaniko with dynamically injected --build-arg flags.
+    # EXTRA_ARGS are passed via 'args' (Tekton only allows array expansion there),
+    # then consumed as "$@" in the script. Build-arg flags are read from the
+    # shared workspace file written by step 1.
     - name: build-and-push
       workingDir: $(workspaces.source.path)
       image: $(params.BUILDER_IMAGE)
       args:
         - $(params.EXTRA_ARGS[*])
-        - --dockerfile=$(params.DOCKERFILE)
-        - --context=$(workspaces.source.path)/$(params.CONTEXT)
-        - --destination=$(params.IMAGE)
-        - --digest-file=$(results.IMAGE_DIGEST.path)
+      script: |
+        #!/busybox/sh
+        set -e
+
+        KANIKO_ARGS_FILE="$(workspaces.source.path)/.tekton-kaniko-build-args"
+
+        # Start building the kaniko command.
+        # "$@" contains EXTRA_ARGS passed via Tekton args.
+        CMD="/kaniko/executor"
+        CMD="$CMD --dockerfile=$(params.DOCKERFILE)"
+        CMD="$CMD --context=$(workspaces.source.path)/$(params.CONTEXT)"
+        CMD="$CMD --destination=$(params.IMAGE)"
+        CMD="$CMD --digest-file=$(results.IMAGE_DIGEST.path)"
+
+        # Append EXTRA_ARGS from Tekton args (passed as "$@")
+        for arg in "$@"; do
+          CMD="$CMD $arg"
+        done
+
+        # Append --build-arg flags from .build-args file
+        if [ -s "$KANIKO_ARGS_FILE" ]; then
+          echo "[build] Injecting build-arg flags from .build-args:"
+          while IFS= read -r flag; do
+            [ -n "$flag" ] || continue
+            # Log key only for security
+            echo "  $(echo "$flag" | cut -d'=' -f1-2)=***"
+            CMD="$CMD $flag"
+          done < "$KANIKO_ARGS_FILE"
+        fi
+
+        echo "[build] Executing kaniko..."
+        exec $CMD
       securityContext:
         runAsUser: 0
     - name: write-url
