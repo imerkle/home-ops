@@ -90,6 +90,10 @@ spec:
     # EXTRA_ARGS are passed via 'args' (Tekton only allows array expansion there),
     # then consumed as "$@" in the script. Build-arg flags are read from the
     # shared workspace file written by step 1.
+    #
+    # Uses `set --` to build a proper argument array instead of string
+    # concatenation, so values containing spaces (e.g. VITE_OIDC_SCOPE=
+    # "openid profile email offline_access") are preserved correctly.
     - name: build-and-push
       workingDir: $(workspaces.source.path)
       image: $(params.BUILDER_IMAGE)
@@ -101,18 +105,28 @@ spec:
 
         KANIKO_ARGS_FILE="$(workspaces.source.path)/.tekton-kaniko-build-args"
 
-        # Start building the kaniko command.
-        # "$@" contains EXTRA_ARGS passed via Tekton args.
-        CMD="/kaniko/executor"
-        CMD="$CMD --dockerfile=$(params.DOCKERFILE)"
-        CMD="$CMD --context=$(workspaces.source.path)/$(params.CONTEXT)"
-        CMD="$CMD --destination=$(params.IMAGE)"
-        CMD="$CMD --digest-file=$(results.IMAGE_DIGEST.path)"
-
-        # Append EXTRA_ARGS from Tekton args (passed as "$@")
+        # Save EXTRA_ARGS (passed via Tekton args as "$@") to a temp file
+        # before we overwrite $@ with the kaniko command.
+        EXTRA_FILE="/tmp/tekton-extra-args"
+        : > "$EXTRA_FILE"
         for arg in "$@"; do
-          CMD="$CMD $arg"
+          printf '%s\n' "$arg" >> "$EXTRA_FILE"
         done
+
+        # Build the kaniko command as a proper argument array.
+        set -- /kaniko/executor \
+          "--dockerfile=$(params.DOCKERFILE)" \
+          "--context=$(workspaces.source.path)/$(params.CONTEXT)" \
+          "--destination=$(params.IMAGE)" \
+          "--digest-file=$(results.IMAGE_DIGEST.path)"
+
+        # Append EXTRA_ARGS back from the temp file
+        if [ -s "$EXTRA_FILE" ]; then
+          while IFS= read -r arg; do
+            [ -n "$arg" ] || continue
+            set -- "$@" "$arg"
+          done < "$EXTRA_FILE"
+        fi
 
         # Append --build-arg flags from .build-args file
         if [ -s "$KANIKO_ARGS_FILE" ]; then
@@ -121,12 +135,12 @@ spec:
             [ -n "$flag" ] || continue
             # Log key only for security
             echo "  $(echo "$flag" | cut -d'=' -f1-2)=***"
-            CMD="$CMD $flag"
+            set -- "$@" "$flag"
           done < "$KANIKO_ARGS_FILE"
         fi
 
-        echo "[build] Executing kaniko..."
-        exec $CMD
+        echo "[build] Executing kaniko with $(($# - 1)) flags..."
+        exec "$@"
       securityContext:
         runAsUser: 0
     - name: write-url
