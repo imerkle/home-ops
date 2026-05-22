@@ -80,12 +80,12 @@ spec:
           KEY=$(echo "$line" | cut -d'=' -f1 | tr -d '[:space:]')
           VAL=$(echo "$line" | cut -d'=' -f2-)
           if [ -n "$KEY" ]; then
-            echo "  --build-arg $KEY=***"
+            echo "  --build-arg $KEY=$VAL"
             printf '%s\n' "--build-arg=${KEY}=${VAL}" >> "$KANIKO_ARGS_FILE"
           fi
         done < "$BUILD_ARGS_FILE"
-
         echo "[prepare] Wrote $(wc -l < "$KANIKO_ARGS_FILE") build-arg flags."
+        echo "$(cat "$KANIKO_ARGS_FILE")"
     # Step 2: Run Kaniko with dynamically injected --build-arg flags.
     # EXTRA_ARGS are passed via 'args' (Tekton only allows array expansion there),
     # then consumed as "$@" in the script. Build-arg flags are read from the
