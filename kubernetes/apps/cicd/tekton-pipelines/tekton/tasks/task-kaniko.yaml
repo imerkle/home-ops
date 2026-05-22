@@ -74,8 +74,8 @@ spec:
           # Ensure line contains '='
           case "$line" in *=*) ;; *) continue ;; esac
           
-          KEY="${line%%=*}"
-          VAL="${line#*=}"
+          KEY=$(echo "$line" | cut -d'=' -f1)
+          VAL=$(echo "$line" | cut -d'=' -f2-)
           # Strip leading/trailing whitespaces from KEY
           KEY=$(echo "$KEY" | tr -d '[:space:]')
           if [ -n "$KEY" ]; then
