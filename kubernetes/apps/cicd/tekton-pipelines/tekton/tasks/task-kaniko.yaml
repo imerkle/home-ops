@@ -81,7 +81,7 @@ spec:
           VAL=$(echo "$line" | cut -d'=' -f2-)
           if [ -n "$KEY" ]; then
             echo "  --build-arg $KEY=$VAL"
-            printf '%s\n' "--build-arg=${KEY}=${VAL}" >> "$KANIKO_ARGS_FILE"
+            printf '%s\n' "--build-arg=$KEY=$VAL" >> "$KANIKO_ARGS_FILE"
           fi
         done < "$BUILD_ARGS_FILE"
         echo "[prepare] Wrote $(wc -l < "$KANIKO_ARGS_FILE") build-arg flags."
