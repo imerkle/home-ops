@@ -122,7 +122,7 @@ spec:
         existingClaim: syncthing-data
         globalMounts:
           - path: /var/syncthing
-            subPath: data
+            subPath: data/
       # external-sync:
       #   type: custom
       #   volumeSpec:
