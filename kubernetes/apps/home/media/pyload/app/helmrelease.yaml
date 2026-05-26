@@ -60,3 +60,10 @@ spec:
         globalMounts:
           - path: /downloads
             subPath: downloads
+      scripts:
+        type: configMap
+        name: pyload-scripts
+        defaultMode: 0775
+        globalMounts:
+          - path: /config/scripts/package_deleted/delete_files.sh
+            subPath: delete_files.sh

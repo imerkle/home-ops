@@ -10,3 +10,6 @@ configMapGenerator:
   - name: ${APP}-volsync-values
     files:
       - values.yaml=volsync.values.yaml
+  - name: pyload-scripts
+    files:
+      - delete_files.sh

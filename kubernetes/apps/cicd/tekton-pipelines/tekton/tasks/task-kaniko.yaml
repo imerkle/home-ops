@@ -44,12 +44,47 @@ spec:
       description: Includes a docker `config.json`
       optional: true
       mountPath: /kaniko/.docker
+    - name: ssh-credentials
+      description: SSH key for accessing private Forgejo repos during go mod download
+      optional: true
+      mountPath: /tekton/home/.ssh-secret
   results:
     - name: IMAGE_DIGEST
       description: Digest of the image just built.
     - name: IMAGE_URL
       description: URL of the image just built.
   steps:
+    # Step 0: Set up SSH for private Forgejo Go modules.
+    # Copies the SSH key from the mounted secret, sets permissions,
+    # and configures git to rewrite HTTPS → SSH for forgejo.x3y.space.
+    - name: prepare-ssh
+      image: docker.io/library/alpine:3.18
+      script: |
+        #!/bin/sh
+        set -e
+        SSH_DIR="$(workspaces.source.path)/.kaniko-ssh"
+        mkdir -p "$SSH_DIR"
+
+        if [ ! -f "$(workspaces.ssh-credentials.path)/identity" ]; then
+          echo "[prepare-ssh] No SSH credentials workspace mounted, skipping."
+          exit 0
+        fi
+
+        cp "$(workspaces.ssh-credentials.path)/identity" "$SSH_DIR/id_ed25519"
+        chmod 600 "$SSH_DIR/id_ed25519"
+
+        if [ -f "$(workspaces.ssh-credentials.path)/known_hosts" ]; then
+          cp "$(workspaces.ssh-credentials.path)/known_hosts" "$SSH_DIR/known_hosts"
+        fi
+
+        # Write a gitconfig that rewrites HTTPS → SSH for forgejo.x3y.space
+        cat > "$SSH_DIR/gitconfig" <<EOF
+        [core]
+          sshCommand = ssh -i $SSH_DIR/id_ed25519 -o UserKnownHostsFile=$SSH_DIR/known_hosts -o StrictHostKeyChecking=accept-new
+        [url "git@ssh.forgejo.x3y.space:"]
+          insteadOf = https://forgejo.x3y.space/
+        EOF
+        echo "[prepare-ssh] SSH config written to $SSH_DIR"
     # Step 1: Parse .build-args into --build-arg flags for Kaniko.
     # Writes a file to the shared workspace so the next step can consume it.
     - name: prepare-build-args
@@ -97,6 +132,15 @@ spec:
     - name: build-and-push
       workingDir: $(workspaces.source.path)
       image: $(params.BUILDER_IMAGE)
+      env:
+        - name: GONOSUMDB
+          value: "forgejo.x3y.space/*"
+        - name: GOPRIVATE
+          value: "forgejo.x3y.space/*"
+        - name: GIT_CONFIG_GLOBAL
+          value: "$(workspaces.source.path)/.kaniko-ssh/gitconfig"
+        - name: GIT_SSH_COMMAND
+          value: "ssh -i $(workspaces.source.path)/.kaniko-ssh/id_ed25519 -o UserKnownHostsFile=$(workspaces.source.path)/.kaniko-ssh/known_hosts -o StrictHostKeyChecking=accept-new"
       args:
         - $(params.EXTRA_ARGS[*])
       script: |

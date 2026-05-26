@@ -117,6 +117,8 @@ spec:
       workspaces:
         - name: source
           workspace: shared-workspace
+        - name: ssh-credentials
+          workspace: ssh-credentials
       params:
         - name: IMAGE
           value: $(params.image)
