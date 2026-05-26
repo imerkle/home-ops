@@ -11,6 +11,6 @@ components:
   - ../../components/repos
 resources:
   - ./namespace.yaml
-  - ./apps/pingpong/ks.yaml
+  # - ./apps/pingpong/ks.yaml
   - ./apps/game-fetcher/ks.yaml
   - ./apps/auth-server/ks.yaml
