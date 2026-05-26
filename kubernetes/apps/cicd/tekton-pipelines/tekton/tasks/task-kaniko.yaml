@@ -54,37 +54,51 @@ spec:
     - name: IMAGE_URL
       description: URL of the image just built.
   steps:
-    # Step 0: Set up SSH for private Forgejo Go modules.
-    # Copies the SSH key from the mounted secret, sets permissions,
-    # and configures git to rewrite HTTPS → SSH for forgejo.x3y.space.
-    - name: prepare-ssh
-      image: docker.io/library/alpine:3.18
+    # Step 0: Pre-download Go modules outside Docker using real SSH credentials.
+    # Sets GONOSUMDB/GOPRIVATE, configures git SSH rewrite for forgejo.x3y.space,
+    # and runs `go mod download` into .gopath/ inside the build context.
+    # The Dockerfile then copies .gopath/ into /go/ and builds with GOPROXY=off —
+    # no network access needed inside the Docker build at all.
+    - name: go-mod-download
+      image: golang:1.26.2-alpine
       script: |
         #!/bin/sh
         set -e
-        SSH_DIR="$(workspaces.source.path)/.kaniko-ssh"
-        mkdir -p "$SSH_DIR"
+        CONTEXT_DIR="$(workspaces.source.path)/$(params.CONTEXT)"
 
-        if [ ! -f "$(workspaces.ssh-credentials.path)/identity" ]; then
-          echo "[prepare-ssh] No SSH credentials workspace mounted, skipping."
+        # Only run if this is a Go project
+        if [ ! -f "$CONTEXT_DIR/go.mod" ]; then
+          echo "[go-mod-download] No go.mod found, skipping."
           exit 0
         fi
 
-        cp "$(workspaces.ssh-credentials.path)/identity" "$SSH_DIR/id_ed25519"
-        chmod 600 "$SSH_DIR/id_ed25519"
-
-        if [ -f "$(workspaces.ssh-credentials.path)/known_hosts" ]; then
-          cp "$(workspaces.ssh-credentials.path)/known_hosts" "$SSH_DIR/known_hosts"
+        SSH_SECRET="$(workspaces.ssh-credentials.path)"
+        if [ ! -f "$SSH_SECRET/identity" ]; then
+          echo "[go-mod-download] No SSH credentials mounted, skipping (public modules only)."
+          exit 0
         fi
 
-        # Write a gitconfig that rewrites HTTPS → SSH for forgejo.x3y.space
-        cat > "$SSH_DIR/gitconfig" <<EOF
-        [core]
-          sshCommand = ssh -i $SSH_DIR/id_ed25519 -o UserKnownHostsFile=$SSH_DIR/known_hosts -o StrictHostKeyChecking=accept-new
-        [url "git@ssh.forgejo.x3y.space:"]
-          insteadOf = https://forgejo.x3y.space/
-        EOF
-        echo "[prepare-ssh] SSH config written to $SSH_DIR"
+        # Install git + openssh (needed for SSH-based go mod download)
+        apk add --no-cache git openssh-client
+
+        # Set up SSH key
+        mkdir -p /root/.ssh
+        cp "$SSH_SECRET/identity" /root/.ssh/id_ed25519
+        chmod 600 /root/.ssh/id_ed25519
+        if [ -f "$SSH_SECRET/known_hosts" ]; then
+          cp "$SSH_SECRET/known_hosts" /root/.ssh/known_hosts
+        fi
+
+        # Rewrite HTTPS → SSH for all forgejo.x3y.space module fetches
+        git config --global url."git@ssh.forgejo.x3y.space:".insteadOf "https://forgejo.x3y.space/"
+
+        echo "[go-mod-download] Downloading modules into .gopath/ ..."
+        cd "$CONTEXT_DIR"
+        GOPATH="$CONTEXT_DIR/.gopath" \
+        GONOSUMDB="forgejo.x3y.space/*" \
+        GOPRIVATE="forgejo.x3y.space/*" \
+          go mod download
+        echo "[go-mod-download] Done."
     # Step 1: Parse .build-args into --build-arg flags for Kaniko.
     # Writes a file to the shared workspace so the next step can consume it.
     - name: prepare-build-args
@@ -132,15 +146,6 @@ spec:
     - name: build-and-push
       workingDir: $(workspaces.source.path)
       image: $(params.BUILDER_IMAGE)
-      env:
-        - name: GONOSUMDB
-          value: "forgejo.x3y.space/*"
-        - name: GOPRIVATE
-          value: "forgejo.x3y.space/*"
-        - name: GIT_CONFIG_GLOBAL
-          value: "$(workspaces.source.path)/.kaniko-ssh/gitconfig"
-        - name: GIT_SSH_COMMAND
-          value: "ssh -i $(workspaces.source.path)/.kaniko-ssh/id_ed25519 -o UserKnownHostsFile=$(workspaces.source.path)/.kaniko-ssh/known_hosts -o StrictHostKeyChecking=accept-new"
       args:
         - $(params.EXTRA_ARGS[*])
       script: |
