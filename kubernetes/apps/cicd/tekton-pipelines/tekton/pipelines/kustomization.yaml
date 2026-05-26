@@ -7,4 +7,5 @@ resources:
   - ./helmrelease.yaml
   - ./servicemonitor.yaml
   - ./prometheusrule.yaml
+  - ./rbac.yaml
   # - ./webhook-rbac-patch.yaml
