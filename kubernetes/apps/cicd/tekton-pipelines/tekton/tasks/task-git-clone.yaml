@@ -191,6 +191,18 @@ spec:
           chmod 700 "$${PARAM_USER_HOME}"/.ssh
           chmod -R 400 "$${PARAM_USER_HOME}"/.ssh/*
           
+          # Rename identity to id_rsa so SSH picks it up automatically
+          if [ -f "$${PARAM_USER_HOME}/.ssh/identity" ]; then
+            mv "$${PARAM_USER_HOME}/.ssh/identity" "$${PARAM_USER_HOME}/.ssh/id_rsa"
+            chmod 400 "$${PARAM_USER_HOME}/.ssh/id_rsa"
+          fi
+          
+          # Allow ssh-rsa which is disabled by default in newer OpenSSH
+          echo "Host *" > "$${PARAM_USER_HOME}/.ssh/config"
+          echo "  PubkeyAcceptedKeyTypes +ssh-rsa" >> "$${PARAM_USER_HOME}/.ssh/config"
+          echo "  HostkeyAlgorithms +ssh-rsa" >> "$${PARAM_USER_HOME}/.ssh/config"
+          chmod 400 "$${PARAM_USER_HOME}/.ssh/config"
+          
           # Append Forgejo's host key
           ssh-keyscan -H ssh.forgejo.x3y.space >> "$${PARAM_USER_HOME}"/.ssh/known_hosts
           chmod 600 "$${PARAM_USER_HOME}"/.ssh/known_hosts
