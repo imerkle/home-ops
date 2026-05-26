@@ -85,9 +85,13 @@ spec:
         mkdir -p /root/.ssh
         cp "$SSH_SECRET/identity" /root/.ssh/id_ed25519
         chmod 600 /root/.ssh/id_ed25519
+        # Start with any existing known_hosts from the secret (e.g. GitHub)
         if [ -f "$SSH_SECRET/known_hosts" ]; then
           cp "$SSH_SECRET/known_hosts" /root/.ssh/known_hosts
         fi
+        # Append Forgejo's host key (the secret only has GitHub's key)
+        ssh-keyscan -H ssh.forgejo.x3y.space >> /root/.ssh/known_hosts
+        chmod 600 /root/.ssh/known_hosts
 
         # Rewrite HTTPS → SSH for all forgejo.x3y.space module fetches
         git config --global url."git@ssh.forgejo.x3y.space:".insteadOf "https://forgejo.x3y.space/"
