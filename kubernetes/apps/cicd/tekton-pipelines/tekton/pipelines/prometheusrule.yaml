@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: tekton-rules
+spec:
+  groups:
+    - name: tekton.rules
+      rules:
+        - alert: TektonPipelineRunFailed
+          expr: |
+            sum by (namespace, pipeline) (increase(tekton_pipelines_controller_pipelinerun_total{status="failed"}[5m])) > 0
+          for: 1s
+          labels:
+            severity: critical
+          annotations:
+            summary: "Tekton Pipeline {{ $labels.pipeline }} failed"
+            description: "A Tekton PipelineRun for {{ $labels.pipeline }} has failed in namespace {{ $labels.namespace }}."
+
+        - alert: TektonPipelineRunFinished
+          expr: |
+            sum by (namespace, pipeline) (increase(tekton_pipelines_controller_pipelinerun_total{status="success"}[5m])) > 0
+          for: 1s
+          labels:
+            severity: info
+          annotations:
+            summary: "Tekton Pipeline {{ $labels.pipeline }} finished successfully"
+            description: "A Tekton PipelineRun for {{ $labels.pipeline }} has finished successfully in namespace {{ $labels.namespace }}."

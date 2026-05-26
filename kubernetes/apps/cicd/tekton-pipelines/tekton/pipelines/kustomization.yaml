@@ -5,4 +5,6 @@ kind: Kustomization
 resources:
   - ../repo.yaml
   - ./helmrelease.yaml
+  - ./servicemonitor.yaml
+  - ./prometheusrule.yaml
   # - ./webhook-rbac-patch.yaml
