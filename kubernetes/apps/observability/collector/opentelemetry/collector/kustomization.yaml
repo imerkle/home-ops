@@ -5,3 +5,4 @@ kind: Kustomization
 resources:
   - ./collector.yaml
   - ./servicemonitor-exported.yaml
+  - ./referencegrant.yaml
