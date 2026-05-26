@@ -190,6 +190,13 @@ spec:
           cp -R "$${WORKSPACE_SSH_DIRECTORY_PATH}" "$${PARAM_USER_HOME}"/.ssh
           chmod 700 "$${PARAM_USER_HOME}"/.ssh
           chmod -R 400 "$${PARAM_USER_HOME}"/.ssh/*
+          
+          # Append Forgejo's host key
+          ssh-keyscan -H ssh.forgejo.x3y.space >> "$${PARAM_USER_HOME}"/.ssh/known_hosts
+          chmod 600 "$${PARAM_USER_HOME}"/.ssh/known_hosts
+          
+          # Rewrite HTTPS to SSH for Forgejo
+          git config --global url."git@ssh.forgejo.x3y.space:".insteadOf "https://forgejo.x3y.space/"
         fi
 
         if [ "$${WORKSPACE_SSL_CA_DIRECTORY_BOUND}" = "true" ] ; then

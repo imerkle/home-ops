@@ -103,6 +103,8 @@ spec:
       workspaces:
         - name: output
           workspace: shared-workspace
+        - name: ssh-directory
+          workspace: ssh-credentials
       params:
         - name: url
           value: $(params.repo-url)
