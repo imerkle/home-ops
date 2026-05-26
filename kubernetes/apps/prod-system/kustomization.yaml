@@ -13,5 +13,4 @@ resources:
   - ./namespace.yaml
   - ./apps/pingpong/ks.yaml
   - ./apps/game-fetcher/ks.yaml
-  - ./apps/game-fetcher-react-ui/ks.yaml
   - ./apps/auth-server/ks.yaml
