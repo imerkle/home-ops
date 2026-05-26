@@ -28,7 +28,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/game-fetcher
-              tag: 55733afbbb1557457e40430b005752fd6d05ef13
+              tag: 7323579e9aaf93eee615043c1fc99803af66b15e
             env:
               PORT: &port "3000"
               RAWG: "vault:secret/data/ext_services#RAWG"
