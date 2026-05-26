@@ -100,6 +100,17 @@ spec:
           - name: envoy-internal
             namespace: network
         rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /auth
+              - path:
+                  type: PathPrefix
+                  value: /api/auth
+            backendRefs:
+              - name: auth-server
+                namespace: prod-system
+                port: 3000
           - backendRefs:
               - port: *port
                 name: *app
