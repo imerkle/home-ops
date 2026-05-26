@@ -82,6 +82,7 @@ spec:
         ports:
           http:
             port: *port
+            appProtocol: kubernetes.io/ws
     serviceMonitor:
       app:
         enabled: true
@@ -100,6 +101,14 @@ spec:
           - name: envoy-internal
             namespace: network
         rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /v1/traces
+            backendRefs:
+              - name: otel-collector
+                namespace: observability
+                port: 4318
           - matches:
               - path:
                   type: PathPrefix
