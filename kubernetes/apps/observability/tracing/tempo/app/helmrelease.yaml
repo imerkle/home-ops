@@ -23,6 +23,10 @@ spec:
   values:
     tempo:
       structuredConfig:
+        overrides:
+          metrics_generator_processors:
+            - service-graphs
+            - span-metrics
         ingester:
           lifecycler:
             ring:

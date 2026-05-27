@@ -12,3 +12,6 @@ spec:
     name: tempo
     access: proxy
     url: http://tempo-gateway.observability.svc.cluster.local:80
+    jsonData:
+      serviceMap:
+        datasourceUid: prometheus
