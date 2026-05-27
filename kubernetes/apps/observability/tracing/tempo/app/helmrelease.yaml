@@ -24,9 +24,12 @@ spec:
     tempo:
       structuredConfig:
         overrides:
-          metrics_generator_processors:
-            - service-graphs
-            - span-metrics
+          defaults:
+            metrics_generator:
+              processors:
+                - service-graphs
+                - span-metrics
+                - local-blocks
         ingester:
           lifecycler:
             ring:
@@ -38,6 +41,8 @@ spec:
           processor:
             service_graphs: {}
             span_metrics: {}
+            local_blocks:
+              filter_server_spans: false
           storage:
             remote_write:
               - url: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090/api/v1/write
