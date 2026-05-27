@@ -120,7 +120,7 @@ spec:
                 subPath: immich-config.yaml
                 readOnly: true
       library:
-        existingClaim: syncthing-data
+        existingClaim: copyparty-hdd
         globalMounts:
           - path: /usr/src/app/upload
             subPath: immich

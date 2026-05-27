@@ -98,7 +98,7 @@ spec:
           - path: /config
             subPath: config
       media:
-        existingClaim: syncthing-data
+        existingClaim: copyparty-hdd
         globalMounts:
           - path: /media
             subPath: frigate
