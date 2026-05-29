@@ -27,6 +27,7 @@ resources:
   - ./media/ps4-fpkgi/ks.yaml
   - ./media/qbittorrent/ks.yaml
   - ./media/pyload/ks.yaml
+  - ./media/prowlarr/ks.yaml
   # file-management
   - ./file-management/syncthing/ks.yaml
   - ./file-management/copyparty/ks.yaml

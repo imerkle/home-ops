@@ -1,0 +1,104 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: prowlarr
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  interval: 1h
+  values:
+    controllers:
+      prowlarr:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          vault.security.banzaicloud.io/vault-role: "default"
+        initContainers:
+          init-config:
+            image:
+              repository: public.ecr.aws/docker/library/python
+              tag: 3.11-alpine
+            command:
+              - /usr/local/bin/python3
+              - -c
+              - |
+                import os
+                import xml.etree.ElementTree as ET
+
+                conf_file = "/config/config.xml"
+                os.makedirs(os.path.dirname(conf_file), exist_ok=True)
+
+                api_key = os.environ.get('PROWLARR_API_KEY')
+                if not api_key:
+                    print("PROWLARR_API_KEY environment variable not set. Skipping.")
+                    exit(0)
+
+                # Create basic skeleton if it doesn't exist
+                if not os.path.exists(conf_file):
+                    root = ET.Element("Config")
+                    tree = ET.ElementTree(root)
+                    tree.write(conf_file)
+
+                # Parse the XML file
+                tree = ET.parse(conf_file)
+                root = tree.getroot()
+
+                # Find or create the ApiKey element
+                apikey_elem = root.find("ApiKey")
+                if apikey_elem is None:
+                    apikey_elem = ET.SubElement(root, "ApiKey")
+                
+                # Update the key
+                apikey_elem.text = api_key
+
+                # Write back
+                tree.write(conf_file, encoding="utf-8", xml_declaration=True)
+                print(f"Configuration updated with Vault API Key in {conf_file}")
+            env:
+              PROWLARR_API_KEY: "vault:secret/data/prowlarr#API_KEY"
+        pod:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: "OnRootMismatch"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/onedr0p/prowlarr
+              tag: 1.28.2.4883
+            env:
+              TZ: America/New_York
+              PROWLARR__PORT: &port 9696
+            resources:
+              requests:
+                cpu: 10m
+                memory: 100Mi
+              limits:
+                memory: 500Mi
+    service:
+      app:
+        controller: prowlarr
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: Prowlarr
+          gethomepage.dev/description: Indexer Manager
+          gethomepage.dev/group: Media
+          gethomepage.dev/icon: prowlarr.png
+        hostnames:
+          - "{{ .Release.Name }}.${DOMAIN1}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      config:
+        existingClaim: "{{ .Release.Name }}"
+        globalMounts:
+          - path: /config
