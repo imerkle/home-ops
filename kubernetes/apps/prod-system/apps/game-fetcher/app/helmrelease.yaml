@@ -54,6 +54,7 @@ spec:
               MEILISEARCH_API_KEY: "super-secret-master-key"
               
               AUTH_SERVER_ADDR: auth-server.prod-system:50051
+              SETTINGS_SERVER_ADDR: settings-server.prod-system:50051
 
 
             securityContext:
