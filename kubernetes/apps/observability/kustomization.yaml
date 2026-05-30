@@ -31,5 +31,6 @@ resources:
   # - ./exporters/unpoller/ks.yaml
   # alerting
   # - ./alerting/silence-operator/ks.yaml
+  - ./alerting/matrix-alertmanager/ks.yaml
   # uptime
   - ./uptime/gatus/ks.yaml

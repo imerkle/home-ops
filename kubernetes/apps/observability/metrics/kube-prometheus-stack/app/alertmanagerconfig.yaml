@@ -26,6 +26,12 @@ spec:
           - name: severity
             value: critical
             matchType: =
+      - receiver: matrix
+        continue: true
+        matchers:
+          - name: alertname
+            value: InfoInhibitor
+            matchType: "!="
     groupBy:
       - alertname
       - cluster
@@ -57,6 +63,9 @@ spec:
           urlSecret:
             name: alertmanager-secret
             key: BUDDY_HEARTBEAT_URL
+    - name: matrix
+      webhookConfigs:
+        - url: http://matrix-alertmanager.observability.svc.cluster.local:3000/alerts?secret=InternalMatrixToken123
     - name: pushover
       pushoverConfigs:
         - html: true
