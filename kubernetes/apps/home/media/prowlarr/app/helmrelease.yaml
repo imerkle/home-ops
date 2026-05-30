@@ -67,8 +67,8 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/onedr0p/prowlarr
-              tag: 1.28.2.4883
+              repository: lscr.io/linuxserver/prowlarr
+              tag: latest
             env:
               TZ: America/New_York
               PROWLARR__PORT: &port 9696
