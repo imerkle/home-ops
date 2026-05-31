@@ -24,7 +24,7 @@ spec:
             env:
               APP_PORT: &port 3000
               APP_ALERTMANAGER_SECRET: "vault:secret/data/matrix_alertmanager#SECRET"
-              MATRIX_HOMESERVER_URL: "matrix.${DOMAIN1}"
+              MATRIX_HOMESERVER_URL: "https://matrix.${DOMAIN1}"
               MATRIX_ROOMS: "vault:secret/data/matrix_alertmanager#ROOM_ID"
               MATRIX_TOKEN: "vault:secret/data/matrix_alertmanager#ACCESS_TOKEN"
               MATRIX_USER: "vault:secret/data/matrix_alertmanager#USER"
