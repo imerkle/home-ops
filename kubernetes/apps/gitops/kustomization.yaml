@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: flux-system
 components:
   - ../../components/alerts
+  - ../../components/repos
 resources:
   - ./namespace.yaml
   - ./flux-operator/
