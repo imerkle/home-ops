@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/infra.contrib.fluxcd.io/terraform_v1alpha2.json
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: cloudflare-email-routing
+spec:
+  interval: 10m
+  retryInterval: 10m
+  retryStrategy: StaticInterval
+  path: ./terraform/cloudflare-email-routing
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  backendConfig:
+    disable: true
+  vars:
+    - name: mail_domain
+      value: "${DOMAIN1}"
+    - name: destination_email
+      value: "d8xu45ay@anonaddy.me" # TODO: Update this with your actual destination email address
+  runnerPodTemplate:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+  approvePlan: auto

@@ -9,3 +9,4 @@ resources:
   - ./ocirepository.yaml
   - ./prometheusrule.yaml
   - ./secret.sops.yaml
+  - ./tofu-email-routing.yaml

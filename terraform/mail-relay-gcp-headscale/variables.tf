@@ -127,23 +127,7 @@ variable "cloudflare_zone_id" {
   default     = null
 }
 
-variable "mx_priority" {
-  description = "MX priority"
-  type        = number
-  default     = 10
-}
 
-variable "spf_record" {
-  description = "SPF TXT value"
-  type        = string
-  default     = "v=spf1 mx -all"
-}
-
-variable "dmarc_record" {
-  description = "DMARC TXT value; empty disables record creation"
-  type        = string
-  default     = ""
-}
 
 variable "use_vault" {
   description = "Whether to use Vault for credentials (when false, uses tfvars/environment variables)"

@@ -132,33 +132,7 @@ resource "cloudflare_record" "mail_a" {
   proxied = false
 }
 
-resource "cloudflare_record" "mail_mx" {
-  count    = var.create_cloudflare_records ? 1 : 0
-  zone_id  = try(coalesce(var.cloudflare_zone_id, lookup(data.vault_generic_secret.cloudflare_secrets.data, "DNS1_ZONE_ID", null)), var.cloudflare_zone_id)
-  name     = var.mail_domain
-  type     = "MX"
-  value    = local.relay_hostname
-  priority = var.mx_priority
-  ttl      = 300
-}
 
-resource "cloudflare_record" "spf" {
-  count   = var.create_cloudflare_records ? 1 : 0
-  zone_id = try(coalesce(var.cloudflare_zone_id, lookup(data.vault_generic_secret.cloudflare_secrets.data, "DNS1_ZONE_ID", null)), var.cloudflare_zone_id)
-  name    = var.mail_domain
-  type    = "TXT"
-  value   = var.spf_record
-  ttl     = 300
-}
-
-resource "cloudflare_record" "dmarc" {
-  count   = var.create_cloudflare_records && var.dmarc_record != "" ? 1 : 0
-  zone_id = try(coalesce(var.cloudflare_zone_id, lookup(data.vault_generic_secret.cloudflare_secrets.data, "DNS1_ZONE_ID", null)), var.cloudflare_zone_id)
-  name    = "_dmarc.${var.mail_domain}"
-  type    = "TXT"
-  value   = var.dmarc_record
-  ttl     = 300
-}
 
 output "vps_public_ip" {
   value = google_compute_instance.mail_relay.network_interface[0].access_config[0].nat_ip
