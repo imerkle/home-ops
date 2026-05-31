@@ -17,8 +17,8 @@ spec:
       - receiver: matrix-flux
         matchers:
           - name: alertname
-            value: FluxKustomizationHealthcheckfailed
-            matchType: =
+            value: "^Flux.*"
+            matchType: "=~"
     groupBy:
       - alertname
       - cluster
