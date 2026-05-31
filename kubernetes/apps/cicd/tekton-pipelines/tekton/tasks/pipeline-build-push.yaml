@@ -133,6 +133,7 @@ spec:
             - --destination=$(params.image-latest)
             - --destination=$(tasks.prepare.results.branch-image)
             - --cache-repo=$(params.base-image)-cache
+            - --build-arg=VERSION=$(tasks.fetch-source.results.commit)
             - $(params.extra-args[*])
         - name: PROTOCOL
           value: $(params.protocol)
