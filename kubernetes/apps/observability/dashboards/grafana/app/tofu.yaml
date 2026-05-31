@@ -20,7 +20,7 @@ spec:
 # 1. Pass specific Variables for Vault
   vars:
     - name: app_name
-      value: "grafana-sso"
+      value: "grafana-oidc"
     - name: redirect_uris
       value:
         - "https://grafana.${DOMAIN1}/login/generic_oauth"
