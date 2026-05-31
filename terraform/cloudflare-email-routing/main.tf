@@ -60,14 +60,14 @@ resource "cloudflare_email_routing_rule" "catch_all" {
   name    = "Catch-all forward rule"
   enabled = true
 
-  matchers {
+  matchers = [{
     type = "all"
-  }
+  }]
 
-  actions {
+  actions = [{
     type  = "forward"
     value = [cloudflare_email_routing_address.destination.email]
-  }
+  }]
 
   # Ensure settings are enabled first
   depends_on = [cloudflare_email_routing_settings.main]
