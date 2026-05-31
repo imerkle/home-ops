@@ -26,7 +26,7 @@ spec:
               APP_ALERTMANAGER_SECRET: "vault:secret/data/matrix_alertmanager#SECRET"
               MATRIX_HOMESERVER_URL: "https://matrix.${DOMAIN1}"
               MATRIX_ROOM_SECRET: "vault:secret/data/matrix_alertmanager#ROOM_ID"
-              MATRIX_ROOMS: "observability/alertmanager/matrix/$(MATRIX_ROOM_SECRET)"
+              MATRIX_ROOMS: "observability/alertmanager/matrix/${vault:secret/data/matrix_alertmanager#ROOM_ID}"
               MATRIX_TOKEN: "vault:secret/data/matrix_alertmanager#ACCESS_TOKEN"
               MATRIX_USER: "vault:secret/data/matrix_alertmanager#USER"
             probes:
