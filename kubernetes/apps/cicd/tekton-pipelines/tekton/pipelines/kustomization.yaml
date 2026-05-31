@@ -8,4 +8,5 @@ resources:
   - ./servicemonitor.yaml
   - ./prometheusrule.yaml
   - ./rbac.yaml
+  - ./cronjob.yaml
   # - ./webhook-rbac-patch.yaml

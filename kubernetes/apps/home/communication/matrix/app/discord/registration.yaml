@@ -1,7 +1,7 @@
 id: discord
 url: http://mautrix-discord:8000
-as_token: $${vault:secret/data/mautrix#hs_token}
-hs_token: $${vault:secret/data/mautrix#hs_token}
+as_token: $${vault:secret/data/mautrix#as_token2}
+hs_token: $${vault:secret/data/mautrix#hs_token2}
 sender_localpart: discordbot
 rate_limited: false
 namespaces:

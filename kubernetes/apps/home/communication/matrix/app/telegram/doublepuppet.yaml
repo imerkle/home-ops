@@ -7,8 +7,8 @@ url:
 # Generate random strings for these three fields. Only the as_token really
 # matters, hs_token is never used because there's no url, and the default
 # user (sender_localpart) is never used either.
-as_token: $${vault:secret/data/mautrix#as_token4}
-hs_token: $${vault:secret/data/mautrix#hs_token4}
+as_token: $${vault:secret/data/mautrix#as_token3}
+hs_token: $${vault:secret/data/mautrix#hs_token3}
 sender_localpart: sender_localpart
 # Bridges don't like ratelimiting. This should only apply when using the
 # as_token, normal user tokens will still be ratelimited.
