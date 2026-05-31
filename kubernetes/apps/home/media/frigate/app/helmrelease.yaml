@@ -78,25 +78,25 @@ spec:
           #       memory: 128Mi
           #     limits:
           #       memory: 512Mi
-          backup:
-            image:
-              repository: alpine
-              tag: latest
-            command:
-              - /bin/sh
-              - -c
-              - |
-                apk add --no-cache rsync
-                while true; do
-                  rsync -a --ignore-existing /media/ /backup/
-                  sleep 3600
-                done
-            resources:
-              requests:
-                cpu: 10m
-                memory: 50Mi
-              limits:
-                memory: 250Mi
+          # backup:
+          #   image:
+          #     repository: alpine
+          #     tag: latest
+          #   command:
+          #     - /bin/sh
+          #     - -c
+          #     - |
+          #       apk add --no-cache rsync
+          #       while true; do
+          #         rsync -a --ignore-existing /media/ /backup/
+          #         sleep 3600
+          #       done
+          #   resources:
+          #     requests:
+          #       cpu: 10m
+          #       memory: 50Mi
+          #     limits:
+          #       memory: 250Mi
     service:
       app:
         controller: frigate
@@ -135,11 +135,11 @@ spec:
         globalMounts:
           - path: /media
             subPath: media
-      backup:
-        existingClaim: copyparty-hdd
-        globalMounts:
-          - path: /backup
-            subPath: frigate
+      # backup:
+      #   existingClaim: copyparty-hdd
+      #   globalMounts:
+      #     - path: /backup
+      #       subPath: frigate
       config-file:
         type: configMap
         name: frigate-configmap
