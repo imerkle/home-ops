@@ -14,6 +14,11 @@ spec:
           - name: alertname
             value: InfoInhibitor
             matchType: =
+      - receiver: matrix-flux
+        matchers:
+          - name: alertname
+            value: FluxKustomizationHealthcheckfailed
+            matchType: =
     groupBy:
       - alertname
       - cluster
@@ -37,5 +42,8 @@ spec:
   receivers:
     - name: blackhole
     - name: matrix
+      webhookConfigs:
+        - url: http://matrix-alertmanager.observability.svc.cluster.local:3000/alerts?secret=InternalMatrixToken123
+    - name: matrix-flux
       webhookConfigs:
         - url: http://matrix-alertmanager.observability.svc.cluster.local:3000/alerts?secret=InternalMatrixToken123
