@@ -1,0 +1,4 @@
+{{- $offsiteDefaults := dict "enabled" true -}}
+{{- $volumeOffsite := dict "enabled" false -}}
+{{- $offsiteRequested := default false (default $offsiteDefaults.enabled $volumeOffsite.enabled) -}}
+offsiteRequested: {{ $offsiteRequested }}

@@ -3,3 +3,5 @@ volumes:
     capacity: 5Gi
   - name: home-assistant-cache
     capacity: 1Gi
+    offsite:
+      enabled: false
