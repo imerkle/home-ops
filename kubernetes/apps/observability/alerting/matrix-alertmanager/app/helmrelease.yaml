@@ -19,7 +19,7 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/jaywink/matrix-alertmanager
+              repository: jaywink/matrix-alertmanager
               tag: latest
             env:
               APP_PORT: &port 3000
