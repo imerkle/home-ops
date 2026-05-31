@@ -73,11 +73,3 @@ resource "cloudflare_email_routing_rule" "catch_all" {
   depends_on = [cloudflare_email_routing_settings.main]
 }
 
-# Add DMARC record to protect the domain
-resource "cloudflare_record" "dmarc" {
-  zone_id = local.zone_id
-  name    = "_dmarc.${var.mail_domain}"
-  type    = "TXT"
-  value   = "v=DMARC1; p=none; rua=mailto:${var.destination_email}"
-  ttl     = 300
-}
