@@ -55,7 +55,7 @@ resource "cloudflare_email_routing_address" "destination" {
 }
 
 # Create a catch-all routing rule to forward to the destination address
-resource "cloudflare_email_routing_rule" "catch_all" {
+resource "cloudflare_email_routing_catch_all" "catch_all" {
   zone_id = local.zone_id
   name    = "Catch-all forward rule"
   enabled = true
