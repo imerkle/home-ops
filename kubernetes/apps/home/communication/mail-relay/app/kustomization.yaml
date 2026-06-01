@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
   - tofu-email-routing.yaml
   - cronjob.yaml
-  - secret.yaml
 
 configMapGenerator:
   - name: email-fetcher-script

@@ -5,7 +5,7 @@ set -e
 apk add --no-cache aws-cli curl jq > /dev/null 2>&1
 
 # Required ENV Vars:
-# R2_ENDPOINT: e.g. https://<account_id>.r2.cloudflarestorage.com
+# R2_ACCOUNT_ID: Cloudflare Account ID
 # R2_BUCKET: e.g. home-ops-email-inbox
 # AWS_ACCESS_KEY_ID: Cloudflare R2 Access Key
 # AWS_SECRET_ACCESS_KEY: Cloudflare R2 Secret Key
@@ -13,6 +13,8 @@ apk add --no-cache aws-cli curl jq > /dev/null 2>&1
 # STALWART_URL: e.g. http://stalwart.home-system.svc.cluster.local:8080/.well-known/jmap
 # STALWART_TOKEN: Stalwart App Password or Token
 # STALWART_ACCOUNT_ID: e.g. admin
+
+R2_ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
 
 echo "Fetching JMAP Session from $STALWART_URL..."
 SESSION=$(curl -s -L -f -u "$STALWART_ACCOUNT_ID:$STALWART_TOKEN" "$STALWART_URL")

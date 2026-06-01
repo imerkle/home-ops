@@ -22,9 +22,24 @@ spec:
               volumeMounts:
                 - name: scripts
                   mountPath: /scripts
-              envFrom:
-                - secretRef:
-                    name: email-fetcher-secret
+              env:
+                - name: AWS_ACCESS_KEY_ID
+                  value: "vault:secret/data/cloudflare#AWS_ACCESS_KEY_ID"
+                - name: AWS_SECRET_ACCESS_KEY
+                  value: "vault:secret/data/cloudflare#AWS_SECRET_ACCESS_KEY"
+                - name: R2_ACCOUNT_ID
+                  value: "vault:secret/data/cloudflare#ACCOUNT_ID"
+                - name: R2_BUCKET
+                  value: "home-ops-email-inbox"
+                - name: AWS_DEFAULT_REGION
+                  value: "auto"
+                - name: STALWART_URL
+                  value: "http://stalwart-stalwart-mail.home-system.svc.cluster.local:80/.well-known/jmap"
+                # Add this secret to Vault!
+                - name: STALWART_TOKEN
+                  value: "vault:secret/data/stalwart#STALWART_TOKEN"
+                - name: STALWART_ACCOUNT_ID
+                  value: "admin"
           volumes:
             - name: scripts
               configMap:
