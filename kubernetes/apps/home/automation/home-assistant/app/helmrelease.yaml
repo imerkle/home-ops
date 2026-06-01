@@ -14,6 +14,17 @@ spec:
       home-assistant:
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          init:
+            image:
+              repository: public.ecr.aws/docker/library/alpine
+              tag: 3.20
+            command:
+              - /bin/sh
+              - -c
+              - |
+                touch /config/automations.yaml
+                mkdir -p /config/themes
         containers:
           app:
             image:
