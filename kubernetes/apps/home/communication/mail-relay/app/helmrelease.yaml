@@ -32,7 +32,7 @@ spec:
               R2_BUCKET: "home-ops-email-inbox"
               AWS_DEFAULT_REGION: "auto"
               STALWART_URL: "http://stalwart-stalwart-mail.home-system.svc.cluster.local:80/.well-known/jmap"
-              STALWART_TOKEN: "vault:secret/data/stalwart#STALWART_TOKEN"
+              STALWART_TOKEN: "supersecret"
               STALWART_LOGIN_USER: "admin"
             resources:
               requests:
