@@ -9,6 +9,9 @@ spec:
   jobTemplate:
     spec:
       template:
+        metadata:
+          annotations:
+            vault.security.banzaicloud.io/vault-role: "default"
         spec:
           containers:
             - name: fetcher

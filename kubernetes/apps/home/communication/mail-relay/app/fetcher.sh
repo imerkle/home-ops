@@ -15,12 +15,12 @@ apk add --no-cache aws-cli curl jq > /dev/null 2>&1
 # STALWART_ACCOUNT_ID: e.g. admin
 
 echo "Fetching JMAP Session from $STALWART_URL..."
-SESSION=$(curl -s -L -f -H "Authorization: Bearer $STALWART_TOKEN" "$STALWART_URL")
+SESSION=$(curl -s -L -f -u "$STALWART_ACCOUNT_ID:$STALWART_TOKEN" "$STALWART_URL")
 API_URL=$(echo "$SESSION" | jq -r '.apiUrl')
 UPLOAD_URL=$(echo "$SESSION" | jq -r '.uploadUrl' | sed "s/{accountId}/$STALWART_ACCOUNT_ID/g")
 
 echo "Fetching Mailbox IDs..."
-MAILBOXES_RES=$(curl -s -L -X POST -H "Authorization: Bearer $STALWART_TOKEN" -H "Content-Type: application/json" -d '{
+MAILBOXES_RES=$(curl -s -L -X POST -u "$STALWART_ACCOUNT_ID:$STALWART_TOKEN" -H "Content-Type: application/json" -d '{
   "using": ["urn:ietf:params:jmap:core", "urn:ietf:params:jmap:mail"],
   "methodCalls": [
     ["Mailbox/get", {"accountId": "'$STALWART_ACCOUNT_ID'"}, "0"]
@@ -53,7 +53,7 @@ for obj in $OBJECTS; do
   aws s3 cp "s3://$R2_BUCKET/$obj" "/tmp/$obj" --endpoint-url "$R2_ENDPOINT"
   
   # 2. Upload to Stalwart Blob Storage
-  BLOB_RES=$(curl -s -L -X POST -H "Authorization: Bearer $STALWART_TOKEN" -H "Content-Type: message/rfc822" --data-binary @"/tmp/$obj" "$UPLOAD_URL")
+  BLOB_RES=$(curl -s -L -X POST -u "$STALWART_ACCOUNT_ID:$STALWART_TOKEN" -H "Content-Type: message/rfc822" --data-binary @"/tmp/$obj" "$UPLOAD_URL")
   BLOB_ID=$(echo "$BLOB_RES" | jq -r '.blobId')
   
   if [ -z "$BLOB_ID" ] || [ "$BLOB_ID" == "null" ]; then
@@ -82,7 +82,7 @@ for obj in $OBJECTS; do
     ]
   }')
   
-  IMPORT_RES=$(curl -s -L -X POST -H "Authorization: Bearer $STALWART_TOKEN" -H "Content-Type: application/json" -d "$JMAP_PAYLOAD" "$API_URL")
+  IMPORT_RES=$(curl -s -L -X POST -u "$STALWART_ACCOUNT_ID:$STALWART_TOKEN" -H "Content-Type: application/json" -d "$JMAP_PAYLOAD" "$API_URL")
   
   # Check if successful
   CREATED_ID=$(echo "$IMPORT_RES" | jq -r '.methodResponses[0][1].created.email1.id')
