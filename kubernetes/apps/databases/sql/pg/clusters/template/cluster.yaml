@@ -31,7 +31,7 @@ spec:
       localeCollate: "${PG_DB_LCOLLATE:=C}"
       localeCType: "${PG_DB_LCTYPE:=C}"
   backup:
-    retentionPolicy: 30d
+    retentionPolicy: 4d
     barmanObjectStore:
       wal:
         compression: bzip2

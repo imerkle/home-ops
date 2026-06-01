@@ -35,7 +35,7 @@ spec:
     enablePodMonitor: true
   backup:
     target: "primary"
-    retentionPolicy: 30d
+    retentionPolicy: 4d
     volumeSnapshot:
        className: ${VSNAP1}
     barmanObjectStore:
