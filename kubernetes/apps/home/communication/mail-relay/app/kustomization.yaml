@@ -3,11 +3,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - tofu-email-routing.yaml
-  - cronjob.yaml
+  - helmrelease.yaml
 
 configMapGenerator:
   - name: email-fetcher-script
     files:
-      - fetcher.sh
+      - fetcher.py
 generatorOptions:
   disableNameSuffixHash: true
