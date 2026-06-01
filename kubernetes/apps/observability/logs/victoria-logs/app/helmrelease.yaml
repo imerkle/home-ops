@@ -16,7 +16,7 @@ spec:
         enabled: true
         storageClassName: ${STORE1}
         size: 20Gi
-      retentionPeriod: 14d
+      retentionPeriod: 3d
       route:
         enabled: true
         annotations:
