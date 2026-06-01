@@ -14,7 +14,7 @@ terraform {
 }
 
 provider "cloudflare" {
-  api_token = lookup(data.vault_generic_secret.cloudflare_secrets.data, "DNS1_TOKEN", null)
+  api_token = lookup(data.vault_generic_secret.cloudflare_secrets.data, "EMAIL_ROUTE_TOKEN", null)
 }
 
 provider "vault" {
