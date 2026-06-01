@@ -12,12 +12,12 @@ apk add --no-cache aws-cli curl jq > /dev/null 2>&1
 # AWS_DEFAULT_REGION: auto
 # STALWART_URL: e.g. http://stalwart.home-system.svc.cluster.local:8080/.well-known/jmap
 # STALWART_TOKEN: Stalwart App Password or Token
-# STALWART_ACCOUNT_ID: e.g. admin
+# STALWART_LOGIN_USER: e.g. admin
 
 R2_ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
 
 echo "Fetching JMAP Session from $STALWART_URL..."
-SESSION=$(curl -s -L -f -u "$STALWART_ACCOUNT_ID:$STALWART_TOKEN" "$STALWART_URL")
+SESSION=$(curl -s -L -f -u "$STALWART_LOGIN_USER:$STALWART_TOKEN" "$STALWART_URL")
 
 # Extract the base URL to avoid internal pod names returned by Stalwart
 STALWART_BASE=$(echo "$STALWART_URL" | sed 's|/.well-known/jmap.*||')
@@ -28,10 +28,10 @@ API_URL="${STALWART_BASE}${API_PATH}"
 STALWART_ACCOUNT_ID=$(echo "$SESSION" | jq -r '.primaryAccounts["urn:ietf:params:jmap:mail"]')
 
 UPLOAD_PATH=$(echo "$SESSION" | jq -r '.uploadUrl' | awk -F'/' '{print "/"$(NF-3)"/"$(NF-2)"/"$(NF-1)"/"}')
-UPLOAD_URL="${STALWART_BASE}${UPLOAD_PATH}" | sed "s/{accountId}/$STALWART_ACCOUNT_ID/g"
+UPLOAD_URL=$(echo "${STALWART_BASE}${UPLOAD_PATH}" | sed "s/{accountId}/$STALWART_ACCOUNT_ID/g")
 
 echo "Fetching Mailbox IDs..."
-MAILBOXES_RES=$(curl -s -L -X POST -u "$STALWART_ACCOUNT_ID:$STALWART_TOKEN" -H "Content-Type: application/json" -d '{
+MAILBOXES_RES=$(curl -s -L -X POST -u "$STALWART_LOGIN_USER:$STALWART_TOKEN" -H "Content-Type: application/json" -d '{
   "using": ["urn:ietf:params:jmap:core", "urn:ietf:params:jmap:mail"],
   "methodCalls": [
     ["Mailbox/get", {"accountId": "'$STALWART_ACCOUNT_ID'"}, "0"]
