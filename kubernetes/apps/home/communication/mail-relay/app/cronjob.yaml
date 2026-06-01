@@ -37,7 +37,7 @@ spec:
                   value: "http://stalwart-stalwart-mail.home-system.svc.cluster.local:80/.well-known/jmap"
                 # Add this secret to Vault!
                 - name: STALWART_TOKEN
-                  value: "vault:secret/data/stalwart#STALWART_TOKEN"
+                  value: "supersecret"
                 - name: STALWART_ACCOUNT_ID
                   value: "admin"
           volumes:
