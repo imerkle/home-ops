@@ -18,8 +18,17 @@ R2_ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
 
 echo "Fetching JMAP Session from $STALWART_URL..."
 SESSION=$(curl -s -L -f -u "$STALWART_ACCOUNT_ID:$STALWART_TOKEN" "$STALWART_URL")
-API_URL=$(echo "$SESSION" | jq -r '.apiUrl')
-UPLOAD_URL=$(echo "$SESSION" | jq -r '.uploadUrl' | sed "s/{accountId}/$STALWART_ACCOUNT_ID/g")
+
+# Extract the base URL to avoid internal pod names returned by Stalwart
+STALWART_BASE=$(echo "$STALWART_URL" | sed 's|/.well-known/jmap.*||')
+API_PATH=$(echo "$SESSION" | jq -r '.apiUrl' | awk -F'/' '{print "/"$(NF-2)"/"$(NF-1)}')
+API_URL="${STALWART_BASE}${API_PATH}"
+
+# Dynamically fetch the correct account ID from the session (e.g., d333333 instead of 'admin')
+STALWART_ACCOUNT_ID=$(echo "$SESSION" | jq -r '.primaryAccounts["urn:ietf:params:jmap:mail"]')
+
+UPLOAD_PATH=$(echo "$SESSION" | jq -r '.uploadUrl' | awk -F'/' '{print "/"$(NF-3)"/"$(NF-2)"/"$(NF-1)"/"}')
+UPLOAD_URL="${STALWART_BASE}${UPLOAD_PATH}" | sed "s/{accountId}/$STALWART_ACCOUNT_ID/g"
 
 echo "Fetching Mailbox IDs..."
 MAILBOXES_RES=$(curl -s -L -X POST -u "$STALWART_ACCOUNT_ID:$STALWART_TOKEN" -H "Content-Type: application/json" -d '{
