@@ -3,7 +3,6 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: email-fetcher
-  namespace: home-system
 spec:
   schedule: "* * * * *"
   concurrencyPolicy: Forbid
