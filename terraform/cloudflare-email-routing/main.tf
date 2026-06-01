@@ -48,13 +48,26 @@ resource "cloudflare_email_routing_settings" "main" {
   enabled = "true"
 }
 
-# Register the destination email address
-resource "cloudflare_email_routing_address" "destination" {
+# Create R2 bucket for email storage
+resource "cloudflare_r2_bucket" "email_inbox" {
   account_id = data.cloudflare_zone.current.account_id
-  email      = var.destination_email
+  name       = "home-ops-email-inbox"
 }
 
-# Create a catch-all routing rule to forward to the destination address
+# Create the Cloudflare Worker script
+resource "cloudflare_workers_script" "email_receiver" {
+  account_id = data.cloudflare_zone.current.account_id
+  name       = "email-receiver"
+  content    = file("${path.module}/worker.js")
+  module     = true
+
+  r2_bucket_binding {
+    name        = "EMAIL_BUCKET"
+    bucket_name = cloudflare_r2_bucket.email_inbox.name
+  }
+}
+
+# Create a catch-all routing rule to forward to the Worker
 resource "cloudflare_email_routing_catch_all" "catch_all" {
   zone_id = local.zone_id
   name    = "Catch-all forward rule"
@@ -65,8 +78,8 @@ resource "cloudflare_email_routing_catch_all" "catch_all" {
   }
 
   action {
-    type  = "forward"
-    value = [cloudflare_email_routing_address.destination.email]
+    type  = "worker"
+    value = [cloudflare_workers_script.email_receiver.name]
   }
 
   # Ensure settings are enabled first

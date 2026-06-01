@@ -1,0 +1,31 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: email-fetcher
+  namespace: home-system
+spec:
+  schedule: "* * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: fetcher
+              image: alpine:3.18
+              command:
+                - /bin/sh
+                - /scripts/fetcher.sh
+              volumeMounts:
+                - name: scripts
+                  mountPath: /scripts
+              envFrom:
+                - secretRef:
+                    name: email-fetcher-secret
+          volumes:
+            - name: scripts
+              configMap:
+                name: email-fetcher-script
+                defaultMode: 0777
+          restartPolicy: OnFailure
