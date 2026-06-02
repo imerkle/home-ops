@@ -44,7 +44,7 @@ spec:
         repositorySecretName: "${VOLSYNC_OFFSITE_SECRET_NAME:=${APP}-volsync-offsite}"
         secretData:
           KOPIA_S3_BUCKET: "${VOLSYNC_OFFSITE_BUCKET:=homeops-volsync-67}"
-          KOPIA_REPOSITORY: "${VOLSYNC_OFFSITE_REPOSITORY:=s3:https://$${vault:secret/data/cloudflare#S3_ENDPOINT}/${APP}}"
+          KOPIA_REPOSITORY: "s3:https://$${vault:secret/data/cloudflare#S3_ENDPOINT}/${APP}"
           KOPIA_S3_ENDPOINT: "$${vault:secret/data/cloudflare#S3_ENDPOINT}"
           AWS_S3_ENDPOINT: "$${vault:secret/data/cloudflare#S3_ENDPOINT}"
           KOPIA_S3_DISABLE_TLS: "${VOLSYNC_OFFSITE_DISABLE_TLS:=false}"
