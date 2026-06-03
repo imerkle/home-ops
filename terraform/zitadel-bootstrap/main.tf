@@ -79,11 +79,6 @@ resource "zitadel_instance_trusted_domain" "auth_server_prod" {
 }
 
 resource "zitadel_instance_trusted_domain" "auth_server_local" {
-  domain = "localhost:5173"
-  instance_id = "371910419087884303"
-}
-
-resource "zitadel_instance_trusted_domain" "auth_server_local_go" {
-  domain = "localhost:3000"
+  domain = "localhost"
   instance_id = "371910419087884303"
 }
