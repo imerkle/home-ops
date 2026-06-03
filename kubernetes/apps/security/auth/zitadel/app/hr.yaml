@@ -45,6 +45,10 @@ spec:
       - name: ZITADEL_DEFAULTINSTANCE_OIDCSETTINGS_REFRESHTOKENEXPIRATION
         value: 2160h
     replicaCount: 1
+    resources:
+      requests:
+        cpu: 15m
+        memory: 248Mi
     zitadel:
       masterkey: vault:secret/data/zitadel#MASTERKEY
       configmapConfig:

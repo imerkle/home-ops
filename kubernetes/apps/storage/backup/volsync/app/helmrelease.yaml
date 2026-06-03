@@ -21,6 +21,10 @@ spec:
     rsync-tls: *image
     syncthing: *image
     manageCRDs: true
+    resources:
+      requests:
+        cpu: 11m
+        memory: 248Mi
     metrics:
       disableAuth: true
     podSecurityContext:

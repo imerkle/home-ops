@@ -73,20 +73,20 @@ spec:
       resources:
         mon:
           requests:
-            cpu: 100m
-            memory: 256Mi
+            cpu: 35m
+            memory: 814Mi
           limits:
             memory: 1Gi
         mgr:
           requests:
-            cpu: 100m
-            memory: 512Mi
+            cpu: 49m
+            memory: 1102Mi
           limits:
             memory: 1Gi
         osd:
           requests:
-            cpu: 100m
-            memory: 1Gi
+            cpu: 63m
+            memory: 2048Mi
           limits:
             memory: 2Gi
         prepareosd:
@@ -192,8 +192,8 @@ spec:
                       app.kubernetes.io/part-of: *cephFileSystemName
             resources:
               requests:
-                cpu: 100m
-                memory: 120Mi
+                cpu: 49m
+                memory: 628Mi
               limits:
                 memory: 500Mi
         storageClass:
@@ -290,8 +290,8 @@ spec:
           port: 80
           resources:
             requests:
-              cpu: 50m
-              memory: 500Mi
+              cpu: 23m
+              memory: 512Mi
             limits:
               memory: 2Gi
           instances: 1

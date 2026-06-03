@@ -24,3 +24,14 @@ spec:
   values:
     monitoring:
       enabled: true
+    controller:
+      resources:
+        requests:
+          cpu: 15m
+          memory: 1038Mi
+    csi:
+      node:
+        resources:
+          requests:
+            cpu: 15m
+            memory: 1168Mi

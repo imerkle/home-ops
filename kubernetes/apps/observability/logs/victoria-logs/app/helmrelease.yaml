@@ -12,6 +12,10 @@ spec:
   values:
     fullnameOverride: victoria-logs
     server:
+      resources:
+        requests:
+          cpu: 35m
+          memory: 2162Mi
       persistentVolume:
         enabled: true
         storageClassName: ${STORE1}
