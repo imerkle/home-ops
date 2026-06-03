@@ -50,6 +50,13 @@ spec:
       requests:
         cpu: 15m
         memory: 248Mi
+    login:
+      customConfigmapConfig: |-
+        ZITADEL_LOGINCLIENT_KEYFILE="/login-service-key/tls.key"
+        AUDIENCE="https://zitadel.${DOMAIN1}"
+        ZITADEL_API_URL="http://zitadel:8080"
+        CUSTOM_REQUEST_HEADERS="Host:zitadel.${DOMAIN1},X-Zitadel-Public-Host:zitadel.${DOMAIN1}"
+
     zitadel:
       masterkey: vault:secret/data/zitadel#MASTERKEY
       configmapConfig:
