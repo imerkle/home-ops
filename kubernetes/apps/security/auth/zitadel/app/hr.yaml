@@ -3,6 +3,7 @@ kind: HelmRelease
 metadata:
   name: zitadel
 spec:
+  timeout: 15m
   chart:
     spec:
       chart: zitadel

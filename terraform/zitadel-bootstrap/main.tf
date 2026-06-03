@@ -82,3 +82,4 @@ resource "zitadel_instance_trusted_domain" "auth_server_local" {
   domain = "localhost"
   instance_id = "371910419087884303"
 }
+
