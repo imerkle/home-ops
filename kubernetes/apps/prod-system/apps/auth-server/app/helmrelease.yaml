@@ -39,24 +39,25 @@ spec:
               OIDC_REDIRECT_URL: "https://auth-server.${DOMAIN1}/auth/callback"
               OIDC_SESSION_KEY: "super-secret-session-key-change-me"
               OIDC_COOKIE_DOMAIN: ".${DOMAIN1}"
+              # Zitadel Session API — required for custom login UI (BYOL)
+              ZITADEL_API_URL: "https://zitadel.${DOMAIN1}"
+              ZITADEL_SERVICE_USER_TOKEN: "vault:secret/data/ext_services#ZITADEL_SERVICE_USER_TOKEN"
+              LOGIN_DOMAIN: "auth-server.${DOMAIN1}"
             securityContext:
               allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
+              # readOnlyRootFilesystem removed: Nginx requires writable /tmp for temp dirs
               capabilities:
                 drop:
                   - ALL
             resources:
               requests:
                 cpu: 10m
-                memory: 16Mi
+                memory: 32Mi
               limits:
                 memory: 128Mi
     defaultPodOptions:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 65534
-        runAsGroup: 65534
-        fsGroup: 65534
+        runAsNonRoot: false  # nginx:alpine runs as root by default
         seccompProfile:
           type: RuntimeDefault
     service:
@@ -78,3 +79,8 @@ spec:
           - backendRefs:
               - port: *port
                 name: *app
+    persistence:
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp

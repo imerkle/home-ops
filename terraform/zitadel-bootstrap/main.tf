@@ -71,3 +71,19 @@ output "org_id" {
 output "project_id" {
   value = zitadel_project.project.id
 }
+
+# --- TRUSTED DOMAINS ---
+resource "zitadel_instance_trusted_domain" "auth_server_prod" {
+  domain = "auth-server.x3y.space"
+  instance_id = "371910419087884303"
+}
+
+resource "zitadel_instance_trusted_domain" "auth_server_local" {
+  domain = "localhost:5173"
+  instance_id = "371910419087884303"
+}
+
+resource "zitadel_instance_trusted_domain" "auth_server_local_go" {
+  domain = "localhost:3000"
+  instance_id = "371910419087884303"
+}
