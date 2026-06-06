@@ -28,8 +28,16 @@ spec:
               DEFAULT_LOCALE: en
               OIDC_ENABLED: "true"
               OIDC_NAME: "Zitadel"
-              OIDC_CLIENT_ID: "${client_id}"
-              OIDC_CLIENT_SECRET: "${client_secret}"
+              OIDC_CLIENT_ID:
+                valueFrom:
+                  secretKeyRef:
+                    name: zealot-oidc-creds
+                    key: client_id
+              OIDC_CLIENT_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: zealot-oidc-creds
+                    key: client_secret
               OIDC_SCOPE: "openid,email,profile"
               OIDC_RESPONSE_TYPE: "code"
               OIDC_UID_FIELD: "preferred_username"
