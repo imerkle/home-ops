@@ -73,6 +73,16 @@ output "project_id" {
 }
 
 # --- TRUSTED DOMAINS ---
+import {
+  to = zitadel_instance_trusted_domain.auth_server_prod
+  id = "371910419087884303/auth-server.x3y.space"
+}
+
+import {
+  to = zitadel_instance_trusted_domain.auth_server_local
+  id = "371910419087884303/localhost"
+}
+
 resource "zitadel_instance_trusted_domain" "auth_server_prod" {
   domain = "auth-server.x3y.space"
   instance_id = "371910419087884303"
