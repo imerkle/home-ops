@@ -16,7 +16,7 @@ spec:
           app:
             image:
               repository: tryzealot/zealot
-              tag: latest
+              tag: nightly
             env:
               PORT: &port 80
               ZEALOT_ADMIN_EMAIL: admin@admin.com
