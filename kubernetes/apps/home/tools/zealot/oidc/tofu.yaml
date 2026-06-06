@@ -1,0 +1,26 @@
+---
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: zealot-zitadel-oidc
+spec:
+  interval: 1h
+  retryInterval: 1h
+  retryStrategy: StaticInterval
+  approvePlan: auto
+  path: ./terraform/zitadel-oidc
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  vars:
+    - name: app_name
+      value: "zealot-oidc"
+    - name: redirect_uris
+      value:
+        - "https://zealot.${DOMAIN1}/users/auth/openid_connect/callback"
+  writeOutputsToSecret:
+    name: zealot-oidc-creds
+    outputs:
+      - client_id
+      - client_secret

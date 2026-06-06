@@ -26,6 +26,17 @@ spec:
               SECRET_TOKEN: "85dbe15d75ef9308c7ae0f33c7a324cc6f4bf519a2ed2f3027bd33c140a4f9aa"
               SECRET_KEY_BASE: "85dbe15d75ef9308c7ae0f33c7a324cc6f4bf519a2ed2f3027bd33c140a4f9aa"
               DEFAULT_LOCALE: en
+              OIDC_ENABLED: "true"
+              OIDC_NAME: "Zitadel"
+              OIDC_CLIENT_ID: "${client_id}"
+              OIDC_CLIENT_SECRET: "${client_secret}"
+              OIDC_SCOPE: "openid,email,profile"
+              OIDC_RESPONSE_TYPE: "code"
+              OIDC_UID_FIELD: "preferred_username"
+              OIDC_ISSUER_URL: "https://zitadel.${DOMAIN1}"
+              OIDC_AUTH_URI: "/oauth/v2/authorize"
+              OIDC_TOKEN_URI: "/oauth/v2/token"
+              OIDC_USERINFO_URI: "/oidc/v1/userinfo"
     service:
       app:
         controller: zealot
