@@ -33,9 +33,9 @@ spec:
     - name: builder-image
       description: >-
         Docker image that contains Flutter + Android SDK + Ruby + Fastlane.
-        Defaults to the custom zot.dev-system.svc.cluster.local:5000/smsvault-android-builder:latest which has all prerequisites.
+        Defaults to the custom zot.x3y.space/smsvault-android-builder:latest which has all prerequisites.
       type: string
-      default: zot.dev-system.svc.cluster.local:5000/smsvault-android-builder:latest
+      default: zot.x3y.space/smsvault-android-builder:latest
   workspaces:
     - name: source
       description: Shared workspace containing both sms-vault and rocket_ui checkouts.
