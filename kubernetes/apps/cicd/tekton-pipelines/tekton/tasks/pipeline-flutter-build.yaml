@@ -22,7 +22,7 @@ spec:
     - name: rocket-ui-repo-url
       description: SSH/HTTPS URL of the rocket_ui repository.
       type: string
-      default: git@ssh.forgejo.x3y.space:zitadel-admin/rocket_ui.git
+      default: https://forgejo.x3y.space/zitadel-admin/rocket_ui.git
     - name: revision
       description: Git revision (commit SHA) to build.
       type: string
@@ -55,13 +55,15 @@ spec:
         - name: output
           workspace: shared-workspace
           subPath: sms-vault
-        - name: ssh-directory
-          workspace: ssh-credentials
+        # No ssh-directory: using plain HTTPS — mounting ssh-directory triggers
+        # git-clone's SSH rewrite which then fails on ssh-keyscan.
       params:
         - name: url
           value: $(params.sms-vault-repo-url)
         - name: revision
           value: $(params.revision)
+        - name: sslVerify
+          value: "false"
     # ── 2. Clone rocket_ui (Flutter path dependency) ──────────────────────────
     - name: clone-rocket-ui
       taskRef:
@@ -70,13 +72,15 @@ spec:
         - name: output
           workspace: shared-workspace
           subPath: rocket_ui
-        - name: ssh-directory
-          workspace: ssh-credentials
+        # No ssh-directory: using HTTPS
       params:
         - name: url
           value: $(params.rocket-ui-repo-url)
         - name: revision
           value: main
+        - name: sslVerify
+          value: "false"
+
     # ── 3. Build APK + upload to Zealot ──────────────────────────────────────
     - name: flutter-build
       runAfter:
