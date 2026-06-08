@@ -1,0 +1,107 @@
+---
+# Tekton Pipeline: flutter-build-android
+#
+# Flow:
+#   clone-sms-vault     — check out sms-vault into workspace/sms-vault/
+#   clone-rocket-ui     — check out rocket_ui into workspace/rocket_ui/  (path dep)
+#   flutter-build       — bundle exec fastlane android build_and_upload → Zealot
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: flutter-build-android
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  description: >-
+    Clones sms-vault and rocket_ui from Forgejo, builds a debug-signed
+    Android APK with Flutter + Fastlane, and uploads it to Zealot.
+  params:
+    - name: sms-vault-repo-url
+      description: SSH/HTTPS URL of the sms-vault repository.
+      type: string
+    - name: rocket-ui-repo-url
+      description: SSH/HTTPS URL of the rocket_ui repository.
+      type: string
+      default: git@ssh.forgejo.x3y.space:slim/rocket_ui.git
+    - name: revision
+      description: Git revision (commit SHA) to build.
+      type: string
+      default: main
+    - name: sanitized-branch
+      description: Pre-sanitized branch name (refs/heads/ stripped, / → -).
+      type: string
+      default: main
+    - name: git-ref
+      description: Full git ref (e.g. refs/heads/main).
+      type: string
+      default: refs/heads/main
+    - name: builder-image
+      description: Docker image with Flutter + Android SDK + Fastlane.
+      type: string
+      default: zot.dev-system.svc.cluster.local:5000/smsvault-android-builder:latest
+  workspaces:
+    - name: shared-workspace
+      description: >-
+        Large workspace; both repos are checked out here as sub-directories.
+        Needs to be ReadWriteOnce with enough room for the Android build (≥5 Gi).
+    - name: ssh-credentials
+      description: SSH key for cloning private Forgejo repos.
+  tasks:
+    # ── 1. Clone sms-vault ────────────────────────────────────────────────────
+    - name: clone-sms-vault
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+          subPath: sms-vault
+        - name: ssh-directory
+          workspace: ssh-credentials
+      params:
+        - name: url
+          value: $(params.sms-vault-repo-url)
+        - name: revision
+          value: $(params.revision)
+    # ── 2. Clone rocket_ui (Flutter path dependency) ──────────────────────────
+    - name: clone-rocket-ui
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+          subPath: rocket_ui
+        - name: ssh-directory
+          workspace: ssh-credentials
+      params:
+        - name: url
+          value: $(params.rocket-ui-repo-url)
+        - name: revision
+          value: main
+    # ── 3. Build APK + upload to Zealot ──────────────────────────────────────
+    - name: flutter-build
+      runAfter:
+        - clone-sms-vault
+        - clone-rocket-ui
+      taskRef:
+        name: flutter-build-android
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: flutter-project-path
+          # subPath puts sms-vault at <ws>/sms-vault; pubspec path dep
+          # ../../rocket_ui resolves to <ws>/rocket_ui ✓
+          value: sms-vault/flutterui
+        - name: commit-sha
+          value: $(tasks.clone-sms-vault.results.commit)
+        - name: branch
+          value: $(params.sanitized-branch)
+        - name: builder-image
+          value: $(params.builder-image)
+  results:
+    - name: apk-path
+      description: Path to the built APK.
+      value: $(tasks.flutter-build.results.apk-path)
+    - name: commit-sha
+      description: The exact commit SHA that was built.
+      value: $(tasks.clone-sms-vault.results.commit)

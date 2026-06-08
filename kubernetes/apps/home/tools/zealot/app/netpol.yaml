@@ -18,6 +18,10 @@ spec:
     - fromEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: network
+    # Allow Tekton pipeline pods to upload builds
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: tekton-pipelines
   egress:
     # Allow same namespace traffic
     - toEndpoints:

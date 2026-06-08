@@ -1,0 +1,106 @@
+---
+# Tekton Task: flutter-build-android
+# Clones the source (already on the shared workspace) and runs
+# Fastlane to build a debug-signed APK and upload it to Zealot.
+#
+# Expects the workspace to contain:
+#   /workspace/source/sms-vault/   ← the sms-vault repo
+#   /workspace/source/rocket_ui/   ← the rocket_ui repo (sibling)
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: flutter-build-android
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  description: >-
+    Runs `fastlane android build_and_upload` inside the Flutter project
+    directory, then uploads the resulting APK to Zealot via the
+    fastlane-plugin-zealot action.
+  params:
+    - name: flutter-project-path
+      description: Path to the Flutter project inside the workspace (relative to workspace root).
+      type: string
+      default: sms-vault/flutterui
+    - name: commit-sha
+      description: Short commit SHA used in the Zealot changelog.
+      type: string
+      default: unknown
+    - name: branch
+      description: Branch name used in the Zealot changelog.
+      type: string
+      default: main
+    - name: builder-image
+      description: Docker image that contains Flutter + Android SDK + Fastlane.
+      type: string
+      default: zot.dev-system.svc.cluster.local:5000/smsvault-android-builder:latest
+  workspaces:
+    - name: source
+      description: Shared workspace containing both sms-vault and rocket_ui checkouts.
+    - name: zealot-credentials
+      description: Secret containing ZEALOT_ENDPOINT, ZEALOT_TOKEN, and optionally ZEALOT_ANDROID_CHANNEL_KEY.
+  results:
+    - name: apk-path
+      description: Absolute path to the built APK inside the workspace.
+  steps:
+    # ── Step 1: flutter pub get ───────────────────────────────────────────────
+    - name: flutter-pub-get
+      image: $(params.builder-image)
+      imagePullPolicy: IfNotPresent
+      workingDir: $(workspaces.source.path)/$(params.flutter-project-path)
+      env:
+        - name: PUB_CACHE
+          value: /workspace/.pub-cache
+        - name: HOME
+          value: /root
+      script: |
+        #!/bin/sh
+        set -e
+        echo "[flutter-pub-get] Running flutter pub get …"
+        flutter pub get
+        echo "[flutter-pub-get] Done."
+    # ── Step 2: fastlane android build_and_upload ─────────────────────────────
+    - name: fastlane-build-upload
+      image: $(params.builder-image)
+      imagePullPolicy: IfNotPresent
+      workingDir: $(workspaces.source.path)/$(params.flutter-project-path)
+      env:
+        - name: HOME
+          value: /root
+        - name: PUB_CACHE
+          value: /workspace/.pub-cache
+        - name: GIT_COMMIT_SHA
+          value: $(params.commit-sha)
+        - name: GIT_BRANCH
+          value: $(params.branch)
+        - name: GIT_CHANGELOG
+          value: "Build $(params.commit-sha) on $(params.branch)"
+        # Zealot credentials — mounted from the secret workspace
+        - name: ZEALOT_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: zealot-tekton-secret
+              key: endpoint
+        - name: ZEALOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: zealot-tekton-secret
+              key: token
+        - name: ZEALOT_ANDROID_CHANNEL_KEY
+          valueFrom:
+            secretKeyRef:
+              name: zealot-tekton-secret
+              key: android_channel_key
+              optional: true
+      script: |
+        #!/bin/sh
+        set -e
+        echo "[fastlane] Installing gems …"
+        bundle install --quiet
+
+        echo "[fastlane] Running android build_and_upload lane …"
+        bundle exec fastlane android build_and_upload
+
+        APK="$(workspaces.source.path)/$(params.flutter-project-path)/build/app/outputs/flutter-apk/app-release.apk"
+        echo -n "$APK" > $(results.apk-path.path)
+        echo "[fastlane] APK result written: $APK"

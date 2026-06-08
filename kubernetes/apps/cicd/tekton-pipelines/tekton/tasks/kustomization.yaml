@@ -9,6 +9,9 @@ resources:
   - ./task-cleanup-preview.yaml
   - ./pipeline-build-push.yaml
   - ./pipeline-cleanup-preview.yaml
+  - ./pipeline-flutter-build.yaml
+  - ./task-flutter-build.yaml
+  - ./trigger-template-flutter.yaml
   - ./trigger-template.yaml
   - ./trigger-template-cleanup.yaml
   - ./trigger-binding.yaml
@@ -16,3 +19,4 @@ resources:
   - ./event-listener.yaml
   - ./rbac.yaml
   - ./tekton-github-ssh.sops.yaml
+  - ./zealot-tekton-secret.sops.yaml

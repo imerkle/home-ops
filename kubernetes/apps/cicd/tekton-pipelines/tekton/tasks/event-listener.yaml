@@ -33,6 +33,29 @@ spec:
       template:
         ref: build-and-push
 
+    # ── Flutter Android build trigger ─────────────────────────────────────────
+    # Fires on any push to the sms-vault repo and builds the Flutter APK,
+    # uploading it to Zealot via Fastlane.
+    - name: forgejo-push-flutter
+      interceptors:
+        - ref:
+            name: "cel"
+            kind: ClusterInterceptor
+          params:
+            - name: "filter"
+              value: >-
+                body.ref.startsWith('refs/heads/') &&
+                body.repository.name == 'sms-vault'
+            - name: "overlays"
+              value:
+                - key: sanitized_branch
+                  expression: >-
+                    body.ref.replace('refs/heads/', '').replace('/', '-')
+      bindings:
+        - ref: forgejo-push
+      template:
+        ref: flutter-build-android
+
     - name: forgejo-delete-trigger
       interceptors:
         - ref:

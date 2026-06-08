@@ -1,0 +1,56 @@
+---
+# TriggerTemplate: flutter-build-android
+# Creates a PipelineRun for the flutter-build-android pipeline
+# when the forgejo-push-flutter trigger fires.
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: flutter-build-android
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  params:
+    - name: git-repo-url
+      description: SSH URL of the sms-vault repository.
+    - name: git-revision
+      description: Commit SHA to build.
+      default: main
+    - name: git-repo-name
+      description: Repository name (used for PipelineRun naming).
+      default: sms-vault
+    - name: sanitized_branch
+      description: Pre-sanitized branch name (refs/heads/ stripped, / → -).
+      default: main
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1
+      kind: PipelineRun
+      metadata:
+        generateName: flutter-build-$(tt.params.git-repo-name)-
+        labels:
+          app.kubernetes.io/part-of: tekton-tasks
+          tekton.dev/pipeline: flutter-build-android
+      spec:
+        pipelineRef:
+          name: flutter-build-android
+        params:
+          - name: sms-vault-repo-url
+            value: $(tt.params.git-repo-url)
+          - name: revision
+            value: $(tt.params.git-revision)
+          - name: sanitized-branch
+            value: $(tt.params.sanitized_branch)
+          - name: git-ref
+            value: refs/heads/$(tt.params.sanitized_branch)
+        workspaces:
+          - name: shared-workspace
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    # Flutter + Android build artefacts are large
+                    storage: 10Gi
+          - name: ssh-credentials
+            secret:
+              secretName: tekton-github-ssh
