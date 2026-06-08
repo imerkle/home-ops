@@ -38,7 +38,7 @@ spec:
     - name: builder-image
       description: Docker image with Flutter + Android SDK + Fastlane.
       type: string
-      default: mingc/android-build-box:latest
+      default: zot.dev-system.svc.cluster.local:5000/smsvault-android-builder:latest
   workspaces:
     - name: shared-workspace
       description: >-
