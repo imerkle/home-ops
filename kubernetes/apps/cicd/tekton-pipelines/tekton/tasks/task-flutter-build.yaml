@@ -61,7 +61,52 @@ spec:
         echo "[flutter-pub-get] Running flutter pub get …"
         flutter pub get
         echo "[flutter-pub-get] Done."
-    # ── Step 2: fastlane android build_and_upload ─────────────────────────────
+    # ── Step 2: patch Gradle wrapper to use pre-installed Gradle ─────────────
+    # mingc/android-build-box ships Gradle at /opt/gradle/gradle-X.Y
+    # The flutter project's gradlew would otherwise try to download gradle-8.14
+    # from GitHub (https://services.gradle.org/...) which may 504 from inside
+    # the cluster. We redirect it to the local installation instead.
+    - name: gradle-setup
+      image: $(params.builder-image)
+      imagePullPolicy: IfNotPresent
+      workingDir: $(workspaces.source.path)/$(params.flutter-project-path)
+      env:
+        - name: HOME
+          value: /root
+      script: |
+        #!/bin/sh
+        set -e
+
+        WRAPPER="android/gradle/wrapper/gradle-wrapper.properties"
+
+        # Find the installed Gradle version
+        GRADLE_DIR=$(ls -d /opt/gradle/gradle-* 2>/dev/null | head -1)
+        if [ -z "$GRADLE_DIR" ]; then
+          echo "[gradle-setup] No pre-installed Gradle found at /opt/gradle, will rely on download."
+          exit 0
+        fi
+
+        GRADLE_VERSION=$(basename "$GRADLE_DIR" | sed 's/gradle-//')
+        echo "[gradle-setup] Found Gradle $GRADLE_VERSION at $GRADLE_DIR"
+
+        # Rewrite distributionUrl to a file:// URI pointing at the local install
+        # The zip lives alongside the expanded dir, or we create a symlink in GRADLE_USER_HOME
+        GRADLE_USER_HOME=/root/.gradle
+        DIST_DIR="$GRADLE_USER_HOME/wrapper/dists/gradle-${GRADLE_VERSION}-all/$(echo gradle-${GRADLE_VERSION}-all | md5sum | cut -d' ' -f1)"
+        mkdir -p "$DIST_DIR"
+
+        # Link the pre-installed dir so the wrapper sees it as already extracted
+        if [ ! -d "$DIST_DIR/gradle-${GRADLE_VERSION}" ]; then
+          ln -sf "$GRADLE_DIR" "$DIST_DIR/gradle-${GRADLE_VERSION}"
+          echo "[gradle-setup] Linked $GRADLE_DIR → $DIST_DIR/gradle-${GRADLE_VERSION}"
+        fi
+
+        # Mark the distribution as ready (gradle wrapper checks for a .ok file)
+        touch "$DIST_DIR/gradle-${GRADLE_VERSION}.ok"
+
+        echo "[gradle-setup] Gradle $GRADLE_VERSION pre-configured. distributionUrl unchanged."
+        echo "[gradle-setup] Done."
+
     - name: fastlane-build-upload
       image: $(params.builder-image)
       imagePullPolicy: IfNotPresent
@@ -77,6 +122,12 @@ spec:
           value: $(params.branch)
         - name: GIT_CHANGELOG
           value: "Build $(params.commit-sha) on $(params.branch)"
+        - name: GRADLE_USER_HOME
+          value: /root/.gradle
+        - name: ANDROID_SDK_ROOT
+          value: /opt/android-sdk-linux
+        - name: FLUTTER_SUPPRESS_ANALYTICS
+          value: "true"
         # Zealot credentials — mounted from the secret workspace
         - name: ZEALOT_ENDPOINT
           valueFrom:
