@@ -37,8 +37,6 @@ spec:
   workspaces:
     - name: source
       description: Shared workspace containing both sms-vault and rocket_ui checkouts.
-    - name: zealot-credentials
-      description: Secret containing ZEALOT_ENDPOINT, ZEALOT_TOKEN, and optionally ZEALOT_ANDROID_CHANNEL_KEY.
   results:
     - name: apk-path
       description: Absolute path to the built APK inside the workspace.
