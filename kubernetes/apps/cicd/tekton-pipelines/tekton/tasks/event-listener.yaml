@@ -34,8 +34,7 @@ spec:
         ref: build-and-push
 
     # ── Flutter Android build trigger ─────────────────────────────────────────
-    # Fires on any push to the sms-vault repo and builds the Flutter APK,
-    # uploading it to Zealot via Fastlane.
+    # Fires on any push to the sms-vault repo where files under flutterui/ have changed.
     - name: forgejo-push-flutter
       interceptors:
         - ref:
@@ -45,7 +44,13 @@ spec:
             - name: "filter"
               value: >-
                 body.ref.startsWith('refs/heads/') &&
-                body.repository.name == 'sms-vault'
+                body.repository.name == 'sms-vault' &&
+                has(body.commits) &&
+                body.commits.exists(c,
+                  c.added.exists(f, f.startsWith('flutterui/')) ||
+                  c.modified.exists(f, f.startsWith('flutterui/')) ||
+                  c.removed.exists(f, f.startsWith('flutterui/'))
+                )
             - name: "overlays"
               value:
                 - key: sanitized_branch
