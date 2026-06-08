@@ -9,6 +9,9 @@ spec:
   retryStrategy: StaticInterval
   approvePlan: auto
   path: ./terraform/zitadel-oidc
+  tfstate:
+    forceUnlock: "auto"
+
 
   sourceRef:
     kind: GitRepository
