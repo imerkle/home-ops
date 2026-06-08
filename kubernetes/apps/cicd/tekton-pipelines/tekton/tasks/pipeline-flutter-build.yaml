@@ -22,7 +22,7 @@ spec:
     - name: rocket-ui-repo-url
       description: SSH/HTTPS URL of the rocket_ui repository.
       type: string
-      default: git@ssh.forgejo.x3y.space:slim/rocket_ui.git
+      default: git@ssh.forgejo.x3y.space:zitadel-admin/rocket_ui.git
     - name: revision
       description: Git revision (commit SHA) to build.
       type: string
