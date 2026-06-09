@@ -20,3 +20,5 @@ resources:
   - ./rbac.yaml
   - ./tekton-github-ssh.sops.yaml
   - ./zealot-tekton-secret.sops.yaml
+  - ./game-fetcher-pac-secret.sops.yaml
+  - ./game-fetcher-repository.yaml

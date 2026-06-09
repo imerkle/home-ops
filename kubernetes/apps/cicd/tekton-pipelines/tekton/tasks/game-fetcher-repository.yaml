@@ -1,0 +1,15 @@
+apiVersion: pipelinesascode.tekton.dev/v1alpha1
+kind: Repository
+metadata:
+  name: game-fetcher
+  namespace: tekton-pipelines
+spec:
+  url: "https://forgejo.x3y.space/zitadel-admin/game-fetcher"
+  git_provider:
+    type: gitea
+    secret:
+      name: game-fetcher-pac-secret
+      key: provider.token
+    webhook_secret:
+      name: game-fetcher-pac-secret
+      key: webhook.secret
