@@ -93,3 +93,28 @@ spec:
   interval: 1h
   retryInterval: 1m
   timeout: 5m
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: tekton-pac
+  namespace: tekton-pipelines
+spec:
+  targetNamespace: pipelines-as-code
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: tekton-pac
+  dependsOn:
+    - name: tekton-pipelines
+  path: ./kubernetes/apps/cicd/tekton-pipelines/tekton/pac
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: home-kubernetes
+    namespace: flux-system
+  wait: true
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+
