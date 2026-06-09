@@ -63,4 +63,4 @@ spec:
         existingClaim: copyparty-hdd
         globalMounts:
           - path: /movies
-            subPath: movies
+            subPath: downloads/movies
