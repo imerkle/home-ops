@@ -57,7 +57,8 @@ spec:
               SETTINGS_SERVER_ADDR: settings-server.prod-system:50051
 
               PROWLARR_URL:  http://prowlarr.home-system.svc.cluster.local:9696
-              PROWLARR_API_KEY: b7b991c3258ad065b38c642000e5e707
+              PROWLARR_API_KEY: "vault:secret/data/prowlarr#API_KEY"
+
 
               DOWNLOAD_GAME_FOLDER: games
               DOWNLOAD_MOVIE_FOLDER: movies
