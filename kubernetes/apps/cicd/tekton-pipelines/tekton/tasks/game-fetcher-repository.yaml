@@ -7,9 +7,11 @@ spec:
   url: "https://forgejo.x3y.space/zitadel-admin/game-fetcher"
   git_provider:
     type: gitea
+    url: "https://forgejo.x3y.space"
     secret:
       name: game-fetcher-pac-secret
       key: provider.token
     webhook_secret:
       name: game-fetcher-pac-secret
       key: webhook.secret
+
