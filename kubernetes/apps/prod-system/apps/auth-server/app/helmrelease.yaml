@@ -57,7 +57,9 @@ spec:
                 memory: 128Mi
     defaultPodOptions:
       securityContext:
-        runAsNonRoot: false  # nginx:alpine runs as root by default
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
         seccompProfile:
           type: RuntimeDefault
     service:
