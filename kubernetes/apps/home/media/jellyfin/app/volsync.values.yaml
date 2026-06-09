@@ -1,0 +1,4 @@
+---
+volumes:
+  - name: jellyfin
+    capacity: 10Gi
