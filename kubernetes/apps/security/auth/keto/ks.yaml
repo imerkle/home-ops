@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://kubernetes-schemas.devbu.io/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: keto-app
+spec:
+  targetNamespace: keto
+  path: ./kubernetes/apps/security/auth/keto/app
+  dependsOn:
+    - name: vault
+      namespace: vault
+    - name: pg-clusters-default
+      namespace: db

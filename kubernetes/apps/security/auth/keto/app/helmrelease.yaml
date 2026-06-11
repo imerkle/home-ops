@@ -1,0 +1,50 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: keto
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: keto
+      version: 0.62.1
+      sourceRef:
+        kind: HelmRepository
+        name: ory
+        namespace: keto
+  values:
+    keto:
+      automigration:
+        enabled: true
+        type: initContainer
+      config:
+        dsn: "postgres://placeholder"
+        namespaces:
+          - id: 0
+            name: sample
+    deployment:
+      automigration:
+        extraEnv:
+          - name: DSN
+            value: "postgres://$${vault:secret/data/pg_default#USER}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/keto?sslmode=disable"
+      podMetadata:
+        annotations:
+          vault.security.banzaicloud.io/vault-role: "default"
+      extraEnv:
+        - name: DSN
+          value: "postgres://$${vault:secret/data/pg_default#USER}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/keto?sslmode=disable"
+      extraInitContainers: |
+        - name: init-db
+          image: ghcr.io/onedr0p/postgres-init:16.4
+          env:
+            - name: INIT_POSTGRES_DBNAME
+              value: keto
+            - name: INIT_POSTGRES_HOST
+              value: "vault:secret/data/pg_default#HOST"
+            - name: INIT_POSTGRES_USER
+              value: "vault:secret/data/pg_default#USER"
+            - name: INIT_POSTGRES_PASS
+              value: "vault:secret/data/pg_default#PASSWORD"
+            - name: INIT_POSTGRES_SUPER_PASS
+              value: "vault:secret/data/pg_default#PASSWORD"
