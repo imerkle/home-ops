@@ -66,6 +66,8 @@ spec:
               SCAN_GAME_PATH: /games
               SCAN_MOVIE_PATH: /movies
 
+              KETO_READ_URL: http://keto-read.keto.svc.cluster.local:80
+              KETO_WRITE_URL: http://keto-write.keto.svc.cluster.local:80
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
