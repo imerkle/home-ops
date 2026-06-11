@@ -23,6 +23,8 @@ spec:
         namespaces:
           - id: 0
             name: sample
+          - id: 1
+            name: media_library
     deployment:
       automigration:
         extraEnv:
