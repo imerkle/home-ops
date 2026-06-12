@@ -11,15 +11,22 @@
       "delay": "24h",
       "policies": [
         {
+          "repositories": ["*-cache", "**/*-cache"],
+          "deleteReferrers": true,
+          "deleteUntagged": true,
+          "keepTags": [
+            {
+              "mostRecentlyPushedCount": 20
+            }
+          ]
+        },
+        {
           "repositories": ["**"],
           "deleteReferrers": true,
           "deleteUntagged": true,
           "keepTags": [
             {
-              "mostRecentlyPushedCount": 5,
-              "mostRecentlyPulledCount": 5,
-              "pulledWithin": "720h",
-              "pushedWithin": "720h"
+              "mostRecentlyPushedCount": 3
             }
           ]
         }
