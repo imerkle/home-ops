@@ -28,6 +28,10 @@ spec:
                 - key: sanitized_branch
                   expression: >-
                     body.ref.replace('refs/heads/', '').replace('/', '-')
+                # Sanitize repo: convert to lowercase and replace '_' with '-'
+                - key: sanitized_repo_name
+                  expression: >-
+                    body.repository.name.lowerAscii().replace('_', '-')
       bindings:
         - ref: forgejo-push
       template:
@@ -56,6 +60,10 @@ spec:
                 - key: sanitized_branch
                   expression: >-
                     body.ref.replace('refs/heads/', '').replace('/', '-')
+                # Sanitize repo: convert to lowercase and replace '_' with '-'
+                - key: sanitized_repo_name
+                  expression: >-
+                    body.repository.name.lowerAscii().replace('_', '-')
       bindings:
         - ref: forgejo-push
       template:
@@ -76,6 +84,10 @@ spec:
                 # Sanitize: replace all '/' with '-' to form a valid preview name
                 - key: sanitized_branch
                   expression: "body.ref.replace('/', '-')"
+                # Sanitize repo: convert to lowercase and replace '_' with '-'
+                - key: sanitized_repo_name
+                  expression: >-
+                    body.repository.name.lowerAscii().replace('_', '-')
       bindings:
         - ref: forgejo-delete
       template:

@@ -11,7 +11,7 @@ metadata:
 spec:
   params:
     - name: git-repo-name
-      value: $(body.repository.name)
+      value: $(extensions.sanitized_repo_name)
     - name: git-ref
       # Use the sanitized_branch overlay computed by CEL in the EventListener
       # (forward slashes already replaced with hyphens)

@@ -33,6 +33,8 @@ spec:
         ports:
           http:
             port: 5800
+          api:
+            port: 3128
     route:
       app:
         labels:

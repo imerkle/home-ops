@@ -47,9 +47,7 @@ spec:
               QBITTORRENT_URL: "http://qbittorrent.home-system.svc.cluster.local:8080"
               QBITTORRENT_USERNAME: "admin"
               QBITTORRENT_PASSWORD: "adminadmin"
-              JDOWNLOADER_EMAIL: "user@example.com"
-              JDOWNLOADER_PASSWORD: "password"
-              JDOWNLOADER_DEVICE_ID: "my-jdownloader"
+              JDOWNLOADER_URL: "http://jdownloader.home-system.svc.cluster.local:3128"
               MEILISEARCH_URL: "http://meilisearch.db.svc.cluster.local:7700"
               MEILISEARCH_API_KEY: "super-secret-master-key"
               
