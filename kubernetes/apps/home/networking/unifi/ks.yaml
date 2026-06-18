@@ -6,8 +6,8 @@ metadata:
   namespace: &namespace home-system
 spec:
   dependsOn:
-    - name: zitadel-app
-      namespace: zitadel
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app

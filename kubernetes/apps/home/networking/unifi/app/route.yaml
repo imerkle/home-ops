@@ -1,5 +1,5 @@
-apiVersion: gateway.networking.k8s.io/v1alpha2
-kind: TLSRoute
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
 metadata:
   name: unifi-route
   annotations:
@@ -15,10 +15,10 @@ spec:
     - name: envoy-internal
       namespace: network
   rules:
-    # - matches:
-    #     - path:
-    #         type: PathPrefix
-    #         value: /
-    - backendRefs:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
         - name: unifi
           port: 8443
