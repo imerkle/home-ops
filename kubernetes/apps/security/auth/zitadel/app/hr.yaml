@@ -16,6 +16,16 @@ spec:
         namespace: zitadel
   values:
     env:
+      - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
+        value: "vault:database/creds/init-role#username"
+      - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
+        value: "vault:database/creds/init-role#password"
+      - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
+        value: "vault:database/creds/app-role#username"
+      - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
+        value: "vault:database/creds/app-role#password"
+      - name: ZITADEL_MASTERKEY
+        value: "vault:secret/data/zitadel#MASTERKEY"
       - name: ZITADEL_FIRSTINSTANCE_ORG_HUMAN_EMAIL_ADDRESS
         value: admin@admin.com
       - name: ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD
