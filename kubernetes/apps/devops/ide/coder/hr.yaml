@@ -37,6 +37,8 @@ spec:
               value: "vault:database/creds/init-role#username"
             - name: INIT_POSTGRES_PASS
               value: "vault:database/creds/init-role#password"
+            - name: PGDATABASE
+              value: "postgres"
             - name: INIT_POSTGRES_SUPER_USER
               value: "vault:database/creds/init-role#username"
             - name: INIT_POSTGRES_SUPER_PASS
