@@ -37,14 +37,14 @@ spec:
             args:
               - |
                 until pg_isready -h pg-default-rw.db.svc.cluster.local -U "$SUPER_USER"; do sleep 2; done
-                psql "postgresql://$SUPER_USER:$SUPER_PASS@pg-default-rw.db.svc.cluster.local:5432/mautrix-discord" <<SQL
-                  GRANT CONNECT ON DATABASE "mautrix-discord" TO PUBLIC;
+                psql "postgresql://$SUPER_USER:$SUPER_PASS@pg-default-rw.db.svc.cluster.local:5432/mautrix-discord" -c "
+                  GRANT CONNECT ON DATABASE \"mautrix-discord\" TO PUBLIC;
                   GRANT ALL PRIVILEGES ON SCHEMA public TO PUBLIC;
                   GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO PUBLIC;
                   GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO PUBLIC;
                   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO PUBLIC;
                   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO PUBLIC;
-                SQL
+                "
             env:
               SUPER_USER: "vault:database/creds/init-role#username"
               SUPER_PASS: "vault:database/creds/init-role#password"
