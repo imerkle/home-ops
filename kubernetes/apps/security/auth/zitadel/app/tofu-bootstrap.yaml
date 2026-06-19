@@ -8,6 +8,9 @@ spec:
   retryInterval: 1h
   retryStrategy: StaticInterval
   approvePlan: auto
+  tfstate:
+    forceUnlock: yes
+    lockIdentifier: "20db2920-fe23-14d9-e3e1-96123e840fc6"
   path: ./terraform/zitadel-bootstrap
 
   sourceRef:
