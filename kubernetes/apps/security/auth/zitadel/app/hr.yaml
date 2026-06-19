@@ -70,6 +70,17 @@ spec:
         CUSTOM_REQUEST_HEADERS="Host:zitadel.${DOMAIN1},X-Zitadel-Public-Host:zitadel.${DOMAIN1}"
 
     zitadel:
+      env:
+        - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
+          value: "vault:database/creds/init-role#username"
+        - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
+          value: "vault:database/creds/init-role#password"
+        - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
+          value: "vault:database/creds/app-role#username"
+        - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
+          value: "vault:database/creds/app-role#password"
+        - name: ZITADEL_MASTERKEY
+          value: "vault:secret/data/zitadel#MASTERKEY"
       masterkey: vault:secret/data/zitadel#MASTERKEY
       configmapConfig:
         ExternalDomain: &host "zitadel.${DOMAIN1}"
