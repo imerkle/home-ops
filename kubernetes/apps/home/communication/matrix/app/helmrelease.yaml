@@ -58,14 +58,14 @@ spec:
             - |
               until pg_isready -h pg-default-rw.db.svc.cluster.local -U "$SUPER_USER"; do sleep 2; done
               for DB in synapse matrix_authentication_service; do
-                psql "postgresql://$SUPER_USER:$SUPER_PASS@pg-default-rw.db.svc.cluster.local:5432/$DB" <<SQL
+                psql "postgresql://$SUPER_USER:$SUPER_PASS@pg-default-rw.db.svc.cluster.local:5432/$DB" -c "
                   GRANT CONNECT ON DATABASE $DB TO PUBLIC;
                   GRANT ALL PRIVILEGES ON SCHEMA public TO PUBLIC;
                   GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO PUBLIC;
                   GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO PUBLIC;
                   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO PUBLIC;
                   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO PUBLIC;
-                SQL
+                "
               done
           env:
             - name: SUPER_USER
