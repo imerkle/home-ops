@@ -27,7 +27,7 @@ spec:
               tag: "8.11@sha256:822dd7a1fa68601f70b3e06445c9cb52b134862b0c43f0f7a96ab6ac44a592a4"
             env:
               PGADMIN_DEFAULT_EMAIL: admin@admin.com
-              PGADMIN_DEFAULT_PASSWORD: "vault:secret/data/pg_default#PASSWORD"
+              PGADMIN_DEFAULT_PASSWORD: "vault:secret/data/pg_default#PASSWORD"  # UI admin password — not a DB connection
             resources:
               requests:
                 cpu: 15m

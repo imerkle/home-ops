@@ -23,26 +23,47 @@ spec:
             - name: INIT_POSTGRES_DBNAME
               value: "synapse"
             - name: INIT_POSTGRES_HOST
-              value: "vault:secret/data/pg_default#HOST"
+              value: "pg-default-rw.db.svc.cluster.local"
             - name: INIT_POSTGRES_USER
-              value: "vault:secret/data/pg_default#USER"
+              value: "vault:database/creds/init-role#username"
             - name: INIT_POSTGRES_PASS
-              value: "vault:secret/data/pg_default#PASSWORD"
+              value: "vault:database/creds/init-role#password"
             - name: INIT_POSTGRES_SUPER_PASS
-              value: "vault:secret/data/pg_default#PASSWORD"
+              value: "vault:database/creds/init-role#password"
         - name: init-db2
           image: ghcr.io/onedr0p/postgres-init:16.4
           env:
             - name: INIT_POSTGRES_DBNAME
               value: "matrix_authentication_service"
             - name: INIT_POSTGRES_HOST
-              value: "vault:secret/data/pg_default#HOST"
+              value: "pg-default-rw.db.svc.cluster.local"
             - name: INIT_POSTGRES_USER
-              value: "vault:secret/data/pg_default#USER"
+              value: "vault:database/creds/init-role#username"
             - name: INIT_POSTGRES_PASS
-              value: "vault:secret/data/pg_default#PASSWORD"
+              value: "vault:database/creds/init-role#password"
             - name: INIT_POSTGRES_SUPER_PASS
-              value: "vault:secret/data/pg_default#PASSWORD"
+              value: "vault:database/creds/init-role#password"
+        - name: init-db-grants
+          image: ghcr.io/cloudnative-pg/postgresql:15.2-11
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              until pg_isready -h pg-default-rw.db.svc.cluster.local -U "$SUPER_USER"; do sleep 2; done
+              for DB in synapse matrix_authentication_service; do
+                psql "postgresql://$SUPER_USER:$SUPER_PASS@pg-default-rw.db.svc.cluster.local:5432/$DB" <<SQL
+                  GRANT CONNECT ON DATABASE $DB TO PUBLIC;
+                  GRANT USAGE ON SCHEMA public TO PUBLIC;
+                  GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO PUBLIC;
+                  GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO PUBLIC;
+                  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO PUBLIC;
+                  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO PUBLIC;
+                SQL
+              done
+          env:
+            - name: SUPER_USER
+              value: "vault:database/creds/init-role#username"
+            - name: SUPER_PASS
+              value: "vault:database/creds/init-role#password"
       ingress:
         host: matrix.${DOMAIN1}
         className: disabled
@@ -50,9 +71,9 @@ spec:
       postgres:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
-        user: vault:secret/data/pg_default#USER
+        user: vault:database/creds/app-role#username
         password:
-          value: vault:secret/data/pg_default#PASSWORD
+          value: vault:database/creds/app-role#password
         database: synapse
       media:
         storage:
@@ -154,10 +175,9 @@ spec:
       postgres:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
-        user: vault:secret/data/pg_default#USER
+        user: vault:database/creds/app-role#username
         password:
-          secret: matrix-postgres-creds
-          secretKey: password
+          value: vault:database/creds/app-role#password
         database: matrix_authentication_service
       additional:
         1-mas-config:

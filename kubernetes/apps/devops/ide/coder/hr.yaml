@@ -32,13 +32,32 @@ spec:
             - name: INIT_POSTGRES_DBNAME
               value: "coder"
             - name: INIT_POSTGRES_HOST
-              value: "vault:secret/data/pg_default#HOST"
+              value: "pg-default-rw.db.svc.cluster.local"
             - name: INIT_POSTGRES_USER
-              value: "vault:secret/data/pg_default#USER"
+              value: "vault:database/creds/init-role#username"
             - name: INIT_POSTGRES_PASS
-              value: "vault:secret/data/pg_default#PASSWORD"
+              value: "vault:database/creds/init-role#password"
             - name: INIT_POSTGRES_SUPER_PASS
-              value: "vault:secret/data/pg_default#PASSWORD"
+              value: "vault:database/creds/init-role#password"
+        - name: 02-init-db-grants
+          image: ghcr.io/cloudnative-pg/postgresql:15.2-11
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              until pg_isready -h pg-default-rw.db.svc.cluster.local -U "$SUPER_USER"; do sleep 2; done
+              psql "postgresql://$SUPER_USER:$SUPER_PASS@pg-default-rw.db.svc.cluster.local:5432/coder" <<SQL
+                GRANT CONNECT ON DATABASE coder TO PUBLIC;
+                GRANT USAGE ON SCHEMA public TO PUBLIC;
+                GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO PUBLIC;
+                GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO PUBLIC;
+                ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO PUBLIC;
+                ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO PUBLIC;
+              SQL
+          env:
+            - name: SUPER_USER
+              value: "vault:database/creds/init-role#username"
+            - name: SUPER_PASS
+              value: "vault:database/creds/init-role#password"
       env:
         - name: CODER_ACCESS_URL
           value: https://coder.${DOMAIN1}
@@ -51,8 +70,7 @@ spec:
         # - name: CODER_DISABLE_PASSWORD_AUTH
           # value: "true"
         - name: CODER_PG_CONNECTION_URL
-          value: "postgres://$${vault:secret/data/pg_default#USER}:$${vault:secret/data/pg_default#PASSWORD}@$${vault:secret/data/pg_default#HOST}:5432/coder?sslmode=disable"
-          # value: postgres://coder:secret42@localhost/coder?sslmode=disable"
+          value: "postgres://$${vault:database/creds/app-role#username}:$${vault:database/creds/app-role#password}@pg-default-rw.db.svc.cluster.local:5432/coder?sslmode=disable"
         - name: CODER_OIDC_ALLOW_SIGNUPS
           value: "true"
         - name: CODER_OIDC_ISSUER_URL
@@ -68,13 +86,13 @@ spec:
               name: coder-oidc-creds
               key: client_secret
         - name: CODER_POSTGRES_HOST
-          value: "vault:secret/data/pg_default#HOST"
+          value: "pg-default-rw.db.svc.cluster.local"
         - name: CODER_POSTGRES_PORT
           value: "5432"
         - name: CODER_POSTGRES_USER
-          value: "vault:secret/data/pg_default#USER"
+          value: "vault:database/creds/app-role#username"
         - name: CODER_POSTGRES_PASSWORD
-          value: "vault:secret/data/pg_default#PASSWORD"
+          value: "vault:database/creds/app-role#password"
         - name: CODER_POSTGRES_MAIN_DB
           value: "coder"
       volumes:

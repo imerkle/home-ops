@@ -70,7 +70,7 @@ spec:
         ExternalPort: 443
         Database:
           postgres:
-            Host: vault:secret/data/pg_default#HOST
+            Host: pg-default-rw.db.svc.cluster.local
             Port: 5432
             Database: zitadel
             MaxOpenConns: 40
@@ -78,13 +78,13 @@ spec:
             MaxConnLifetime: 30m
             MaxConnIdleTime: 5m
             User:
-              Username: vault:secret/data/pg_default#USER
-              Password: vault:secret/data/pg_default#PASSWORD
+              Username: vault:database/creds/app-role#username
+              Password: vault:database/creds/app-role#password
               SSL:
                 Mode: disable
             Admin:
-              Username: vault:secret/data/pg_default#USER
-              Password: vault:secret/data/pg_default#PASSWORD
+              Username: vault:database/creds/init-role#username
+              Password: vault:database/creds/init-role#password
               SSL:
                 Mode: disable
 
