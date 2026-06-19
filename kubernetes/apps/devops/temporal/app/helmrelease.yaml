@@ -71,6 +71,7 @@ spec:
               POSTGRES_USER: "vault:database/creds/app-role#username"
               POSTGRES_PWD: "vault:database/creds/app-role#password"
               POSTGRES_SEEDS: "pg-default-rw.db.svc.cluster.local"
+              SKIP_DB_CREATE: "true"
             resources:
               requests:
                 cpu: 100m
