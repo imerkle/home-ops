@@ -10,7 +10,7 @@ spec:
   approvePlan: auto
   path: ./terraform/zitadel-oidc
   tfstate:
-    forceUnlock: "auto"
+    forceUnlock: "no"
 
 
   sourceRef:
