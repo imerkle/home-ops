@@ -25,6 +25,7 @@ spec:
               INIT_POSTGRES_HOST: "pg-default-rw.db.svc.cluster.local"
               INIT_POSTGRES_USER: "vault:database/creds/init-role#username"
               INIT_POSTGRES_PASS: "vault:database/creds/init-role#password"
+              INIT_POSTGRES_SUPER_USER: "vault:database/creds/init-role#username"
               INIT_POSTGRES_SUPER_PASS: "vault:database/creds/init-role#password"
           init-db-grants:
             image:

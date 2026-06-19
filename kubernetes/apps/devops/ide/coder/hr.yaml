@@ -37,6 +37,8 @@ spec:
               value: "vault:database/creds/init-role#username"
             - name: INIT_POSTGRES_PASS
               value: "vault:database/creds/init-role#password"
+            - name: INIT_POSTGRES_SUPER_USER
+              value: "vault:database/creds/init-role#username"
             - name: INIT_POSTGRES_SUPER_PASS
               value: "vault:database/creds/init-role#password"
         - name: 02-init-db-grants
