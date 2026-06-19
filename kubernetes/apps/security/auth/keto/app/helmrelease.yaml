@@ -3,6 +3,8 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: keto
+  labels:
+    security.banzaicloud.io/mutate: skip
 spec:
   interval: 1h
   chart:
