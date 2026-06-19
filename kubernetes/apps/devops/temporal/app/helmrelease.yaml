@@ -50,7 +50,7 @@ spec:
                 for DB in temporal temporal_visibility; do
                   psql "postgresql://$SUPER_USER:$SUPER_PASS@pg-default-rw.db.svc.cluster.local:5432/$DB" <<SQL
                     GRANT CONNECT ON DATABASE $DB TO PUBLIC;
-                    GRANT USAGE ON SCHEMA public TO PUBLIC;
+                    GRANT ALL PRIVILEGES ON SCHEMA public TO PUBLIC;
                     GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO PUBLIC;
                     GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO PUBLIC;
                     ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO PUBLIC;
