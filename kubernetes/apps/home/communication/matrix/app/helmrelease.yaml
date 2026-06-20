@@ -57,7 +57,7 @@ spec:
         database: synapse
       media:
         storage:
-          size: 5Gi
+          size: 20Gi
           storageClassName: ceph-filesystem
         maxUploadSize: 100M
       additional:
