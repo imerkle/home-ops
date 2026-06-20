@@ -69,9 +69,10 @@ spec:
       postgres:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
-        user: vault:database/creds/app-role#username
+        user: ${username}
         password:
-          value: vault:database/creds/app-role#password
+          secret: matrix-postgres-creds
+          secretKey: password
         database: synapse
       media:
         storage:
@@ -173,9 +174,10 @@ spec:
       postgres:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
-        user: vault:database/creds/app-role#username
+        user: ${username}
         password:
-          value: vault:database/creds/app-role#password
+          secret: matrix-postgres-creds
+          secretKey: password
         database: matrix_authentication_service
       additional:
         1-mas-config:
