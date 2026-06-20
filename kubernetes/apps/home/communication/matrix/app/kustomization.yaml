@@ -6,7 +6,7 @@ resources:
   - source.yaml
   - httproutes.yaml
   - netpol.yaml
-  - secret.yaml
+  - externalsecret.yaml
 configMapGenerator:
   - name: mautrix-whatsapp-config
     files:
@@ -25,5 +25,3 @@ configMapGenerator:
       - ./discord/doublepuppet.yaml
 generatorOptions:
   disableNameSuffixHash: true
-patchesStrategicMerge:
-  - render-config-patch.yaml

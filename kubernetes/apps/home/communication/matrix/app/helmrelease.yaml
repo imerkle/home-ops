@@ -43,25 +43,6 @@ spec:
               value: "pg-default-rw.db.svc.cluster.local"
             - name: PGDATABASE
               value: "postgres"
-        - name: init-db-grants
-          image: ghcr.io/cloudnative-pg/postgresql:15.2-11
-          envFrom:
-            - secretRef:
-                name: matrix-init-db-credentials
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              until pg_isready -h pg-default-rw.db.svc.cluster.local -U "$SUPER_USER"; do sleep 2; done
-              for DB in synapse matrix_authentication_service; do
-                psql "postgresql://$SUPER_USER:$SUPER_PASS@pg-default-rw.db.svc.cluster.local:5432/$DB" -c "
-                  GRANT CONNECT ON DATABASE $DB TO PUBLIC;
-                  GRANT ALL PRIVILEGES ON SCHEMA public TO PUBLIC;
-                  GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO PUBLIC;
-                  GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO PUBLIC;
-                  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO PUBLIC;
-                  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO PUBLIC;
-                "
-              done
       ingress:
         host: matrix.${DOMAIN1}
         className: disabled
@@ -69,9 +50,10 @@ spec:
       postgres:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
-        user: vault:database/creds/app-role#username
+        user: synapse_user
         password:
-          value: vault:database/creds/app-role#password
+          secret: synapse-db-creds
+          secretKey: password
         database: synapse
       media:
         storage:
@@ -173,9 +155,10 @@ spec:
       postgres:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
-        user: vault:database/creds/app-role#username
+        user: mas_user
         password:
-          value: vault:database/creds/app-role#password
+          secret: mas-db-creds
+          secretKey: password
         database: matrix_authentication_service
       additional:
         1-mas-config:
@@ -301,3 +284,5 @@ spec:
     # Disable built-in PostgreSQL, use external
     postgres:
       enabled: false
+
+

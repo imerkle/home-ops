@@ -6,6 +6,18 @@ metadata:
   # annotations:
   #   cnpg.io/skipEmptyWalArchiveCheck: "enabled"
 spec:
+  managed:
+    roles:
+      - name: synapse_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: synapse-db-creds
+      - name: mas_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: mas-db-creds
   # inheritedMetadata:
   #   annotations:
   #     vault.security.banzaicloud.io/vault-addr: "http://vault.vault:8200"
