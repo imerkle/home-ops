@@ -38,7 +38,6 @@ spec:
       namespace: rook-ceph
     - name: vault
       namespace: vault
-    - name: matrix-oidc
   path: ./kubernetes/apps/home/communication/matrix/app
   prune: true
   sourceRef:
