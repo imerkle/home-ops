@@ -14,45 +14,33 @@ spec:
   postRenderers:
     - kustomize:
         patches:
-          - patch: |
-              apiVersion: apps/v1
+          - target:
               kind: Deployment
-              metadata:
-                name: matrix-matrix-authentication-service
-              spec:
-                template:
-                  spec:
-                    initContainers:
-                      - name: render-config
-                        envFrom:
-                          - secretRef:
-                              name: matrix-postgres-creds
-          - patch: |
-              apiVersion: apps/v1
+              name: matrix-matrix-authentication-service
+            patch: |
+              - op: add
+                path: /spec/template/spec/initContainers/0/envFrom
+                value:
+                  - secretRef:
+                      name: matrix-postgres-creds
+          - target:
               kind: StatefulSet
-              metadata:
-                name: matrix-synapse-main
-              spec:
-                template:
-                  spec:
-                    initContainers:
-                      - name: render-config
-                        envFrom:
-                          - secretRef:
-                              name: matrix-postgres-creds
-          - patch: |
-              apiVersion: batch/v1
+              name: matrix-synapse-main
+            patch: |
+              - op: add
+                path: /spec/template/spec/initContainers/0/envFrom
+                value:
+                  - secretRef:
+                      name: matrix-postgres-creds
+          - target:
               kind: Job
-              metadata:
-                name: matrix-synapse-check-config
-              spec:
-                template:
-                  spec:
-                    initContainers:
-                      - name: render-config
-                        envFrom:
-                          - secretRef:
-                              name: matrix-postgres-creds
+              name: matrix-synapse-check-config
+            patch: |
+              - op: add
+                path: /spec/template/spec/initContainers/0/envFrom
+                value:
+                  - secretRef:
+                      name: matrix-postgres-creds
   values:
     serverName: ${DOMAIN1}
     labels:
