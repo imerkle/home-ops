@@ -25,5 +25,3 @@ configMapGenerator:
       - ./discord/doublepuppet.yaml
 generatorOptions:
   disableNameSuffixHash: true
-patchesStrategicMerge:
-  - render-config-patch.yaml
