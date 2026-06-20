@@ -11,36 +11,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: matrix-stack
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Deployment
-              name: matrix-matrix-authentication-service
-            patch: |
-              - op: add
-                path: /spec/template/spec/initContainers/0/envFrom
-                value:
-                  - secretRef:
-                      name: matrix-postgres-creds
-          - target:
-              kind: StatefulSet
-              name: matrix-synapse-main
-            patch: |
-              - op: add
-                path: /spec/template/spec/initContainers/0/envFrom
-                value:
-                  - secretRef:
-                      name: matrix-postgres-creds
-          - target:
-              kind: Job
-              name: matrix-synapse-check-config
-            patch: |
-              - op: add
-                path: /spec/template/spec/initContainers/0/envFrom
-                value:
-                  - secretRef:
-                      name: matrix-postgres-creds
   values:
     serverName: ${DOMAIN1}
     labels:
@@ -99,9 +69,9 @@ spec:
       postgres:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
-        user: "$${username}"
+        user: vault:database/creds/app-role#username
         password:
-          value: "$${password}"
+          value: vault:database/creds/app-role#password
         database: synapse
       media:
         storage:
@@ -203,9 +173,9 @@ spec:
       postgres:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
-        user: "$${username}"
+        user: vault:database/creds/app-role#username
         password:
-          value: "$${password}"
+          value: vault:database/creds/app-role#password
         database: matrix_authentication_service
       additional:
         1-mas-config:
