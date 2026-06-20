@@ -21,40 +21,33 @@ spec:
       extraInitContainers:
         - name: init-db
           image: ghcr.io/onedr0p/postgres-init:16.4
+          envFrom:
+            - secretRef:
+                name: matrix-init-db-credentials
           env:
             - name: INIT_POSTGRES_DBNAME
               value: "synapse"
             - name: INIT_POSTGRES_HOST
               value: "pg-default-rw.db.svc.cluster.local"
-            - name: INIT_POSTGRES_USER
-              value: "vault:database/creds/init-role#username"
-            - name: INIT_POSTGRES_PASS
-              value: "vault:database/creds/init-role#password"
             - name: PGDATABASE
               value: "postgres"
-            - name: INIT_POSTGRES_SUPER_USER
-              value: "vault:database/creds/init-role#username"
-            - name: INIT_POSTGRES_SUPER_PASS
-              value: "vault:database/creds/init-role#password"
         - name: init-db2
           image: ghcr.io/onedr0p/postgres-init:16.4
+          envFrom:
+            - secretRef:
+                name: matrix-init-db-credentials
           env:
             - name: INIT_POSTGRES_DBNAME
               value: "matrix_authentication_service"
             - name: INIT_POSTGRES_HOST
               value: "pg-default-rw.db.svc.cluster.local"
-            - name: INIT_POSTGRES_USER
-              value: "vault:database/creds/init-role#username"
-            - name: INIT_POSTGRES_PASS
-              value: "vault:database/creds/init-role#password"
             - name: PGDATABASE
               value: "postgres"
-            - name: INIT_POSTGRES_SUPER_USER
-              value: "vault:database/creds/init-role#username"
-            - name: INIT_POSTGRES_SUPER_PASS
-              value: "vault:database/creds/init-role#password"
         - name: init-db-grants
           image: ghcr.io/cloudnative-pg/postgresql:15.2-11
+          envFrom:
+            - secretRef:
+                name: matrix-init-db-credentials
           command: ["/bin/sh", "-c"]
           args:
             - |
@@ -69,11 +62,6 @@ spec:
                   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO PUBLIC;
                 "
               done
-          env:
-            - name: SUPER_USER
-              value: "vault:database/creds/init-role#username"
-            - name: SUPER_PASS
-              value: "vault:database/creds/init-role#password"
       ingress:
         host: matrix.${DOMAIN1}
         className: disabled
