@@ -8,3 +8,5 @@ resources:
   - providers.yaml
   - providerconfig-sql.yaml
   - providerconfig-vault.yaml
+  - xrd.yaml
+  - composition.yaml
