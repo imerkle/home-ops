@@ -1,0 +1,37 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xappdatabases.home.arpa
+spec:
+  group: home.arpa
+  names:
+    kind: XAppDatabase
+    plural: xappdatabases
+  claimNames:
+    kind: AppDatabase
+    plural: appdatabases
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                databaseName:
+                  type: string
+                groupRole:
+                  type: string
+                schemaCreate:
+                  type: boolean
+                  default: false
+                createDb:
+                  type: boolean
+                  default: false
+              required:
+                - databaseName
+                - groupRole

@@ -1,0 +1,117 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: appdatabases.home.arpa
+spec:
+  compositeTypeRef:
+    apiVersion: home.arpa/v1alpha1
+    kind: XAppDatabase
+  resources:
+    - name: postgres-db
+      base:
+        apiVersion: postgresql.sql.crossplane.io/v1alpha1
+        kind: Database
+        spec:
+          forProvider: {}
+      patches:
+        - fromFieldPath: spec.databaseName
+          toFieldPath: spec.forProvider.name
+    
+    - name: postgres-role
+      base:
+        apiVersion: postgresql.sql.crossplane.io/v1alpha1
+        kind: Role
+        spec:
+          forProvider:
+            privileges:
+              login: false
+      patches:
+        - fromFieldPath: spec.groupRole
+          toFieldPath: spec.forProvider.name
+
+    - name: grant-connect
+      base:
+        apiVersion: postgresql.sql.crossplane.io/v1alpha1
+        kind: Grant
+        spec:
+          forProvider:
+            privileges:
+              - CONNECT
+            database: "placeholder"
+            role: "placeholder"
+      patches:
+        - fromFieldPath: spec.databaseName
+          toFieldPath: spec.forProvider.database
+        - fromFieldPath: spec.groupRole
+          toFieldPath: spec.forProvider.role
+
+    - name: grant-usage-schema
+      base:
+        apiVersion: postgresql.sql.crossplane.io/v1alpha1
+        kind: Grant
+        spec:
+          forProvider:
+            privileges:
+              - USAGE
+            database: "placeholder"
+            schema: "public"
+            role: "placeholder"
+      patches:
+        - fromFieldPath: spec.databaseName
+          toFieldPath: spec.forProvider.database
+        - fromFieldPath: spec.groupRole
+          toFieldPath: spec.forProvider.role
+
+    - name: grant-create-schema
+      base:
+        apiVersion: postgresql.sql.crossplane.io/v1alpha1
+        kind: Grant
+        spec:
+          forProvider:
+            privileges:
+              - CREATE
+            database: "placeholder"
+            schema: "public"
+            role: "placeholder"
+      patches:
+        - fromFieldPath: spec.databaseName
+          toFieldPath: spec.forProvider.database
+        - fromFieldPath: spec.groupRole
+          toFieldPath: spec.forProvider.role
+        - fromFieldPath: spec.schemaCreate
+          toFieldPath: spec.forProvider.privileges
+          transforms:
+            - type: map
+              map:
+                true: ["CREATE", "USAGE"]
+                false: ["USAGE"]
+
+    - name: vault-role
+      base:
+        apiVersion: database.vault.upbound.io/v1alpha1
+        kind: SecretBackendRole
+        spec:
+          forProvider:
+            backend: database
+            dbName: pg-default
+            defaultTtl: 3600
+            maxTtl: 86400
+            name: "placeholder"
+            creationStatements:
+              - "placeholder"
+      patches:
+        - fromFieldPath: metadata.labels[crossplane.io/claim-name]
+          toFieldPath: spec.forProvider.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-role"
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.groupRole
+            strategy: string
+            string:
+              fmt: "CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}' INHERIT; GRANT %s TO \"{{name}}\";"
+          toFieldPath: spec.forProvider.creationStatements[0]
