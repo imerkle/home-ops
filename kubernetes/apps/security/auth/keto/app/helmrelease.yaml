@@ -31,47 +31,16 @@ spec:
       automigration:
         extraEnv:
           - name: DSN
-            value: "postgres://$${vault:database/creds/app-role#username}:$${vault:database/creds/app-role#password}@pg-default-rw.db.svc.cluster.local:5432/keto?sslmode=disable"
+            valueFrom:
+              secretKeyRef:
+                name: keto-db-creds
+                key: DSN
       podMetadata:
         annotations:
           vault.security.banzaicloud.io/vault-role: "default"
       extraEnv:
         - name: DSN
-          value: "postgres://$${vault:database/creds/app-role#username}:$${vault:database/creds/app-role#password}@pg-default-rw.db.svc.cluster.local:5432/keto?sslmode=disable"
-      extraInitContainers: |
-        - name: init-db
-          image: ghcr.io/onedr0p/postgres-init:16.4
-          env:
-            - name: INIT_POSTGRES_DBNAME
-              value: keto
-            - name: INIT_POSTGRES_HOST
-              value: "pg-default-rw.db.svc.cluster.local"
-            - name: INIT_POSTGRES_USER
-              value: "vault:database/creds/init-role#username"
-            - name: INIT_POSTGRES_PASS
-              value: "vault:database/creds/init-role#password"
-            - name: PGDATABASE
-              value: "postgres"
-            - name: INIT_POSTGRES_SUPER_USER
-              value: "vault:database/creds/init-role#username"
-            - name: INIT_POSTGRES_SUPER_PASS
-              value: "vault:database/creds/init-role#password"
-        - name: init-db-grants
-          image: ghcr.io/cloudnative-pg/postgresql:15.2-11
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              until pg_isready -h pg-default-rw.db.svc.cluster.local -U "$SUPER_USER"; do sleep 2; done
-              psql "postgresql://$SUPER_USER:$SUPER_PASS@pg-default-rw.db.svc.cluster.local:5432/keto" <<SQL
-                GRANT CONNECT ON DATABASE keto TO PUBLIC;
-                GRANT ALL PRIVILEGES ON SCHEMA public TO PUBLIC;
-                GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO PUBLIC;
-                GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO PUBLIC;
-                ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO PUBLIC;
-                ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO PUBLIC;
-              SQL
-          env:
-            - name: SUPER_USER
-              value: "vault:database/creds/init-role#username"
-            - name: SUPER_PASS
-              value: "vault:database/creds/init-role#password"
+          valueFrom:
+            secretKeyRef:
+              name: keto-db-creds
+              key: DSN
