@@ -67,7 +67,7 @@ spec:
               # game-fetcher
               psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/gamefetcher" <<'SQL'
                 GRANT CONNECT ON DATABASE gamefetcher TO game_fetcher_grp;
-                GRANT USAGE ON SCHEMA public TO game_fetcher_grp;
+                GRANT USAGE, CREATE ON SCHEMA public TO game_fetcher_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO game_fetcher_grp;
                 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO game_fetcher_grp;
                 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO game_fetcher_grp;
@@ -77,7 +77,7 @@ spec:
               # settings-server
               psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/settings_server" <<'SQL'
                 GRANT CONNECT ON DATABASE settings_server TO settings_server_grp;
-                GRANT USAGE ON SCHEMA public TO settings_server_grp;
+                GRANT USAGE, CREATE ON SCHEMA public TO settings_server_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO settings_server_grp;
                 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO settings_server_grp;
                 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO settings_server_grp;
@@ -87,7 +87,7 @@ spec:
               # atuin
               psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/atuin_db" <<'SQL'
                 GRANT CONNECT ON DATABASE atuin_db TO atuin_grp;
-                GRANT USAGE ON SCHEMA public TO atuin_grp;
+                GRANT USAGE, CREATE ON SCHEMA public TO atuin_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO atuin_grp;
                 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO atuin_grp;
                 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO atuin_grp;
@@ -97,7 +97,7 @@ spec:
               # vaultwarden
               psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/vaultwarden" <<'SQL'
                 GRANT CONNECT ON DATABASE vaultwarden TO vaultwarden_grp;
-                GRANT USAGE ON SCHEMA public TO vaultwarden_grp;
+                GRANT USAGE, CREATE ON SCHEMA public TO vaultwarden_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO vaultwarden_grp;
                 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO vaultwarden_grp;
                 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO vaultwarden_grp;
@@ -107,7 +107,7 @@ spec:
               # zealot
               psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/zealot" <<'SQL'
                 GRANT CONNECT ON DATABASE zealot TO zealot_grp;
-                GRANT USAGE ON SCHEMA public TO zealot_grp;
+                GRANT USAGE, CREATE ON SCHEMA public TO zealot_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO zealot_grp;
                 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO zealot_grp;
                 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO zealot_grp;
@@ -117,7 +117,7 @@ spec:
               # zitadel
               psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/zitadel" <<'SQL'
                 GRANT CONNECT ON DATABASE zitadel TO zitadel_grp;
-                GRANT USAGE ON SCHEMA public TO zitadel_grp;
+                GRANT USAGE, CREATE ON SCHEMA public TO zitadel_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO zitadel_grp;
                 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO zitadel_grp;
                 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO zitadel_grp;
@@ -127,7 +127,7 @@ spec:
               # forgejo
               psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/forgejo" <<'SQL'
                 GRANT CONNECT ON DATABASE forgejo TO forgejo_grp;
-                GRANT USAGE ON SCHEMA public TO forgejo_grp;
+                GRANT USAGE, CREATE ON SCHEMA public TO forgejo_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO forgejo_grp;
                 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO forgejo_grp;
                 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO forgejo_grp;
@@ -137,7 +137,7 @@ spec:
               # coder
               psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/coder" <<'SQL'
                 GRANT CONNECT ON DATABASE coder TO coder_grp;
-                GRANT USAGE ON SCHEMA public TO coder_grp;
+                GRANT USAGE, CREATE ON SCHEMA public TO coder_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO coder_grp;
                 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO coder_grp;
                 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO coder_grp;
@@ -147,7 +147,7 @@ spec:
               # litellm
               psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/litellm" <<'SQL'
                 GRANT CONNECT ON DATABASE litellm TO litellm_grp;
-                GRANT USAGE ON SCHEMA public TO litellm_grp;
+                GRANT USAGE, CREATE ON SCHEMA public TO litellm_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO litellm_grp;
                 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO litellm_grp;
                 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO litellm_grp;
@@ -157,7 +157,7 @@ spec:
               # keto
               psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/keto" <<'SQL'
                 GRANT CONNECT ON DATABASE keto TO keto_grp;
-                GRANT USAGE ON SCHEMA public TO keto_grp;
+                GRANT USAGE, CREATE ON SCHEMA public TO keto_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO keto_grp;
                 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO keto_grp;
                 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO keto_grp;
@@ -168,7 +168,7 @@ spec:
               for DB in temporal temporal_visibility; do
                 psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/$${DB}" <<SQL
                   GRANT CONNECT ON DATABASE $${DB} TO temporal_grp;
-                  GRANT USAGE ON SCHEMA public TO temporal_grp;
+                  GRANT USAGE, CREATE ON SCHEMA public TO temporal_grp;
                   GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO temporal_grp;
                   GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO temporal_grp;
                   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO temporal_grp;
@@ -182,7 +182,7 @@ spec:
                 GRP="mautrix_$${APP}_grp"
                 psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/$${DB}" <<SQL
                   GRANT CONNECT ON DATABASE "$${DB}" TO $${GRP};
-                  GRANT USAGE ON SCHEMA public TO $${GRP};
+                  GRANT USAGE, CREATE ON SCHEMA public TO $${GRP};
                   GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $${GRP};
                   GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $${GRP};
                   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO $${GRP};
@@ -193,7 +193,7 @@ spec:
               # matrix-stack (synapse + mas)
               psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/synapse" <<'SQL'
                 GRANT CONNECT ON DATABASE synapse TO synapse_grp;
-                GRANT USAGE ON SCHEMA public TO synapse_grp;
+                GRANT USAGE, CREATE ON SCHEMA public TO synapse_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO synapse_grp;
                 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO synapse_grp;
                 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO synapse_grp;
@@ -202,7 +202,7 @@ spec:
 
               psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/matrix_authentication_service" <<'SQL'
                 GRANT CONNECT ON DATABASE matrix_authentication_service TO mas_grp;
-                GRANT USAGE ON SCHEMA public TO mas_grp;
+                GRANT USAGE, CREATE ON SCHEMA public TO mas_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO mas_grp;
                 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO mas_grp;
                 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO mas_grp;
