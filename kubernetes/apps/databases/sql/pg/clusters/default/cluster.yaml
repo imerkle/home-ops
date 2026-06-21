@@ -18,6 +18,61 @@ spec:
         ensure: present
         passwordSecret:
           name: mas-db-creds
+      - name: atuin_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: atuin-db-creds
+      - name: vaultwarden_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: vaultwarden-db-creds
+      - name: zealot_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: zealot-db-creds
+      - name: zitadel_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: zitadel-db-creds
+      - name: forgejo_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: forgejo-db-creds
+      - name: coder_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: coder-db-creds
+      - name: litellm_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: litellm-db-creds
+      - name: keto_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: keto-db-creds
+      - name: temporal_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: temporal-db-creds
+      - name: game_fetcher_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: game-fetcher-db-creds
+      - name: settings_server_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: settings-server-db-creds
   # inheritedMetadata:
   #   annotations:
   #     vault.security.banzaicloud.io/vault-addr: "http://vault.vault:8200"
