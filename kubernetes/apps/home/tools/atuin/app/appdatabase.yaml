@@ -3,7 +3,7 @@ apiVersion: home.arpa/v1alpha1
 kind: AppDatabase
 metadata:
   name: atuin-db
-  namespace: tools
+  namespace: home-system
 spec:
   databaseName: atuin_db
   groupRole: atuin-role
