@@ -84,8 +84,8 @@ spec:
           transforms:
             - type: map
               map:
-                true: ["CREATE", "USAGE"]
-                false: ["USAGE"]
+                "true": ["CREATE", "USAGE"]
+                "false": ["USAGE"]
 
     - name: vault-role
       base:
