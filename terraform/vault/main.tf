@@ -39,7 +39,10 @@ locals {
     { name = "keto-static", username = "keto_user" },
     { name = "temporal-static", username = "temporal_user" },
     { name = "game-fetcher-static", username = "game_fetcher_user" },
-    { name = "settings-server-static", username = "settings_server_user" }
+    { name = "settings-server-static", username = "settings_server_user" },
+    { name = "mautrix-discord-static", username = "mautrix_discord_user" },
+    { name = "mautrix-whatsapp-static", username = "mautrix_whatsapp_user" },
+    { name = "mautrix-telegram-static", username = "mautrix_telegram_user" }
   ]
 }
 

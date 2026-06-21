@@ -73,6 +73,21 @@ spec:
         ensure: present
         passwordSecret:
           name: settings-server-db-creds
+      - name: mautrix_discord_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: mautrix-discord-db-creds
+      - name: mautrix_whatsapp_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: mautrix-whatsapp-db-creds
+      - name: mautrix_telegram_user
+        login: true
+        ensure: present
+        passwordSecret:
+          name: mautrix-telegram-db-creds
   # inheritedMetadata:
   #   annotations:
   #     vault.security.banzaicloud.io/vault-addr: "http://vault.vault:8200"
