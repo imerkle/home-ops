@@ -17,15 +17,15 @@ spec:
           postgres: "true"
         annotations:
           reloader.stakater.com/auto: "true"
-        containers:
-          app:
+        initContainers:
+          copy-config:
             image:
-              repository: dock.mau.dev/mautrix/discord
-              tag: v0.7.1
-            command: ["/usr/bin/mautrix-discord"]
-            args: [ "-c", "/data/config.yaml", "--no-update" ]
+              repository: public.ecr.aws/docker/library/busybox
+              tag: latest
+            command: ["/bin/sh", "-c"]
+            args:
+              - sed -e "s/\${DB_USER}/${DB_USER}/g" -e "s/\${DB_PASS}/${DB_PASS}/g" /tmp/config/config.yaml > /data/config.yaml
             env:
-              TZ: ${TIMEZONE}
               DB_USER:
                 valueFrom:
                   secretKeyRef:
@@ -36,16 +36,35 @@ spec:
                   secretKeyRef:
                     name: mautrix-discord-db-creds
                     key: password
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities: {drop: ["ALL"]}
-            resources:
-              requests:
-                cpu: 10m
-                memory: 128Mi
-              limits:
-                memory: 512Mi
+        containers:
+          app:
+             image:
+               repository: dock.mau.dev/mautrix/discord
+               tag: v0.7.1
+             command: ["/usr/bin/mautrix-discord"]
+             args: [ "-c", "/data/config.yaml", "--no-update" ]
+             env:
+               TZ: ${TIMEZONE}
+               DB_USER:
+                 valueFrom:
+                   secretKeyRef:
+                     name: mautrix-discord-db-creds
+                     key: username
+               DB_PASS:
+                 valueFrom:
+                   secretKeyRef:
+                     name: mautrix-discord-db-creds
+                     key: password
+             securityContext:
+               allowPrivilegeEscalation: false
+               readOnlyRootFilesystem: true
+               capabilities: {drop: ["ALL"]}
+             resources:
+               requests:
+                 cpu: 10m
+                 memory: 128Mi
+               limits:
+                 memory: 512Mi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -72,9 +91,14 @@ spec:
       config:
         type: configMap
         name: mautrix-discord-config
+        advancedMounts:
+          mautrix-discord:
+            copy-config:
+              - path: /tmp/config
+      data:
+        type: emptyDir
         globalMounts:
           - path: /data
-            readOnly: true
       tmpfs:
         type: emptyDir
         advancedMounts:

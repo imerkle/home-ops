@@ -23,7 +23,20 @@ spec:
               tag: latest
             command: ["/bin/sh", "-c"]
             args:
-              - cp /tmp/config/* /data/
+              - |
+                cp /tmp/config/* /data/
+                sed -i -e "s/\${DB_USER}/${DB_USER}/g" -e "s/\${DB_PASS}/${DB_PASS}/g" /data/config.yaml
+            env:
+              DB_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: mautrix-telegram-db-creds
+                    key: username
+              DB_PASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: mautrix-telegram-db-creds
+                    key: password
         containers:
           app:
             image:
