@@ -8,6 +8,6 @@ spec:
   credentials:
     source: Secret
     secretRef:
-      name: vault-unseal-keys
-      namespace: vault
-      key: vault-root
+      name: vault-creds-json
+      namespace: crossplane-system
+      key: credentials
