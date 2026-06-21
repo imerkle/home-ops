@@ -14,38 +14,6 @@ spec:
       litellm:
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          init-db:
-            image:
-              repository: ghcr.io/onedr0p/postgres-init
-              tag: "16.4"
-            env:
-              INIT_POSTGRES_DBNAME: "litellm"
-              INIT_POSTGRES_HOST: "pg-default-rw.db.svc.cluster.local"
-              INIT_POSTGRES_USER: "vault:database/creds/init-role#username"
-              INIT_POSTGRES_PASS: "vault:database/creds/init-role#password"
-              PGDATABASE: "postgres"
-              INIT_POSTGRES_SUPER_USER: "vault:database/creds/init-role#username"
-              INIT_POSTGRES_SUPER_PASS: "vault:database/creds/init-role#password"
-          init-db-grants:
-            image:
-              repository: ghcr.io/cloudnative-pg/postgresql
-              tag: "15.2-11"
-            command: ["/bin/sh", "-c"]
-            args:
-              - |
-                until pg_isready -h pg-default-rw.db.svc.cluster.local -U "$SUPER_USER"; do sleep 2; done
-                psql "postgresql://$SUPER_USER:$SUPER_PASS@pg-default-rw.db.svc.cluster.local:5432/litellm" <<SQL
-                  GRANT CONNECT ON DATABASE litellm TO PUBLIC;
-                  GRANT ALL PRIVILEGES ON SCHEMA public TO PUBLIC;
-                  GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO PUBLIC;
-                  GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO PUBLIC;
-                  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO PUBLIC;
-                  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO PUBLIC;
-                SQL
-            env:
-              SUPER_USER: "vault:database/creds/init-role#username"
-              SUPER_PASS: "vault:database/creds/init-role#password"
         containers:
           app:
             image:
@@ -61,7 +29,11 @@ spec:
               LITELLM_SALT_KEY: "vault:secret/data/ai#LITELLM_SALT_KEY"
               GOOGLE_API_KEY: "vault:secret/data/ai#google"
               CONTEXT7_API_KEY: "vault:secret/data/ai#CONTEXT7_API_KEY"
-              DATABASE_URL: "postgresql://$${vault:database/creds/app-role#username}:$${vault:database/creds/app-role#password}@pg-default-rw.db.svc.cluster.local:5432/litellm"
+              DATABASE_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: litellm-db-creds
+                    key: DATABASE_URL
             # probes:
             #   liveness:
             #     enabled: true
