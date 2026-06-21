@@ -57,6 +57,8 @@ spec:
                 DO 'BEGIN CREATE ROLE mautrix_telegram_grp NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
                 DO 'BEGIN CREATE ROLE synapse_grp         NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
                 DO 'BEGIN CREATE ROLE mas_grp             NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                
+                ALTER ROLE zitadel_grp CREATEDB;
               SQL
               echo "==> Group roles created."
 
