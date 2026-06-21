@@ -16,7 +16,7 @@ spec:
           forProvider: {}
       patches:
         - fromFieldPath: spec.databaseName
-          toFieldPath: spec.forProvider.name
+          toFieldPath: metadata.annotations[crossplane.io/external-name]
     
     - name: postgres-role
       base:
@@ -28,7 +28,7 @@ spec:
               login: false
       patches:
         - fromFieldPath: spec.groupRole
-          toFieldPath: spec.forProvider.name
+          toFieldPath: metadata.annotations[crossplane.io/external-name]
 
     - name: grant-connect
       base:
