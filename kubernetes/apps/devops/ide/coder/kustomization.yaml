@@ -11,3 +11,4 @@ resources:
   - route.yaml
   - pvc.yaml
   - template-tofu.yaml
+  - ./externalsecret.yaml

@@ -24,44 +24,6 @@ spec:
       podAnnotations:
         reloader.stakater.com/auto: "true"
         vault.security.banzaicloud.io/vault-role: "default"
-      initContainers:
-        - name: 01-init-db
-          image: ghcr.io/onedr0p/postgres-init:16.4
-          imagePullPolicy: IfNotPresent
-          env:
-            - name: INIT_POSTGRES_DBNAME
-              value: "coder"
-            - name: INIT_POSTGRES_HOST
-              value: "pg-default-rw.db.svc.cluster.local"
-            - name: INIT_POSTGRES_USER
-              value: "vault:database/creds/init-role#username"
-            - name: INIT_POSTGRES_PASS
-              value: "vault:database/creds/init-role#password"
-            - name: PGDATABASE
-              value: "postgres"
-            - name: INIT_POSTGRES_SUPER_USER
-              value: "vault:database/creds/init-role#username"
-            - name: INIT_POSTGRES_SUPER_PASS
-              value: "vault:database/creds/init-role#password"
-        - name: 02-init-db-grants
-          image: ghcr.io/cloudnative-pg/postgresql:15.2-11
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              until pg_isready -h pg-default-rw.db.svc.cluster.local -U "$SUPER_USER"; do sleep 2; done
-              psql "postgresql://$SUPER_USER:$SUPER_PASS@pg-default-rw.db.svc.cluster.local:5432/coder" <<SQL
-                GRANT CONNECT ON DATABASE coder TO PUBLIC;
-                GRANT ALL PRIVILEGES ON SCHEMA public TO PUBLIC;
-                GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO PUBLIC;
-                GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO PUBLIC;
-                ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO PUBLIC;
-                ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO PUBLIC;
-              SQL
-          env:
-            - name: SUPER_USER
-              value: "vault:database/creds/init-role#username"
-            - name: SUPER_PASS
-              value: "vault:database/creds/init-role#password"
       env:
         - name: CODER_ACCESS_URL
           value: https://coder.${DOMAIN1}
@@ -74,7 +36,10 @@ spec:
         # - name: CODER_DISABLE_PASSWORD_AUTH
           # value: "true"
         - name: CODER_PG_CONNECTION_URL
-          value: "postgres://$${vault:database/creds/app-role#username}:$${vault:database/creds/app-role#password}@pg-default-rw.db.svc.cluster.local:5432/coder?sslmode=disable"
+          valueFrom:
+            secretKeyRef:
+              name: coder-db-creds
+              key: CODER_PG_CONNECTION_URL
         - name: CODER_OIDC_ALLOW_SIGNUPS
           value: "true"
         - name: CODER_OIDC_ISSUER_URL
@@ -94,9 +59,15 @@ spec:
         - name: CODER_POSTGRES_PORT
           value: "5432"
         - name: CODER_POSTGRES_USER
-          value: "vault:database/creds/app-role#username"
+          valueFrom:
+            secretKeyRef:
+              name: coder-db-creds
+              key: username
         - name: CODER_POSTGRES_PASSWORD
-          value: "vault:database/creds/app-role#password"
+          valueFrom:
+            secretKeyRef:
+              name: coder-db-creds
+              key: password
         - name: CODER_POSTGRES_MAIN_DB
           value: "coder"
       volumes:
