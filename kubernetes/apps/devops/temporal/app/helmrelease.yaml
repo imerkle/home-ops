@@ -16,52 +16,6 @@ spec:
       temporal:
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          init-db:
-            image:
-              repository: ghcr.io/onedr0p/postgres-init
-              tag: "16.4"
-            env:
-              INIT_POSTGRES_DBNAME: "temporal"
-              INIT_POSTGRES_HOST: "pg-default-rw.db.svc.cluster.local"
-              INIT_POSTGRES_USER: "vault:database/creds/init-role#username"
-              INIT_POSTGRES_PASS: "vault:database/creds/init-role#password"
-              PGDATABASE: "postgres"
-              INIT_POSTGRES_SUPER_USER: "vault:database/creds/init-role#username"
-              INIT_POSTGRES_SUPER_PASS: "vault:database/creds/init-role#password"
-          init-visibility-db:
-            image:
-              repository: ghcr.io/onedr0p/postgres-init
-              tag: "16.4"
-            env:
-              INIT_POSTGRES_DBNAME: "temporal_visibility"
-              INIT_POSTGRES_HOST: "pg-default-rw.db.svc.cluster.local"
-              INIT_POSTGRES_USER: "vault:database/creds/init-role#username"
-              INIT_POSTGRES_PASS: "vault:database/creds/init-role#password"
-              PGDATABASE: "postgres"
-              INIT_POSTGRES_SUPER_USER: "vault:database/creds/init-role#username"
-              INIT_POSTGRES_SUPER_PASS: "vault:database/creds/init-role#password"
-          init-db-grants:
-            image:
-              repository: ghcr.io/cloudnative-pg/postgresql
-              tag: "15.2-11"
-            command: ["/bin/sh", "-c"]
-            args:
-              - |
-                until pg_isready -h pg-default-rw.db.svc.cluster.local -U "$SUPER_USER"; do sleep 2; done
-                for DB in temporal temporal_visibility; do
-                  psql "postgresql://$SUPER_USER:$SUPER_PASS@pg-default-rw.db.svc.cluster.local:5432/$DB" <<SQL
-                    GRANT CONNECT ON DATABASE $DB TO PUBLIC;
-                    GRANT ALL PRIVILEGES ON SCHEMA public TO PUBLIC;
-                    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO PUBLIC;
-                    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO PUBLIC;
-                    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO PUBLIC;
-                    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO PUBLIC;
-                SQL
-                done
-            env:
-              SUPER_USER: "vault:database/creds/init-role#username"
-              SUPER_PASS: "vault:database/creds/init-role#password"
         containers:
           app:
             image:
@@ -70,8 +24,16 @@ spec:
             env:
               DB: postgres12
               DB_PORT: "5432"
-              POSTGRES_USER: "vault:database/creds/app-role#username"
-              POSTGRES_PWD: "vault:database/creds/app-role#password"
+              POSTGRES_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: temporal-db-creds
+                    key: username
+              POSTGRES_PWD:
+                valueFrom:
+                  secretKeyRef:
+                    name: temporal-db-creds
+                    key: password
               POSTGRES_SEEDS: "pg-default-rw.db.svc.cluster.local"
               SKIP_DB_CREATE: "true"
             resources:
