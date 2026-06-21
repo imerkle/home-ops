@@ -82,6 +82,9 @@ spec:
         - fromFieldPath: spec.schemaCreate
           toFieldPath: spec.forProvider.privileges
           transforms:
+            - type: string
+              string:
+                fmt: "%t"
             - type: map
               map:
                 "true": ["CREATE", "USAGE"]
