@@ -16,37 +16,6 @@ spec:
           reloader.stakater.com/auto: "true"
           vault.security.banzaicloud.io/vault-role: "default"
         initContainers:
-          init-db:
-            image:
-              repository: ghcr.io/onedr0p/postgres-init
-              tag: 16.4
-            env:
-              INIT_POSTGRES_DBNAME: forgejo
-              INIT_POSTGRES_HOST: "pg-default-rw.db.svc.cluster.local"
-              INIT_POSTGRES_USER: "vault:database/creds/init-role#username"
-              INIT_POSTGRES_PASS: "vault:database/creds/init-role#password"
-              PGDATABASE: "postgres"
-              INIT_POSTGRES_SUPER_USER: "vault:database/creds/init-role#username"
-              INIT_POSTGRES_SUPER_PASS: "vault:database/creds/init-role#password"
-          init-db-grants:
-            image:
-              repository: ghcr.io/cloudnative-pg/postgresql
-              tag: "15.2-11"
-            command: ["/bin/sh", "-c"]
-            args:
-              - |
-                until pg_isready -h pg-default-rw.db.svc.cluster.local -U "$SUPER_USER"; do sleep 2; done
-                psql "postgresql://$SUPER_USER:$SUPER_PASS@pg-default-rw.db.svc.cluster.local:5432/forgejo" <<SQL
-                  GRANT CONNECT ON DATABASE forgejo TO PUBLIC;
-                  GRANT ALL PRIVILEGES ON SCHEMA public TO PUBLIC;
-                  GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO PUBLIC;
-                  GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO PUBLIC;
-                  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO PUBLIC;
-                  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO PUBLIC;
-                SQL
-            env:
-              SUPER_USER: "vault:database/creds/init-role#username"
-              SUPER_PASS: "vault:database/creds/init-role#password"
           init-oidc:
             image:
               repository: codeberg.org/forgejo/forgejo
@@ -59,8 +28,16 @@ spec:
               FORGEJO__database__DB_TYPE: postgres
               FORGEJO__database__HOST: "pg-default-rw.db.svc.cluster.local"
               FORGEJO__database__NAME: forgejo
-              FORGEJO__database__USER: "vault:database/creds/app-role#username"
-              FORGEJO__database__PASSWD: "vault:database/creds/app-role#password"
+              FORGEJO__database__USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: forgejo-db-creds
+                    key: username
+              FORGEJO__database__PASSWD:
+                valueFrom:
+                  secretKeyRef:
+                    name: forgejo-db-creds
+                    key: password
               FORGEJO__security__INSTALL_LOCK: "true"
               FORGEJO__server__OFFLINE_MODE: "true"
             command:
@@ -97,8 +74,16 @@ spec:
               FORGEJO__database__DB_TYPE: postgres
               FORGEJO__database__HOST: "pg-default-rw.db.svc.cluster.local"
               FORGEJO__database__NAME: forgejo
-              FORGEJO__database__USER: "vault:database/creds/app-role#username"
-              FORGEJO__database__PASSWD: "vault:database/creds/app-role#password"
+              FORGEJO__database__USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: forgejo-db-creds
+                    key: username
+              FORGEJO__database__PASSWD:
+                valueFrom:
+                  secretKeyRef:
+                    name: forgejo-db-creds
+                    key: password
               FORGEJO__metrics__ENABLED: "true"
               FORGEJO__repository__ENABLE_PUSH_CREATE_USER: "true"
               FORGEJO__repository__ENABLE_PUSH_CREATE_ORG: "true"
