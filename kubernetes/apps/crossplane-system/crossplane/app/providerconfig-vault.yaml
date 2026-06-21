@@ -1,0 +1,13 @@
+---
+apiVersion: vault.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: default
+spec:
+  address: http://vault.vault:8200
+  credentials:
+    source: Secret
+    secretRef:
+      name: vault-unseal-keys
+      namespace: vault
+      key: vault-root

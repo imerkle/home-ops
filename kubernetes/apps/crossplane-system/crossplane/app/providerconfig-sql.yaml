@@ -1,0 +1,12 @@
+---
+apiVersion: postgresql.sql.crossplane.io/v1alpha1
+kind: ProviderConfig
+metadata:
+  name: default
+spec:
+  credentials:
+    source: PostgreSQLConnectionSecret
+    connectionSecretRef:
+      name: pg-default-superuser
+      namespace: db
+  sslMode: disable
