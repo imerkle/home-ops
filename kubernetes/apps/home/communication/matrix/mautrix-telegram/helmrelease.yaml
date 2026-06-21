@@ -26,7 +26,8 @@ spec:
               - |
                 import os, shutil
                 for f in os.listdir('/tmp/config'):
-                    shutil.copy(os.path.join('/tmp/config', f), '/data')
+                    if not f.startswith('.'):
+                        shutil.copy(os.path.join('/tmp/config', f), '/data')
                 with open('/data/config.yaml', 'r') as f:
                     content = f.read()
                 content = content.replace('${' + 'DB_USER}', os.environ['DB_USER'])
