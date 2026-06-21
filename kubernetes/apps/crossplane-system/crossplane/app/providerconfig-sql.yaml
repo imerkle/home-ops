@@ -7,6 +7,6 @@ spec:
   credentials:
     source: PostgreSQLConnectionSecret
     connectionSecretRef:
-      name: pg-default-superuser
-      namespace: db
+      name: provider-sql-creds
+      namespace: crossplane-system
   sslMode: disable

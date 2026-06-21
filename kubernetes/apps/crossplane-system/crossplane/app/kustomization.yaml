@@ -5,6 +5,7 @@ resources:
   - namespace.yaml
   - helmrepository.yaml
   - helmrelease.yaml
+  - externalsecret.yaml
   - providers.yaml
   - providerconfig-sql.yaml
   - providerconfig-vault.yaml
