@@ -8,4 +8,5 @@ resources:
   - ./netpol.yaml
   - ./route.yaml
   - ./tofu-bootstrap.yaml
+  - ./externalsecret.yaml
   # - ./loginclient.sops.yaml

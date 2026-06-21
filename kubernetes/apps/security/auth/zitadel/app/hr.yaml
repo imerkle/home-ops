@@ -17,13 +17,25 @@ spec:
   values:
     env:
       - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
-        value: "vault:database/creds/init-role#username"
+        valueFrom:
+          secretKeyRef:
+            name: zitadel-db-creds
+            key: username
       - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
-        value: "vault:database/creds/init-role#password"
+        valueFrom:
+          secretKeyRef:
+            name: zitadel-db-creds
+            key: password
       - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
-        value: "vault:database/creds/app-role#username"
+        valueFrom:
+          secretKeyRef:
+            name: zitadel-db-creds
+            key: username
       - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
-        value: "vault:database/creds/app-role#password"
+        valueFrom:
+          secretKeyRef:
+            name: zitadel-db-creds
+            key: password
       - name: ZITADEL_FIRSTINSTANCE_ORG_HUMAN_EMAIL_ADDRESS
         value: admin@admin.com
       - name: ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD
@@ -70,13 +82,25 @@ spec:
     zitadel:
       env:
         - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
-          value: "vault:database/creds/init-role#username"
+          valueFrom:
+            secretKeyRef:
+              name: zitadel-db-creds
+              key: username
         - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
-          value: "vault:database/creds/init-role#password"
+          valueFrom:
+            secretKeyRef:
+              name: zitadel-db-creds
+              key: password
         - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
-          value: "vault:database/creds/app-role#username"
+          valueFrom:
+            secretKeyRef:
+              name: zitadel-db-creds
+              key: username
         - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
-          value: "vault:database/creds/app-role#password"
+          valueFrom:
+            secretKeyRef:
+              name: zitadel-db-creds
+              key: password
       masterkey: vault:secret/data/zitadel#MASTERKEY
       configmapConfig:
         ExternalDomain: &host "zitadel.${DOMAIN1}"
@@ -97,13 +121,13 @@ spec:
             MaxConnLifetime: 30m
             MaxConnIdleTime: 5m
             User:
-              Username: vault:database/creds/app-role#username
-              Password: vault:database/creds/app-role#password
+              Username: dummy
+              Password: dummy
               SSL:
                 Mode: disable
             Admin:
-              Username: vault:database/creds/init-role#username
-              Password: vault:database/creds/init-role#password
+              Username: dummy
+              Password: dummy
               SSL:
                 Mode: disable
 
