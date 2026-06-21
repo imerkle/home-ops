@@ -58,5 +58,5 @@ spec:
               - fromFieldPath: spec.groupRole
             strategy: string
             string:
-              fmt: "CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}' INHERIT; GRANT %s TO \"{{name}}\";"
+              fmt: "CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}' INHERIT; GRANT \"%s\" TO \"{{name}}\";"
           toFieldPath: spec.forProvider.creationStatements[0]
