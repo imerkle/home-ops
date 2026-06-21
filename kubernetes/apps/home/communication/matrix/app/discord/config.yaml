@@ -35,7 +35,7 @@ appservice:
     # The database type. "sqlite3-fk-wal" and "postgres" are supported.
     type: postgres
     # The database URI.
-    uri: "postgres://$${vault:database/creds/app-role#username}:$${vault:database/creds/app-role#password}@pg-default-rw.db.svc.cluster.local:5432/mautrix-discord"
+    uri: "postgres://$${DB_USER}:$${DB_PASS}@pg-default-rw.db.svc.cluster.local:5432/mautrix-discord"
     # Maximum number of connections. Mostly relevant for Postgres.
     max_open_conns: 20
     max_idle_conns: 2

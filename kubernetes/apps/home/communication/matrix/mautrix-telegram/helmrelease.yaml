@@ -16,39 +16,7 @@ spec:
           postgres: "true"
         annotations:
           reloader.stakater.com/auto: "true"
-          vault.security.banzaicloud.io/vault-role: "default"
         initContainers:
-          init-db:
-            image:
-              repository: ghcr.io/onedr0p/postgres-init
-              tag: 16.4
-            env:
-              INIT_POSTGRES_DBNAME: "mautrix-telegram"
-              INIT_POSTGRES_HOST: "pg-default-rw.db.svc.cluster.local"
-              INIT_POSTGRES_USER: "vault:database/creds/init-role#username"
-              INIT_POSTGRES_PASS: "vault:database/creds/init-role#password"
-              PGDATABASE: "postgres"
-              INIT_POSTGRES_SUPER_USER: "vault:database/creds/init-role#username"
-              INIT_POSTGRES_SUPER_PASS: "vault:database/creds/init-role#password"
-          init-db-grants:
-            image:
-              repository: ghcr.io/cloudnative-pg/postgresql
-              tag: "15.2-11"
-            command: ["/bin/sh", "-c"]
-            args:
-              - |
-                until pg_isready -h pg-default-rw.db.svc.cluster.local -U "$SUPER_USER"; do sleep 2; done
-                psql "postgresql://$SUPER_USER:$SUPER_PASS@pg-default-rw.db.svc.cluster.local:5432/mautrix-telegram" -c "
-                  GRANT CONNECT ON DATABASE \"mautrix-telegram\" TO PUBLIC;
-                  GRANT ALL PRIVILEGES ON SCHEMA public TO PUBLIC;
-                  GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO PUBLIC;
-                  GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO PUBLIC;
-                  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO PUBLIC;
-                  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO PUBLIC;
-                "
-            env:
-              SUPER_USER: "vault:database/creds/init-role#username"
-              SUPER_PASS: "vault:database/creds/init-role#password"
           copy-config:
             image:
               repository: public.ecr.aws/docker/library/busybox
@@ -65,10 +33,16 @@ spec:
             args: [ "-c", "/data/config.yaml", "--no-update" ]
             env:
               TZ: America/New_York
-              # MAUTRIX_DIRECT_STARTUP: false
-              # DB_USER: "vault:secret/data/pg_default#USER"
-              # DB_PASS: "vault:secret/data/pg_default#PASSWORD"
-              # DB_HOST: "vault:secret/data/pg_default#HOST"
+              DB_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: mautrix-telegram-db-creds
+                    key: username
+              DB_PASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: mautrix-telegram-db-creds
+                    key: password
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
