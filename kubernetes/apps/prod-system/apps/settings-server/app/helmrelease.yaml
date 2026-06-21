@@ -32,7 +32,11 @@ spec:
             env:
               PORT: &port "3000"
               GRPC_PORT: &grpcPort "50051"
-              DATABASE_URL: "postgres://$${vault:database/creds/app-role#username}:$${vault:database/creds/app-role#password}@pg-default-rw.db.svc.cluster.local:5432/gamefetcher?sslmode=disable"
+              DATABASE_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: settings-server-db-creds
+                    key: DATABASE_URL
               AUTH_SERVER_ADDR: "auth-server.prod-system:50051"
             securityContext:
               allowPrivilegeEscalation: false
