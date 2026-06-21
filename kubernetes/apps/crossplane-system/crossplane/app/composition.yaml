@@ -17,6 +17,8 @@ spec:
       patches:
         - fromFieldPath: spec.databaseName
           toFieldPath: metadata.annotations[crossplane.io/external-name]
+        - fromFieldPath: spec.groupRole
+          toFieldPath: spec.forProvider.owner
     
     - name: postgres-role
       base:
@@ -29,66 +31,6 @@ spec:
       patches:
         - fromFieldPath: spec.groupRole
           toFieldPath: metadata.annotations[crossplane.io/external-name]
-
-    - name: grant-connect
-      base:
-        apiVersion: postgresql.sql.crossplane.io/v1alpha1
-        kind: Grant
-        spec:
-          forProvider:
-            privileges:
-              - CONNECT
-            database: "placeholder"
-            role: "placeholder"
-      patches:
-        - fromFieldPath: spec.databaseName
-          toFieldPath: spec.forProvider.database
-        - fromFieldPath: spec.groupRole
-          toFieldPath: spec.forProvider.role
-
-    - name: grant-usage-schema
-      base:
-        apiVersion: postgresql.sql.crossplane.io/v1alpha1
-        kind: Grant
-        spec:
-          forProvider:
-            privileges:
-              - USAGE
-            database: "placeholder"
-            schema: "public"
-            role: "placeholder"
-      patches:
-        - fromFieldPath: spec.databaseName
-          toFieldPath: spec.forProvider.database
-        - fromFieldPath: spec.groupRole
-          toFieldPath: spec.forProvider.role
-
-    - name: grant-create-schema
-      base:
-        apiVersion: postgresql.sql.crossplane.io/v1alpha1
-        kind: Grant
-        spec:
-          forProvider:
-            privileges:
-              - CREATE
-            database: "placeholder"
-            schema: "public"
-            role: "placeholder"
-      patches:
-        - fromFieldPath: spec.databaseName
-          toFieldPath: spec.forProvider.database
-        - fromFieldPath: spec.groupRole
-          toFieldPath: spec.forProvider.role
-        - fromFieldPath: spec.schemaCreate
-          toFieldPath: spec.forProvider.privileges
-          transforms:
-            - type: string
-              string:
-                fmt: "%t"
-            - type: map
-              map:
-                "true": ["CREATE", "USAGE"]
-                "false": ["USAGE"]
 
     - name: vault-role
       base:
