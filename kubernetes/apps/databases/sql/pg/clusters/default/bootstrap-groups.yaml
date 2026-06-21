@@ -35,31 +35,35 @@ spec:
               set -euo pipefail
               PG_HOST="pg-default-rw.db.svc.cluster.local"
 
+              echo "==> Creating settings_server database if not exists..."
+              psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/postgres" -tc "SELECT 1 FROM pg_database WHERE datname = 'settings_server'" | grep -q 1 || \
+                psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/postgres" -c "CREATE DATABASE settings_server;"
+
               echo "==> Creating NOLOGIN group roles..."
-              psql "postgresql://${PGUSER}@${PG_HOST}:5432/postgres" <<'SQL'
-                DO $$ BEGIN CREATE ROLE game_fetcher_grp    NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE settings_server_grp NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE atuin_grp           NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE vaultwarden_grp     NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE zealot_grp          NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE zitadel_grp         NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE forgejo_grp         NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE coder_grp           NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE litellm_grp         NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE keto_grp            NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE temporal_grp        NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE mautrix_discord_grp  NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE mautrix_whatsapp_grp NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE mautrix_telegram_grp NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE synapse_grp         NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-                DO $$ BEGIN CREATE ROLE mas_grp             NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+              psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/postgres" <<'SQL'
+                DO 'BEGIN CREATE ROLE game_fetcher_grp    NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE settings_server_grp NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE atuin_grp           NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE vaultwarden_grp     NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE zealot_grp          NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE zitadel_grp         NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE forgejo_grp         NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE coder_grp           NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE litellm_grp         NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE keto_grp            NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE temporal_grp        NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE mautrix_discord_grp  NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE mautrix_whatsapp_grp NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE mautrix_telegram_grp NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE synapse_grp         NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
+                DO 'BEGIN CREATE ROLE mas_grp             NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END';
               SQL
               echo "==> Group roles created."
 
               echo "==> Granting permissions per database..."
 
               # game-fetcher
-              psql "postgresql://${PGUSER}@${PG_HOST}:5432/gamefetcher" <<'SQL'
+              psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/gamefetcher" <<'SQL'
                 GRANT CONNECT ON DATABASE gamefetcher TO game_fetcher_grp;
                 GRANT USAGE ON SCHEMA public TO game_fetcher_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO game_fetcher_grp;
@@ -69,7 +73,7 @@ spec:
               SQL
 
               # settings-server
-              psql "postgresql://${PGUSER}@${PG_HOST}:5432/settings_server" <<'SQL'
+              psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/settings_server" <<'SQL'
                 GRANT CONNECT ON DATABASE settings_server TO settings_server_grp;
                 GRANT USAGE ON SCHEMA public TO settings_server_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO settings_server_grp;
@@ -79,8 +83,8 @@ spec:
               SQL
 
               # atuin
-              psql "postgresql://${PGUSER}@${PG_HOST}:5432/atuin" <<'SQL'
-                GRANT CONNECT ON DATABASE atuin TO atuin_grp;
+              psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/atuin_db" <<'SQL'
+                GRANT CONNECT ON DATABASE atuin_db TO atuin_grp;
                 GRANT USAGE ON SCHEMA public TO atuin_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO atuin_grp;
                 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO atuin_grp;
@@ -89,7 +93,7 @@ spec:
               SQL
 
               # vaultwarden
-              psql "postgresql://${PGUSER}@${PG_HOST}:5432/vaultwarden" <<'SQL'
+              psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/vaultwarden" <<'SQL'
                 GRANT CONNECT ON DATABASE vaultwarden TO vaultwarden_grp;
                 GRANT USAGE ON SCHEMA public TO vaultwarden_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO vaultwarden_grp;
@@ -99,7 +103,7 @@ spec:
               SQL
 
               # zealot
-              psql "postgresql://${PGUSER}@${PG_HOST}:5432/zealot" <<'SQL'
+              psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/zealot" <<'SQL'
                 GRANT CONNECT ON DATABASE zealot TO zealot_grp;
                 GRANT USAGE ON SCHEMA public TO zealot_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO zealot_grp;
@@ -109,7 +113,7 @@ spec:
               SQL
 
               # zitadel
-              psql "postgresql://${PGUSER}@${PG_HOST}:5432/zitadel" <<'SQL'
+              psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/zitadel" <<'SQL'
                 GRANT CONNECT ON DATABASE zitadel TO zitadel_grp;
                 GRANT USAGE ON SCHEMA public TO zitadel_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO zitadel_grp;
@@ -119,7 +123,7 @@ spec:
               SQL
 
               # forgejo
-              psql "postgresql://${PGUSER}@${PG_HOST}:5432/forgejo" <<'SQL'
+              psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/forgejo" <<'SQL'
                 GRANT CONNECT ON DATABASE forgejo TO forgejo_grp;
                 GRANT USAGE ON SCHEMA public TO forgejo_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO forgejo_grp;
@@ -129,7 +133,7 @@ spec:
               SQL
 
               # coder
-              psql "postgresql://${PGUSER}@${PG_HOST}:5432/coder" <<'SQL'
+              psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/coder" <<'SQL'
                 GRANT CONNECT ON DATABASE coder TO coder_grp;
                 GRANT USAGE ON SCHEMA public TO coder_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO coder_grp;
@@ -139,7 +143,7 @@ spec:
               SQL
 
               # litellm
-              psql "postgresql://${PGUSER}@${PG_HOST}:5432/litellm" <<'SQL'
+              psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/litellm" <<'SQL'
                 GRANT CONNECT ON DATABASE litellm TO litellm_grp;
                 GRANT USAGE ON SCHEMA public TO litellm_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO litellm_grp;
@@ -149,7 +153,7 @@ spec:
               SQL
 
               # keto
-              psql "postgresql://${PGUSER}@${PG_HOST}:5432/keto" <<'SQL'
+              psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/keto" <<'SQL'
                 GRANT CONNECT ON DATABASE keto TO keto_grp;
                 GRANT USAGE ON SCHEMA public TO keto_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO keto_grp;
@@ -160,8 +164,8 @@ spec:
 
               # temporal (uses multiple databases)
               for DB in temporal temporal_visibility; do
-                psql "postgresql://${PGUSER}@${PG_HOST}:5432/${DB}" <<SQL
-                  GRANT CONNECT ON DATABASE ${DB} TO temporal_grp;
+                psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/$${DB}" <<SQL
+                  GRANT CONNECT ON DATABASE $${DB} TO temporal_grp;
                   GRANT USAGE ON SCHEMA public TO temporal_grp;
                   GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO temporal_grp;
                   GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO temporal_grp;
@@ -172,20 +176,20 @@ spec:
 
               # mautrix bridges
               for APP in discord whatsapp telegram; do
-                DB="mautrix_${APP}"
-                GRP="mautrix_${APP}_grp"
-                psql "postgresql://${PGUSER}@${PG_HOST}:5432/${DB}" <<SQL
-                  GRANT CONNECT ON DATABASE ${DB} TO ${GRP};
-                  GRANT USAGE ON SCHEMA public TO ${GRP};
-                  GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${GRP};
-                  GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${GRP};
-                  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO ${GRP};
-                  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO ${GRP};
+                DB="mautrix-$${APP}"
+                GRP="mautrix_$${APP}_grp"
+                psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/$${DB}" <<SQL
+                  GRANT CONNECT ON DATABASE "$${DB}" TO $${GRP};
+                  GRANT USAGE ON SCHEMA public TO $${GRP};
+                  GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $${GRP};
+                  GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $${GRP};
+                  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO $${GRP};
+                  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO $${GRP};
               SQL
               done
 
               # matrix-stack (synapse + mas)
-              psql "postgresql://${PGUSER}@${PG_HOST}:5432/synapse" <<'SQL'
+              psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/synapse" <<'SQL'
                 GRANT CONNECT ON DATABASE synapse TO synapse_grp;
                 GRANT USAGE ON SCHEMA public TO synapse_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO synapse_grp;
@@ -194,7 +198,7 @@ spec:
                 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO synapse_grp;
               SQL
 
-              psql "postgresql://${PGUSER}@${PG_HOST}:5432/matrix_authentication_service" <<'SQL'
+              psql "postgresql://$${PGUSER}@$${PG_HOST}:5432/matrix_authentication_service" <<'SQL'
                 GRANT CONNECT ON DATABASE matrix_authentication_service TO mas_grp;
                 GRANT USAGE ON SCHEMA public TO mas_grp;
                 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO mas_grp;

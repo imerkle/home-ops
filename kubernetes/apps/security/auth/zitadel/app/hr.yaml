@@ -3,6 +3,7 @@ kind: HelmRelease
 metadata:
   name: zitadel
 spec:
+  interval: 1h
   timeout: 15m
   chart:
     spec:
@@ -15,9 +16,9 @@ spec:
   values:
     env:
       - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
-        value: "$${vault:database/creds/zitadel-role#username}"
+        value: "$${vault:database/creds/init-role#username}"
       - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
-        value: "$${vault:database/creds/zitadel-role#password}"
+        value: "$${vault:database/creds/init-role#password}"
       - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
         value: "$${vault:database/creds/zitadel-role#username}"
       - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
@@ -68,9 +69,9 @@ spec:
     zitadel:
       env:
         - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
-          value: "$${vault:database/creds/zitadel-role#username}"
+          value: "$${vault:database/creds/init-role#username}"
         - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
-          value: "$${vault:database/creds/zitadel-role#password}"
+          value: "$${vault:database/creds/init-role#password}"
         - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
           value: "$${vault:database/creds/zitadel-role#username}"
         - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
