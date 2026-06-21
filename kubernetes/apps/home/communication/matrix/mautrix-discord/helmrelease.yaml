@@ -20,11 +20,18 @@ spec:
         initContainers:
           copy-config:
             image:
-              repository: public.ecr.aws/docker/library/busybox
-              tag: latest
-            command: ["/bin/sh", "-c"]
+              repository: public.ecr.aws/docker/library/python
+              tag: 3.11-alpine
+            command: ["python3", "-c"]
             args:
-              - sed -e "s/\${DB_USER}/${DB_USER}/g" -e "s/\${DB_PASS}/${DB_PASS}/g" /tmp/config/config.yaml > /data/config.yaml
+              - |
+                import os
+                with open('/tmp/config/config.yaml', 'r') as f:
+                    content = f.read()
+                content = content.replace('${DB_USER}', os.environ['DB_USER'])
+                content = content.replace('${DB_PASS}', os.environ['DB_PASS'])
+                with open('/data/config.yaml', 'w') as f:
+                    f.write(content)
             env:
               DB_USER:
                 valueFrom:
