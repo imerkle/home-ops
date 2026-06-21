@@ -28,8 +28,8 @@ spec:
                 import os
                 with open('/tmp/config/config.yaml', 'r') as f:
                     content = f.read()
-                content = content.replace('$${DB_USER}', os.environ['DB_USER'])
-                content = content.replace('$${DB_PASS}', os.environ['DB_PASS'])
+                content = content.replace('${' + 'DB_USER}', os.environ['DB_USER'])
+                content = content.replace('${' + 'DB_PASS}', os.environ['DB_PASS'])
                 with open('/data/config.yaml', 'w') as f:
                     f.write(content)
             env:
@@ -50,6 +50,7 @@ spec:
                tag: v0.2602.0
              command: ["/usr/bin/mautrix-whatsapp"]
              args: [ "-c", "/data/config.yaml", "--no-update" ]
+             workingDir: /data
              env:
                TZ: ${TIMEZONE}
                DB_USER:
