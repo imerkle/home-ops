@@ -5,6 +5,7 @@ metadata:
   name: pg-default
   # annotations:
   #   cnpg.io/skipEmptyWalArchiveCheck: "enabled"
+spec:
   # inheritedMetadata:
   #   annotations:
   #     vault.security.banzaicloud.io/vault-addr: "http://vault.vault:8200"
