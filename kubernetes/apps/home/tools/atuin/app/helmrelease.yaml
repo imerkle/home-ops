@@ -23,7 +23,7 @@ spec:
               ATUIN_HOST: "0.0.0.0"
               ATUIN_PORT: &port 80
               ATUIN_OPEN_REGISTRATION: "true"
-              ATUIN_DB_URI: "postgres://$${vault:database/creds/atuin-role#username}:$${vault:database/creds/atuin-role#password}@pg-default-rw.db.svc.cluster.local:5432/atuin?sslmode=disable"
+              ATUIN_DB_URI: "postgres://$${vault:database/creds/atuin-role#username}:$${vault:database/creds/atuin-role#password}@pg-default-rw.db.svc.cluster.local:5432/atuin_db?sslmode=disable"
 
               TZ: America/New_York
             command:
