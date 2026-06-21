@@ -29,11 +29,7 @@ spec:
               LITELLM_SALT_KEY: "vault:secret/data/ai#LITELLM_SALT_KEY"
               GOOGLE_API_KEY: "vault:secret/data/ai#google"
               CONTEXT7_API_KEY: "vault:secret/data/ai#CONTEXT7_API_KEY"
-              DATABASE_URL:
-                valueFrom:
-                  secretKeyRef:
-                    name: litellm-db-creds
-                    key: DATABASE_URL
+              DATABASE_URL: "postgresql://$${vault:database/creds/litellm-role#username}:$${vault:database/creds/litellm-role#password}@pg-default-rw.db.svc.cluster.local:5432/litellm?sslmode=disable"
             # probes:
             #   liveness:
             #     enabled: true

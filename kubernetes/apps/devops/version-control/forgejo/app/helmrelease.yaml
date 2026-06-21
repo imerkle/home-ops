@@ -28,16 +28,8 @@ spec:
               FORGEJO__database__DB_TYPE: postgres
               FORGEJO__database__HOST: "pg-default-rw.db.svc.cluster.local"
               FORGEJO__database__NAME: forgejo
-              FORGEJO__database__USER:
-                valueFrom:
-                  secretKeyRef:
-                    name: forgejo-db-creds
-                    key: username
-              FORGEJO__database__PASSWD:
-                valueFrom:
-                  secretKeyRef:
-                    name: forgejo-db-creds
-                    key: password
+              FORGEJO__database__USER: "$${vault:database/creds/forgejo-role#username}"
+              FORGEJO__database__PASSWD: "$${vault:database/creds/forgejo-role#password}"
               FORGEJO__security__INSTALL_LOCK: "true"
               FORGEJO__server__OFFLINE_MODE: "true"
             command:
@@ -74,16 +66,8 @@ spec:
               FORGEJO__database__DB_TYPE: postgres
               FORGEJO__database__HOST: "pg-default-rw.db.svc.cluster.local"
               FORGEJO__database__NAME: forgejo
-              FORGEJO__database__USER:
-                valueFrom:
-                  secretKeyRef:
-                    name: forgejo-db-creds
-                    key: username
-              FORGEJO__database__PASSWD:
-                valueFrom:
-                  secretKeyRef:
-                    name: forgejo-db-creds
-                    key: password
+              FORGEJO__database__USER: "$${vault:database/creds/forgejo-role#username}"
+              FORGEJO__database__PASSWD: "$${vault:database/creds/forgejo-role#password}"
               FORGEJO__metrics__ENABLED: "true"
               FORGEJO__repository__ENABLE_PUSH_CREATE_USER: "true"
               FORGEJO__repository__ENABLE_PUSH_CREATE_ORG: "true"

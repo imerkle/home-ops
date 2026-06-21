@@ -4,8 +4,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: temporal
-  labels:
-    security.banzaicloud.io/mutate: skip
 spec:
   interval: 1h
   chartRef:
@@ -24,16 +22,8 @@ spec:
             env:
               DB: postgres12
               DB_PORT: "5432"
-              POSTGRES_USER:
-                valueFrom:
-                  secretKeyRef:
-                    name: temporal-db-creds
-                    key: username
-              POSTGRES_PWD:
-                valueFrom:
-                  secretKeyRef:
-                    name: temporal-db-creds
-                    key: password
+              POSTGRES_USER: "$${vault:database/creds/temporal-role#username}"
+              POSTGRES_PWD: "$${vault:database/creds/temporal-role#password}"
               POSTGRES_SEEDS: "pg-default-rw.db.svc.cluster.local"
               SKIP_DB_CREATE: "true"
             resources:

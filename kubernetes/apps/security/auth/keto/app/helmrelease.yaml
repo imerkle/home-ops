@@ -3,8 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: keto
-  labels:
-    security.banzaicloud.io/mutate: skip
 spec:
   interval: 1h
   chart:
@@ -31,16 +29,10 @@ spec:
       automigration:
         extraEnv:
           - name: DSN
-            valueFrom:
-              secretKeyRef:
-                name: keto-db-creds
-                key: DSN
+            value: "postgres://$${vault:database/creds/keto-role#username}:$${vault:database/creds/keto-role#password}@pg-default-rw.db.svc.cluster.local:5432/keto?sslmode=disable"
       podMetadata:
         annotations:
           vault.security.banzaicloud.io/vault-role: "default"
       extraEnv:
         - name: DSN
-          valueFrom:
-            secretKeyRef:
-              name: keto-db-creds
-              key: DSN
+          value: "postgres://$${vault:database/creds/keto-role#username}:$${vault:database/creds/keto-role#password}@pg-default-rw.db.svc.cluster.local:5432/keto?sslmode=disable"

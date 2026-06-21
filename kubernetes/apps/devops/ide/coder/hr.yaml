@@ -36,10 +36,7 @@ spec:
         # - name: CODER_DISABLE_PASSWORD_AUTH
           # value: "true"
         - name: CODER_PG_CONNECTION_URL
-          valueFrom:
-            secretKeyRef:
-              name: coder-db-creds
-              key: CODER_PG_CONNECTION_URL
+          value: "postgres://$${vault:database/creds/coder-role#username}:$${vault:database/creds/coder-role#password}@pg-default-rw.db.svc.cluster.local:5432/coder?sslmode=disable"
         - name: CODER_OIDC_ALLOW_SIGNUPS
           value: "true"
         - name: CODER_OIDC_ISSUER_URL
@@ -59,15 +56,9 @@ spec:
         - name: CODER_POSTGRES_PORT
           value: "5432"
         - name: CODER_POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: coder-db-creds
-              key: username
+          value: "$${vault:database/creds/coder-role#username}"
         - name: CODER_POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: coder-db-creds
-              key: password
+          value: "$${vault:database/creds/coder-role#password}"
         - name: CODER_POSTGRES_MAIN_DB
           value: "coder"
       volumes:

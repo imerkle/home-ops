@@ -2,8 +2,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: zitadel
-  labels:
-    security.banzaicloud.io/mutate: skip
 spec:
   timeout: 15m
   chart:
@@ -17,25 +15,13 @@ spec:
   values:
     env:
       - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
-        valueFrom:
-          secretKeyRef:
-            name: zitadel-db-creds
-            key: username
+        value: "$${vault:database/creds/zitadel-role#username}"
       - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: zitadel-db-creds
-            key: password
+        value: "$${vault:database/creds/zitadel-role#password}"
       - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
-        valueFrom:
-          secretKeyRef:
-            name: zitadel-db-creds
-            key: username
+        value: "$${vault:database/creds/zitadel-role#username}"
       - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: zitadel-db-creds
-            key: password
+        value: "$${vault:database/creds/zitadel-role#password}"
       - name: ZITADEL_FIRSTINSTANCE_ORG_HUMAN_EMAIL_ADDRESS
         value: admin@admin.com
       - name: ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD
@@ -82,25 +68,13 @@ spec:
     zitadel:
       env:
         - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: zitadel-db-creds
-              key: username
+          value: "$${vault:database/creds/zitadel-role#username}"
         - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: zitadel-db-creds
-              key: password
+          value: "$${vault:database/creds/zitadel-role#password}"
         - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: zitadel-db-creds
-              key: username
+          value: "$${vault:database/creds/zitadel-role#username}"
         - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: zitadel-db-creds
-              key: password
+          value: "$${vault:database/creds/zitadel-role#password}"
       masterkey: vault:secret/data/zitadel#MASTERKEY
       configmapConfig:
         ExternalDomain: &host "zitadel.${DOMAIN1}"

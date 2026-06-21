@@ -3,8 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: mautrix-discord
-  labels:
-    security.banzaicloud.io/mutate: skip
 spec:
   interval: 1h
   chartRef:
@@ -33,16 +31,8 @@ spec:
                 with open('/data/config.yaml', 'w') as f:
                     f.write(content)
             env:
-              DB_USER:
-                valueFrom:
-                  secretKeyRef:
-                    name: mautrix-discord-db-creds
-                    key: username
-              DB_PASS:
-                valueFrom:
-                  secretKeyRef:
-                    name: mautrix-discord-db-creds
-                    key: password
+              DB_USER: "$${vault:database/creds/mautrix-discord-role#username}"
+              DB_PASS: "$${vault:database/creds/mautrix-discord-role#password}"
         containers:
           app:
              image:
@@ -53,16 +43,8 @@ spec:
              workingDir: /data
              env:
                TZ: ${TIMEZONE}
-               DB_USER:
-                 valueFrom:
-                   secretKeyRef:
-                     name: mautrix-discord-db-creds
-                     key: username
-               DB_PASS:
-                 valueFrom:
-                   secretKeyRef:
-                     name: mautrix-discord-db-creds
-                     key: password
+               DB_USER: "$${vault:database/creds/mautrix-discord-role#username}"
+               DB_PASS: "$${vault:database/creds/mautrix-discord-role#password}"
              securityContext:
                allowPrivilegeEscalation: false
                readOnlyRootFilesystem: true

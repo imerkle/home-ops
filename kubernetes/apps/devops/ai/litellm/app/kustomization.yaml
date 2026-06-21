@@ -5,7 +5,6 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./netpol.yaml
-  - ./externalsecret.yaml
 configMapGenerator:
   - name: litellm-configmap
     files:

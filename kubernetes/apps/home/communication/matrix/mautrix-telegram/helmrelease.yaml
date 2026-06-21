@@ -2,8 +2,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: mautrix-telegram
-  labels:
-    security.banzaicloud.io/mutate: skip
 spec:
   interval: 1h
   chartRef:
@@ -35,16 +33,8 @@ spec:
                 with open('/data/config.yaml', 'w') as f:
                     f.write(content)
             env:
-              DB_USER:
-                valueFrom:
-                  secretKeyRef:
-                    name: mautrix-telegram-db-creds
-                    key: username
-              DB_PASS:
-                valueFrom:
-                  secretKeyRef:
-                    name: mautrix-telegram-db-creds
-                    key: password
+              DB_USER: "$${vault:database/creds/mautrix-telegram-role#username}"
+              DB_PASS: "$${vault:database/creds/mautrix-telegram-role#password}"
         containers:
           app:
             image:
@@ -55,16 +45,8 @@ spec:
             workingDir: /data
             env:
               TZ: America/New_York
-              DB_USER:
-                valueFrom:
-                  secretKeyRef:
-                    name: mautrix-telegram-db-creds
-                    key: username
-              DB_PASS:
-                valueFrom:
-                  secretKeyRef:
-                    name: mautrix-telegram-db-creds
-                    key: password
+              DB_USER: "$${vault:database/creds/mautrix-telegram-role#username}"
+              DB_PASS: "$${vault:database/creds/mautrix-telegram-role#password}"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true

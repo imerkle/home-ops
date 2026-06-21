@@ -12,4 +12,3 @@ resources:
   - servicemonitor.yaml
   - grafanadashboard.yaml
   - tcproute.yaml
-  - ./externalsecret.yaml

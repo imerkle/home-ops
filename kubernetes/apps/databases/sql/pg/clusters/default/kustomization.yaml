@@ -8,5 +8,5 @@ resources:
 - scheduledbackup.yaml
 - route.yaml
 - bucket.yaml
-- externalsecret.yaml
+- bootstrap-groups.yaml
 # - dump-local.yaml

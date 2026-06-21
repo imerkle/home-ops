@@ -4,8 +4,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: zealot
-  labels:
-    security.banzaicloud.io/mutate: skip
 spec:
   chartRef:
     kind: OCIRepository
@@ -26,11 +24,7 @@ spec:
               ZEALOT_ADMIN_EMAIL: admin@admin.com
               ZEALOT_ADMIN_PASSWORD: password
               ZEALOT_DOMAIN: "{{ .Release.Name }}.${DOMAIN1}"
-              ZEALOT_DATABASE_URL:
-                valueFrom:
-                  secretKeyRef:
-                    name: zealot-db-creds
-                    key: ZEALOT_DATABASE_URL
+              ZEALOT_DATABASE_URL: "postgresql://$${vault:database/creds/zealot-role#username}:$${vault:database/creds/zealot-role#password}@pg-default-rw.db.svc.cluster.local:5432/zealot?sslmode=disable"
               SECRET_TOKEN: "85dbe15d75ef9308c7ae0f33c7a324cc6f4bf519a2ed2f3027bd33c140a4f9aa"
               SECRET_KEY_BASE: "85dbe15d75ef9308c7ae0f33c7a324cc6f4bf519a2ed2f3027bd33c140a4f9aa"
               DEFAULT_LOCALE: en

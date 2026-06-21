@@ -6,4 +6,3 @@ resources:
   - ./helmrelease.yaml
   - ./netpol.yaml
   - ./pvc-uploads.yaml
-  - ./externalsecret.yaml

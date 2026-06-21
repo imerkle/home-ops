@@ -7,4 +7,3 @@ resources:
   - ./helmrelease.yaml
   - ./route.yaml
   - ./netpol.yaml
-  - ./externalsecret.yaml

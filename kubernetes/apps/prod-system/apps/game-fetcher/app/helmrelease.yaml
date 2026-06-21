@@ -42,11 +42,7 @@ spec:
               OIDC_ISSUER: "https://zitadel.${DOMAIN1}"
               OIDC_REDIRECT_URL: "https://game-fetcher.${DOMAIN1}/auth/callback"
               OIDC_SESSION_KEY: "super-secret-session-key-change-me"
-              DATABASE_URL:
-                valueFrom:
-                  secretKeyRef:
-                    name: game-fetcher-db-creds
-                    key: DATABASE_URL
+              DATABASE_URL: "postgres://$${vault:database/creds/game-fetcher-role#username}:$${vault:database/creds/game-fetcher-role#password}@pg-default-rw.db.svc.cluster.local:5432/gamefetcher?sslmode=disable"
               TEMPORAL_HOST: "temporal.dev-system.svc.cluster.local:7233"
               TEMPORAL_NAMESPACE: "default"
               TEMPORAL_TASK_QUEUE: "game-fetcher"

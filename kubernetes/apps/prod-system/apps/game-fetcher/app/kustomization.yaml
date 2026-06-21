@@ -7,4 +7,3 @@ resources:
   - ./helmrelease.yaml
   - ./grafanadashboard.yaml
   - ./pvc-copyparty.yaml
-  - ./externalsecret.yaml
