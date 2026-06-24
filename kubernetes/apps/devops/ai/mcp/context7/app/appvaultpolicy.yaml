@@ -1,0 +1,11 @@
+apiVersion: home.arpa/v1alpha1
+kind: AppVaultPolicy
+metadata:
+  name: context7-vault
+  namespace: dev-system
+spec:
+  serviceAccount: context7
+  policy: |
+    path "secret/data/ai" {
+      capabilities = ["read"]
+    }

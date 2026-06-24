@@ -1,0 +1,11 @@
+apiVersion: home.arpa/v1alpha1
+kind: AppVaultPolicy
+metadata:
+  name: mautrix-discord-vault
+  namespace: home-system
+spec:
+  serviceAccount: mautrix-discord
+  policy: |
+    path "secret/data/mautrix" {
+      capabilities = ["read"]
+    }

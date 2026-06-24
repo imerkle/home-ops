@@ -1,0 +1,11 @@
+apiVersion: home.arpa/v1alpha1
+kind: AppVaultPolicy
+metadata:
+  name: litellm-vault
+  namespace: dev-system
+spec:
+  serviceAccount: litellm
+  policy: |
+    path "secret/data/ai" {
+      capabilities = ["read"]
+    }

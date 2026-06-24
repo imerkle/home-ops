@@ -11,3 +11,5 @@ resources:
   - providerconfig-vault.yaml
   - xrd.yaml
   - composition.yaml
+  - xvaultpolicy-xrd.yaml
+  - xvaultpolicy-composition.yaml

@@ -1,0 +1,11 @@
+apiVersion: home.arpa/v1alpha1
+kind: AppVaultPolicy
+metadata:
+  name: pgadmin-vault
+  namespace: db
+spec:
+  serviceAccount: pgadmin
+  policy: |
+    path "secret/data/pg_default" {
+      capabilities = ["read"]
+    }

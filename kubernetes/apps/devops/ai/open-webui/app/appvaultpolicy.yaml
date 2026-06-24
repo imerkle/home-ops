@@ -1,0 +1,11 @@
+apiVersion: home.arpa/v1alpha1
+kind: AppVaultPolicy
+metadata:
+  name: open-webui-vault
+  namespace: dev-system
+spec:
+  serviceAccount: open-webui
+  policy: |
+    path "secret/data/ai" {
+      capabilities = ["read"]
+    }

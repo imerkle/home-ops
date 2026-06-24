@@ -1,0 +1,56 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: appvaultpolicies.home.arpa
+spec:
+  compositeTypeRef:
+    apiVersion: home.arpa/v1alpha1
+    kind: XAppVaultPolicy
+  resources:
+    - name: vault-policy
+      base:
+        apiVersion: vault.vault.upbound.io/v1alpha1
+        kind: Policy
+        spec:
+          forProvider:
+            name: "placeholder"
+            policy: "placeholder"
+      patches:
+        - fromFieldPath: spec.serviceAccount
+          toFieldPath: spec.forProvider.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-policy"
+        - fromFieldPath: spec.policy
+          toFieldPath: spec.forProvider.policy
+    
+    - name: vault-k8s-role
+      base:
+        apiVersion: kubernetes.vault.upbound.io/v1alpha1
+        kind: AuthBackendRole
+        spec:
+          forProvider:
+            backend: kubernetes
+            roleName: "placeholder"
+            boundServiceAccountNames:
+              - "placeholder"
+            boundServiceAccountNamespaces:
+              - "placeholder"
+            tokenPolicies:
+              - "placeholder"
+            tokenTtl: 3600
+      patches:
+        - fromFieldPath: spec.serviceAccount
+          toFieldPath: spec.forProvider.roleName
+        - fromFieldPath: spec.serviceAccount
+          toFieldPath: spec.forProvider.boundServiceAccountNames[0]
+        - fromFieldPath: metadata.labels[crossplane.io/claim-namespace]
+          toFieldPath: spec.forProvider.boundServiceAccountNamespaces[0]
+        - fromFieldPath: spec.serviceAccount
+          toFieldPath: spec.forProvider.tokenPolicies[0]
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-policy"

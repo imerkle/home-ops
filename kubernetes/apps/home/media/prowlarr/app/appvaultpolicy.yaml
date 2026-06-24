@@ -1,0 +1,11 @@
+apiVersion: home.arpa/v1alpha1
+kind: AppVaultPolicy
+metadata:
+  name: prowlarr-vault
+  namespace: home-system
+spec:
+  serviceAccount: prowlarr
+  policy: |
+    path "secret/data/prowlarr" {
+      capabilities = ["read"]
+    }

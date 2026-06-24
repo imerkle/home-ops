@@ -1,0 +1,31 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xappvaultpolicies.home.arpa
+spec:
+  group: home.arpa
+  names:
+    kind: XAppVaultPolicy
+    plural: xappvaultpolicies
+  claimNames:
+    kind: AppVaultPolicy
+    plural: appvaultpolicies
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                serviceAccount:
+                  type: string
+                policy:
+                  type: string
+              required:
+                - serviceAccount
+                - policy
