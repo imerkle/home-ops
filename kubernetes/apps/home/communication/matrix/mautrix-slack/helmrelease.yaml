@@ -14,6 +14,11 @@ spec:
         namespace: home-system
   interval: 1h
   values:
+    podAnnotations:
+      vault.security.banzaicloud.io/vault-env-daemon: "true"
+    env:
+      PG_USER: "$${vault:database/creds/mautrix-slack-role#username}"
+      PG_PASSWORD: "$${vault:database/creds/mautrix-slack-role#password}"
     config:
       homeserver:
         address: http://matrix-synapse:8008

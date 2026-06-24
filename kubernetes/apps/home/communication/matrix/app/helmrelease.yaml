@@ -18,43 +18,21 @@ spec:
 
     synapse:
       enabled: true
-      extraInitContainers:
-        - name: init-db
-          image: ghcr.io/onedr0p/postgres-init:16.4
-          envFrom:
-            - secretRef:
-                name: matrix-init-db-credentials
-          env:
-            - name: INIT_POSTGRES_DBNAME
-              value: "synapse"
-            - name: INIT_POSTGRES_HOST
-              value: "pg-default-rw.db.svc.cluster.local"
-            - name: PGDATABASE
-              value: "postgres"
-        - name: init-db2
-          image: ghcr.io/onedr0p/postgres-init:16.4
-          envFrom:
-            - secretRef:
-                name: matrix-init-db-credentials
-          env:
-            - name: INIT_POSTGRES_DBNAME
-              value: "matrix_authentication_service"
-            - name: INIT_POSTGRES_HOST
-              value: "pg-default-rw.db.svc.cluster.local"
-            - name: PGDATABASE
-              value: "postgres"
+      podAnnotations:
+        vault.security.banzaicloud.io/vault-env-daemon: "true"
+      extraEnv:
+        - name: POSTGRES_PASSWORD
+          value: "$${vault:database/creds/synapse-role#password}"
+        - name: POSTGRES_USER
+          value: "$${vault:database/creds/synapse-role#username}"
+        - name: SYNAPSE_POSTGRES_PASSWORD
+          value: "$${vault:database/creds/synapse-role#password}"
+        - name: SYNAPSE_POSTGRES_USER
+          value: "$${vault:database/creds/synapse-role#username}"
       ingress:
         host: matrix.${DOMAIN1}
         className: disabled
         tlsEnabled: false
-      postgres:
-        host: pg-default-rw.db.svc.cluster.local
-        port: 5432
-        user: synapse_user
-        password:
-          secret: synapse-db-creds
-          secretKey: password
-        database: synapse
       media:
         storage:
           size: 20Gi
@@ -91,6 +69,15 @@ spec:
               msc3575_enabled: true
               msc4186_enabled: true
             database:
+              name: psycopg2
+              args:
+                user: "{{ env('SYNAPSE_POSTGRES_USER') }}"
+                password: "{{ env('SYNAPSE_POSTGRES_PASSWORD') }}"
+                database: synapse
+                host: pg-default-rw.db.svc.cluster.local
+                port: 5432
+                cp_min: 5
+                cp_max: 10
               allow_unsafe_locale: true
         whatsapp-appservice.yaml:
           config: |
@@ -147,19 +134,15 @@ spec:
           readOnly: true
     matrixAuthenticationService:
       enabled: true
-
+      podAnnotations:
+        vault.security.banzaicloud.io/vault-env-daemon: "true"
+      extraEnv:
+        - name: MAS_DATABASE_URI
+          value: "postgres://$${vault:database/creds/matrix-authentication-service-role#username}:$${vault:database/creds/matrix-authentication-service-role#password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
       ingress:
         host: auth.${DOMAIN1}
         className: disabled
         tlsEnabled: false
-      postgres:
-        host: pg-default-rw.db.svc.cluster.local
-        port: 5432
-        user: mas_user
-        password:
-          secret: mas-db-creds
-          secretKey: password
-        database: matrix_authentication_service
       additional:
         1-mas-config:
           config: |

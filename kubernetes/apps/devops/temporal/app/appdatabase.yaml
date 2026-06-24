@@ -1,0 +1,11 @@
+---
+apiVersion: home.arpa/v1alpha1
+kind: AppDatabase
+metadata:
+  name: temporal
+  namespace: devops
+spec:
+  databaseName: temporal
+  groupRole: temporal_grp
+  schemaCreate: false
+  createDb: true

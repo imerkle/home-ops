@@ -1,0 +1,22 @@
+---
+apiVersion: home.arpa/v1alpha1
+kind: AppDatabase
+metadata:
+  name: synapse
+  namespace: home-system
+spec:
+  databaseName: synapse
+  groupRole: synapse_grp
+  schemaCreate: false
+  createDb: true
+---
+apiVersion: home.arpa/v1alpha1
+kind: AppDatabase
+metadata:
+  name: matrix-authentication-service
+  namespace: home-system
+spec:
+  databaseName: matrix_authentication_service
+  groupRole: matrix_authentication_service_grp
+  schemaCreate: false
+  createDb: true

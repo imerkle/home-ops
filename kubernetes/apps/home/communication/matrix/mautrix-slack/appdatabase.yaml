@@ -1,0 +1,11 @@
+---
+apiVersion: home.arpa/v1alpha1
+kind: AppDatabase
+metadata:
+  name: mautrix-slack
+  namespace: home-system
+spec:
+  databaseName: mautrix-slack
+  groupRole: mautrix_slack_grp
+  schemaCreate: false
+  createDb: true
