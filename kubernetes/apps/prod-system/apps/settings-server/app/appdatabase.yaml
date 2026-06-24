@@ -1,0 +1,11 @@
+---
+apiVersion: home.arpa/v1alpha1
+kind: AppDatabase
+metadata:
+  name: settings-server
+  namespace: prod-system
+spec:
+  databaseName: settings_server
+  groupRole: settings_server_grp
+  schemaCreate: false
+  createDb: true

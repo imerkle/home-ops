@@ -1,0 +1,11 @@
+---
+apiVersion: home.arpa/v1alpha1
+kind: AppDatabase
+metadata:
+  name: zitadel
+  namespace: security
+spec:
+  databaseName: zitadel
+  groupRole: zitadel_grp
+  schemaCreate: false
+  createDb: true

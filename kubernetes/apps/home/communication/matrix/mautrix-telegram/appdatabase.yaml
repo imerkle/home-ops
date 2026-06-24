@@ -1,0 +1,11 @@
+---
+apiVersion: home.arpa/v1alpha1
+kind: AppDatabase
+metadata:
+  name: mautrix-telegram
+  namespace: home-system
+spec:
+  databaseName: mautrix-telegram
+  groupRole: mautrix_telegram_grp
+  schemaCreate: false
+  createDb: true

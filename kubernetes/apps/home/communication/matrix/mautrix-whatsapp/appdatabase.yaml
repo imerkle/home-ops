@@ -1,0 +1,11 @@
+---
+apiVersion: home.arpa/v1alpha1
+kind: AppDatabase
+metadata:
+  name: mautrix-whatsapp
+  namespace: home-system
+spec:
+  databaseName: mautrix-whatsapp
+  groupRole: mautrix_whatsapp_grp
+  schemaCreate: false
+  createDb: true

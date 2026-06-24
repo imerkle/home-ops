@@ -1,0 +1,11 @@
+---
+apiVersion: home.arpa/v1alpha1
+kind: AppDatabase
+metadata:
+  name: mautrix-discord
+  namespace: home-system
+spec:
+  databaseName: mautrix-discord
+  groupRole: mautrix_discord_grp
+  schemaCreate: false
+  createDb: true

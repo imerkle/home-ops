@@ -1,0 +1,11 @@
+---
+apiVersion: home.arpa/v1alpha1
+kind: AppDatabase
+metadata:
+  name: litellm
+  namespace: devops
+spec:
+  databaseName: litellm
+  groupRole: litellm_grp
+  schemaCreate: false
+  createDb: true

@@ -1,0 +1,11 @@
+---
+apiVersion: home.arpa/v1alpha1
+kind: AppDatabase
+metadata:
+  name: keto
+  namespace: security
+spec:
+  databaseName: keto
+  groupRole: keto_grp
+  schemaCreate: false
+  createDb: true

@@ -1,0 +1,11 @@
+---
+apiVersion: home.arpa/v1alpha1
+kind: AppDatabase
+metadata:
+  name: game-fetcher
+  namespace: prod-system
+spec:
+  databaseName: gamefetcher
+  groupRole: game_fetcher_grp
+  schemaCreate: false
+  createDb: true

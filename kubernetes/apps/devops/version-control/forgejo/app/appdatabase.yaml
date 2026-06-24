@@ -1,0 +1,11 @@
+---
+apiVersion: home.arpa/v1alpha1
+kind: AppDatabase
+metadata:
+  name: forgejo
+  namespace: devops
+spec:
+  databaseName: forgejo
+  groupRole: forgejo_grp
+  schemaCreate: false
+  createDb: true
