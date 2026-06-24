@@ -15,6 +15,9 @@ spec:
           postgres: "true"
         annotations:
           reloader.stakater.com/auto: "true"
+        pod:
+          annotations:
+            vault.security.banzaicloud.io/vault-env-daemon: "true"
         initContainers:
           copy-config:
             image:

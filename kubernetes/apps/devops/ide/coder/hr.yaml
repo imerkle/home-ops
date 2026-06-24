@@ -24,6 +24,7 @@ spec:
       podAnnotations:
         reloader.stakater.com/auto: "true"
         vault.security.banzaicloud.io/vault-role: "default"
+        vault.security.banzaicloud.io/vault-env-daemon: "true"
       env:
         - name: CODER_ACCESS_URL
           value: https://coder.${DOMAIN1}

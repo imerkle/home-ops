@@ -14,6 +14,9 @@ spec:
       litellm:
         annotations:
           reloader.stakater.com/auto: "true"
+        pod:
+          annotations:
+            vault.security.banzaicloud.io/vault-env-daemon: "true"
         containers:
           app:
             image:
