@@ -41,10 +41,14 @@ spec:
             backend: database
             dbName: pg-default
             defaultTtl: 3600
-            maxTtl: 86400
+            maxTtl: 604800
             name: "placeholder"
             creationStatements:
               - "placeholder"
+            revocationStatements:
+              - "DROP ROLE IF EXISTS \"{{name}}\";"
+            renewStatements:
+              - "ALTER ROLE \"{{name}}\" VALID UNTIL '{{expiration}}';"
       patches:
         - fromFieldPath: metadata.labels[crossplane.io/claim-name]
           toFieldPath: spec.forProvider.name
