@@ -13,6 +13,8 @@ spec:
         name: zitadel
         namespace: zitadel
   values:
+    podAnnotations:
+      vault.security.banzaicloud.io/vault-env-daemon: "true"
     env:
       - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
         value: "$${vault:database/creds/zitadel-role#username}"
@@ -66,6 +68,8 @@ spec:
         CUSTOM_REQUEST_HEADERS="Host:zitadel.${DOMAIN1},X-Zitadel-Public-Host:zitadel.${DOMAIN1}"
 
     zitadel:
+      podAnnotations:
+        vault.security.banzaicloud.io/vault-env-daemon: "true"
       env:
         - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
           value: "$${vault:database/creds/zitadel-role#username}"
