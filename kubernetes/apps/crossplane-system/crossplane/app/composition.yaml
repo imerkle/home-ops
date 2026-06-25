@@ -40,7 +40,7 @@ spec:
           forProvider:
             backend: database
             dbName: pg-default
-            defaultTtl: 3600
+            defaultTtl: 604800
             maxTtl: 604800
             name: "placeholder"
             creationStatements:
