@@ -22,6 +22,8 @@ spec:
         vault.security.banzaicloud.io/vault-env-daemon: "true"
       postgres:
         host: pg-default-rw.db.svc.cluster.local
+        user: dummy
+        database: dummy
       extraEnv:
         - name: POSTGRES_PASSWORD
           value: "$${vault:database/creds/synapse-role#password}"
@@ -140,6 +142,8 @@ spec:
         vault.security.banzaicloud.io/vault-env-daemon: "true"
       postgres:
         host: pg-default-rw.db.svc.cluster.local
+        user: dummy
+        database: dummy
       extraEnv:
         - name: MAS_DATABASE_URI
           value: "postgres://$${vault:database/creds/matrix-authentication-service-role#username}:$${vault:database/creds/matrix-authentication-service-role#password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
