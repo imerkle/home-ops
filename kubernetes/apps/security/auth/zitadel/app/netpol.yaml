@@ -19,6 +19,14 @@ spec:
         - matchLabels:
             io.kubernetes.pod.namespace: network
   egress:
+    # Allow access to Vault
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: vault
+      toPorts:
+        - ports:
+            - port: "8200"
+              protocol: TCP
     # Allow same namespace traffic
     - toEndpoints:
         - matchLabels:
@@ -30,6 +38,13 @@ spec:
       toPorts:
         - ports:
             - port: "5432"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: vault
+      toPorts:
+        - ports:
+            - port: "8200"
               protocol: TCP
     # Allow access to Kubernetes API
     - toEntities:
