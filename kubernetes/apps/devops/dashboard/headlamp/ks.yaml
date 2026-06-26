@@ -6,9 +6,7 @@ metadata:
   name: &app headlamp
   namespace: dev-system
 spec:
-  dependsOn:
-    - name: zitadel-app
-      namespace: zitadel
+  dependsOn: []
   targetNamespace: dev-system
   commonMetadata:
     labels:

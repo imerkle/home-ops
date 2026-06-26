@@ -22,8 +22,6 @@ metadata:
   name: grafana-instance
 spec:
   dependsOn:
-    - name: zitadel-app
-      namespace: zitadel
     - name: grafana
     # - name: rook-ceph-cluster
     #   namespace: rook-ceph

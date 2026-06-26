@@ -7,9 +7,7 @@ metadata:
 spec:
   components:
     - ../../../../../components/volsync
-  dependsOn:
-    - name: zitadel-app
-      namespace: zitadel
+  dependsOn: 
     - name: rook-ceph-cluster
       namespace: rook-ceph
     - name: vault

@@ -9,9 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: zitadel-app
-      namespace: zitadel
+  dependsOn: []
   interval: 10m
   path: ./kubernetes/apps/home/dashboard/homepage/app
   prune: true

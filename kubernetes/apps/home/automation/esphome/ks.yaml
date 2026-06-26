@@ -5,9 +5,7 @@ kind: Kustomization
 metadata:
   name: esphome
 spec:
-  dependsOn:
-    - name: zitadel-app
-      namespace: zitadel
+  dependsOn: []
   components:
     - ../../../../../components/volsync
   interval: 1h

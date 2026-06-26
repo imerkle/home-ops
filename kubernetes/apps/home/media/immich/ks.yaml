@@ -10,8 +10,6 @@ spec:
     labels:
       app.kubernetes.io/name: immich-oidc
   dependsOn:
-    - name: zitadel-app
-      namespace: zitadel
     - name: vault
       namespace: vault
   path: ./kubernetes/apps/home/media/immich/oidc
@@ -35,8 +33,6 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: zitadel-app
-      namespace: zitadel
     - name: rook-ceph-cluster
       namespace: rook-ceph
     - name: vault

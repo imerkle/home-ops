@@ -13,8 +13,6 @@ metadata:
   name: &app forgejo
 spec:
   dependsOn:
-    - name: zitadel-app
-      namespace: zitadel
     - name: forgejo-oidc
   components:
     - ../../../../../components/volsync

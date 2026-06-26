@@ -10,8 +10,6 @@ spec:
     labels:
       app.kubernetes.io/name: zealot-oidc
   dependsOn:
-    - name: zitadel-app
-      namespace: zitadel
     - name: vault
       namespace: vault
   path: ./kubernetes/apps/home/tools/zealot/oidc

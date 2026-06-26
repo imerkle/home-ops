@@ -11,8 +11,6 @@ spec:
   targetNamespace: dev-system
   path: ./kubernetes/apps/devops/ide/coder
   dependsOn:
-    - name: zitadel-app
-      namespace: zitadel
     - name: vault
       namespace: vault
     - name: pg-clusters-default
