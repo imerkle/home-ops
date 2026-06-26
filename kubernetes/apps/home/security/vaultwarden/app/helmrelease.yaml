@@ -25,12 +25,27 @@ spec:
           vault.security.banzaicloud.io/vault-role: "default"
         pod:
           annotations:
+            vault.security.banzaicloud.io/mutate: "skip"
             vault.security.banzaicloud.io/vault-env-daemon: "true"
+        initContainers:
+          copy-vault-env:
+            image:
+              repository: ghcr.io/bank-vaults/vault-env
+              tag: v1.21.3
+            command: ["sh", "-c", "cp /usr/local/bin/vault-env /vault/"]
+            securityContext:
+              runAsUser: 1000
+              runAsGroup: 1000
+              runAsNonRoot: true
+              allowPrivilegeEscalation: false
+              seccompProfile:
+                type: RuntimeDefault
         containers:
           app:
             image:
               repository: vaultwarden/server
               tag: latest
+            command: ["/vault/vault-env", "/start.sh"]
             env:
               TZ: America/New_York
               DOMAIN: "https://vaultwarden.${DOMAIN1}"
@@ -49,6 +64,12 @@ spec:
                     name: vaultwarden-oidc-creds
                     key: client_secret
               RELOAD_TEMPLATES: "true"
+              VAULT_ADDR: "http://vault.vault.svc.cluster.local:8200"
+              VAULT_SKIP_VERIFY: "false"
+              VAULT_AUTH_METHOD: "jwt"
+              VAULT_PATH: "kubernetes"
+              VAULT_ROLE: "default"
+              VAULT_IGNORE_MISSING_SECRETS: "false"
             probes:
               liveness: &probes
                 enabled: true
@@ -94,3 +115,7 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /data
+      vault-env:
+        type: emptyDir
+        globalMounts:
+          - path: /vault/
