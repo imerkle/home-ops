@@ -14,6 +14,7 @@ spec:
         namespace: zitadel
   values:
     podAnnotations:
+      vault.security.banzaicloud.io/mutate: "skip"
       vault.security.banzaicloud.io/vault-env-daemon: "true"
     env:
       - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
@@ -69,6 +70,7 @@ spec:
 
     zitadel:
       podAnnotations:
+        vault.security.banzaicloud.io/mutate: "skip"
         vault.security.banzaicloud.io/vault-env-daemon: "true"
       env:
         - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
@@ -135,8 +137,35 @@ spec:
               spec:
                 template:
                   spec:
+                    volumes:
+                      - name: vault-env
+                        emptyDir: {}
+                    initContainers:
+                      - name: copy-vault-env
+                        image: ghcr.io/bank-vaults/vault-env:v1.21.3
+                        command: ["sh", "-c", "cp /usr/local/bin/vault-env /vault/"]
+                        volumeMounts:
+                          - name: vault-env
+                            mountPath: /vault/
                     containers:
                       - name: zitadel
+                        command: ["/vault/vault-env", "/app/zitadel"]
+                        volumeMounts:
+                          - name: vault-env
+                            mountPath: /vault/
+                        env:
+                          - name: VAULT_ADDR
+                            value: "http://vault.vault.svc.cluster.local:8200"
+                          - name: VAULT_SKIP_VERIFY
+                            value: "false"
+                          - name: VAULT_AUTH_METHOD
+                            value: "jwt"
+                          - name: VAULT_PATH
+                            value: "kubernetes"
+                          - name: VAULT_ROLE
+                            value: "default"
+                          - name: VAULT_IGNORE_MISSING_SECRETS
+                            value: "false"
                         livenessProbe:
                           httpGet:
                             path: /debug/ready
