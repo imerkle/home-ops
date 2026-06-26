@@ -15,6 +15,14 @@ spec:
         - matchLabels:
             app.kubernetes.io/name: matrix-synapse
   egress:
+    # Allow access to Vault
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: vault
+      toPorts:
+        - ports:
+            - port: "8200"
+              protocol: TCP
     # Allow traffic to Synapse
     - toEndpoints:
         - matchLabels:

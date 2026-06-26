@@ -9,6 +9,14 @@ spec:
     matchLabels:
       app.kubernetes.io/name: litellm
   egress:
+    # Allow access to Vault
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: vault
+      toPorts:
+        - ports:
+            - port: "8200"
+              protocol: TCP
     - toEntities:
         - all
     # # Allow communication to Kubernetes API / DNS and external traffic

@@ -44,6 +44,14 @@ spec:
             - port: "8010"
               protocol: TCP
   egress:
+    # Allow access to Vault
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: vault
+      toPorts:
+        - ports:
+            - port: "8200"
+              protocol: TCP
     - toEndpoints:
         - matchLabels:
             app.kubernetes.io/part-of: matrix-stack
