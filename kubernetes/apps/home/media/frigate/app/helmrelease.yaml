@@ -125,14 +125,11 @@ spec:
           - name: envoy-internal
             namespace: network
     persistence:
-      data:
+      storage:
         existingClaim: "{{ .Release.Name }}"
         globalMounts:
           - path: /config
             subPath: config
-      media:
-        existingClaim: "{{ .Release.Name }}"
-        globalMounts:
           - path: /media
             subPath: media
       # backup:
