@@ -4,6 +4,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: frigate
+  namespace: home-system
   labels:
     helm.flux.home.arpa/default: "false"
 spec:
