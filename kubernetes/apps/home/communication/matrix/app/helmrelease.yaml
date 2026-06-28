@@ -24,6 +24,11 @@ spec:
                 name: matrix-synapse-check-config
               spec:
                 template:
+                  metadata:
+                    labels:
+                      security.banzaicloud.io/mutate: skip
+                    annotations:
+                      vault.security.banzaicloud.io/mutate: skip
                   spec:
                     automountServiceAccountToken: true
   values:
