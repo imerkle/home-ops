@@ -141,7 +141,7 @@ spec:
                 cpu: 5m
                 memory: 16Mi
               limits:
-                memory: 32Mi
+                memory: 200Mi
 
           # Terminates TLS for ghcr.io and reverse-proxies to Zot,
           # rewriting the OCI path so images land under /ghcr.io/<org>/<name>.
