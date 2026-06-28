@@ -120,13 +120,18 @@ spec:
           # 0.0.0.0:443 which includes 172.17.0.1.
           dnsmasq:
             image:
-              repository: andyshinn/dnsmasq
-              tag: "2.86"
-            args:
-              - --no-daemon
-              - --address=/ghcr.io/172.17.0.1
-              - --listen-address=0.0.0.0
-              - --port=53
+              repository: alpine
+              tag: "3.20"
+            command:
+              - /bin/sh
+              - -c
+              - |
+                apk add --no-cache dnsmasq > /dev/null 2>&1
+                exec dnsmasq \
+                  --no-daemon \
+                  --address=/ghcr.io/172.17.0.1 \
+                  --listen-address=0.0.0.0 \
+                  --port=53
             securityContext:
               capabilities:
                 add:
