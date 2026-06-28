@@ -11,6 +11,21 @@ spec:
   chartRef:
     kind: OCIRepository
     name: matrix-stack
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Job
+              name: matrix-synapse-check-config
+            patch: |
+              apiVersion: batch/v1
+              kind: Job
+              metadata:
+                name: matrix-synapse-check-config
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: true
   values:
     serverName: ${DOMAIN1}
     labels:
