@@ -34,12 +34,14 @@ spec:
                   sleep 2
                 done
 
-                if [ ! -f /data/config.yaml ]; then
-                  echo "Generating config..."
-                  forgejo-runner generate-config > /data/config.yaml
-                  # Update the docker_host in config to point to the shared socket
-                  sed -i 's|docker_host: "-"|docker_host: "unix:///socket/docker.sock"|g' /data/config.yaml
-                fi
+                # Always regenerate config to ensure options stay current
+                echo "Generating config..."
+                forgejo-runner generate-config > /data/config.yaml
+                # Point Docker daemon at the shared DinD socket
+                sed -i 's|docker_host: "-"|docker_host: "unix:///socket/docker.sock"|g' /data/config.yaml
+                # Mount the DinD socket into job containers so workflow steps
+                # that use docker/login-action, docker/build-push-action etc. work
+                sed -i 's|options: ""|options: "-v /socket/docker.sock:/var/run/docker.sock"|g' /data/config.yaml
 
                 if [ ! -f /data/.runner ]; then
                   echo "Registering runner..."
@@ -47,7 +49,7 @@ spec:
                     --instance "$FORGEJO_INSTANCE_URL" \
                     --token "$FORGEJO_RUNNER_SECRET" \
                     --name "forgejo-runner-k8s" \
-                    --labels "ubuntu-latest:docker://node:20-bookworm" \
+                    --labels "ubuntu-latest:docker://catthehacker/ubuntu:act-22.04" \
                     --no-interactive
                 fi
 
