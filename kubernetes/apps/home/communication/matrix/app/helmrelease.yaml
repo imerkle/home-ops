@@ -18,9 +18,9 @@ spec:
 
     synapse:
       enabled: true
-      serviceAccount:
-        create: true
-        automountServiceAccountToken: true
+      checkConfigHook:
+        annotations:
+          vault.security.banzaicloud.io/mutate: skip
       annotations:
         vault.security.banzaicloud.io/vault-env-daemon: "true"
       postgres:
