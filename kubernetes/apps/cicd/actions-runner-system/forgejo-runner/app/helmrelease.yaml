@@ -28,20 +28,16 @@ spec:
               - /bin/sh
               - -c
               - |
-                # Wait for Docker socket to be ready
-                echo "Waiting for Docker daemon to be ready at /socket/docker.sock..."
-                while [ ! -S /socket/docker.sock ]; do
-                  sleep 2
-                done
+                echo "Waiting for Docker daemon..."
+                while [ ! -S /socket/docker.sock ]; do sleep 2; done
 
                 # Always regenerate config to ensure options stay current
-                echo "Generating config..."
                 forgejo-runner generate-config > /data/config.yaml
-                # Point Docker daemon at the shared DinD socket
                 sed -i 's|docker_host: "-"|docker_host: "unix:///socket/docker.sock"|g' /data/config.yaml
-                # Mount the DinD socket into job containers so workflow steps
-                # that use docker/login-action, docker/build-push-action etc. work
-                sed -i 's|options: ""|options: "-v /socket/docker.sock:/var/run/docker.sock"|g' /data/config.yaml
+                # Mount DinD socket + certs dir into job containers.
+                # The certs dir gives job containers access to our CA so
+                # any docker CLI commands also trust the ghcr-proxy.
+                sed -i 's|options: ""|options: "-v /socket/docker.sock:/var/run/docker.sock -v /etc/docker/certs.d:/etc/docker/certs.d:ro"|g' /data/config.yaml
 
                 if [ ! -f /data/.runner ]; then
                   echo "Registering runner..."
@@ -63,19 +59,52 @@ spec:
                 memory: 128Mi
               limits:
                 memory: 512Mi
+
           dind:
             image:
               repository: docker
               tag: 24-dind
             env:
               DOCKER_TLS_CERTDIR: ""
+            # Use shell so we can generate the CA cert before starting dockerd.
+            # The CA is written to /etc/docker/certs.d/ghcr.io/ca.crt — docker
+            # buildx automatically bind-mounts this directory into every
+            # buildkitd container it creates, so buildkitd trusts our proxy
+            # without any workflow changes.
             args:
-              - dockerd
-              - --host=unix:///socket/docker.sock
-              - --group=0
-              # Treat ghcr.io as insecure so Docker skips TLS validation
-              # (ghcr.io resolves to our local nginx proxy via hostAliases)
-              - --insecure-registry=ghcr.io
+              - /bin/sh
+              - -c
+              - |
+                mkdir -p /etc/docker/certs.d/ghcr.io
+
+                # Generate CA + server cert signed by that CA.
+                openssl genrsa -out /certs/ca.key 2048 2>/dev/null
+                openssl req -x509 -new -nodes -key /certs/ca.key -sha256 -days 3650 \
+                  -out /certs/ca.crt -subj '/CN=ghcr-proxy-ca' 2>/dev/null
+
+                openssl genrsa -out /certs/server.key 2048 2>/dev/null
+                openssl req -new -key /certs/server.key \
+                  -out /certs/server.csr -subj '/CN=ghcr.io' 2>/dev/null
+                printf 'subjectAltName=DNS:ghcr.io\n' > /tmp/san.ext
+                openssl x509 -req -in /certs/server.csr \
+                  -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial \
+                  -out /certs/server.crt -days 3650 -extfile /tmp/san.ext 2>/dev/null
+
+                # Install CA into the Docker daemon cert store.
+                # docker buildx mounts /etc/docker/certs.d/ (read-only) into
+                # every buildkitd container → buildkitd trusts our proxy's cert.
+                cp /certs/ca.crt /etc/docker/certs.d/ghcr.io/ca.crt
+
+                echo "Certs ready, starting dockerd..."
+                exec dockerd \
+                  --host=unix:///socket/docker.sock \
+                  --group=0 \
+                  --insecure-registry=ghcr.io \
+                  --dns=172.17.0.1
+                  # ↑ All containers spawned by this daemon (job containers,
+                  #   buildkitd) use 172.17.0.1 as DNS → our dnsmasq sidecar,
+                  #   which resolves ghcr.io → 172.17.0.1 (docker0 gateway,
+                  #   where nginx listens on 0.0.0.0:443).
             securityContext:
               privileged: true
             resources:
@@ -84,9 +113,35 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 2Gi
-          # Transparent HTTPS proxy: intercepts ghcr.io traffic (via hostAliases
-          # pointing ghcr.io → 127.0.0.1) and forwards it to Zot, rewriting the
-          # OCI API path so images land under /ghcr.io/<org>/<image> in Zot.
+
+          # Resolves ghcr.io → 172.17.0.1 for containers inside DinD.
+          # 172.17.0.1 is the docker0 bridge gateway — reachable from all
+          # containers spawned by the DinD daemon. nginx listens on
+          # 0.0.0.0:443 which includes 172.17.0.1.
+          dnsmasq:
+            image:
+              repository: andyshinn/dnsmasq
+              tag: "2.86"
+            args:
+              - --no-daemon
+              - --address=/ghcr.io/172.17.0.1
+              - --listen-address=0.0.0.0
+              - --port=53
+            securityContext:
+              capabilities:
+                add:
+                  - NET_ADMIN
+            resources:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                memory: 32Mi
+
+          # Terminates TLS for ghcr.io and reverse-proxies to Zot,
+          # rewriting the OCI path so images land under /ghcr.io/<org>/<name>.
+          # Serves pod-level traffic (127.0.0.1 via hostAliases) AND
+          # docker-bridge traffic (172.17.0.1 via dnsmasq).
           ghcr-proxy:
             image:
               repository: nginx
@@ -95,48 +150,34 @@ spec:
               - /bin/sh
               - -c
               - |
-                apk add --no-cache openssl > /dev/null 2>&1
-
-                # Self-signed cert for ghcr.io — Docker uses --insecure-registry
-                # so cert validation is skipped; the cert only satisfies the TLS handshake.
-                openssl req -x509 -newkey rsa:2048 \
-                  -keyout /tmp/key.pem -out /tmp/cert.pem \
-                  -days 3650 -nodes \
-                  -subj '/CN=ghcr.io' \
-                  -addext 'subjectAltName=DNS:ghcr.io' 2>/dev/null
+                # Wait for DinD to generate certs
+                while [ ! -f /certs/server.crt ]; do sleep 1; done
 
                 cat > /tmp/nginx.conf << 'EOF'
                 worker_processes 1;
                 events { worker_connections 256; }
                 http {
-                  # Required for large image layers
                   client_max_body_size 0;
                   chunked_transfer_encoding on;
-
                   server {
                     listen 443 ssl;
                     server_name ghcr.io;
+                    ssl_certificate     /certs/server.crt;
+                    ssl_certificate_key /certs/server.key;
 
-                    ssl_certificate     /tmp/cert.pem;
-                    ssl_certificate_key /tmp/key.pem;
-
-                    # OCI ping — pass through unchanged
+                    # OCI ping — unchanged
                     location = /v2/ {
                       proxy_pass http://zot.dev-system.svc.cluster.local:5000;
                       proxy_set_header Host $host;
                       proxy_read_timeout 900;
                       proxy_send_timeout 900;
                     }
-
-                    # OCI API — rewrite /v2/<name>/... → /v2/ghcr.io/<name>/...
-                    # so images are stored under the ghcr.io namespace in Zot,
-                    # matching the existing sync mirror structure.
+                    # OCI API — prefix path with /ghcr.io/ so images are stored
+                    # under the ghcr.io namespace in Zot (matching sync mirrors).
                     location ~ ^/v2/(.+)$ {
                       rewrite ^/v2/(.+)$ /v2/ghcr.io/$1 break;
                       proxy_pass http://zot.dev-system.svc.cluster.local:5000;
                       proxy_set_header Host $host;
-                      proxy_set_header X-Real-IP $remote_addr;
-                      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                       proxy_set_header X-Forwarded-Proto https;
                       proxy_read_timeout 900;
                       proxy_send_timeout 900;
@@ -146,7 +187,6 @@ spec:
                   }
                 }
                 EOF
-
                 nginx -c /tmp/nginx.conf -g 'daemon off;'
             resources:
               requests:
@@ -156,8 +196,9 @@ spec:
                 memory: 64Mi
 
     defaultPodOptions:
-      # Resolve ghcr.io to localhost so all containers in the pod
-      # (including Docker daemon in dind) hit the ghcr-proxy sidecar.
+      # ghcr.io → 127.0.0.1 for pod-level containers (DinD daemon itself,
+      # runner). Docker daemon pushes/pulls go through nginx on 127.0.0.1:443.
+      # Containers INSIDE DinD use dnsmasq (--dns=172.17.0.1) instead.
       hostAliases:
         - ip: "127.0.0.1"
           hostnames:
@@ -172,3 +213,9 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /socket
+      # Shared between dind (writes CA+server cert) and ghcr-proxy (reads them).
+      # Also bind-mounted into job containers so docker CLI trusts our CA.
+      certs:
+        type: emptyDir
+        globalMounts:
+          - path: /certs
