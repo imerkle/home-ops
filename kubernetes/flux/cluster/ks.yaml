@@ -37,8 +37,8 @@ spec:
         spec:
           postBuild:
             substitute:
-              STORE1: ceph-block
-              VNSAP1: csi-ceph-blockpool
+              STORE1: linstor-ssd
+              VNSAP1: linstor-snapshot
               DOMAIN1: x3y.space
               OAUTH2_ISSUER: https://zitadel.x3y.space
           prune: true

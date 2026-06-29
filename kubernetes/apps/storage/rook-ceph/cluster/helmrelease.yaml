@@ -132,7 +132,7 @@ spec:
       disruptionManagement:
         managePodBudgets: false
     cephBlockPools:
-      - name: ceph-blockpool
+      - name: linstor-ssdpool
         spec:
           failureDomain: host
           deviceClass: ssd
@@ -140,7 +140,7 @@ spec:
             size: 1
         storageClass:
           enabled: true
-          name: ceph-block
+          name: linstor-ssd
           isDefault: true
           reclaimPolicy: Delete
           allowVolumeExpansion: true
@@ -161,7 +161,7 @@ spec:
             csi.storage.k8s.io/fstype: ext4
     cephBlockPoolsVolumeSnapshotClass:
       enabled: true
-      name: csi-ceph-blockpool
+      name: csi-linstor-ssdpool
       isDefault: false
       deletionPolicy: Delete
     cephFileSystems:

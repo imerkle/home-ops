@@ -13,9 +13,9 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-ceph-block
+  name: pvc-linstor-ssd
 spec:
-  storageClassName: ceph-block
+  storageClassName: linstor-ssd
   accessModes:
     - ReadWriteOnce
   resources:
@@ -25,7 +25,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: fio-ceph-block
+  name: fio-linstor-ssd
 spec:
   backoffLimit: 0
   template:
@@ -42,7 +42,7 @@ spec:
       volumes:
       - name: vol
         persistentVolumeClaim:
-          claimName: pvc-ceph-block
+          claimName: pvc-linstor-ssd
 ---
 # Ceph Filesystem (SSD)
 apiVersion: v1

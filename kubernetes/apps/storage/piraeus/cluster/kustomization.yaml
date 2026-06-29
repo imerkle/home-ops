@@ -7,4 +7,5 @@ resources:
   - ./helmrelease.yaml
   - ./linstorsatelliteconfig.yaml
   - ./storageclass.yaml
+  - ./snapshotclass.yaml
   - ./fio-benchmark.yaml

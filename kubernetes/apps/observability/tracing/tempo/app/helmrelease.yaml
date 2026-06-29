@@ -68,7 +68,7 @@ spec:
       replicas: 1
       persistence:
         enabled: true
-        storageClass: ceph-block
+        storageClass: linstor-ssd
         size: 10Gi
     compactor:
       enabled: true

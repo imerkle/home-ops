@@ -115,7 +115,7 @@ spec:
       #       subPath: repository.config
       repository:
         enabled: true
-        storageClass: ceph-block
+        storageClass: linstor-ssd
         type: persistentVolumeClaim
         accessMode: ReadWriteOnce
         size: 20Gi

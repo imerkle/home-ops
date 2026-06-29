@@ -14,9 +14,9 @@ spec:
   primaryUpdateMethod: restart
   storage:
     size: 5Gi
-    storageClass: ceph-block
+    storageClass: linstor-ssd
   walStorage:
-    storageClass: ceph-block
+    storageClass: linstor-ssd
     size: 5Gi
   superuserSecret:
     name: pg-default-superuser
