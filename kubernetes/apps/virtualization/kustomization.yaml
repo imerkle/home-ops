@@ -14,6 +14,6 @@ resources:
   # platform
   - ./platform/kubevirt/ks.yaml
   # vms
-  - ./vms/openwrt/ks.yaml
-  - ./vms/debian/ks.yaml
-  - ./vms/windows-xp/ks.yaml
+  # - ./vms/openwrt/ks.yaml
+  # - ./vms/debian/ks.yaml
+  # - ./vms/windows-xp/ks.yaml
