@@ -15,6 +15,18 @@ spec:
 apiVersion: piraeus.io/v1
 kind: LinstorSatelliteConfiguration
 metadata:
+  name: ssd-storage-pool
+spec:
+  storagePools:
+    - name: linstor-ssd-pool
+      lvmPool: {}
+      source:
+        hostDevices:
+          - /dev/sdb
+---
+apiVersion: piraeus.io/v1
+kind: LinstorSatelliteConfiguration
+metadata:
   name: talos-loader-override
 spec:
   podTemplate:

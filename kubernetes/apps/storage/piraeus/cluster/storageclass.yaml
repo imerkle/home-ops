@@ -1,0 +1,13 @@
+---
+allowVolumeExpansion: true
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: linstor-ssd
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+parameters:
+  linstor.csi.linbit.com/storagePool: linstor-ssd-pool
+provisioner: linstor.csi.linbit.com
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
