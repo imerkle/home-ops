@@ -33,6 +33,12 @@
       (hasKey $offsiteSecretData "AWS_SECRET_ACCESS_KEY")
       (hasKey $offsiteSecretData "KOPIA_PASSWORD")
       (hasKey $offsiteSecretData "KOPIA_REPOSITORY") -}}
+{{- $existingClaim := false -}}
+{{- if hasKey $volume "existingClaim" -}}
+  {{- $existingClaim = $volume.existingClaim -}}
+{{- else if hasKey $defaults "existingClaim" -}}
+  {{- $existingClaim = $defaults.existingClaim -}}
+{{- end -}}
 {{- if not (hasKey $generatedSecrets $secretName) }}
 {{- $_ := set $generatedSecrets $secretName "true" }}
 ---
@@ -61,7 +67,7 @@ stringData:
   {{- end }}
 {{- end }}
 {{- end }}
-{{- if not (default false $volume.existingClaim) }}
+{{- if not $existingClaim }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
