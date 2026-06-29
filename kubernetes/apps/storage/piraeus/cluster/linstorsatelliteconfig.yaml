@@ -19,10 +19,10 @@ metadata:
 spec:
   storagePools:
     - name: linstor-ssd-pool
-      lvmPool: {}
+      lvmThinPool: {}
       source:
         hostDevices:
-          - /dev/sdb
+          - /dev/disk/by-id/ata-WDC_WDS240G2G0A-00JH30_19226D800608
 ---
 apiVersion: piraeus.io/v1
 kind: LinstorSatelliteConfiguration
@@ -41,8 +41,6 @@ spec:
         - name: drbd-shutdown-guard
           $patch: delete
         - name: drbd-module-loader
-          $patch: delete
-        - name: setup-lvm-configuration
           $patch: delete
       volumes:
         - name: run-systemd-system
