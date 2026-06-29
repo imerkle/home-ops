@@ -13,3 +13,4 @@ resources:
   - composition.yaml
   - xvaultpolicy-xrd.yaml
   - xvaultpolicy-composition.yaml
+  - vault-token-refresher.yaml
