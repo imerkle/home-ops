@@ -4,7 +4,7 @@ resources:
 # - s3.yaml
 - superuser.sops.yaml
 - secret.sops.yaml
-- offsite-secret.yaml
+- offsite-secret.sops.yaml
 - cluster.yaml
 - scheduledbackup.yaml
 - route.yaml
