@@ -43,10 +43,8 @@ spec:
       wal:
         compression: bzip2
         maxParallel: 8
-      destinationPath: s3://pg-default
-      # endpointURL: http://minio.minio:9000
-      # endpointURL: ${S3_ENDPOINT}
-      endpointURL: ${S3_ENDPOINT}
+      destinationPath: s3://homeops-volsync-67/pg-default
+      endpointURL: "https://d4ecb65c48cd4a627c11099c8d9c9fb7.r2.cloudflarestorage.com"
       # serverName: pg-default-v1
       s3Credentials:
         accessKeyId:
