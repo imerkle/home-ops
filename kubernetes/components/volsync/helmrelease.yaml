@@ -29,6 +29,7 @@ spec:
       runAsUser: ${VOLSYNC_PUID:=1000}
       runAsGroup: ${VOLSYNC_PGID:=1000}
       fsGroup: ${VOLSYNC_PGID:=1000}
+      existingClaim: ${VOLSYNC_EXISTING_CLAIM:=false}
       secretData:
         KOPIA_FS_PATH: /repository
         KOPIA_PASSWORD: "vault:secret/data/volsync#RESTIC_PASSWORD"

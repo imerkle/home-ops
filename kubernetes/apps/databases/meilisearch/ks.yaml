@@ -16,3 +16,10 @@ spec:
   retryInterval: 1m
   timeout: 5m
   targetNamespace: db
+  components:
+    - ../../../../components/volsync
+  postBuild:
+    substitute:
+      APP: meilisearch
+      VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_EXISTING_CLAIM: "true"

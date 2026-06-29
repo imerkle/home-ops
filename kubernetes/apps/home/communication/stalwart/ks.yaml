@@ -11,3 +11,10 @@ spec:
     labels:
       app.kubernetes.io/name: stalwart
   path: ./kubernetes/apps/home/communication/stalwart/app
+  components:
+    - ../../../../../components/volsync
+  postBuild:
+    substitute:
+      APP: stalwart-stalwart-mail
+      VOLSYNC_CAPACITY: 10Gi
+      VOLSYNC_EXISTING_CLAIM: "true"

@@ -89,6 +89,13 @@ metadata:
 spec:
   targetNamespace: *namespace
   path: ./kubernetes/apps/databases/sql/pg/pgadmin
+  components:
+    - ../../../../../components/volsync
+  postBuild:
+    substitute:
+      APP: pgadmin
+      VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_EXISTING_CLAIM: "true"
   dependsOn:
     - name: pg-app
     - name: vault
