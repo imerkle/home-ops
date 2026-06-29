@@ -13,6 +13,4 @@ spec:
       VOLSYNC_CAPACITY: 1Gi
   targetNamespace: home-system
   dependsOn:
-    - name: rook-ceph-cluster
-      namespace: rook-ceph
   path: ./kubernetes/apps/home/file-management/filebrowser/app

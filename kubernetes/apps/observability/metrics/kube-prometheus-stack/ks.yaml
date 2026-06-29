@@ -6,8 +6,6 @@ metadata:
   name: kube-prometheus-stack
 spec:
   # dependsOn:
-    # - name: rook-ceph-cluster
-      # namespace: rook-ceph
   interval: 1h
   path: ./kubernetes/apps/observability/metrics/kube-prometheus-stack/app
   prune: true

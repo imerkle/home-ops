@@ -6,8 +6,6 @@ metadata:
   namespace: &namespace home-system
 spec:
   dependsOn:
-    - name: rook-ceph-cluster
-      namespace: rook-ceph
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app

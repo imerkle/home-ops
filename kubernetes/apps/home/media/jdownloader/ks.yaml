@@ -12,8 +12,6 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: rook-ceph-cluster
-      namespace: rook-ceph
   path: ./kubernetes/apps/home/media/jdownloader/app
   prune: true
   sourceRef:

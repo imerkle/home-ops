@@ -10,8 +10,6 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: rook-ceph-cluster
-      namespace: rook-ceph
   path: ./kubernetes/apps/home/media/ps4-fpkgi/app
   prune: true
   sourceRef:

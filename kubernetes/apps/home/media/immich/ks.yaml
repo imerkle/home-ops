@@ -33,8 +33,6 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: rook-ceph-cluster
-      namespace: rook-ceph
     - name: vault
       namespace: vault
     - name: immich-oidc
