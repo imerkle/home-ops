@@ -19,7 +19,8 @@ metadata:
 spec:
   storagePools:
     - name: linstor-ssd-pool
-      lvmThinPool: {}
+      lvmPool:
+        volumeGroup: linstor_linstor-ssd-pool
       source:
         hostDevices:
           - /dev/disk/by-id/ata-WDC_WDS240G2G0A-00JH30_19226D800608
