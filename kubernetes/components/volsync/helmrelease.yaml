@@ -34,9 +34,9 @@ spec:
         KOPIA_FS_PATH: /repository
         KOPIA_PASSWORD: "vault:secret/data/volsync#RESTIC_PASSWORD"
         KOPIA_S3_BUCKET: "${APP}-volsync"
-        KOPIA_REPOSITORY: s3:http://rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80/${APP}-volsync
-        KOPIA_S3_ENDPOINT: rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80
-        AWS_S3_ENDPOINT: rook-ceph-rgw-ceph-objectstore.rook-ceph.svc:80
+        KOPIA_REPOSITORY: s3:http://minio.storage.svc.cluster.local:9000/${APP}-volsync
+        KOPIA_S3_ENDPOINT: minio.storage.svc.cluster.local:9000
+        AWS_S3_ENDPOINT: minio.storage.svc.cluster.local:9000
         KOPIA_S3_DISABLE_TLS: "true"
         AWS_S3_DISABLE_TLS: "true"
       offsite:
