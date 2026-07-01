@@ -5,6 +5,8 @@ kind: Kustomization
 metadata:
   name: &app minio
   namespace: &namespace storage
+  labels:
+    helm.flux.home.fluxvars: "true"
 spec:
   commonMetadata:
     labels:
