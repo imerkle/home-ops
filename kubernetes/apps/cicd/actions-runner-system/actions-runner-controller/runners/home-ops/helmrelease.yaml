@@ -19,7 +19,7 @@ spec:
       kubernetesModeWorkVolumeClaim:
         accessModes:
           - ReadWriteOnce
-        storageClassName: linstor-ssd
+        storageClassName: ${STORE1}
         resources:
           requests:
             storage: 10Gi

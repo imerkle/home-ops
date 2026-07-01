@@ -14,9 +14,9 @@ spec:
   primaryUpdateMethod: restart
   storage:
     size: 5Gi
-    storageClass: linstor-ssd
+    storageClass: ${STORE1}
   walStorage:
-    storageClass: linstor-ssd
+    storageClass: ${STORE1}
     size: 5Gi
   superuserSecret:
     name: pg-default-superuser
