@@ -5,7 +5,7 @@ kind: Component
 resources:
   - ./offsite-secret.yaml
   - ./values-configmap.yaml
-  - ./objectbucketclaim.yaml
+  - ./local-secret.yaml
   - ./helmrelease.yaml
 patches:
   - patch: |-
