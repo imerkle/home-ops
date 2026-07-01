@@ -35,8 +35,8 @@ spec:
             env:
               MINIO_UPDATE: "off"
               MINIO_PROMETHEUS_AUTH_TYPE: public
-              MINIO_BROWSER_REDIRECT_URL: "https://minio.${SECRET_DOMAIN}"
-              MINIO_SERVER_URL: "https://s3.${SECRET_DOMAIN}"
+              MINIO_BROWSER_REDIRECT_URL: "https://minio.${DOMAIN1}"
+              MINIO_SERVER_URL: "https://s3.${DOMAIN1}"
             envFrom:
               - secretRef:
                   name: minio-secret
@@ -98,7 +98,7 @@ spec:
           gethomepage.dev/name: MinIO
           gethomepage.dev/icon: minio.svg
         hosts:
-          - host: "minio.${SECRET_DOMAIN}"
+          - host: "minio.${DOMAIN1}"
             paths:
               - path: /
                 service:
@@ -107,7 +107,7 @@ spec:
       s3:
         className: internal
         hosts:
-          - host: "s3.${SECRET_DOMAIN}"
+          - host: "s3.${DOMAIN1}"
             paths:
               - path: /
                 service:
