@@ -19,7 +19,6 @@ spec:
           image: quay.io/minio/mc:latest
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
             capabilities:
               drop:
                 - ALL
@@ -30,6 +29,8 @@ spec:
             - /bin/sh
             - -c
             - |
+              mkdir -p /tmp/.mc;
+              export MC_CONFIG_DIR=/tmp/.mc;
               mc alias set myminio http://minio.storage.svc.cluster.local:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD;
               
               BUCKETS="pg-default tempo-bucket pg-enc pg-default-s3 meilisearch-volsync mosquitto-volsync pgadmin-volsync coder-volsync forgejo-volsync omniroute-volsync zot-volsync atuin-volsync blocky-volsync copyparty-volsync esphome-volsync frigate-volsync home-assistant-cache-volsync home-assistant-volsync immich-volsync jdownloader-volsync jellyfin-volsync prowlarr-volsync pyload-volsync qbittorrent-volsync rustdesk-volsync stalwart-stalwart-mail-volsync syncthing-volsync unifi-volsync zealot-volsync vault-volsync"
