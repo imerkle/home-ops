@@ -1,0 +1,38 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-bucket-provision
+  namespace: storage
+spec:
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: provision
+          image: quay.io/minio/mc:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          envFrom:
+            - secretRef:
+                name: minio-secret
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mc alias set myminio http://minio.storage.svc.cluster.local:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD;
+              mc mb myminio/pg-default || true;
+              mc mb myminio/tempo-bucket || true;
+              mc mb myminio/pg-enc || true;
+              mc mb myminio/pg-default-s3 || true;
+      restartPolicy: OnFailure
