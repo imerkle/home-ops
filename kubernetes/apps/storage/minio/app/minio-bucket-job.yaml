@@ -31,8 +31,10 @@ spec:
             - -c
             - |
               mc alias set myminio http://minio.storage.svc.cluster.local:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD;
-              mc mb myminio/pg-default || true;
-              mc mb myminio/tempo-bucket || true;
-              mc mb myminio/pg-enc || true;
-              mc mb myminio/pg-default-s3 || true;
+              
+              BUCKETS="pg-default tempo-bucket pg-enc pg-default-s3 meilisearch-volsync mosquitto-volsync pgadmin-volsync coder-volsync forgejo-volsync omniroute-volsync zot-volsync atuin-volsync blocky-volsync copyparty-volsync esphome-volsync frigate-volsync home-assistant-cache-volsync home-assistant-volsync immich-volsync jdownloader-volsync jellyfin-volsync prowlarr-volsync pyload-volsync qbittorrent-volsync rustdesk-volsync stalwart-stalwart-mail-volsync syncthing-volsync unifi-volsync zealot-volsync vault-volsync"
+              
+              for bucket in $BUCKETS; do
+                mc mb myminio/$bucket || true
+              done
       restartPolicy: OnFailure

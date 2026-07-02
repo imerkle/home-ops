@@ -7,6 +7,7 @@ resources:
   - ./values-configmap.yaml
   - ./local-secret.yaml
   - ./helmrelease.yaml
+  - ./objectbucketclaim.yaml
 patches:
   - patch: |-
       apiVersion: helm.toolkit.fluxcd.io/v2
