@@ -17,6 +17,7 @@ spec:
     app: ${APP}
     defaults:
       schedule: "0 * * * *"
+      cacheCapacity: 5Gi
       accessModes:
         - ${VOLSYNC_ACCESSMODES:=ReadWriteOnce}
       sourceAccessModes:

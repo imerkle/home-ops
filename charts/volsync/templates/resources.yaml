@@ -16,6 +16,7 @@
 {{- $runAsUser := default $defaults.runAsUser $volume.runAsUser -}}
 {{- $runAsGroup := default $defaults.runAsGroup $volume.runAsGroup -}}
 {{- $fsGroup := default $defaults.fsGroup $volume.fsGroup -}}
+{{- $cacheCapacity := default $capacity (default $defaults.cacheCapacity $volume.cacheCapacity) -}}
 {{- $offsiteDefaults := default (dict) $defaults.offsite -}}
 {{- $volumeOffsite := default (dict) $volume.offsite -}}
 {{- $offsiteSecretName := default (printf "%s-volsync-offsite" $name) (default $offsiteDefaults.repositorySecretName $volumeOffsite.repositorySecretName) -}}
@@ -99,7 +100,7 @@ spec:
       {{- toYaml $accessModes | nindent 6 }}
     cacheAccessModes:
       {{- toYaml $cacheAccessModes | nindent 6 }}
-    cacheCapacity: {{ $capacity }}
+    cacheCapacity: {{ $cacheCapacity }}
     cacheStorageClassName: {{ $cacheStorageClassName }}
     capacity: {{ $capacity }}
     cleanupCachePVC: true
@@ -130,7 +131,7 @@ spec:
       {{- toYaml $sourceAccessModes | nindent 6 }}
     cacheAccessModes:
       {{- toYaml $cacheAccessModes | nindent 6 }}
-    cacheCapacity: {{ $capacity }}
+    cacheCapacity: {{ $cacheCapacity }}
     cacheStorageClassName: {{ $cacheStorageClassName }}
     compression: zstd-fastest
     copyMethod: Snapshot
@@ -160,7 +161,7 @@ spec:
       {{- toYaml $sourceAccessModes | nindent 6 }}
     cacheAccessModes:
       {{- toYaml $cacheAccessModes | nindent 6 }}
-    cacheCapacity: {{ $capacity }}
+    cacheCapacity: {{ $cacheCapacity }}
     cacheStorageClassName: {{ $cacheStorageClassName }}
     compression: zstd-fastest
     copyMethod: Snapshot

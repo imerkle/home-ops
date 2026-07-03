@@ -19,7 +19,7 @@ metadata:
 spec:
   storagePools:
     - name: ssd-zfs-pool
-      zfsPool:
+      zfsThinPool:
         zPool: linstor-ssd-zpool
       source:
         hostDevices:
