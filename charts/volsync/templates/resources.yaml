@@ -34,6 +34,27 @@
       (hasKey $offsiteSecretData "AWS_SECRET_ACCESS_KEY")
       (hasKey $offsiteSecretData "KOPIA_PASSWORD")
       (hasKey $offsiteSecretData "KOPIA_REPOSITORY") -}}
+{{- $restoreDefaults := default (dict) $defaults.restore -}}
+{{- $volumeRestore := default (dict) $volume.restore -}}
+{{- $restore := mergeOverwrite (deepCopy $restoreDefaults) $volumeRestore -}}
+{{- $restoreRepository := default "local" $restore.repository -}}
+{{- $restoreSecretName := $secretName -}}
+{{- $restoreSourceName := $name -}}
+{{- if eq $restoreRepository "offsite" -}}
+  {{- if not $offsiteConfigured -}}
+    {{- fail (printf "volume %s restore.repository=offsite requires offsite to be enabled and configured" $name) -}}
+  {{- end -}}
+  {{- $restoreSecretName = $offsiteSecretName -}}
+  {{- $restoreSourceName = printf "%s-offsite" $name -}}
+{{- else if ne $restoreRepository "local" -}}
+  {{- fail (printf "volume %s restore.repository must be one of: local, offsite" $name) -}}
+{{- end -}}
+{{- if hasKey $restore "repositorySecretName" -}}
+  {{- $restoreSecretName = $restore.repositorySecretName -}}
+{{- end -}}
+{{- if hasKey $restore "sourceName" -}}
+  {{- $restoreSourceName = $restore.sourceName -}}
+{{- end -}}
 {{- $existingClaim := false -}}
 {{- if hasKey $volume "existingClaim" -}}
   {{- $existingClaim = $volume.existingClaim -}}
@@ -111,9 +132,24 @@ spec:
       runAsUser: {{ $runAsUser }}
       runAsGroup: {{ $runAsGroup }}
       fsGroup: {{ $fsGroup }}
-    repository: {{ $secretName }}
+    repository: {{ $restoreSecretName }}
+    {{- if hasKey $restore "restoreAsOf" }}
+    restoreAsOf: {{ $restore.restoreAsOf | quote }}
+    {{- end }}
+    {{- if hasKey $restore "previous" }}
+    previous: {{ $restore.previous }}
+    {{- end }}
     sourceIdentity:
-      sourceName: {{ $name }}
+      sourceName: {{ $restoreSourceName }}
+      {{- if hasKey $restore "sourceNamespace" }}
+      sourceNamespace: {{ $restore.sourceNamespace }}
+      {{- end }}
+      {{- if hasKey $restore "sourcePVCName" }}
+      sourcePVCName: {{ $restore.sourcePVCName }}
+      {{- end }}
+      {{- if hasKey $restore "sourcePathOverride" }}
+      sourcePathOverride: {{ $restore.sourcePathOverride }}
+      {{- end }}
     storageClassName: {{ $storageClassName }}
     volumeSnapshotClassName: {{ $snapshotClassName }}
 {{- end }}
