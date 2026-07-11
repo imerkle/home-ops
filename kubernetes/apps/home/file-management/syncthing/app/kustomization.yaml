@@ -5,3 +5,4 @@ resources:
   - ./hr.yaml
   - ./netpol.yaml
   - ./pvc-data.yaml
+  - ./pvc-config.yaml

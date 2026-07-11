@@ -14,3 +14,4 @@ spec:
     substitute:
       APP: syncthing
       VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_EXISTING_CLAIM: "true"
