@@ -7,7 +7,8 @@ metadata:
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
 parameters:
-  linstor.csi.linbit.com/storagePool: ssd-zfs-pool
+  linstor.csi.linbit.com/storagePool: "ssd-zfs-pool"
+  linstor.csi.linbit.com/placementCount: "1"
 provisioner: linstor.csi.linbit.com
 reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
