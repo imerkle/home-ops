@@ -31,7 +31,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany  # CephFS supports this
-  storageClassName: ceph-filesystem # Match your CephFS storage class
+  storageClassName: linstor-ssd # Match your CephFS storage class
   # volumeName: syncthing-data-coder-pv
   resources:
     requests:
