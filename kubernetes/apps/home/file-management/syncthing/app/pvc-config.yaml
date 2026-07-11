@@ -3,8 +3,6 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: syncthing
-  annotations:
-    linstor.csi.linbit.com/placementCount: "1"
 spec:
   accessModes:
     - ReadWriteOnce
