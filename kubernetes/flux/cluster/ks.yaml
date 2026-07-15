@@ -48,7 +48,7 @@ spec:
             name: flux-system
             namespace: flux-system
           interval: 1h
-          timeout: 15m
+          timeout: 2m
           retryInterval: 1m
           decryption:
             provider: sops
