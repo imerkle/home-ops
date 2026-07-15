@@ -3,7 +3,7 @@ volumes:
     capacity: 5Gi
     restore:
       repository: offsite # or local
-      previous: 1
+      previous: 7
   # - name: home-assistant-cache
   #   capacity: 1Gi
   #   offsite:
