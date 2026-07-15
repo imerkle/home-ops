@@ -45,7 +45,7 @@ spec:
       media:
         storage:
           size: 20Gi
-          storageClassName: ceph-filesystem
+          storageClassName: piraeus-storage
         maxUploadSize: 100M
       additional:
         1-base-config:
