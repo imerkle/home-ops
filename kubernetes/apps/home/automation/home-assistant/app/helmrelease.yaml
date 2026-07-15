@@ -133,9 +133,10 @@ spec:
         globalMounts:
           - path: /config
       config-cache:
-        existingClaim: "{{ .Release.Name }}-cache"
-        globalMounts:
-          - path: /config/.venv
+        type: emptyDir
+        # existingClaim: "{{ .Release.Name }}-cache"
+        # globalMounts:
+        #   - path: /config/.venv
       tmp:
         type: emptyDir
       config-file:
