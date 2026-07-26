@@ -1,3 +1,6 @@
+defaults:
+  cacheCapacity: 15Gi
 volumes:
   - name: zot
     capacity: 50Gi
+
