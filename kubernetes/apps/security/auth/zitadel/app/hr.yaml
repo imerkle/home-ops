@@ -65,7 +65,7 @@ spec:
       customConfigmapConfig: |-
         ZITADEL_LOGINCLIENT_KEYFILE="/login-service-key/tls.key"
         AUDIENCE="https://zitadel.${DOMAIN1}"
-        ZITADEL_API_URL="http://zitadel.zitadel.svc.cluster.local:8080"
+        ZITADEL_API_URL="http://zitadel:8080"
         CUSTOM_REQUEST_HEADERS="Host:zitadel.${DOMAIN1},X-Zitadel-Public-Host:zitadel.${DOMAIN1}"
 
     zitadel:
@@ -126,6 +126,22 @@ spec:
   postRenderers:
     - kustomize:
         patches:
+          - target:
+              kind: Deployment
+              name: zitadel-login
+            patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: zitadel-login
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: zitadel-login
+                        env:
+                          - name: NODE_OPTIONS
+                            value: "--dns-result-order=ipv4first"
           - target:
               kind: Deployment
               name: zitadel
