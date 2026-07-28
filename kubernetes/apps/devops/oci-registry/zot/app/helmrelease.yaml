@@ -6,6 +6,8 @@ metadata:
   name: &app zot
 spec:
   interval: 2h
+  dependsOn:
+    - name: zot-volsync
   chartRef:
     kind: OCIRepository
     name: app-template

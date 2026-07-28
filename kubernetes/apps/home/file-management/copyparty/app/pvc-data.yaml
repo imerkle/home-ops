@@ -7,6 +7,7 @@ spec:
   accessModes:
     - ReadWriteMany
   storageClassName: piraeus-storage
+  volumeName: pvc-9992f617-6f92-4a58-be7a-871005337db6
   resources:
     requests:
       storage: 200Gi

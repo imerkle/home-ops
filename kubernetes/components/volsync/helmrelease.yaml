@@ -11,10 +11,12 @@ spec:
   maxHistory: 5
   install:
     createNamespace: true
+    disableWait: true
     remediation:
       retries: 2
   upgrade:
     cleanupOnFail: true
+    disableWait: true
     remediation:
       retries: 2
   uninstall:
@@ -31,7 +33,7 @@ spec:
     app: ${APP}
     defaults:
       schedule: "0 * * * *"
-      cacheCapacity: 5Gi
+      cacheCapacity: ${VOLSYNC_CACHE_CAPACITY:=15Gi}
       accessModes:
         - ${VOLSYNC_ACCESSMODES:=ReadWriteOnce}
       sourceAccessModes:
@@ -54,6 +56,7 @@ spec:
         AWS_S3_ENDPOINT: minio.storage.svc.cluster.local:9000
         KOPIA_S3_DISABLE_TLS: "true"
         AWS_S3_DISABLE_TLS: "true"
+        GODEBUG: "netdns=go"
       offsite:
         enabled: ${VOLSYNC_OFFSITE_ENABLED:=true}
         schedule: "${VOLSYNC_OFFSITE_SCHEDULE:=30 * * * *}"
@@ -65,6 +68,7 @@ spec:
           AWS_S3_ENDPOINT: "$${vault:secret/data/cloudflare#S3_ENDPOINT}"
           KOPIA_S3_DISABLE_TLS: "${VOLSYNC_OFFSITE_DISABLE_TLS:=false}"
           AWS_S3_DISABLE_TLS: "${VOLSYNC_OFFSITE_DISABLE_TLS:=false}"
+          GODEBUG: "netdns=go"
   valuesFrom:
     - kind: ConfigMap
       name: ${APP}-volsync-defaults
