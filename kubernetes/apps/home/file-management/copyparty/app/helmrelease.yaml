@@ -57,6 +57,7 @@ spec:
           - path: /ceph-filesystem-hdd
     route:
       app:
+        enabled: true
         labels:
           enabled-oidc: "true"
         annotations:
