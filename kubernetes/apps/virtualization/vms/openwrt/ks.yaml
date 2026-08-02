@@ -10,6 +10,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: kubevirt
+  wait: false
   path: ./kubernetes/apps/virtualization/vms/openwrt/app
   postBuild:
     substitute:
