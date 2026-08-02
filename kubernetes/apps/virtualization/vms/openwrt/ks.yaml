@@ -14,7 +14,7 @@ spec:
   postBuild:
     substitute:
       OPENWRT_ROUTER_NODE: talos-0d4c1
-      OPENWRT_WAN_LINK: br-openwrt-wan
       OPENWRT_LAN_LINK: br-openwrt-lan
-      OPENWRT_LAN_IP: 192.168.10.1
+      # Temporary address while the old router still owns 10.0.0.1.
+      OPENWRT_LAN_IP: 10.0.0.254
       OPENWRT_LAN_NETMASK: 255.255.255.0
