@@ -43,11 +43,11 @@ spec:
       kind: HelmRelease
       name: *app
       namespace: *namespace
-  healthCheckExprs:
-    - apiVersion: deviceplugin.intel.com/v1
-      kind: GpuDevicePlugin
-      failed: status.desiredNumberScheduled != status.numberReady
-      current: status.desiredNumberScheduled == status.numberReady
+#   healthCheckExprs:
+#     - apiVersion: deviceplugin.intel.com/v1
+#       kind: GpuDevicePlugin
+#       failed: status.desiredNumberScheduled != status.numberReady
+#       current: status.desiredNumberScheduled == status.numberReady
   interval: 1h
   path: ./kubernetes/apps/kube-system/devices/intel-device-plugin-operator/gpu
   prune: true

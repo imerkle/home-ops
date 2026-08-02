@@ -19,10 +19,10 @@ spec:
     - apiVersion: cert-manager.io/v1
       kind: ClusterIssuer
       name: letsencrypt-prodxs
-  healthCheckExprs:
-    - apiVersion: cert-manager.io/v1
-      kind: ClusterIssuer
-      failed: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
-      current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
+#   healthCheckExprs:
+#     - apiVersion: cert-manager.io/v1
+#       kind: ClusterIssuer
+#       failed: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
+#       current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
   path: ./kubernetes/apps/security/certificates/cert-manager/app
   targetNamespace: cert-manager
