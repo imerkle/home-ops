@@ -32,6 +32,10 @@ spec:
       retries: 3
   values:
     replicas: 1
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
     kind: Deployment
     deschedulerPolicyAPIVersion: descheduler/v1alpha2
     deschedulerPolicy:
