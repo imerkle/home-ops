@@ -12,8 +12,6 @@ cleanup() {
   kubectl -n "$namespace" delete pod "$pod" --ignore-not-found >/dev/null 2>&1 || true
 }
 
-trap cleanup EXIT
-
 cleanup
 
 cat <<EOF | kubectl apply -f -

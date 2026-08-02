@@ -8,7 +8,7 @@ controller := `talosctl config info -o yaml 2>/dev/null | yq -r '.endpoints[0] /
 nodes := `talosctl config info -o yaml 2>/dev/null | yq -r '.nodes // [] | join(" ")' 2>/dev/null || true`
 
 [private]
-default: talos kube (kubeconfig "node") wait namespaces resources crds apps kubeconfig
+default: kube (kubeconfig "node") wait namespaces resources crds apps kubeconfig
 
 [doc('Install Talos')]
 talos:
@@ -57,15 +57,18 @@ wait:
 namespaces:
     just log info "Running stage..." "stage" "$0"
     find "{{ kubernetes_dir }}/apps" -mindepth 1 -maxdepth 1 -type d | while IFS= read -r dir; do \
-        if ! kustomize build "$dir" | yq ea -e 'select(.kind == "Namespace")' | kubectl apply --server-side --field-manager bootstrap --force-conflicts -f -; then \
-            just log fatal "Failed to apply namespace" "stage" "$0" "namespace" "$(basename "$dir")"; \
+        ns_yaml=$(kustomize build "$dir" | yq 'select(.kind == "Namespace")' 2>/dev/null); \
+        if [ -n "$ns_yaml" ]; then \
+            if ! echo "$ns_yaml" | kubectl apply --server-side --field-manager bootstrap --force-conflicts -f -; then \
+                just log fatal "Failed to apply namespace" "stage" "$0" "namespace" "$(basename "$dir")"; \
+            fi; \
         fi; \
     done
 
 [doc('Apply Kubernetes resources')]
 resources:
     just log info "Running stage..." "stage" "$0"
-    if ! just template "{{ bootstrap_dir }}/resources.yaml.j2" | kubectl apply --server-side --field-manager bootstrap --force-conflicts -f -; then \
+    if ! minijinja-cli "{{ bootstrap_dir }}/resources.yaml.j2" | kubectl apply --server-side --field-manager bootstrap --force-conflicts -f -; then \
         just log fatal "Failed to apply resources" "stage" "$0"; \
     fi;
 
@@ -79,6 +82,6 @@ crds:
 [doc('Apply Helmfile Apps')]
 apps:
     just log info "Running stage..." "stage" "$0"
-    if ! helmfile -f "{{ bootstrap_dir }}/helmfile.d/01-apps.yaml" sync --hide-notes; then \
+    if ! helmfile -f "{{ bootstrap_dir }}/helmfile.d/01-apps.yaml" sync; then \
         just log fatal "Failed to sync helmfile" "stage" "$0"; \
     fi

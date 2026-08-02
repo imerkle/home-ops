@@ -39,19 +39,19 @@ machine:
         devices {
            global_filter = [ "r|^/dev/drbd.*|", "r|^/dev/dm-.*|", "r|^/dev/zd.*|" ]
         }
-    - path: /usr/local/bin/lvs
+    - path: /var/usrlocal/bin/lvs
       permissions: 0755
       op: create
       content: |
         #!/bin/sh
         exit 5
-    - path: /usr/local/bin/vgs
+    - path: /var/usrlocal/bin/vgs
       permissions: 0755
       op: create
       content: |
         #!/bin/sh
         exit 5
-    - path: /usr/local/bin/pvs
+    - path: /var/usrlocal/bin/pvs
       permissions: 0755
       op: create
       content: |
@@ -62,6 +62,8 @@ machine:
     # image: factory.talos.dev/installer/cbc20e313ea99869a01aba9ea3301f1cc29dc73e0a6987662b96a33538a25cc2:v1.12.1
     image: factory.talos.dev/metal-installer/3ee01a14dde715136c598aa018beb4863245e204e4e0716eb83e14fcbb9d1b51:v1.12.6
     wipe: false
+    extraKernelArgs:
+      - ip=:::::enp5s0:none
   kernel:
     modules:
       - name: openvswitch
@@ -95,16 +97,29 @@ machine:
           - fe80::aaa1:59ff:fe53:1f41/64
         routes:
           - network: 0.0.0.0/0
-            gateway: fe80::1
+            gateway: 10.0.0.4
+        vlans:
+          - vlanId: 100
+          - vlanId: 200
+      - interface: br-openwrt-wan
+        bridge:
+          interfaces:
+            - enp5s0.100
+      - interface: br-openwrt-lan
+        bridge:
+          interfaces:
+            - enp5s0.200
     nameservers:
       - 1.1.1.1
-      - 1.0.0.4
+      - 1.0.0.1
   registries:
     mirrors:
       docker.io:
         endpoints:
           - https://mirror.gcr.io
   sysctls:
+    net.ipv4.conf.all.rp_filter: "0"
+    net.ipv4.conf.default.rp_filter: "0"
     net.ipv4.neigh.default.gc_thresh1: "4096"
     net.ipv4.neigh.default.gc_thresh2: "8192"
     net.ipv4.neigh.default.gc_thresh3: "16384"
@@ -260,37 +275,4 @@ cluster:
 # kind: WatchdogTimerConfig
 # device: /dev/watchdog0
 # timeout: 5m
----
-apiVersion: v1alpha1
-kind: VLANConfig
-name: enp5s0.100
-vlanID: 100
-parent: enp5s0
----
-apiVersion: v1alpha1
-kind: VLANConfig
-name: enp5s0.200
-vlanID: 200
-parent: enp5s0
----
-apiVersion: v1alpha1
-kind: BridgeConfig
-name: br-openwrt-wan
-links:
-  - enp5s0.100
-stp:
-  enabled: false
-vlan:
-  filtering: false
-up: true
----
-apiVersion: v1alpha1
-kind: BridgeConfig
-name: br-openwrt-lan
-links:
-  - enp5s0.200
-stp:
-  enabled: false
-vlan:
-  filtering: false
-up: true
+
