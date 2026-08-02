@@ -6,9 +6,9 @@ resources:
   - helmrepository.yaml
   - helmrelease.yaml
   - externalsecret.yaml
-  - providers.yaml
-  - providerconfig-sql.yaml
-  - providerconfig-vault.yaml
+#   - providers.yaml
+#   - providerconfig-sql.yaml
+#   - providerconfig-vault.yaml
 #   - xrd.yaml
 #   - composition.yaml
 #   - xvaultpolicy-xrd.yaml
