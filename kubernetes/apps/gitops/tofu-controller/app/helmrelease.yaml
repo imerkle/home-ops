@@ -41,6 +41,10 @@ spec:
 
     metrics:
       enabled: true
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
       serviceMonitor:
         enabled: true
         interval: 1m
