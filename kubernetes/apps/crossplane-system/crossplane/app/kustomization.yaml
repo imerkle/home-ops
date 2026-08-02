@@ -7,10 +7,10 @@ resources:
   - helmrelease.yaml
   - externalsecret.yaml
   - providers.yaml
-#  - providerconfig-sql.yaml
-#  - providerconfig-vault.yaml
-#  - xrd.yaml
-#  - composition.yaml
-#  - xvaultpolicy-xrd.yaml
-#  - xvaultpolicy-composition.yaml
-#  - vault-token-refresher.yaml
+  - providerconfig-sql.yaml
+  - providerconfig-vault.yaml
+  - xrd.yaml
+  - composition.yaml
+  - xvaultpolicy-xrd.yaml
+  - xvaultpolicy-composition.yaml
+  - vault-token-refresher.yaml
