@@ -23,12 +23,13 @@ spec:
       - "--enable-composition-functions"
     provider:
       packages: []
-    resources:
+    resourcesCrossplane:
       requests:
         cpu: 20m
         memory: 128Mi
     rbacManager:
-      resources:
-        requests:
-          cpu: 20m
-          memory: 128Mi
+      deploy: true
+    resourcesRBACManager:
+      requests:
+        cpu: 20m
+        memory: 128Mi
