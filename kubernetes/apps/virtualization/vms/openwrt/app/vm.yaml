@@ -32,23 +32,20 @@ spec:
                 bus: virtio
               name: rootdisk
           interfaces:
-            - name: default
-              masquerade: {}
+            # The pod network is a temporary, non-ISP WAN during staging.  The
+            # physical SFP is deliberately not attached until cutover.
             - name: wan
-              macAddress: "02:00:00:00:00:01"
-              bridge: {}
+              masquerade: {}
             - name: lan
               macAddress: "02:00:00:00:00:02"
               bridge: {}
         resources:
           requests:
+            cpu: 100m
             memory: 512Mi
       networks:
-        - name: default
-          pod: {}
         - name: wan
-          multus:
-            networkName: wan-net
+          pod: {}
         - name: lan
           multus:
             networkName: lan-net
