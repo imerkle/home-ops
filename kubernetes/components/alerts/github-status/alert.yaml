@@ -8,5 +8,7 @@ spec:
   providerRef:
     name: github-status
   eventSources:
+#     - kind: FluxInstance
+#       name: "*"
     - kind: Kustomization
       name: "*"
