@@ -8,6 +8,6 @@ resources:
 - cluster.yaml
 - scheduledbackup.yaml
 - route.yaml
-- bucket.yaml
+# - bucket.yaml
 - bootstrap-groups.yaml
 # - dump-local.yaml
