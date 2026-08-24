@@ -7,15 +7,14 @@ stringData:
     #ENC[AES256_GCM,data:UGCRAhJbUNBUv5b39fzE5woQkAoqPd/SDOJboy6nsR/7,iv:mFQYS8SkskrQ6Z9AoFUPit6fTDCQePvmRETz+wqCnCM=,tag:ft4CG4JjaapbX3DV/7sbAA==,type:comment]
     #ENC[AES256_GCM,data:gRkBohl8ppPZFlDeGT6bDnF0xQId1q9ONft1e0L7rDRB,iv:21UzhYI6fhlgzLQX1c4+9fL0TxDNgCh73f9hPcGNF/o=,tag:QFZmSjk7xuM32sL+dsiEHA==,type:comment]
     PG_S3_FOLDER_PREV: ENC[AES256_GCM,data:nQXyFWR4fmMsCjM0Mg==,iv:JFl/QsKXomLqkHHKDTeMf8R4dNqLMLE4W9AUK64FMAc=,tag:jsJIrhf4MkDFJf991f4RrQ==,type:str]
-    PG_S3_FOLDER_CURR: ENC[AES256_GCM,data:DfYhArtU7cRibRcIiQ==,iv:z4c+K38XUWKIdX6u/ihOFw9pCfw+UJryJCANvDGW1JM=,tag:/SbbeMa5UZFoKa4O/EeZKQ==,type:str]
+    PG_S3_FOLDER_CURR: ENC[AES256_GCM,data:PYnDCPqJ+CIciUjqpw==,iv:i6Mmzfggz9SALFkNM+JHKrFAjF8V3LS8GF35KC3RPmc=,tag:6zJme7Su4xI7zfpsHDKqRQ==,type:str]
     VEC_PG_S3_FOLDER_PREV: ENC[AES256_GCM,data:yLDc9leIlvbv,iv:K6Mzk9XHm7RLgRD9KTnXuyyiL+J+rVVHyL323jz8/aM=,tag:PEOigtT30btjNt0myuPs7A==,type:str]
     VEC_PG_S3_FOLDER_CURR: ENC[AES256_GCM,data:BGmxVGpwMBb7ZbWdjg==,iv:YB4uglmFa0pEOtR5qRzISVc/s4RVY/mWGqiFPGXr60c=,tag:vjaZ9tL82bDWcXqygf1c0Q==,type:str]
     S3_ENDPOINT: ENC[AES256_GCM,data:RV1yJx99quBxDYUWGj3pT5gLv7RYNIARi8knUaaukaqudP3VpsQ=,iv:SKcQcxv4cNHelzxx4/ZfBLrAIAdptk0WSqPyfUldr9s=,tag:nCFGOeKrTfq99Vyjd9qK1Q==,type:str]
     #ENC[AES256_GCM,data:HM5qgNck3Py0431MQVANn1m3+t3B2dPSVhcsq/MPk3G7L3TWsaGU4046M1KloOt5GNp3KMwH01fd7Iu287RJv4Snaio=,iv:kEbcsSleCYrZN9T7bV2vVssbuISkaWe/pSGkM3btebU=,tag:afCvwA5ei2fBsQNDJ6ZVKQ==,type:comment]
 sops:
     age:
-        - recipient: age1yvl77vcj6cthafxqnjezrme4ntktjgd2j4xpgkcfutws83zrtdesk93cll
-          enc: |
+        - enc: |
             -----BEGIN AGE ENCRYPTED FILE-----
             YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBPTUVPa1JIOWNrNjJrc2h4
             L0hVZENwSHNHanhEelRBNGFEVzFKbXhjZ0djCmRDcUxDd29KYjlCWWpGTFQ5Qjlq
@@ -23,8 +22,9 @@ sops:
             YzNXZkR0cTJDM3p5Z3lTRUliNkZqQ1EK8QEWCwKmKUlx+RtH0ouUVbcBTrxuq9FC
             wbUg8kv6lQ/HgFHaJI0Tux+jXUQgo/U+d9TVtaMyZ4GMAEnqGP/suw==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-07-15T08:39:01Z"
-    mac: ENC[AES256_GCM,data:7IZYFrb1IS8Fe9tjpYp7vV+rrd4tg/eR9UR7TsTK6sTjVkhZa25Jht0OTfZam/Z9zaoWXnkGj970eokp9shMYr2QR8dCGN3P5gzq6ILonN8XkIakWgymNjwXyFHu28jM6+1uJFNxoszpzLt2fVuO6XC2dAPglynzJ5FKcH9OFrI=,iv:on96rxIJtN4RgtjN18gisdC47J6ht1XRqmoHeLRtdQw=,tag:uqCJbDf9WYUZD8yALMRyPQ==,type:str]
+          recipient: age1yvl77vcj6cthafxqnjezrme4ntktjgd2j4xpgkcfutws83zrtdesk93cll
     encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-08-24T16:28:57Z"
+    mac: ENC[AES256_GCM,data:jJSKXBfxI4MnaR7YsNUkZtIsxf7jRrc9fXvhtF7oqToTTRtEUSiWcEzY0NKT0KVaXFnA6mUX0Ydl8XjBzM1BGH+YQRwOCxzFCeeRRdnUUGbBtdfZH6JlTq338p1w8C0Toz8F5PVHdWbeaj8b1RG1BwVIPN5t15+HMkiiqAUcIIc=,iv:JqVY2A38scvrMJYpdFvfphR0dZC90Qry5p+aNATOWAY=,tag:BqmBVAFTg7jiOSk3XqDOrQ==,type:str]
     mac_only_encrypted: true
-    version: 3.12.2
+    version: 3.13.3
