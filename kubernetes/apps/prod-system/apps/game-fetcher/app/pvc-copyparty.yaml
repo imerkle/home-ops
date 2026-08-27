@@ -13,11 +13,11 @@ spec:
     fsType: ext4
     volumeAttributes:
       linstor.csi.linbit.com/mount-options: ""
-      linstor.csi.linbit.com/nfs-export: nfs://linstor-csi-nfs.piraeus-datastore.svc:1000/pvc-58b983e3-ce75-4c7b-baef-972cd88c7f72
+      linstor.csi.linbit.com/nfs-export: nfs://linstor-csi-nfs.piraeus-datastore.svc:1002/pvc-82f552b9-6b3b-4b8f-9a5a-6d7e349a5c67
       linstor.csi.linbit.com/post-mount-xfs-opts: ""
       linstor.csi.linbit.com/remote-access-policy: "true"
       linstor.csi.linbit.com/uses-volume-context: "true"
-    volumeHandle: pvc-58b983e3-ce75-4c7b-baef-972cd88c7f72
+    volumeHandle: pvc-82f552b9-6b3b-4b8f-9a5a-6d7e349a5c67
   persistentVolumeReclaimPolicy: Retain
   storageClassName: piraeus-storage
   volumeMode: Filesystem
