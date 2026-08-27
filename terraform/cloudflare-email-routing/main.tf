@@ -51,24 +51,24 @@ resource "cloudflare_email_routing_settings" "main" {
 # Import existing R2 bucket if already created
 import {
   to = cloudflare_r2_bucket.email_inbox
-  id = "d4ecb65c48cd4a627c11099c8d9c9fb7/home-ops-email-inbox"
+  id = "${var.account_id}/home-ops-email-inbox"
 }
 
 # Create R2 bucket for email storage
 resource "cloudflare_r2_bucket" "email_inbox" {
-  account_id = data.cloudflare_zone.current.account_id
+  account_id = var.account_id
   name       = "home-ops-email-inbox"
 }
 
 # Import existing Worker script if already created
 import {
   to = cloudflare_workers_script.email_receiver
-  id = "d4ecb65c48cd4a627c11099c8d9c9fb7/email-receiver"
+  id = "${var.account_id}/email-receiver"
 }
 
 # Create the Cloudflare Worker script
 resource "cloudflare_workers_script" "email_receiver" {
-  account_id = data.cloudflare_zone.current.account_id
+  account_id = var.account_id
   name       = "email-receiver"
   content    = file("${path.module}/worker.js")
   module     = true

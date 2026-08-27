@@ -1,3 +1,8 @@
+variable "account_id" {
+  description = "Cloudflare Account ID"
+  type        = string
+}
+
 variable "zone_id" {
   description = "Cloudflare Zone ID (if not provided, will be read from Vault secrets)"
   type        = string
