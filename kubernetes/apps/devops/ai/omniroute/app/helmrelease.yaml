@@ -12,11 +12,17 @@ spec:
   values:
     controllers:
       omniroute:
+        annotations:
+          reloader.stakater.com/auto: "true"
         containers:
           app:
             image:
               repository: diegosouzapw/omniroute
               tag: latest
+            env:
+              INITIAL_PASSWORD: "vault:secret/data/ai#OMNIROUTE_PASSWORD"
+              DB_BACKUP_MAX_FILES: "1"
+              DB_BACKUP_RETENTION_DAYS: "1"
             ports:
               - name: http
                 containerPort: 20128

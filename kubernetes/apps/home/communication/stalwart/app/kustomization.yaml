@@ -6,9 +6,3 @@ resources:
   - helmrelease.yaml
   - dnsendpoint.yaml
   - httproute.yaml
-  - tailscale-auth-secret.yaml
-patches:
-  - path: patches/tailscale-sidecar.yaml
-    target:
-      kind: StatefulSet
-      name: stalwart-stalwart-mail

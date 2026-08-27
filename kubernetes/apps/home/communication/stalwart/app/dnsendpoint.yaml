@@ -6,11 +6,12 @@ metadata:
   name: stalwart
 spec:
   endpoints:
-    - dnsName: ${DOMAIN1}
-      recordType: MX
-      recordTTL: 300
-      targets:
-        - "10 mail.${DOMAIN1}"
+    # Inbound MX records are automatically managed by Cloudflare Email Routing
+    # - dnsName: ${DOMAIN1}
+    #   recordType: MX
+    #   recordTTL: 300
+    #   targets:
+    #     - "10 mail.${DOMAIN1}"
     - dnsName: ${DOMAIN1}
       recordType: TXT
       recordTTL: 300

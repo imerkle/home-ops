@@ -35,7 +35,8 @@ data "vault_generic_secret" "cloudflare_secrets" {
 }
 
 locals {
-  zone_id = try(coalesce(var.zone_id, lookup(data.vault_generic_secret.cloudflare_secrets.data, "DNS1_ZONE_ID", null)), var.zone_id)
+  zone_id    = try(coalesce(var.zone_id, lookup(data.vault_generic_secret.cloudflare_secrets.data, "DNS1_ZONE_ID", null)), var.zone_id)
+  account_id = try(coalesce(var.account_id, lookup(data.vault_generic_secret.cloudflare_secrets.data, "ACCOUNT_ID", null)), var.account_id)
 }
 
 data "cloudflare_zone" "current" {
@@ -51,24 +52,24 @@ resource "cloudflare_email_routing_settings" "main" {
 # Import existing R2 bucket if already created
 import {
   to = cloudflare_r2_bucket.email_inbox
-  id = "${var.account_id}/home-ops-email-inbox"
+  id = "${local.account_id}/home-ops-email-inbox"
 }
 
 # Create R2 bucket for email storage
 resource "cloudflare_r2_bucket" "email_inbox" {
-  account_id = var.account_id
+  account_id = local.account_id
   name       = "home-ops-email-inbox"
 }
 
 # Import existing Worker script if already created
 import {
   to = cloudflare_workers_script.email_receiver
-  id = "${var.account_id}/email-receiver"
+  id = "${local.account_id}/email-receiver"
 }
 
 # Create the Cloudflare Worker script
 resource "cloudflare_workers_script" "email_receiver" {
-  account_id = var.account_id
+  account_id = local.account_id
   name       = "email-receiver"
   content    = file("${path.module}/worker.js")
   module     = true

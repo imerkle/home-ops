@@ -8,6 +8,7 @@ metadata:
     security.banzaicloud.io/mutate: skip
 spec:
   interval: 15m
+  timeout: 15m
   chartRef:
     kind: OCIRepository
     name: matrix-stack
@@ -25,7 +26,7 @@ spec:
         vault.security.banzaicloud.io/vault-env-daemon: "true"
       postgres:
         host: pg-default-rw.db.svc.cluster.local
-        user: dummy
+        user: "$${SYNAPSE_POSTGRES_USER}"
         database: synapse
         password:
           value: dummy
@@ -147,11 +148,17 @@ spec:
         vault.security.banzaicloud.io/vault-env-daemon: "true"
       postgres:
         host: pg-default-rw.db.svc.cluster.local
-        user: dummy
-        database: mas
+        user: "$${POSTGRES_USER}"
+        database: matrix_authentication_service
         password:
           value: dummy
       extraEnv:
+        - name: POSTGRES_USER
+          value: "$${vault:database/creds/matrix-authentication-service-role#username}"
+        - name: POSTGRES_PASSWORD
+          value: "$${vault:database/creds/matrix-authentication-service-role#password}"
+        - name: MAS_DATABASE__URI
+          value: "postgres://$${vault:database/creds/matrix-authentication-service-role#username}:$${vault:database/creds/matrix-authentication-service-role#password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
         - name: MAS_DATABASE_URI
           value: "postgres://$${vault:database/creds/matrix-authentication-service-role#username}:$${vault:database/creds/matrix-authentication-service-role#password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
       ingress:
@@ -282,5 +289,50 @@ spec:
     # Disable built-in PostgreSQL, use external
     postgres:
       enabled: false
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: StatefulSet
+              name: matrix-synapse-main
+            patch: |-
+              apiVersion: apps/v1
+              kind: StatefulSet
+              metadata:
+                name: matrix-synapse-main
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: true
+                    initContainers:
+                      - name: render-config
+                        env:
+                          - name: SYNAPSE_POSTGRES_PASSWORD
+                            value: "$${vault:database/creds/synapse-role#password}"
+                          - name: SYNAPSE_POSTGRES_USER
+                            value: "$${vault:database/creds/synapse-role#username}"
+          - target:
+              kind: Deployment
+              name: matrix-matrix-authentication-service
+            patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: matrix-matrix-authentication-service
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: true
+                    initContainers:
+                      - name: render-config
+                        env:
+                          - name: POSTGRES_PASSWORD
+                            value: "$${vault:database/creds/matrix-authentication-service-role#password}"
+                          - name: POSTGRES_USER
+                            value: "$${vault:database/creds/matrix-authentication-service-role#username}"
+                      - name: database-migrate
+                        env:
+                          - name: MAS_DATABASE__URI
+                            value: "postgres://$${vault:database/creds/matrix-authentication-service-role#username}:$${vault:database/creds/matrix-authentication-service-role#password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
 
 

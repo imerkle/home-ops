@@ -14,12 +14,8 @@ spec:
     name: flux-system
     namespace: flux-system
   vars:
-    - name: account_id
-      value: "d4ecb65c48cd4a627c11099c8d9c9fb7"
     - name: mail_domain
       value: "${DOMAIN1}"
-    - name: destination_email
-      value: "d8xu45ay@anonaddy.me" # TODO: Update this with your actual destination email address
   runnerPodTemplate:
     spec:
       securityContext:
