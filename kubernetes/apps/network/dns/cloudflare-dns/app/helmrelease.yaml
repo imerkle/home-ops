@@ -30,7 +30,6 @@ spec:
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint
       - --gateway-name=envoy-external
-      - --zone-id-filter=$(CF_ZONE_ID)
     triggerLoopOnEvent: true
     policy: sync
     sources:
@@ -44,3 +43,4 @@ spec:
       enabled: true
     podAnnotations:
       secret.reloader.stakater.com/reload: *secret
+      vault.security.banzaicloud.io/vault-env-daemon: "true"
