@@ -60,6 +60,12 @@ resource "cloudflare_r2_bucket" "email_inbox" {
   name       = "home-ops-email-inbox"
 }
 
+# Import existing Worker script if already created
+import {
+  to = cloudflare_workers_script.email_receiver
+  id = "d4ecb65c48cd4a627c11099c8d9c9fb7/email-receiver"
+}
+
 # Create the Cloudflare Worker script
 resource "cloudflare_workers_script" "email_receiver" {
   account_id = data.cloudflare_zone.current.account_id
