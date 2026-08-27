@@ -74,18 +74,17 @@ def get_jmap_session():
         logger.error("No mail account ID found in Stalwart JMAP session response.")
         return None
 
-    # Base URL handling
-    api_url_raw = session.get('apiUrl', '')
-    upload_url_raw = session.get('uploadUrl', '')
-    
-    # Check if relative path or absolute URL
-    if api_url_raw.startswith('/'):
-        stalwart_base = STALWART_URL.split('/.well-known')[0]
-        api_url = urljoin(stalwart_base, api_url_raw)
-        upload_url = urljoin(stalwart_base, upload_url_raw).replace("{accountId}", account_id)
-    else:
-        api_url = api_url_raw
-        upload_url = upload_url_raw.replace("{accountId}", account_id)
+    # Base URL handling: always use the scheme and netloc from STALWART_URL
+    # because Stalwart may return pod-internal hostnames (e.g. stalwart-stalwart-mail-1)
+    # that are not resolvable outside its pod.
+    parsed_base = urlparse(STALWART_URL)
+    base_origin = f"{parsed_base.scheme}://{parsed_base.netloc}"
+
+    api_path = urlparse(session.get('apiUrl', '')).path
+    upload_path = urlparse(session.get('uploadUrl', '')).path
+
+    api_url = f"{base_origin}{api_path}"
+    upload_url = f"{base_origin}{upload_path}".replace("{accountId}", account_id)
 
     return {
         "account_id": account_id,
