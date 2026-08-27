@@ -8,7 +8,7 @@
     "gcInterval": "24h",
     "retention": {
       "dryRun": false,
-      "delay": "24h",
+      "delay": "1h",
       "policies": [
         {
           "repositories": ["*-cache", "**/*-cache"],
@@ -16,7 +16,7 @@
           "deleteUntagged": true,
           "keepTags": [
             {
-              "mostRecentlyPushedCount": 20
+              "mostRecentlyPushedCount": 1
             }
           ]
         },

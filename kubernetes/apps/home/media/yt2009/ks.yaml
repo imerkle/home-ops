@@ -1,12 +1,25 @@
 ---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app yt2009
-  namespace: home-system
 spec:
   targetNamespace: home-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../../components/kaniko-build
   path: ./kubernetes/apps/home/media/yt2009/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: home-ops
+  wait: true
+  interval: 30m
+  postBuild:
+    substitute:
+      APP: *app
+      GIT_REPO: "git://github.com/ftde0/yt2009.git"
+      BUILD_SCHEDULE: "0 3 * * *"

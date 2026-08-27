@@ -2,9 +2,9 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: zot-nuviostreams-build
+  name: ${APP}-build
 spec:
-  schedule: "15 3 * * *"
+  schedule: "${BUILD_SCHEDULE:=0 3 * * *}"
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 2
   jobTemplate:
@@ -15,9 +15,9 @@ spec:
             - name: kaniko
               image: gcr.io/kaniko-project/executor:latest
               args:
-                - "--context=git://github.com/tapframe/NuvioStreamsAddon.git"
-                - "--dockerfile=Dockerfile"
-                - "--destination=zot.dev-system.svc.cluster.local:5000/nuviostreams:latest"
+                - "--context=${GIT_REPO}"
+                - "--dockerfile=${DOCKERFILE:=Dockerfile}"
+                - "--destination=zot.dev-system.svc.cluster.local:5000/${APP}:latest"
                 - "--insecure"
                 - "--insecure-pull"
           restartPolicy: OnFailure
