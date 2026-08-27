@@ -46,13 +46,22 @@ spec:
       serviceAccountName: vault-token-refresher
       containers:
         - name: refresher
-          image: bitnami/kubectl:latest
+          image: alpine/k8s:1.30.0
           command:
             - /bin/bash
             - -c
             - |
-              apk add --no-cache curl jq
+              BACKOFF=15
+              MAX_BACKOFF=600
               while true; do
+                echo "Waiting for Vault to be healthy..."
+                until curl -sf http://vault.vault:8200/v1/sys/health > /dev/null 2>&1; do
+                  echo "Vault not ready, waiting ${BACKOFF}s..."
+                  sleep $BACKOFF
+                  BACKOFF=$(( BACKOFF * 2 > MAX_BACKOFF ? MAX_BACKOFF : BACKOFF * 2 ))
+                done
+                BACKOFF=15
+
                 echo "Attempting to fetch new Vault token..."
                 JWT=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
                 RESPONSE=$(curl -s --fail --request POST --data '{"jwt": "'"$JWT"'", "role": "crossplane"}' http://vault.vault:8200/v1/auth/kubernetes/login || echo "")
@@ -61,10 +70,12 @@ spec:
                 if [ -n "$TOKEN" ]; then
                   echo "Successfully fetched token. Updating secret..."
                   kubectl create secret generic vault-creds-json -n crossplane-system --from-literal=credentials="{\"token\": \"$TOKEN\"}" --dry-run=client -o yaml | kubectl apply -f -
-                  # Token TTL is 1h, sleep for 30m
-                  sleep 1800
+                  echo "Token updated. Sleeping for 45 minutes..."
+                  sleep 2700
                 else
                   echo "Failed to fetch token. Response: $RESPONSE"
-                  sleep 15
+                  BACKOFF=$(( BACKOFF * 2 > MAX_BACKOFF ? MAX_BACKOFF : BACKOFF * 2 ))
+                  echo "Backing off for ${BACKOFF}s..."
+                  sleep $BACKOFF
                 fi
               done
