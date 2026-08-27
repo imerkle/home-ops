@@ -92,6 +92,9 @@ def get_jmap_session():
         "upload_url": upload_url
     }
 
+import email
+from email.policy import default
+
 def get_directory_accounts(session_info):
     headers, auth = get_auth_headers_and_auth()
     headers["Content-Type"] = "application/json"
@@ -106,22 +109,29 @@ def get_directory_accounts(session_info):
         if resp.status_code == 200:
             principals = resp.json().get('methodResponses', [[]])[0][1].get('list', [])
             accounts_map = {}
-            first_user_acc = None
             for p in principals:
                 if p.get('type') == 'individual':
                     acc_id = p.get('id')
-                    email = p.get('email', '').lower()
-                    if not first_user_acc:
-                        first_user_acc = acc_id
-                    if email:
-                        accounts_map[email] = acc_id
-                    name = p.get('name', '').lower()
+                    primary_email = p.get('email', '').lower().strip()
+                    if primary_email:
+                        accounts_map[primary_email] = acc_id
+                    # Also map username
+                    name = p.get('name', '').lower().strip()
                     if name:
                         accounts_map[name] = acc_id
-            return accounts_map, first_user_acc
+                    # Map any configured aliases or secondary emails
+                    for extra in p.get('emails', []):
+                        if isinstance(extra, str):
+                            accounts_map[extra.lower().strip()] = acc_id
+                        elif isinstance(extra, dict) and extra.get('email'):
+                            accounts_map[extra['email'].lower().strip()] = acc_id
+                    for alias in p.get('aliases', []):
+                        if isinstance(alias, str):
+                            accounts_map[alias.lower().strip()] = acc_id
+            return accounts_map
     except Exception as e:
         logger.warning(f"Could not query directory principals: {e}")
-    return {}, None
+    return {}
 
 def get_inbox_id_for_account(session_info, target_account_id):
     headers, auth = get_auth_headers_and_auth()
@@ -173,7 +183,9 @@ def fetch_and_process_emails():
     if not session_info:
         return
 
-    accounts_map, default_user_account = get_directory_accounts(session_info)
+    accounts_map = get_directory_accounts(session_info)
+    if not accounts_map:
+        logger.warning("No individual user accounts found in Stalwart Directory.")
 
     # List objects in R2
     try:
@@ -206,22 +218,53 @@ def fetch_and_process_emails():
             logger.error(f"Failed to download {file_key} from R2: {e}")
             continue
 
-        # Determine target recipient account
-        recipient = metadata.get('to', '').strip().lower()
+        # Extract all potential recipient addresses
+        recipients = []
+        if metadata.get('to'):
+            recipients.append(metadata.get('to').strip().lower())
+
+        try:
+            parsed_msg = email.message_from_bytes(blob_data, policy=default)
+            for header_name in ['to', 'cc', 'delivered-to', 'x-forwarded-to']:
+                for header_val in parsed_msg.get_all(header_name, []):
+                    if hasattr(header_val, 'addresses'):
+                        for addr in header_val.addresses:
+                            if addr.addr_spec:
+                                recipients.append(addr.addr_spec.strip().lower())
+                    elif isinstance(header_val, str):
+                        recipients.append(header_val.strip().lower())
+        except Exception as e:
+            logger.debug(f"Could not parse MIME headers for {file_key}: {e}")
+
+        # Find matching account in Stalwart
         target_account_id = None
-        if recipient and recipient in accounts_map:
-            target_account_id = accounts_map[recipient]
-        elif default_user_account:
-            target_account_id = default_user_account
-        else:
-            target_account_id = session_info["account_id"]
+        matched_recipient = None
+        for r in recipients:
+            if r in accounts_map:
+                target_account_id = accounts_map[r]
+                matched_recipient = r
+                break
+            # Check localpart (e.g. "info" if "info@x3y.space")
+            localpart = r.split('@')[0] if '@' in r else r
+            if localpart in accounts_map:
+                target_account_id = accounts_map[localpart]
+                matched_recipient = r
+                break
+
+        if not target_account_id:
+            logger.warning(f"No account or alias matched recipients {recipients} for {file_key}. Dropping to avoid cross-account delivery.")
+            try:
+                s3_client.delete_object(Bucket=R2_BUCKET, Key=file_key)
+            except Exception:
+                pass
+            continue
 
         if target_account_id not in inbox_cache:
             inbox_cache[target_account_id] = get_inbox_id_for_account(session_info, target_account_id)
 
         target_inbox_id = inbox_cache.get(target_account_id)
         if not target_inbox_id:
-            logger.error(f"Could not find Inbox for target account {target_account_id}. Skipping {file_key}.")
+            logger.error(f"Could not find Inbox for target account {target_account_id} ({matched_recipient}). Skipping {file_key}.")
             continue
 
         # Upload blob to target account uploadUrl
