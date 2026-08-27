@@ -56,6 +56,7 @@ spec:
           rm -f /rootdisk/disk.img
           rm -f /rootdisk/disk.qcow2
           qemu-img convert -f qcow2 -O raw /workspace/source.qcow2 /rootdisk/disk.img
+          qemu-img resize /rootdisk/disk.img 256M
           sync
       securityContext:
         allowPrivilegeEscalation: false

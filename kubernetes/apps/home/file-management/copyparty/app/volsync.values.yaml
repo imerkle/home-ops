@@ -1,3 +1,6 @@
 volumes:
   - name: copyparty
     capacity: 5Gi
+    schedule: "0 3 * * *"
+    offsite:
+      schedule: "30 3 * * *"
