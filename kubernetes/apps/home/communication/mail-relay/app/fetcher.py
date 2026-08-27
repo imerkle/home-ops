@@ -92,20 +92,51 @@ def get_jmap_session():
         "upload_url": upload_url
     }
 
-def get_inbox_id(session_info):
+def get_directory_accounts(session_info):
+    headers, auth = get_auth_headers_and_auth()
+    headers["Content-Type"] = "application/json"
+    payload = {
+        "using": ["urn:ietf:params:jmap:core", "urn:ietf:params:jmap:principals"],
+        "methodCalls": [
+            ["Principal/get", {"accountId": session_info["account_id"]}, "0"]
+        ]
+    }
+    try:
+        resp = requests.post(session_info["api_url"], auth=auth, headers=headers, json=payload, timeout=15)
+        if resp.status_code == 200:
+            principals = resp.json().get('methodResponses', [[]])[0][1].get('list', [])
+            accounts_map = {}
+            first_user_acc = None
+            for p in principals:
+                if p.get('type') == 'individual':
+                    acc_id = p.get('id')
+                    email = p.get('email', '').lower()
+                    if not first_user_acc:
+                        first_user_acc = acc_id
+                    if email:
+                        accounts_map[email] = acc_id
+                    name = p.get('name', '').lower()
+                    if name:
+                        accounts_map[name] = acc_id
+            return accounts_map, first_user_acc
+    except Exception as e:
+        logger.warning(f"Could not query directory principals: {e}")
+    return {}, None
+
+def get_inbox_id_for_account(session_info, target_account_id):
     headers, auth = get_auth_headers_and_auth()
     headers["Content-Type"] = "application/json"
     
     payload = {
         "using": ["urn:ietf:params:jmap:core", "urn:ietf:params:jmap:mail"],
         "methodCalls": [
-            ["Mailbox/get", {"accountId": session_info["account_id"]}, "0"]
+            ["Mailbox/get", {"accountId": target_account_id}, "0"]
         ]
     }
 
     resp = requests.post(session_info["api_url"], auth=auth, headers=headers, json=payload, timeout=15)
     if resp.status_code != 200:
-        logger.error(f"Failed to fetch mailboxes. Status: {resp.status_code}")
+        logger.error(f"Failed to fetch mailboxes for account {target_account_id}. Status: {resp.status_code}")
         return None
 
     mb_data = resp.json()
@@ -114,11 +145,10 @@ def get_inbox_id(session_info):
         for mb in mailboxes:
             if mb.get('role') == 'inbox' or mb.get('name', '').lower() == 'inbox':
                 return mb['id']
-        # If no explicit inbox found, return the first mailbox
         if mailboxes:
             return mailboxes[0]['id']
     except Exception as e:
-        logger.error(f"Error parsing mailbox list: {e}")
+        logger.error(f"Error parsing mailbox list for account {target_account_id}: {e}")
         return None
 
     return None
@@ -143,10 +173,7 @@ def fetch_and_process_emails():
     if not session_info:
         return
 
-    inbox_id = get_inbox_id(session_info)
-    if not inbox_id:
-        logger.error("Could not find a valid Inbox ID in Stalwart.")
-        return
+    accounts_map, default_user_account = get_directory_accounts(session_info)
 
     # List objects in R2
     try:
@@ -163,6 +190,9 @@ def fetch_and_process_emails():
     logger.info(f"Found {len(contents)} email(s) in R2 bucket. Processing...")
     headers, auth = get_auth_headers_and_auth()
 
+    # Cache inbox IDs per account
+    inbox_cache = {}
+
     for obj in contents:
         file_key = obj['Key']
         logger.info(f"Processing email: {file_key}")
@@ -171,17 +201,37 @@ def fetch_and_process_emails():
         try:
             r2_obj = s3_client.get_object(Bucket=R2_BUCKET, Key=file_key)
             blob_data = r2_obj['Body'].read()
+            metadata = r2_obj.get('Metadata', {})
         except Exception as e:
             logger.error(f"Failed to download {file_key} from R2: {e}")
             continue
 
-        # Upload blob to Stalwart
+        # Determine target recipient account
+        recipient = metadata.get('to', '').strip().lower()
+        target_account_id = None
+        if recipient and recipient in accounts_map:
+            target_account_id = accounts_map[recipient]
+        elif default_user_account:
+            target_account_id = default_user_account
+        else:
+            target_account_id = session_info["account_id"]
+
+        if target_account_id not in inbox_cache:
+            inbox_cache[target_account_id] = get_inbox_id_for_account(session_info, target_account_id)
+
+        target_inbox_id = inbox_cache.get(target_account_id)
+        if not target_inbox_id:
+            logger.error(f"Could not find Inbox for target account {target_account_id}. Skipping {file_key}.")
+            continue
+
+        # Upload blob to target account uploadUrl
+        target_upload_url = session_info["upload_url"].replace(session_info["account_id"], target_account_id)
         up_headers = dict(headers)
         up_headers["Content-Type"] = "message/rfc822"
         try:
-            up_resp = requests.post(session_info["upload_url"], auth=auth, headers=up_headers, data=blob_data, timeout=30)
+            up_resp = requests.post(target_upload_url, auth=auth, headers=up_headers, data=blob_data, timeout=30)
         except Exception as e:
-            logger.error(f"Failed to upload blob {file_key} to Stalwart: {e}")
+            logger.error(f"Failed to upload blob {file_key} to account {target_account_id}: {e}")
             continue
 
         if up_resp.status_code not in (200, 201):
@@ -194,18 +244,18 @@ def fetch_and_process_emails():
             logger.error(f"No blobId returned from Stalwart for {file_key}")
             continue
 
-        # Import blob into Inbox
+        # Import blob into Target Inbox
         import_headers = dict(headers)
         import_headers["Content-Type"] = "application/json"
         import_payload = {
             "using": ["urn:ietf:params:jmap:core", "urn:ietf:params:jmap:mail"],
             "methodCalls": [
                 ["Email/import", {
-                    "accountId": session_info["account_id"],
+                    "accountId": target_account_id,
                     "emails": {
                         file_key: {
                             "blobId": blob_id,
-                            "mailboxIds": {inbox_id: True}
+                            "mailboxIds": {target_inbox_id: True}
                         }
                     }
                 }, "0"]
@@ -215,14 +265,14 @@ def fetch_and_process_emails():
         try:
             imp_resp = requests.post(session_info["api_url"], auth=auth, headers=import_headers, json=import_payload, timeout=20)
         except Exception as e:
-            logger.error(f"Failed to import email {file_key}: {e}")
+            logger.error(f"Failed to import email {file_key} to account {target_account_id}: {e}")
             continue
 
         if imp_resp.status_code != 200:
             logger.error(f"Email/import call failed for {file_key}. Status: {imp_resp.status_code}, Body: {imp_resp.text}")
             continue
 
-        logger.info(f"Successfully imported {file_key} into Stalwart Inbox (Blob: {blob_id}).")
+        logger.info(f"Successfully imported {file_key} into account {target_account_id} Inbox (Blob: {blob_id}).")
 
         # Delete object from R2 after successful import
         try:
