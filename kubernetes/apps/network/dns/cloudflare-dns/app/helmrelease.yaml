@@ -44,3 +44,4 @@ spec:
     podAnnotations:
       secret.reloader.stakater.com/reload: *secret
       vault.security.banzaicloud.io/vault-env-daemon: "true"
+      vault.security.banzaicloud.io/vault-role: "default"
