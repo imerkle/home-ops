@@ -48,6 +48,12 @@ resource "cloudflare_email_routing_settings" "main" {
   enabled = "true"
 }
 
+# Import existing R2 bucket if already created
+import {
+  to = cloudflare_r2_bucket.email_inbox
+  id = "d4ecb65c48cd4a627c11099c8d9c9fb7/home-ops-email-inbox"
+}
+
 # Create R2 bucket for email storage
 resource "cloudflare_r2_bucket" "email_inbox" {
   account_id = data.cloudflare_zone.current.account_id

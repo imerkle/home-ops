@@ -25,12 +25,14 @@ spec:
     # Allow kube-apiserver access
     - toEntities:
         - kube-apiserver
-    # Allow terraform provider downloads
+    # Allow terraform provider downloads and external APIs
     - toEntities:
         - world
       toPorts:
         - ports:
             - port: "443"
+              protocol: TCP
+            - port: "80"
               protocol: TCP
     # Allow DNS
     - toEndpoints:
@@ -41,3 +43,21 @@ spec:
         - ports:
             - port: "53"
               protocol: UDP
+    # Allow access to Vault for secrets retrieval
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: vault
+            app.kubernetes.io/name: vault
+      toPorts:
+        - ports:
+            - port: "8200"
+              protocol: TCP
+    # Allow access to Zitadel
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: zitadel
+            app.kubernetes.io/name: zitadel
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP

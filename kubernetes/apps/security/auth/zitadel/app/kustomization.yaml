@@ -9,4 +9,5 @@ resources:
   - ./netpol.yaml
   - ./route.yaml
   - ./tofu-bootstrap.yaml
+  - ./iam-admin.sops.yaml
   # - ./loginclient.sops.yaml
