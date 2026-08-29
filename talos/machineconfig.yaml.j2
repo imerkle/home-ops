@@ -91,24 +91,25 @@ machine:
   network:
     hostname: talos-0d4c1
     interfaces:
+      - interface: enp1s0f1np1
+        dhcp: false
+        mtu: 1500
+      - interface: br-openwrt-wan
+        bridge:
+          interfaces:
+            - enp1s0f1np1
       - interface: enp5s0
+        dhcp: false
+      - interface: br-openwrt-lan
         addresses:
           - 10.0.0.99/24
           - fe80::aaa1:59ff:fe53:1f41/64
         routes:
           - network: 0.0.0.0/0
             gateway: 10.0.0.4
-        vlans:
-          - vlanId: 100
-          - vlanId: 200
-      - interface: br-openwrt-wan
         bridge:
           interfaces:
-            - enp5s0.100
-      - interface: br-openwrt-lan
-        bridge:
-          interfaces:
-            - enp5s0.200
+            - enp5s0
     nameservers:
       - 1.1.1.1
       - 1.0.0.1
