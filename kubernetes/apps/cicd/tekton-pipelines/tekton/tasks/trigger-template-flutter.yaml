@@ -51,7 +51,14 @@ spec:
               effect: NoSchedule
         workspaces:
           - name: shared-workspace
-            emptyDir: {}
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    # Flutter + Android build artefacts are large
+                    storage: 10Gi
           - name: ssh-credentials
             secret:
               secretName: tekton-github-ssh
