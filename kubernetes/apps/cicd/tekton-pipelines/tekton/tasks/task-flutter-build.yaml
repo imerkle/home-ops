@@ -151,13 +151,20 @@ spec:
       script: |
         #!/bin/sh
         set -e
+
+        # Restore cached Android SDK platforms before build
+        mkdir -p "$(workspaces.cache.path)/android-sdk-platforms"
+        if [ -d "$(workspaces.cache.path)/android-sdk-platforms" ]; then
+          cp -rn "$(workspaces.cache.path)/android-sdk-platforms/." /opt/android-sdk/platforms/ 2>/dev/null || true
+        fi
+
         echo "[fastlane] Installing gems …"
         bundle install --quiet
 
         echo "[fastlane] Running android build_and_upload lane …"
         bundle exec fastlane android build_and_upload
 
-        # Persist any downloaded Android SDK platforms into the cache volume
+        # Persist any newly downloaded Android SDK platforms into the cache volume
         cp -rn /opt/android-sdk/platforms/. "$(workspaces.cache.path)/android-sdk-platforms/" 2>/dev/null || true
 
         APK="$(workspaces.source.path)/$(params.flutter-project-path)/build/app/outputs/flutter-apk/app-release.apk"
