@@ -56,6 +56,11 @@ spec:
       script: |
         #!/bin/sh
         set -e
+        echo "[flutter-pub-get] Workspace root:"
+        ls -la $(workspaces.source.path) || true
+        git config --global --add safe.directory "*"
+        echo "[flutter-pub-get] Current directory: $(pwd)"
+        ls -la . || true
         echo "[flutter-pub-get] Running flutter pub get …"
         flutter pub get
         echo "[flutter-pub-get] Done."

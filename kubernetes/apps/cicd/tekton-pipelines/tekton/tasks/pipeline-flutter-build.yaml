@@ -54,7 +54,6 @@ spec:
       workspaces:
         - name: output
           workspace: shared-workspace
-          subPath: sms-vault
         # No ssh-directory: using plain HTTPS — mounting ssh-directory triggers
         # git-clone's SSH rewrite which then fails on ssh-keyscan.
       params:
@@ -62,6 +61,8 @@ spec:
           value: $(params.sms-vault-repo-url)
         - name: revision
           value: $(params.revision)
+        - name: subdirectory
+          value: sms-vault
         - name: sslVerify
           value: "false"
     # ── 2. Clone rocket_ui (Flutter path dependency) ──────────────────────────
@@ -71,13 +72,14 @@ spec:
       workspaces:
         - name: output
           workspace: shared-workspace
-          subPath: rocket_ui
         # No ssh-directory: using HTTPS
       params:
         - name: url
           value: $(params.rocket-ui-repo-url)
         - name: revision
           value: main
+        - name: subdirectory
+          value: rocket_ui
         - name: sslVerify
           value: "false"
 
