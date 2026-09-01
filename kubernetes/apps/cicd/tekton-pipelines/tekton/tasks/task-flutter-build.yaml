@@ -42,15 +42,35 @@ spec:
   results:
     - name: apk-path
       description: Absolute path to the built APK inside the workspace.
+  volumes:
+    - name: gradle-cache
+      hostPath:
+        path: /var/cache/tekton-flutter/gradle
+        type: DirectoryOrCreate
+    - name: pub-cache
+      hostPath:
+        path: /var/cache/tekton-flutter/pub-cache
+        type: DirectoryOrCreate
+    - name: android-sdk-platforms
+      hostPath:
+        path: /var/cache/tekton-flutter/android-sdk-platforms
+        type: DirectoryOrCreate
   steps:
     # ── Step 1: flutter pub get ───────────────────────────────────────────────
     - name: flutter-pub-get
       image: $(params.builder-image)
       imagePullPolicy: IfNotPresent
       workingDir: $(workspaces.source.path)/$(params.flutter-project-path)
+      volumeMounts:
+        - name: pub-cache
+          mountPath: /root/.pub-cache
+        - name: gradle-cache
+          mountPath: /root/.gradle
+        - name: android-sdk-platforms
+          mountPath: /opt/android-sdk/platforms
       env:
         - name: PUB_CACHE
-          value: /workspace/.pub-cache
+          value: /root/.pub-cache
         - name: HOME
           value: /root
       script: |
@@ -73,9 +93,16 @@ spec:
       image: $(params.builder-image)
       imagePullPolicy: IfNotPresent
       workingDir: $(workspaces.source.path)/$(params.flutter-project-path)
+      volumeMounts:
+        - name: gradle-cache
+          mountPath: /root/.gradle
+        - name: android-sdk-platforms
+          mountPath: /opt/android-sdk/platforms
       env:
         - name: HOME
           value: /root
+        - name: GRADLE_USER_HOME
+          value: /root/.gradle
       script: |
         #!/bin/sh
         set -e
@@ -114,11 +141,18 @@ spec:
       image: $(params.builder-image)
       imagePullPolicy: IfNotPresent
       workingDir: $(workspaces.source.path)/$(params.flutter-project-path)
+      volumeMounts:
+        - name: pub-cache
+          mountPath: /root/.pub-cache
+        - name: gradle-cache
+          mountPath: /root/.gradle
+        - name: android-sdk-platforms
+          mountPath: /opt/android-sdk/platforms
       env:
         - name: HOME
           value: /root
         - name: PUB_CACHE
-          value: /workspace/.pub-cache
+          value: /root/.pub-cache
         - name: GIT_COMMIT_SHA
           value: $(params.commit-sha)
         - name: GIT_BRANCH
@@ -127,6 +161,8 @@ spec:
           value: "Build $(params.commit-sha) on $(params.branch)"
         - name: GRADLE_USER_HOME
           value: /root/.gradle
+        - name: GRADLE_OPTS
+          value: "-Dorg.gradle.caching=true -Dorg.gradle.parallel=true"
         - name: FLUTTER_SUPPRESS_ANALYTICS
           value: "true"
         # Zealot credentials — mounted from the secret workspace
