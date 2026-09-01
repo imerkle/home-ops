@@ -53,15 +53,15 @@ spec:
         COMMIT_SHA="$(params.commit-sha)"
         TARGET_IMAGE="$(params.target-image-name)"
         HOME_OPS_URL="$(params.home-ops-url)"
-        if [ -z "${HOME_OPS_URL}" ]; then
+        if [ -z "$${HOME_OPS_URL}" ]; then
           HOME_OPS_URL="git@github.com:imerkle/home-ops.git"
         fi
         APPS_BASE="$(params.apps-base-path)"
 
-        PREVIEW_DIR="${APPS_BASE}/apps/${REPO_NAME}/preview"
-        TEMPLATE_FILE="${PREVIEW_DIR}/helmrelease.tmpl.yaml"
-        DEPLOY_DIR="${APPS_BASE}/apps/${REPO_NAME}-${BRANCH}"
-        KS_FILE="${APPS_BASE}/kustomization.yaml"
+        PREVIEW_DIR="$${APPS_BASE}/apps/$${REPO_NAME}/preview"
+        TEMPLATE_FILE="$${PREVIEW_DIR}/helmrelease.tmpl.yaml"
+        DEPLOY_DIR="$${APPS_BASE}/apps/$${REPO_NAME}-$${BRANCH}"
+        KS_FILE="$${APPS_BASE}/kustomization.yaml"
 
         # ── SSH setup ──────────────────────────────────────────────────────────
         mkdir -p /root/.ssh
@@ -75,30 +75,30 @@ spec:
         git config --global user.name  "Tekton Preview Bot"
 
         # ── Clone home-ops ─────────────────────────────────────────────────────
-        git clone --depth=1 "${HOME_OPS_URL}" /workspace/home-ops
+        git clone --depth=1 "$${HOME_OPS_URL}" /workspace/home-ops
         cd /workspace/home-ops
 
         # ── Branch-specific routing ───────────────────────────────────────────
-        if [ "${BRANCH}" = "main" ] || [ "${BRANCH}" = "master" ]; then
-          echo "Branch is ${BRANCH} — updating production deployment."
-          PROD_FILE="${APPS_BASE}/apps/${REPO_NAME}/app/helmrelease.yaml"
-          if [ ! -f "${PROD_FILE}" ]; then
-            echo "Production helmrelease not found at ${PROD_FILE} — skipping."
+        if [ "$${BRANCH}" = "main" ] || [ "$${BRANCH}" = "master" ]; then
+          echo "Branch is $${BRANCH} — updating production deployment."
+          PROD_FILE="$${APPS_BASE}/apps/$${REPO_NAME}/app/helmrelease.yaml"
+          if [ ! -f "$${PROD_FILE}" ]; then
+            echo "Production helmrelease not found at $${PROD_FILE} — skipping."
             exit 0
           fi
           # Replace tag in production helmrelease
-          TAG="${COMMIT_SHA}"
-          if [ -n "${TARGET_IMAGE}" ]; then
-            echo "Updating tag for image: ${TARGET_IMAGE} -> ${TAG}"
-            awk -v target="${TARGET_IMAGE}" -v newtag="${TAG}" '
+          TAG="$${COMMIT_SHA}"
+          if [ -n "$${TARGET_IMAGE}" ]; then
+            echo "Updating tag for image: $${TARGET_IMAGE} -> $${TAG}"
+            awk -v target="$${TARGET_IMAGE}" -v newtag="$${TAG}" '
               $0 ~ "repository:.*" target "([^-a-zA-Z0-9]|$)" { in_target=1; print; next }
               in_target && $1 == "tag:" { sub($2, newtag); in_target=0; print; next }
               { print }
-            ' "${PROD_FILE}" > "${PROD_FILE}.tmp" && mv "${PROD_FILE}.tmp" "${PROD_FILE}"
+            ' "$${PROD_FILE}" > "$${PROD_FILE}.tmp" && mv "$${PROD_FILE}.tmp" "$${PROD_FILE}"
           else
-            sed -i "s/\(tag: \).*/\1${TAG}/g" "${PROD_FILE}"
+            sed -i "s/\(tag: \).*/\1$${TAG}/g" "$${PROD_FILE}"
           fi
-          git add "${PROD_FILE}"
+          git add "$${PROD_FILE}"
         else
           echo "Branch is $${BRANCH} — updating preview deployment."
           # ── Opt-in check ───────────────────────────────────────────────────────
