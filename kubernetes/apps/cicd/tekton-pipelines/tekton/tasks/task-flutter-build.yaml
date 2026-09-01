@@ -158,8 +158,8 @@ spec:
           cp -rn "$(workspaces.cache.path)/android-sdk-platforms/." /opt/android-sdk/platforms/ 2>/dev/null || true
         fi
 
-        echo "[fastlane] Installing gems …"
-        bundle install --quiet
+        echo "[fastlane] Checking gems …"
+        bundle check || bundle install --quiet --local || bundle install --quiet
 
         echo "[fastlane] Running android build_and_upload lane …"
         bundle exec fastlane android build_and_upload
