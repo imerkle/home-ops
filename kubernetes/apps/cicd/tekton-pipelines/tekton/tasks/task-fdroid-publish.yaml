@@ -26,6 +26,14 @@ spec:
     - name: publish
       image: python:3.11-slim
       env:
+        - name: DEBIAN_FRONTEND
+          value: "noninteractive"
+        - name: GIT_PYTHON_REFRESH
+          value: "quiet"
+        - name: AWS_REQUEST_CHECKSUM_CALCULATION
+          value: "WHEN_REQUIRED"
+        - name: AWS_RESPONSE_CHECKSUM_VALIDATION
+          value: "WHEN_REQUIRED"
         - name: KEYSTORE_BASE64
           valueFrom:
             secretKeyRef:
@@ -65,13 +73,18 @@ spec:
         #!/bin/sh
         set -e
 
-        echo "[fdroid] Installing git, java, and fdroidserver..."
-        apt-get update -qq && apt-get install -y -qq git default-jdk-headless zipalign apksigner awscli ca-certificates >/dev/null 2>&1
+        echo "[fdroid] Installing fdroidserver and awscli tools..."
+        export GIT_PYTHON_REFRESH=quiet
+        export AWS_REQUEST_CHECKSUM_CALCULATION=when_required
+        export AWS_RESPONSE_CHECKSUM_VALIDATION=when_required
+        apt-get update -qq && apt-get install -y -qq default-jdk-headless zipalign apksigner awscli git >/dev/null 2>&1
         pip install -q fdroidserver
 
         WORKDIR="/tmp/fdroid-workspace"
         mkdir -p "$WORKDIR/repo"
         cd "$WORKDIR"
+
+        aws configure set default.s3.multipart_threshold 128MB
 
         echo "[fdroid] Pulling existing repository from MinIO (if present)..."
         aws s3 sync s3://fdroid/repo "$WORKDIR/repo" --endpoint-url "$AWS_ENDPOINT_URL" || true
