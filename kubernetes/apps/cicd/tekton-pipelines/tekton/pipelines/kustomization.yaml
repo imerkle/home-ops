@@ -9,4 +9,4 @@ resources:
   - ./prometheusrule.yaml
   - ./rbac.yaml
   - ./cronjob.yaml
-  # - ./webhook-rbac-patch.yaml
+  - ./feature-flags-patch.yaml
