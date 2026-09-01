@@ -157,6 +157,8 @@ spec:
       params:
         - name: repo-name
           value: $(params.repo-name)
+        - name: target-image-name
+          value: $(params.repo-name)
         - name: branch
           value: $(params.sanitized-branch)
         - name: commit-sha

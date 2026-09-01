@@ -65,9 +65,8 @@ spec:
         #!/bin/sh
         set -e
 
-        echo "[fdroid] Installing fdroidserver and awscli tools..."
-        export GIT_PYTHON_REFRESH=quiet
-        apt-get update -qq && apt-get install -y -qq default-jdk-headless zipalign apksigner awscli git >/dev/null 2>&1
+        echo "[fdroid] Installing git, java, and fdroidserver..."
+        apt-get update -qq && apt-get install -y -qq git default-jdk-headless zipalign apksigner awscli ca-certificates >/dev/null 2>&1
         pip install -q fdroidserver
 
         WORKDIR="/tmp/fdroid-workspace"
@@ -75,7 +74,7 @@ spec:
         cd "$WORKDIR"
 
         echo "[fdroid] Pulling existing repository from MinIO (if present)..."
-        aws s3 sync "$AWS_ENDPOINT_URL/fdroid/repo" "$WORKDIR/repo" --endpoint-url "$AWS_ENDPOINT_URL" || true
+        aws s3 sync s3://fdroid/repo "$WORKDIR/repo" --endpoint-url "$AWS_ENDPOINT_URL" || true
 
         echo "[fdroid] Setting up signing keystore..."
         echo "$KEYSTORE_BASE64" | base64 -d > /tmp/fdroid.p12

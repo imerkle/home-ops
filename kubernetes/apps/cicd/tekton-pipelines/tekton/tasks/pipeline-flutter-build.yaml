@@ -126,7 +126,7 @@ spec:
         - name: app-id
           value: space.x3y.smsvault
 
-    # ── 5. Build full-stack container (Go backend + Flutter Web) ─────────────
+    # ── 5. Build standalone Flutter Web container ────────────────────────────
     - name: build-push-container
       runAfter:
         - flutter-build
@@ -139,18 +139,17 @@ spec:
           workspace: ssh-credentials
       params:
         - name: IMAGE
-          value: zot.x3y.space/sms-vault:$(tasks.clone-sms-vault.results.commit)
+          value: zot.x3y.space/sms-vault-web:$(tasks.clone-sms-vault.results.commit)
         - name: DOCKERFILE
-          value: sms-vault/Dockerfile
+          value: sms-vault/Dockerfile.web
         - name: CONTEXT
           value: sms-vault
         - name: EXTRA_ARGS
           value:
-            - --destination=zot.x3y.space/sms-vault:latest
-            - --destination=zot.x3y.space/sms-vault:$(params.sanitized-branch)
-            - --cache-repo=zot.x3y.space/sms-vault-cache
+            - --destination=zot.x3y.space/sms-vault-web:latest
+            - --destination=zot.x3y.space/sms-vault-web:$(params.sanitized-branch)
+            - --cache-repo=zot.x3y.space/sms-vault-web-cache
             - --cache=true
-            - --build-arg=VERSION=$(tasks.clone-sms-vault.results.commit)
             - --insecure
             - --skip-tls-verify
         - name: PROTOCOL
@@ -165,7 +164,7 @@ spec:
       value: $(tasks.clone-sms-vault.results.commit)
 
   finally:
-    # ── Deploy / update production deployment in prod-system ─────────────────
+    # ── Deploy / update web container in prod-system ─────────────────────────
     - name: deploy-prod
       taskRef:
         name: deploy-preview
@@ -175,6 +174,8 @@ spec:
       params:
         - name: repo-name
           value: sms-vault
+        - name: target-image-name
+          value: sms-vault-web
         - name: branch
           value: $(params.sanitized-branch)
         - name: commit-sha

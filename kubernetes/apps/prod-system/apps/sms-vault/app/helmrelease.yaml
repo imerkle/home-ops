@@ -23,12 +23,19 @@ spec:
     keepHistory: false
   values:
     controllers:
-      sms-vault:
+      backend:
         annotations:
           reloader.stakater.com/auto: "true"
         pod:
           annotations:
             vault.security.banzaicloud.io/vault-env-daemon: "true"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            runAsGroup: 65534
+            fsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
         containers:
           app:
             image:
@@ -41,6 +48,31 @@ spec:
               BASE_URL: "https://sms-vault.${DOMAIN1}"
             securityContext:
               allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 256Mi
+      web:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          securityContext:
+            runAsNonRoot: false
+            seccompProfile:
+              type: RuntimeDefault
+        containers:
+          app:
+            image:
+              repository: zot.${DOMAIN1}/sms-vault-web
+              tag: 68654d9922d300740a869e57c19cd8ac36b21a19
+            securityContext:
+              allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
               capabilities:
                 drop:
@@ -51,21 +83,33 @@ spec:
                   - SETGID
             resources:
               requests:
-                cpu: 10m
-                memory: 32Mi
+                cpu: 5m
+                memory: 16Mi
               limits:
-                memory: 256Mi
-    defaultPodOptions:
-      securityContext:
-        runAsNonRoot: false
-        seccompProfile:
-          type: RuntimeDefault
+                memory: 64Mi
     service:
-      app:
-        controller: sms-vault
+      backend:
+        controller: backend
         ports:
           http:
-            port: 3000
+            port: 8081
+          grpc:
+            port: 50051
+      web:
+        controller: web
+        ports:
+          http:
+            port: 80
+    serviceMonitor:
+      backend:
+        enabled: true
+        endpoints:
+          - port: http
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 10s
+        serviceName: sms-vault-backend
     route:
       app:
         hostnames:
@@ -74,6 +118,19 @@ spec:
           - name: envoy-internal
             namespace: network
         rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /api
+              - path:
+                  type: PathPrefix
+                  value: /auth
+              - path:
+                  type: PathPrefix
+                  value: /metrics
+            backendRefs:
+              - port: 8081
+                name: sms-vault-backend
           - backendRefs:
-              - port: 3000
-                name: *app
+              - port: 80
+                name: sms-vault-web
