@@ -22,3 +22,4 @@ resources:
   - ./zealot-tekton-secret.sops.yaml
   - ./game-fetcher-pac-secret.sops.yaml
   - ./game-fetcher-repository.yaml
+  - ./pvc-cache.yaml

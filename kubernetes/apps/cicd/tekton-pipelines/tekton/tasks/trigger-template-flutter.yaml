@@ -61,6 +61,9 @@ spec:
                   requests:
                     # Flutter + Android build artefacts are large
                     storage: 10Gi
+          - name: cache-workspace
+            persistentVolumeClaim:
+              claimName: tekton-flutter-cache
           - name: ssh-credentials
             secret:
               secretName: tekton-github-ssh

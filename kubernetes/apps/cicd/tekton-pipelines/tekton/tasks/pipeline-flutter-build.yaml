@@ -44,6 +44,8 @@ spec:
       description: >-
         Large workspace; both repos are checked out here as sub-directories.
         Needs to be ReadWriteOnce with enough room for the Android build (≥5 Gi).
+    - name: cache-workspace
+      description: Persistent cache for Gradle, Pub, and Android SDK platforms.
     - name: ssh-credentials
       description: SSH key for cloning private Forgejo repos.
   tasks:
@@ -93,6 +95,8 @@ spec:
       workspaces:
         - name: source
           workspace: shared-workspace
+        - name: cache
+          workspace: cache-workspace
       params:
         - name: flutter-project-path
           # subPath puts sms-vault at <ws>/sms-vault; pubspec path dep

@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tekton-flutter-cache
+  namespace: tekton-pipelines
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 20Gi

@@ -39,73 +39,52 @@ spec:
   workspaces:
     - name: source
       description: Shared workspace containing both sms-vault and rocket_ui checkouts.
+    - name: cache
+      description: Persistent cache workspace for Gradle, Pub, and Android SDK.
   results:
     - name: apk-path
       description: Absolute path to the built APK inside the workspace.
-  volumes:
-    - name: gradle-cache
-      hostPath:
-        path: /var/cache/tekton-flutter/gradle
-        type: DirectoryOrCreate
-    - name: pub-cache
-      hostPath:
-        path: /var/cache/tekton-flutter/pub-cache
-        type: DirectoryOrCreate
-    - name: android-sdk-platforms
-      hostPath:
-        path: /var/cache/tekton-flutter/android-sdk-platforms
-        type: DirectoryOrCreate
   steps:
     # ── Step 1: flutter pub get ───────────────────────────────────────────────
     - name: flutter-pub-get
       image: $(params.builder-image)
       imagePullPolicy: IfNotPresent
       workingDir: $(workspaces.source.path)/$(params.flutter-project-path)
-      volumeMounts:
-        - name: pub-cache
-          mountPath: /root/.pub-cache
-        - name: gradle-cache
-          mountPath: /root/.gradle
-        - name: android-sdk-platforms
-          mountPath: /opt/android-sdk/platforms
       env:
         - name: PUB_CACHE
-          value: /root/.pub-cache
+          value: $(workspaces.cache.path)/pub-cache
         - name: HOME
           value: /root
       script: |
         #!/bin/sh
         set -e
-        echo "[flutter-pub-get] Workspace root:"
-        ls -la $(workspaces.source.path) || true
+        mkdir -p $(workspaces.cache.path)/pub-cache
         git config --global --add safe.directory "*"
-        echo "[flutter-pub-get] Current directory: $(pwd)"
-        ls -la . || true
         echo "[flutter-pub-get] Running flutter pub get …"
         flutter pub get
         echo "[flutter-pub-get] Done."
-    # ── Step 2: patch Gradle wrapper to use pre-installed Gradle ─────────────
-    # mingc/android-build-box ships Gradle at /opt/gradle/gradle-X.Y
-    # The flutter project's gradlew would otherwise try to download gradle-8.14
-    # from GitHub (https://services.gradle.org/...) which may 504 from inside
-    # the cluster. We redirect it to the local installation instead.
+
+    # ── Step 2: patch Gradle wrapper & restore SDK platforms ──────────────────
     - name: gradle-setup
       image: $(params.builder-image)
       imagePullPolicy: IfNotPresent
       workingDir: $(workspaces.source.path)/$(params.flutter-project-path)
-      volumeMounts:
-        - name: gradle-cache
-          mountPath: /root/.gradle
-        - name: android-sdk-platforms
-          mountPath: /opt/android-sdk/platforms
       env:
         - name: HOME
           value: /root
         - name: GRADLE_USER_HOME
-          value: /root/.gradle
+          value: $(workspaces.cache.path)/gradle
       script: |
         #!/bin/sh
         set -e
+
+        mkdir -p $(workspaces.cache.path)/gradle
+        mkdir -p $(workspaces.cache.path)/android-sdk-platforms
+
+        # Copy any cached SDK platforms into /opt/android-sdk/platforms
+        if [ -d "$(workspaces.cache.path)/android-sdk-platforms" ]; then
+          cp -rn "$(workspaces.cache.path)/android-sdk-platforms/." /opt/android-sdk/platforms/ 2>/dev/null || true
+        fi
 
         WRAPPER="android/gradle/wrapper/gradle-wrapper.properties"
 
@@ -119,40 +98,27 @@ spec:
         GRADLE_VERSION=$(basename "$GRADLE_DIR" | sed 's/gradle-//')
         echo "[gradle-setup] Found Gradle $GRADLE_VERSION at $GRADLE_DIR"
 
-        # Rewrite distributionUrl to a file:// URI pointing at the local install
-        # The zip lives alongside the expanded dir, or we create a symlink in GRADLE_USER_HOME
-        GRADLE_USER_HOME=/root/.gradle
+        GRADLE_USER_HOME="$(workspaces.cache.path)/gradle"
         DIST_DIR="$GRADLE_USER_HOME/wrapper/dists/gradle-${GRADLE_VERSION}-all/$(echo gradle-${GRADLE_VERSION}-all | md5sum | cut -d' ' -f1)"
         mkdir -p "$DIST_DIR"
 
-        # Link the pre-installed dir so the wrapper sees it as already extracted
         if [ ! -d "$DIST_DIR/gradle-${GRADLE_VERSION}" ]; then
           ln -sf "$GRADLE_DIR" "$DIST_DIR/gradle-${GRADLE_VERSION}"
           echo "[gradle-setup] Linked $GRADLE_DIR → $DIST_DIR/gradle-${GRADLE_VERSION}"
         fi
 
-        # Mark the distribution as ready (gradle wrapper checks for a .ok file)
         touch "$DIST_DIR/gradle-${GRADLE_VERSION}.ok"
-
-        echo "[gradle-setup] Gradle $GRADLE_VERSION pre-configured. distributionUrl unchanged."
         echo "[gradle-setup] Done."
 
     - name: fastlane-build-upload
       image: $(params.builder-image)
       imagePullPolicy: IfNotPresent
       workingDir: $(workspaces.source.path)/$(params.flutter-project-path)
-      volumeMounts:
-        - name: pub-cache
-          mountPath: /root/.pub-cache
-        - name: gradle-cache
-          mountPath: /root/.gradle
-        - name: android-sdk-platforms
-          mountPath: /opt/android-sdk/platforms
       env:
         - name: HOME
           value: /root
         - name: PUB_CACHE
-          value: /root/.pub-cache
+          value: $(workspaces.cache.path)/pub-cache
         - name: GIT_COMMIT_SHA
           value: $(params.commit-sha)
         - name: GIT_BRANCH
@@ -160,7 +126,7 @@ spec:
         - name: GIT_CHANGELOG
           value: "Build $(params.commit-sha) on $(params.branch)"
         - name: GRADLE_USER_HOME
-          value: /root/.gradle
+          value: $(workspaces.cache.path)/gradle
         - name: GRADLE_OPTS
           value: "-Dorg.gradle.caching=true -Dorg.gradle.parallel=true"
         - name: FLUTTER_SUPPRESS_ANALYTICS
@@ -190,6 +156,9 @@ spec:
 
         echo "[fastlane] Running android build_and_upload lane …"
         bundle exec fastlane android build_and_upload
+
+        # Persist any downloaded Android SDK platforms into the cache volume
+        cp -rn /opt/android-sdk/platforms/. "$(workspaces.cache.path)/android-sdk-platforms/" 2>/dev/null || true
 
         APK="$(workspaces.source.path)/$(params.flutter-project-path)/build/app/outputs/flutter-apk/app-release.apk"
         echo -n "$APK" > $(results.apk-path.path)
