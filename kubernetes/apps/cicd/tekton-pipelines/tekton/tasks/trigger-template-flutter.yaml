@@ -41,10 +41,19 @@ spec:
             value: $(tt.params.sanitized_branch)
           - name: git-ref
             value: refs/heads/$(tt.params.sanitized_branch)
+        podTemplate:
+          nodeSelector:
+            ci.home.arpa/runner: tekton
+          tolerations:
+            - key: dedicated
+              operator: Equal
+              value: tekton-runner
+              effect: NoSchedule
         workspaces:
           - name: shared-workspace
             volumeClaimTemplate:
               spec:
+                storageClassName: local-path
                 accessModes:
                   - ReadWriteOnce
                 resources:
