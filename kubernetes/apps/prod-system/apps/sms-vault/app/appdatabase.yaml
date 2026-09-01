@@ -1,0 +1,11 @@
+---
+apiVersion: home.arpa/v1alpha1
+kind: AppDatabase
+metadata:
+  name: sms-vault
+  namespace: prod-system
+spec:
+  databaseName: smsvault
+  groupRole: sms_vault_grp
+  schemaCreate: false
+  createDb: true

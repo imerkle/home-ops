@@ -1,0 +1,138 @@
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: fdroid-publish
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  description: >-
+    Publishes an Android APK to the self-hosted F-Droid repository on MinIO,
+    generates metadata, signs index-v1.jar and index-v2.json, and syncs to S3.
+  params:
+    - name: apk-path
+      description: Absolute path to the built APK file.
+      type: string
+    - name: app-id
+      description: Android application package ID (e.g. space.x3y.smsvault).
+      type: string
+      default: ""
+  workspaces:
+    - name: source
+      description: Workspace containing the source and built APK.
+    - name: cache
+      description: Cache workspace for tools and repository metadata.
+  steps:
+    - name: publish
+      image: python:3.11-slim
+      env:
+        - name: KEYSTORE_BASE64
+          valueFrom:
+            secretKeyRef:
+              name: fdroid-signing-secret
+              key: KEYSTORE_BASE64
+        - name: KEYSTORE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: fdroid-signing-secret
+              key: KEYSTORE_PASSWORD
+        - name: KEYSTORE_ALIAS
+          valueFrom:
+            secretKeyRef:
+              name: fdroid-signing-secret
+              key: KEYSTORE_ALIAS
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: fdroid-signing-secret
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: fdroid-signing-secret
+              key: AWS_SECRET_ACCESS_KEY
+        - name: AWS_ENDPOINT_URL
+          valueFrom:
+            secretKeyRef:
+              name: fdroid-signing-secret
+              key: AWS_ENDPOINT_URL
+        - name: REPO_URL
+          valueFrom:
+            secretKeyRef:
+              name: fdroid-signing-secret
+              key: REPO_URL
+      script: |
+        #!/bin/sh
+        set -e
+
+        echo "[fdroid] Installing fdroidserver and awscli tools..."
+        apt-get update -qq && apt-get install -y -qq default-jdk-headless zipalign apksigner awscli >/dev/null 2>&1
+        pip install -q fdroidserver
+
+        WORKDIR="/tmp/fdroid-workspace"
+        mkdir -p "$WORKDIR/repo"
+        cd "$WORKDIR"
+
+        echo "[fdroid] Pulling existing repository from MinIO (if present)..."
+        aws s3 sync "$AWS_ENDPOINT_URL/fdroid/repo" "$WORKDIR/repo" --endpoint-url "$AWS_ENDPOINT_URL" || true
+
+        echo "[fdroid] Setting up signing keystore..."
+        echo "$KEYSTORE_BASE64" | base64 -d > /tmp/fdroid.p12
+
+        cat << EOCONF > "$WORKDIR/config.yml"
+        repo_url: "$REPO_URL"
+        repo_name: "Personal F-Droid Repo"
+        repo_description: "Self-hosted Android applications built with Tekton"
+        keystore: "/tmp/fdroid.p12"
+        keystorepass: "$KEYSTORE_PASSWORD"
+        keypass: "$KEYSTORE_PASSWORD"
+        repo_keyalias: "$KEYSTORE_ALIAS"
+        archive_older: 0
+        EOCONF
+
+        APK_FILE="$(params.apk-path)"
+        if [ ! -f "$APK_FILE" ]; then
+          echo "[fdroid] ERROR: APK file not found at $APK_FILE"
+          exit 1
+        fi
+
+        echo "[fdroid] Copying APK to repository: $APK_FILE"
+        cp -f "$APK_FILE" "$WORKDIR/repo/"
+
+        echo "[fdroid] Running fdroid update to generate index-v1 and index-v2..."
+        fdroid update --create-metadata
+
+        echo "[fdroid] Generating web landing page..."
+        cat << EOHTML > "$WORKDIR/index.html"
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Personal F-Droid Repository</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <style>
+            body { font-family: system-ui, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; line-height: 1.6; color: #333; }
+            .card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; margin-top: 20px; }
+            code { background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; word-break: break-all; }
+            a.btn { display: inline-block; background: #007bff; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 15px; }
+          </style>
+        </head>
+        <body>
+          <h1>Personal F-Droid Repository</h1>
+          <p>This repository hosts personal Android applications automatically built and updated by Tekton CI/CD.</p>
+          <div class="card">
+            <h3>Add to F-Droid / Neo Store / Droid-ify</h3>
+            <p>Repository URL:</p>
+            <p><code>https://fdroid.x3y.space/repo</code></p>
+            <p>Fingerprint:</p>
+            <p><code>2882AD4BF00A9205205F64EC139C38B2196CABDF27EBAD6A81EFD4194C6C5110</code></p>
+            <a class="btn" href="https://fdroid.x3y.space/repo?fingerprint=2882AD4BF00A9205205F64EC139C38B2196CABDF27EBAD6A81EFD4194C6C5110">Add Repository</a>
+          </div>
+        </body>
+        </html>
+        EOHTML
+
+        echo "[fdroid] Syncing repository to MinIO..."
+        aws s3 sync "$WORKDIR/repo" s3://fdroid/repo/ --endpoint-url "$AWS_ENDPOINT_URL" --delete
+        aws s3 cp "$WORKDIR/index.html" s3://fdroid/index.html --endpoint-url "$AWS_ENDPOINT_URL"
+
+        echo "[fdroid] F-Droid repository successfully updated and published!"

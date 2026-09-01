@@ -15,3 +15,4 @@ resources:
   - ./apps/game-fetcher/ks.yaml
   - ./apps/auth-server/ks.yaml
   - ./apps/settings-server/ks.yaml
+  - ./apps/sms-vault/ks.yaml

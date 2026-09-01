@@ -164,6 +164,9 @@ spec:
         echo "[fastlane] Running android build_and_upload lane …"
         bundle exec fastlane android build_and_upload
 
+        echo "[flutter-web] Building Flutter Web release bundle …"
+        flutter build web --release --pwa-strategy=none
+
         # Persist any newly downloaded Android SDK platforms into the cache volume
         cp -rn /opt/android-sdk/platforms/. "$(workspaces.cache.path)/android-sdk-platforms/" 2>/dev/null || true
 

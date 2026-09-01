@@ -108,6 +108,54 @@ spec:
           value: $(params.sanitized-branch)
         - name: builder-image
           value: $(params.builder-image)
+
+    # ── 4. Publish APK to F-Droid Repository ─────────────────────────────────
+    - name: publish-fdroid
+      runAfter:
+        - flutter-build
+      taskRef:
+        name: fdroid-publish
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: cache
+          workspace: cache-workspace
+      params:
+        - name: apk-path
+          value: $(tasks.flutter-build.results.apk-path)
+        - name: app-id
+          value: space.x3y.smsvault
+
+    # ── 5. Build full-stack container (Go backend + Flutter Web) ─────────────
+    - name: build-push-container
+      runAfter:
+        - flutter-build
+      taskRef:
+        name: kaniko-build
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: ssh-credentials
+          workspace: ssh-credentials
+      params:
+        - name: IMAGE
+          value: zot.x3y.space/sms-vault:$(tasks.clone-sms-vault.results.commit)
+        - name: DOCKERFILE
+          value: sms-vault/Dockerfile
+        - name: CONTEXT
+          value: sms-vault
+        - name: EXTRA_ARGS
+          value:
+            - --destination=zot.x3y.space/sms-vault:latest
+            - --destination=zot.x3y.space/sms-vault:$(params.sanitized-branch)
+            - --cache-repo=zot.x3y.space/sms-vault-cache
+            - --cache=true
+            - --build-arg=VERSION=$(tasks.clone-sms-vault.results.commit)
+            - --insecure
+            - --skip-tls-verify
+        - name: PROTOCOL
+          value: http
+
   results:
     - name: apk-path
       description: Path to the built APK.
@@ -115,3 +163,21 @@ spec:
     - name: commit-sha
       description: The exact commit SHA that was built.
       value: $(tasks.clone-sms-vault.results.commit)
+
+  finally:
+    # ── Deploy / update production deployment in prod-system ─────────────────
+    - name: deploy-prod
+      taskRef:
+        name: deploy-preview
+      workspaces:
+        - name: ssh-credentials
+          workspace: ssh-credentials
+      params:
+        - name: repo-name
+          value: sms-vault
+        - name: branch
+          value: $(params.sanitized-branch)
+        - name: commit-sha
+          value: $(tasks.clone-sms-vault.results.commit)
+        - name: home-ops-url
+          value: git@github.com:imerkle/home-ops.git

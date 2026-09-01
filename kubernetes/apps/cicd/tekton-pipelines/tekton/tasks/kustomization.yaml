@@ -11,6 +11,7 @@ resources:
   - ./pipeline-cleanup-preview.yaml
   - ./pipeline-flutter-build.yaml
   - ./task-flutter-build.yaml
+  - ./task-fdroid-publish.yaml
   - ./trigger-template-flutter.yaml
   - ./trigger-template.yaml
   - ./trigger-template-cleanup.yaml
