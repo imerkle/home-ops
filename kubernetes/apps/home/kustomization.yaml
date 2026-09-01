@@ -47,6 +47,7 @@ resources:
   # - ./tools/pdf-tool/ks.yaml
   - ./tools/atuin/ks.yaml
   - ./tools/zealot/ks.yaml
+  - ./tools/fdroid/ks.yaml
   - ./tools/json-exporter/ks.yaml
   # oidc
   - ./oidc/oidc/ks.yaml

@@ -128,7 +128,11 @@ spec:
         - name: apk-path
           value: $(tasks.flutter-build.results.apk-path)
         - name: app-id
-          value: space.x3y.smsvault
+          value: com.smsvault.smsvault_flutter
+        - name: app-name
+          value: "SMS Vault"
+        - name: app-summary
+          value: "Encrypted SMS backup and synchronization client"
 
     # ── 5. Build standalone Flutter Web container ────────────────────────────
     - name: build-push-container
