@@ -55,7 +55,7 @@ spec:
           - name: repo-name
             value: $(tt.params.git-repo-name)
           - name: home-ops-url
-            value: $(tt.params.home-ops-url)
+            value: git@github.com:imerkle/home-ops.git
           - name: sanitized-branch
             value: $(tt.params.sanitized_branch)
         taskRunTemplate:
