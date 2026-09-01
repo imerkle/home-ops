@@ -58,14 +58,6 @@ spec:
             value: $(tt.params.home-ops-url)
           - name: sanitized-branch
             value: $(tt.params.sanitized_branch)
-        podTemplate:
-          nodeSelector:
-            ci.home.arpa/runner: tekton
-          tolerations:
-            - key: dedicated
-              operator: Equal
-              value: tekton-runner
-              effect: NoSchedule
         workspaces:
           - name: shared-workspace
             volumeClaimTemplate:
