@@ -14,9 +14,17 @@ spec:
       description: Absolute path to the built APK file.
       type: string
     - name: app-id
-      description: Android application package ID (e.g. space.x3y.smsvault).
+      description: Android application package ID (e.g. com.smsvault.smsvault_flutter).
       type: string
-      default: ""
+      default: "com.smsvault.smsvault_flutter"
+    - name: app-name
+      description: Display name of the application.
+      type: string
+      default: "SMS Vault"
+    - name: app-summary
+      description: Short summary of the application.
+      type: string
+      default: "Encrypted SMS backup and synchronization client"
   workspaces:
     - name: source
       description: Workspace containing the source and built APK.
@@ -66,17 +74,17 @@ spec:
         #!/bin/sh
         set -e
 
-        echo "[fdroid] Installing dependencies (JRE, apksigner, zipalign, git, fdroidserver, minio)..."
-        apt-get update -qq && apt-get install -y -qq --no-install-recommends default-jre-headless zipalign apksigner git ca-certificates >/dev/null 2>&1
+        echo "[fdroid] Installing dependencies (JDK, apksigner, zipalign, git, fdroidserver, minio)..."
+        apt-get update -qq && apt-get install -y -qq --no-install-recommends default-jdk-headless zipalign apksigner git ca-certificates >/dev/null 2>&1
         pip install -q fdroidserver minio
 
         WORKDIR="/tmp/fdroid-workspace"
-        mkdir -p "$WORKDIR/repo"
+        mkdir -p "$WORKDIR/repo/icons" "$WORKDIR/metadata"
         cd "$WORKDIR"
 
         # Python S3 helper script
         cat << 'EOPY' > /tmp/s3_helper.py
-        import os, sys
+        import os, sys, base64
         from minio import Minio
 
         endpoint = os.environ.get("MINIO_ENDPOINT", "minio.storage.svc.cluster.local:9000").replace("http://", "").replace("https://", "")
@@ -109,14 +117,16 @@ spec:
 
         if sys.argv[1] == "pull":
             sync_down("fdroid", "repo", "/tmp/fdroid-workspace/repo")
+            sync_down("fdroid", "metadata", "/tmp/fdroid-workspace/metadata")
         elif sys.argv[1] == "push":
             sync_up("/tmp/fdroid-workspace/repo", "fdroid", "repo")
+            sync_up("/tmp/fdroid-workspace/metadata", "fdroid", "metadata")
             if os.path.exists("/tmp/fdroid-workspace/index.html"):
                 client.fput_object("fdroid", "index.html", "/tmp/fdroid-workspace/index.html", content_type="text/html")
                 print("Uploaded: index.html")
         EOPY
 
-        echo "[fdroid] Pulling existing repository from MinIO (if present)..."
+        echo "[fdroid] Pulling existing repository and metadata from MinIO (if present)..."
         python3 /tmp/s3_helper.py pull
 
         echo "[fdroid] Setting up signing keystore..."
@@ -126,12 +136,22 @@ spec:
         repo_url: "$REPO_URL"
         repo_name: "Personal F-Droid Repo"
         repo_description: "Self-hosted Android applications built with Tekton"
+        repo_icon: "icon.png"
         keystore: "/tmp/fdroid.p12"
         keystorepass: "$KEYSTORE_PASSWORD"
         keypass: "$KEYSTORE_PASSWORD"
         repo_keyalias: "$KEYSTORE_ALIAS"
         archive_older: 0
         EOCONF
+
+        # Ensure default repo icon exists
+        if [ ! -f "$WORKDIR/repo/icons/icon.png" ]; then
+          python3 -c "
+        import base64
+        with open('$WORKDIR/repo/icons/icon.png', 'wb') as f:
+            f.write(base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='))
+        "
+        fi
 
         APK_FILE="$(params.apk-path)"
         if [ ! -f "$APK_FILE" ]; then
@@ -141,6 +161,25 @@ spec:
 
         echo "[fdroid] Copying APK to repository: $APK_FILE"
         cp -f "$APK_FILE" "$WORKDIR/repo/"
+
+        # Ensure complete metadata file for the app exists
+        APP_ID="$(params.app-id)"
+        if [ -n "$APP_ID" ]; then
+          cat << EOMETA > "$WORKDIR/metadata/${APP_ID}.yml"
+        Name: "$(params.app-name)"
+        Summary: "$(params.app-summary)"
+        Description: |-
+          $(params.app-name) built with Tekton CI/CD.
+        Categories:
+          - System
+          - Utilities
+        License: Apache-2.0
+        AuthorName: Personal
+        SourceCode: https://forgejo.x3y.space
+        IssueTracker: https://forgejo.x3y.space
+        AutoUpdateMode: None
+        EOMETA
+        fi
 
         echo "[fdroid] Running fdroid update to generate index-v1 and index-v2..."
         fdroid update --create-metadata
@@ -174,7 +213,7 @@ spec:
         </html>
         EOHTML
 
-        echo "[fdroid] Syncing repository to MinIO..."
+        echo "[fdroid] Syncing repository and metadata to MinIO..."
         python3 /tmp/s3_helper.py push
 
         echo "[fdroid] F-Droid repository successfully updated and published!"
