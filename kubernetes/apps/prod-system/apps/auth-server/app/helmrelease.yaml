@@ -28,7 +28,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/auth-server
-              tag: 4de2c9cb313b75b48cbc53f827c9bc7355d0f6a5
+              tag: 9a524acd5c4214217e14b5c1505aae33918737bd
             env:
               PORT: &port "3000"
               GRPC_PORT: &grpcPort "50051"
