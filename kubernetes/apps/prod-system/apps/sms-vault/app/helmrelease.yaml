@@ -121,10 +121,18 @@ spec:
           - matches:
               - path:
                   type: PathPrefix
-                  value: /api
+                  value: /auth
               - path:
                   type: PathPrefix
-                  value: /auth
+                  value: /api/auth
+            backendRefs:
+              - name: auth-server
+                namespace: prod-system
+                port: 3000
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /api
               - path:
                   type: PathPrefix
                   value: /metrics
