@@ -24,8 +24,9 @@ spec:
     # - "wg0"
     - "^eth.*"
   nodeSelector:
-    matchLabels:
-      kubernetes.io/os: linux
+    matchExpressions:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
 ---
 # # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cilium.io/ciliumbgpadvertisement_v2alpha1.json
 # apiVersion: cilium.io/v2alpha1
