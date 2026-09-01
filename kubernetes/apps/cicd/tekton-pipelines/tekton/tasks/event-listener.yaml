@@ -17,9 +17,19 @@ spec:
             kind: ClusterInterceptor
           params:
             - name: "filter"
-              # Only trigger on push events to branches (not tags)
+              # Only trigger on push events to branches (not tags), and skip if all changed files in sms-vault are under flutterui/
               value: >-
-                body.ref.startsWith('refs/heads/')
+                body.ref.startsWith('refs/heads/') &&
+                (
+                  body.repository.name != 'sms-vault' ||
+                  !has(body.commits) ||
+                  body.commits.size() == 0 ||
+                  body.commits.exists(c,
+                    c.added.exists(f, !f.startsWith('flutterui/')) ||
+                    c.modified.exists(f, !f.startsWith('flutterui/')) ||
+                    c.removed.exists(f, !f.startsWith('flutterui/'))
+                  )
+                )
             - name: "overlays"
               value:
                 - key: truncated_sha
