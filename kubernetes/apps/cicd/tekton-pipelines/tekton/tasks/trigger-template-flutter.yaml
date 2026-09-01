@@ -41,16 +41,17 @@ spec:
             value: $(tt.params.sanitized_branch)
           - name: git-ref
             value: refs/heads/$(tt.params.sanitized_branch)
+        podTemplate:
+          nodeSelector:
+            ci.home.arpa/runner: tekton
+          tolerations:
+            - key: dedicated
+              operator: Equal
+              value: tekton-runner
+              effect: NoSchedule
         workspaces:
           - name: shared-workspace
-            volumeClaimTemplate:
-              spec:
-                accessModes:
-                  - ReadWriteOnce
-                resources:
-                  requests:
-                    # Flutter + Android build artefacts are large
-                    storage: 10Gi
+            emptyDir: {}
           - name: ssh-credentials
             secret:
               secretName: tekton-github-ssh

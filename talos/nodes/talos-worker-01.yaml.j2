@@ -1,0 +1,14 @@
+---
+machine:
+  type: worker
+  install:
+    disk: /dev/vda
+  kubelet:
+    nodeIP:
+      validSubnets:
+        - 10.0.0.0/24
+    extraArgs:
+      node-labels: "ci.home.arpa/runner=tekton"
+      register-with-taints: "dedicated=tekton-runner:NoSchedule"
+  network:
+    hostname: talos-worker-01

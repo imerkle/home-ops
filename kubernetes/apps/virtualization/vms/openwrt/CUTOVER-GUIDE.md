@@ -69,19 +69,39 @@ Before changing any cables or network configurations, ensure the ODI GPON stick 
 
 Apply the host bridge networking and VM specifications to the cluster.
 
-### Step 2.1: Apply Talos Machine Config
-```bash
-cd /home/slim/repos/personal/home-ops
+### Step 2.1: Apply Talos Network Interfaces
+You can apply the network interfaces directly to the live Talos node (no reboot needed):
 
-# Apply machine config to node (Talos creates br-openwrt-wan and br-openwrt-lan):
-just talos apply-node talos-0d4c1
+```bash
+talosctl patch mc -n 10.0.0.99 --patch '[{"op":"replace","path":"/machine/network/interfaces","value":[{"interface":"enp1s0f1np1","dhcp":false,"mtu":1500},{"interface":"br-openwrt-wan","bridge":{"interfaces":["enp1s0f1np1"]}},{"interface":"enp5s0","dhcp":false},{"interface":"br-openwrt-lan","addresses":["10.0.0.99/24"],"routes":[{"network":"0.0.0.0/0","gateway":"10.0.0.4"}],"bridge":{"interfaces":["enp5s0"]}}]}]'
 ```
-*Verification:* Talos node remains `Ready` on `10.0.0.99`.
+
+*Verification:*
+Check that both bridges and physical interfaces are UP on Talos:
+```bash
+talosctl get links -n 10.0.0.99 | grep -E '(enp|br-)'
+# Should show br-openwrt-wan, br-openwrt-lan, enp1s0f1np1, enp5s0 all UP
+```
 
 ### Step 2.2: Apply Multus & OpenWrt Manifests
+Apply the updated Multus NetworkAttachmentDefinitions and VM spec, then restart the VM so QEMU attaches both network interfaces (`wan-net` and `lan-net`):
+
 ```bash
+# 1. Apply NetworkAttachmentDefinitions (wan-net and lan-net)
 kubectl apply -f kubernetes/apps/virtualization/vms/openwrt/app/networks.yaml
+
+# 2. Apply updated VM spec
 kubectl apply -f kubernetes/apps/virtualization/vms/openwrt/app/vm.yaml
+
+# 3. Restart the OpenWrt VM to attach the new network interfaces
+virtctl restart -n kubevirt openwrt
+# (or: kubectl -n kubevirt patch vm openwrt --type merge -p '{"spec":{"running":false}}' && sleep 3 && kubectl -n kubevirt patch vm openwrt --type merge -p '{"spec":{"running":true}}')
+```
+
+*Verification:*
+Ensure the VM is running:
+```bash
+kubectl get vmi -n kubevirt openwrt
 ```
 
 ---
@@ -111,8 +131,8 @@ uci set network.wan_dev.vid='100'
 uci set network.wan=interface
 uci set network.wan.device='eth0.100'
 uci set network.wan.proto='pppoe'
-uci set network.wan.username='<YOUR_AIRTEL_USERNAME>_dsl@airtelbroadband.in'
-uci set network.wan.password='<YOUR_AIRTEL_PASSWORD>'
+uci set network.wan.username='03310237744_dsl@airtelbroadband.in'
+uci set network.wan.password='20000489261'
 uci set network.wan.ipv6='auto'
 
 # 3. Configure SFP Stick Management alias (192.168.1.1)
@@ -175,23 +195,11 @@ uci commit
 /etc/init.d/dnsmasq restart
 ```
 
-### Step 4.3: Update Talos Node Default Gateway
-In `talos/machineconfig.yaml.j2`, update the default gateway to OpenWrt:
-```yaml
-      - interface: br-openwrt-lan
-        addresses:
-          - 10.0.0.99/24
-          - fe80::aaa1:59ff:fe53:1f41/64
-        routes:
-          - network: 0.0.0.0/0
-            gateway: 10.0.0.1 # Changed from 10.0.0.4
-        bridge:
-          interfaces:
-            - enp5s0
-```
-Apply the change:
+### Step 4.3: Update Talos Node Default Gateway to OpenWrt (10.0.0.1)
+Run this command to switch the Talos node default gateway to OpenWrt (`10.0.0.1`) live:
+
 ```bash
-just talos apply-node talos-0d4c1
+talosctl patch mc -n 10.0.0.99 --patch '[{"op":"replace","path":"/machine/network/interfaces","value":[{"interface":"enp1s0f1np1","dhcp":false,"mtu":1500},{"interface":"br-openwrt-wan","bridge":{"interfaces":["enp1s0f1np1"]}},{"interface":"enp5s0","dhcp":false},{"interface":"br-openwrt-lan","addresses":["10.0.0.99/24"],"routes":[{"network":"0.0.0.0/0","gateway":"10.0.0.1"}],"bridge":{"interfaces":["enp5s0"]}}]}]'
 ```
 
 ### Step 4.4: Refresh Client Connections
@@ -220,9 +228,10 @@ If anything unexpected happens or internet does not come up, execute this rollba
 │    Plug old Airtel router's LAN cable back into the switch. │
 │    (Move fiber back if needed).                             │
 ├─────────────────────────────────────────────────────────────┤
-│ 3. Revert Talos Gateway (if modified):                      │
-│    Change gateway to 10.0.0.4 in machineconfig.yaml.j2      │
-│    just talos apply-node talos-0d4c1                        │
+│ 3. Revert Talos Gateway (if modified in 4.3):               │
+│    talosctl patch mc -n 10.0.0.99 --patch '[{"op":"replace" │
+│    ,"path":"/machine/network/interfaces","value":[{...      │
+│    gateway: 10.0.0.4}]}]'                                   │
 ├─────────────────────────────────────────────────────────────┤
 │ 4. Reconnect Clients:                                       │
 │    Toggle Wi-Fi/Ethernet on client devices to restore IP.   │

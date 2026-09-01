@@ -34,6 +34,14 @@ spec:
           # CEL overlays run before bindings so we handle it in the task script
           - name: branch
             value: $(tt.params.git-ref)
+        podTemplate:
+          nodeSelector:
+            ci.home.arpa/runner: tekton
+          tolerations:
+            - key: dedicated
+              operator: Equal
+              value: tekton-runner
+              effect: NoSchedule
         workspaces:
           - name: ssh-credentials
             secret:
