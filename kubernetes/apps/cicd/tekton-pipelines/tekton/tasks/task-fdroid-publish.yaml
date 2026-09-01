@@ -32,7 +32,7 @@ spec:
       description: Cache workspace for tools and repository metadata.
   steps:
     - name: publish
-      image: python:3.11-slim
+      image: zot.x3y.space/fdroid-publisher:latest
       env:
         - name: DEBIAN_FRONTEND
           value: "noninteractive"
@@ -74,11 +74,8 @@ spec:
         #!/bin/sh
         set -e
 
-        echo "[fdroid] Installing dependencies (JDK, apksigner, zipalign, git, fdroidserver, minio)..."
-        apt-get update -qq && apt-get install -y -qq --no-install-recommends default-jdk-headless zipalign apksigner git ca-certificates >/dev/null 2>&1
-        pip install -q fdroidserver minio
-
         WORKDIR="/tmp/fdroid-workspace"
+        rm -rf "$WORKDIR"
         mkdir -p "$WORKDIR/repo/icons" "$WORKDIR/metadata"
         cd "$WORKDIR"
 
@@ -117,16 +114,14 @@ spec:
 
         if sys.argv[1] == "pull":
             sync_down("fdroid", "repo", "/tmp/fdroid-workspace/repo")
-            sync_down("fdroid", "metadata", "/tmp/fdroid-workspace/metadata")
         elif sys.argv[1] == "push":
             sync_up("/tmp/fdroid-workspace/repo", "fdroid", "repo")
-            sync_up("/tmp/fdroid-workspace/metadata", "fdroid", "metadata")
             if os.path.exists("/tmp/fdroid-workspace/index.html"):
                 client.fput_object("fdroid", "index.html", "/tmp/fdroid-workspace/index.html", content_type="text/html")
                 print("Uploaded: index.html")
         EOPY
 
-        echo "[fdroid] Pulling existing repository and metadata from MinIO (if present)..."
+        echo "[fdroid] Pulling existing repository from MinIO (if present)..."
         python3 /tmp/s3_helper.py pull
 
         echo "[fdroid] Setting up signing keystore..."
@@ -163,13 +158,7 @@ spec:
         cp -f "$APK_FILE" "$WORKDIR/repo/"
 
         # Ensure complete metadata file for the app exists
-        APP_ID="$(params.app-id)"
-        if [ -n "$APP_ID" ]; then
-          cat << EOMETA > "$WORKDIR/metadata/${APP_ID}.yml"
-        Name: "$(params.app-name)"
-        Summary: "$(params.app-summary)"
-        Description: |-
-          $(params.app-name) built with Tekton CI/CD.
+        cat << EOMETA > "$WORKDIR/metadata/$(params.app-id).yml"
         Categories:
           - System
           - Utilities
@@ -177,9 +166,11 @@ spec:
         AuthorName: Personal
         SourceCode: https://forgejo.x3y.space
         IssueTracker: https://forgejo.x3y.space
+        Summary: $(params.app-summary)
+        Description: |-
+          $(params.app-name) built with Tekton CI/CD.
         AutoUpdateMode: None
         EOMETA
-        fi
 
         echo "[fdroid] Running fdroid update to generate index-v1 and index-v2..."
         fdroid update --create-metadata
@@ -213,7 +204,7 @@ spec:
         </html>
         EOHTML
 
-        echo "[fdroid] Syncing repository and metadata to MinIO..."
+        echo "[fdroid] Syncing repository to MinIO..."
         python3 /tmp/s3_helper.py push
 
         echo "[fdroid] F-Droid repository successfully updated and published!"
