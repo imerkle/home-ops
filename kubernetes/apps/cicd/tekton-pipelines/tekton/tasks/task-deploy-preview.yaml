@@ -52,7 +52,7 @@ spec:
         BRANCH="$(params.branch)"
         COMMIT_SHA="$(params.commit-sha)"
         TARGET_IMAGE="$(params.target-image-name)"
-        HOME_OPS_URL="$(params.home-ops-url)"
+        HOME_OPS_URL="${HOME_OPS_URL:-git@github.com:imerkle/home-ops.git}"
         APPS_BASE="$(params.apps-base-path)"
 
         PREVIEW_DIR="${APPS_BASE}/apps/${REPO_NAME}/preview"

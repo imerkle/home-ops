@@ -30,10 +30,6 @@ spec:
           value: "noninteractive"
         - name: GIT_PYTHON_REFRESH
           value: "quiet"
-        - name: AWS_REQUEST_CHECKSUM_CALCULATION
-          value: "WHEN_REQUIRED"
-        - name: AWS_RESPONSE_CHECKSUM_VALIDATION
-          value: "WHEN_REQUIRED"
         - name: KEYSTORE_BASE64
           valueFrom:
             secretKeyRef:
@@ -59,11 +55,8 @@ spec:
             secretKeyRef:
               name: fdroid-signing-secret
               key: AWS_SECRET_ACCESS_KEY
-        - name: AWS_ENDPOINT_URL
-          valueFrom:
-            secretKeyRef:
-              name: fdroid-signing-secret
-              key: AWS_ENDPOINT_URL
+        - name: MINIO_ENDPOINT
+          value: "minio.storage.svc.cluster.local:9000"
         - name: REPO_URL
           valueFrom:
             secretKeyRef:
@@ -73,21 +66,58 @@ spec:
         #!/bin/sh
         set -e
 
-        echo "[fdroid] Installing fdroidserver and awscli tools..."
-        export GIT_PYTHON_REFRESH=quiet
-        export AWS_REQUEST_CHECKSUM_CALCULATION=when_required
-        export AWS_RESPONSE_CHECKSUM_VALIDATION=when_required
-        apt-get update -qq && apt-get install -y -qq default-jdk-headless zipalign apksigner awscli git >/dev/null 2>&1
-        pip install -q fdroidserver
+        echo "[fdroid] Installing dependencies (JRE, apksigner, zipalign, git, fdroidserver, minio)..."
+        apt-get update -qq && apt-get install -y -qq --no-install-recommends default-jre-headless zipalign apksigner git ca-certificates >/dev/null 2>&1
+        pip install -q fdroidserver minio
 
         WORKDIR="/tmp/fdroid-workspace"
         mkdir -p "$WORKDIR/repo"
         cd "$WORKDIR"
 
-        aws configure set default.s3.multipart_threshold 128MB
+        # Python S3 helper script
+        cat << 'EOPY' > /tmp/s3_helper.py
+        import os, sys
+        from minio import Minio
+
+        endpoint = os.environ.get("MINIO_ENDPOINT", "minio.storage.svc.cluster.local:9000").replace("http://", "").replace("https://", "")
+        ak = os.environ["AWS_ACCESS_KEY_ID"]
+        sk = os.environ["AWS_SECRET_ACCESS_KEY"]
+
+        client = Minio(endpoint, access_key=ak, secret_key=sk, secure=False)
+
+        def sync_down(bucket, prefix, local_dir):
+            os.makedirs(local_dir, exist_ok=True)
+            try:
+                objects = client.list_objects(bucket, prefix=prefix, recursive=True)
+                for obj in objects:
+                    rel_path = os.path.relpath(obj.object_name, prefix)
+                    target = os.path.join(local_dir, rel_path)
+                    os.makedirs(os.path.dirname(target), exist_ok=True)
+                    client.fget_object(bucket, obj.object_name, target)
+                    print(f"Downloaded: {obj.object_name}")
+            except Exception as e:
+                print(f"Sync down note: {e}")
+
+        def sync_up(local_dir, bucket, prefix):
+            for root, _, files in os.walk(local_dir):
+                for f in files:
+                    full_path = os.path.join(root, f)
+                    rel_path = os.path.relpath(full_path, local_dir)
+                    obj_name = f"{prefix}/{rel_path}".lstrip("/")
+                    client.fput_object(bucket, obj_name, full_path)
+                    print(f"Uploaded: {obj_name}")
+
+        if sys.argv[1] == "pull":
+            sync_down("fdroid", "repo", "/tmp/fdroid-workspace/repo")
+        elif sys.argv[1] == "push":
+            sync_up("/tmp/fdroid-workspace/repo", "fdroid", "repo")
+            if os.path.exists("/tmp/fdroid-workspace/index.html"):
+                client.fput_object("fdroid", "index.html", "/tmp/fdroid-workspace/index.html", content_type="text/html")
+                print("Uploaded: index.html")
+        EOPY
 
         echo "[fdroid] Pulling existing repository from MinIO (if present)..."
-        aws s3 sync s3://fdroid/repo "$WORKDIR/repo" --endpoint-url "$AWS_ENDPOINT_URL" || true
+        python3 /tmp/s3_helper.py pull
 
         echo "[fdroid] Setting up signing keystore..."
         echo "$KEYSTORE_BASE64" | base64 -d > /tmp/fdroid.p12
@@ -145,7 +175,6 @@ spec:
         EOHTML
 
         echo "[fdroid] Syncing repository to MinIO..."
-        aws s3 sync "$WORKDIR/repo" s3://fdroid/repo/ --endpoint-url "$AWS_ENDPOINT_URL" --delete
-        aws s3 cp "$WORKDIR/index.html" s3://fdroid/index.html --endpoint-url "$AWS_ENDPOINT_URL"
+        python3 /tmp/s3_helper.py push
 
         echo "[fdroid] F-Droid repository successfully updated and published!"

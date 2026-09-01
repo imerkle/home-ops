@@ -39,6 +39,10 @@ spec:
       description: Docker image with Flutter + Android SDK + Fastlane.
       type: string
       default: zot.x3y.space/smsvault-android-builder:latest
+    - name: home-ops-url
+      description: SSH URL of the home-ops GitHub repository.
+      type: string
+      default: git@github.com:imerkle/home-ops.git
   workspaces:
     - name: shared-workspace
       description: >-
