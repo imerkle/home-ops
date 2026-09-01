@@ -3,6 +3,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  # Tekton Dashboard installed from upstream release manifest (read-only mode)
-  - https://storage.googleapis.com/tekton-releases/dashboard/latest/release.yaml
+  # Tekton Dashboard installed from upstream full release manifest (read-write mode)
+  - https://storage.googleapis.com/tekton-releases/dashboard/latest/release-full.yaml
   - ./route.yaml
