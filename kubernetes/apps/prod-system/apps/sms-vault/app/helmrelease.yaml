@@ -45,6 +45,10 @@ spec:
               capabilities:
                 drop:
                   - ALL
+                add:
+                  - CHOWN
+                  - SETUID
+                  - SETGID
             resources:
               requests:
                 cpu: 10m
