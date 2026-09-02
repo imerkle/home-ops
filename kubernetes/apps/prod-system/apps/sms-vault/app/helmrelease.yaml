@@ -29,6 +29,7 @@ spec:
         pod:
           annotations:
             vault.security.banzaicloud.io/vault-env-daemon: "true"
+            vault.security.banzaicloud.io/vault-env-sig: "SIGTERM"
           securityContext:
             runAsNonRoot: true
             runAsUser: 65534
