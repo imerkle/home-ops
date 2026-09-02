@@ -158,10 +158,9 @@ spec:
             - --destination=zot.x3y.space/sms-vault-web:$(params.sanitized-branch)
             - --cache-repo=zot.x3y.space/sms-vault-web-cache
             - --cache=true
-            - --insecure
             - --skip-tls-verify
         - name: PROTOCOL
-          value: http
+          value: https
 
   results:
     - name: apk-path
