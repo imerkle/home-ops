@@ -28,11 +28,8 @@ spec:
           reloader.stakater.com/auto: "true"
         pod:
           annotations:
+            vault.security.banzaicloud.io/mutate: "skip"
             vault.security.banzaicloud.io/vault-env-daemon: "true"
-            vault.security.banzaicloud.io/vault-env-passthrough: "DATABASE_URL"
-            vault.security.banzaicloud.io/vault-env-sig: "SIGTERM"
-            vault.security.banzaicloud.io/vault-env-cpu-request: "5m"
-            vault.security.banzaicloud.io/vault-env-memory-request: "16Mi"
           securityContext:
             runAsNonRoot: true
             runAsUser: 65534
@@ -45,16 +42,39 @@ spec:
               operator: "Equal"
               value: "tekton-runner"
               effect: "NoSchedule"
+        initContainers:
+          copy-vault-env:
+            image:
+              repository: ghcr.io/bank-vaults/vault-env
+              tag: v1.21.3
+            command: ["sh", "-c", "cp /usr/local/bin/vault-env /vault/"]
+            securityContext:
+              runAsUser: 65534
+              runAsGroup: 65534
+              runAsNonRoot: true
+              allowPrivilegeEscalation: false
+              seccompProfile:
+                type: RuntimeDefault
         containers:
           app:
             image:
               repository: zot.${DOMAIN1}/sms-vault
               tag: 4c602755f531930721667219a42d47c2754e805c
+            command: ["/vault/vault-env", "/app/sms-vault"]
             env:
               PORT: "8081"
               DATABASE_URL: "postgres://$${vault:database/creds/sms-vault-role#username}:$${vault:database/creds/sms-vault-role#password}@pg-default-rw.db.svc.cluster.local:5432/smsvault?sslmode=disable"
               AUTH_SERVER_ADDR: "auth-server.prod-system:50051"
               BASE_URL: "https://sms-vault.${DOMAIN1}"
+              VAULT_ADDR: "http://vault.vault.svc.cluster.local:8200"
+              VAULT_SKIP_VERIFY: "false"
+              VAULT_AUTH_METHOD: "jwt"
+              VAULT_PATH: "kubernetes"
+              VAULT_ROLE: "default"
+              VAULT_IGNORE_MISSING_SECRETS: "false"
+              VAULT_ENV_DAEMON: "true"
+              VAULT_ENV_SIG: "SIGTERM"
+              VAULT_ENV_DELAY: "2"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -185,3 +205,8 @@ spec:
           - backendRefs:
               - port: 80
                 name: sms-vault-web
+    persistence:
+      vault-env:
+        type: emptyDir
+        globalMounts:
+          - path: /vault/

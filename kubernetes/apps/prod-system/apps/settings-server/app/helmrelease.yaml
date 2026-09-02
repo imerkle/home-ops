@@ -28,18 +28,41 @@ spec:
           reloader.stakater.com/auto: "true"
         pod:
           annotations:
+            vault.security.banzaicloud.io/mutate: "skip"
             vault.security.banzaicloud.io/vault-env-daemon: "true"
-            vault.security.banzaicloud.io/vault-env-passthrough: "DATABASE_URL"
+        initContainers:
+          copy-vault-env:
+            image:
+              repository: ghcr.io/bank-vaults/vault-env
+              tag: v1.21.3
+            command: ["sh", "-c", "cp /usr/local/bin/vault-env /vault/"]
+            securityContext:
+              runAsUser: 65534
+              runAsGroup: 65534
+              runAsNonRoot: true
+              allowPrivilegeEscalation: false
+              seccompProfile:
+                type: RuntimeDefault
         containers:
           app:
             image:
               repository: zot.${DOMAIN1}/settings-server
               tag: main
+            command: ["/vault/vault-env", "/app/settings-server"]
             env:
               PORT: &port "3000"
               GRPC_PORT: &grpcPort "50051"
               DATABASE_URL: "postgres://$${vault:database/creds/settings-server-role#username}:$${vault:database/creds/settings-server-role#password}@pg-default-rw.db.svc.cluster.local:5432/settings_server?sslmode=disable"
               AUTH_SERVER_ADDR: "auth-server.prod-system:50051"
+              VAULT_ADDR: "http://vault.vault.svc.cluster.local:8200"
+              VAULT_SKIP_VERIFY: "false"
+              VAULT_AUTH_METHOD: "jwt"
+              VAULT_PATH: "kubernetes"
+              VAULT_ROLE: "default"
+              VAULT_IGNORE_MISSING_SECRETS: "false"
+              VAULT_ENV_DAEMON: "true"
+              VAULT_ENV_SIG: "SIGTERM"
+              VAULT_ENV_DELAY: "2"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -60,6 +83,11 @@ spec:
         fsGroup: 65534
         seccompProfile:
           type: RuntimeDefault
+    persistence:
+      vault-env:
+        type: emptyDir
+        globalMounts:
+          - path: /vault/
     service:
       app:
         controller: settings-server
