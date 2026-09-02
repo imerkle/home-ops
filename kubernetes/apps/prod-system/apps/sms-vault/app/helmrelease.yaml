@@ -42,7 +42,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/sms-vault
-              tag: f1f37e2dfdf40be7661b067463c4a8b0b5187220
+              tag: 4c602755f531930721667219a42d47c2754e805c
             env:
               PORT: "8081"
               DATABASE_URL: "postgres://$${vault:database/creds/sms-vault-role#username}:$${vault:database/creds/sms-vault-role#password}@pg-default-rw.db.svc.cluster.local:5432/smsvault?sslmode=disable"
