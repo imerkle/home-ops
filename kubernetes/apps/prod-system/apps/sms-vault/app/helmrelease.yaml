@@ -71,7 +71,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/sms-vault-web
-              tag: 7f1e322865b653151a487986da3bdfceebf6fcd5
+              tag: 202f50c339e6c21dd6274ce82d5336288aeff010
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
