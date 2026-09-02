@@ -31,6 +31,8 @@ spec:
             vault.security.banzaicloud.io/vault-env-daemon: "true"
             vault.security.banzaicloud.io/vault-env-passthrough: "DATABASE_URL"
             vault.security.banzaicloud.io/vault-env-sig: "SIGTERM"
+            vault.security.banzaicloud.io/vault-env-cpu-request: "5m"
+            vault.security.banzaicloud.io/vault-env-memory-request: "16Mi"
           securityContext:
             runAsNonRoot: true
             runAsUser: 65534
