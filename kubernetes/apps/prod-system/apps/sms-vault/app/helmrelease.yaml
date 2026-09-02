@@ -29,6 +29,7 @@ spec:
         pod:
           annotations:
             vault.security.banzaicloud.io/vault-env-daemon: "true"
+            vault.security.banzaicloud.io/vault-env-passthrough: "DATABASE_URL"
             vault.security.banzaicloud.io/vault-env-sig: "SIGTERM"
           securityContext:
             runAsNonRoot: true
@@ -53,6 +54,40 @@ spec:
               capabilities:
                 drop:
                   - ALL
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: 8081
+                  initialDelaySeconds: 15
+                  periodSeconds: 15
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /readyz
+                    port: 8081
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: 8081
+                  initialDelaySeconds: 2
+                  periodSeconds: 5
+                  timeoutSeconds: 3
+                  failureThreshold: 30
             resources:
               requests:
                 cpu: 10m
