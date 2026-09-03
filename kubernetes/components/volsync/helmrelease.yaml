@@ -50,8 +50,8 @@ spec:
       secretData:
         KOPIA_FS_PATH: /repository
         KOPIA_PASSWORD: "vault:secret/data/volsync#RESTIC_PASSWORD"
-        KOPIA_S3_BUCKET: "${APP}-volsync"
-        KOPIA_REPOSITORY: s3:http://minio.storage.svc.cluster.local:9000/${APP}-volsync
+        KOPIA_S3_BUCKET: "${VOLSYNC_LOCAL_BUCKET:=volsync}"
+        KOPIA_REPOSITORY: "s3:http://minio.storage.svc.cluster.local:9000/${VOLSYNC_LOCAL_BUCKET:=volsync}/${APP}"
         KOPIA_S3_ENDPOINT: minio.storage.svc.cluster.local:9000
         AWS_S3_ENDPOINT: minio.storage.svc.cluster.local:9000
         KOPIA_S3_DISABLE_TLS: "true"

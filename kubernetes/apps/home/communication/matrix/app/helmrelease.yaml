@@ -33,11 +33,11 @@ spec:
           value: dummy
       extraEnv:
         - name: POSTGRES_PASSWORD
-          value: "${vault:secret/data/matrix#synapse_postgres_password}"
+          value: "$${vault:secret/data/matrix#synapse_postgres_password}"
         - name: POSTGRES_USER
           value: synapse_user
         - name: SYNAPSE_POSTGRES_PASSWORD
-          value: "${vault:secret/data/matrix#synapse_postgres_password}"
+          value: "$${vault:secret/data/matrix#synapse_postgres_password}"
         - name: SYNAPSE_POSTGRES_USER
           value: synapse_user
       ingress:
@@ -158,11 +158,11 @@ spec:
         - name: POSTGRES_USER
           value: matrix_authentication_service_user
         - name: POSTGRES_PASSWORD
-          value: "${vault:secret/data/matrix#mas_postgres_password}"
+          value: "$${vault:secret/data/matrix#mas_postgres_password}"
         - name: MAS_DATABASE__URI
-          value: "postgres://matrix_authentication_service_user:${vault:secret/data/matrix#mas_postgres_password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
+          value: "postgres://matrix_authentication_service_user:$${vault:secret/data/matrix#mas_postgres_password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
         - name: MAS_DATABASE_URI
-          value: "postgres://matrix_authentication_service_user:${vault:secret/data/matrix#mas_postgres_password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
+          value: "postgres://matrix_authentication_service_user:$${vault:secret/data/matrix#mas_postgres_password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
       ingress:
         host: auth.${DOMAIN1}
         className: disabled
@@ -310,7 +310,7 @@ spec:
                       - name: render-config
                         env:
                           - name: SYNAPSE_POSTGRES_PASSWORD
-                            value: "${vault:secret/data/matrix#synapse_postgres_password}"
+                            value: "$${vault:secret/data/matrix#synapse_postgres_password}"
                           - name: SYNAPSE_POSTGRES_USER
                             value: synapse_user
           - target:
@@ -329,12 +329,12 @@ spec:
                       - name: render-config
                         env:
                           - name: POSTGRES_PASSWORD
-                            value: "${vault:secret/data/matrix#mas_postgres_password}"
+                            value: "$${vault:secret/data/matrix#mas_postgres_password}"
                           - name: POSTGRES_USER
                             value: matrix_authentication_service_user
                       - name: database-migrate
                         env:
                           - name: MAS_DATABASE__URI
-                            value: "postgres://matrix_authentication_service_user:${vault:secret/data/matrix#mas_postgres_password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
+                            value: "postgres://matrix_authentication_service_user:$${vault:secret/data/matrix#mas_postgres_password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
 
 
