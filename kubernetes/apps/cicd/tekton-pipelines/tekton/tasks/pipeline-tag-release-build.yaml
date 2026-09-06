@@ -1,0 +1,76 @@
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: tag-release-build
+  namespace: tekton-pipelines
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  description: >-
+    Generic pipeline to build container images from a specific git tag
+    using Kaniko and push them to the local Zot registry.
+  params:
+    - name: repo-url
+      description: Git repository clone URL.
+      type: string
+    - name: tag
+      description: The git tag to checkout and build (e.g. v2.34.0).
+      type: string
+    - name: image
+      description: Primary destination image reference (e.g. zot.dev-system.../aiostreams:v2.34.0).
+      type: string
+    - name: dockerfile
+      description: Relative path to Dockerfile.
+      type: string
+      default: ./Dockerfile
+    - name: context
+      description: Build context relative to repo root.
+      type: string
+      default: ./
+    - name: extra-args
+      description: Additional Kaniko flags (extra --destination tags, cache-repo, etc.).
+      type: array
+      default: []
+    - name: protocol
+      description: Protocol to use for the image URL (http or https).
+      type: string
+      default: http
+  workspaces:
+    - name: shared-workspace
+      description: Workspace for source code sharing.
+  tasks:
+    - name: fetch-source
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: $(params.repo-url)
+        - name: revision
+          value: $(params.tag)
+        - name: deleteExisting
+          value: "true"
+
+    - name: build-and-push
+      runAfter:
+        - fetch-source
+      taskRef:
+        name: kaniko-build
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: IMAGE
+          value: $(params.image)
+        - name: DOCKERFILE
+          value: $(params.dockerfile)
+        - name: CONTEXT
+          value: $(params.context)
+        - name: EXTRA_ARGS
+          value:
+            - $(params.extra-args[*])
+        - name: PROTOCOL
+          value: $(params.protocol)

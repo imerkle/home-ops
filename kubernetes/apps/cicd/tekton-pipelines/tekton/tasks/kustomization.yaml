@@ -8,6 +8,7 @@ resources:
   - ./task-deploy-preview.yaml
   - ./task-cleanup-preview.yaml
   - ./pipeline-build-push.yaml
+  - ./pipeline-tag-release-build.yaml
   - ./pipeline-cleanup-preview.yaml
   - ./pipeline-flutter-build.yaml
   - ./task-flutter-build.yaml

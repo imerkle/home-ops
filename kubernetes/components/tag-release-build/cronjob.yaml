@@ -1,0 +1,142 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ${APP}-tag-watcher
+  namespace: tekton-pipelines
+spec:
+  schedule: "${CHECK_SCHEDULE:=15 * * * *}"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: ${APP}-tag-watcher
+          restartPolicy: OnFailure
+          containers:
+            - name: watcher
+              image: bitnami/kubectl:latest
+              command:
+                - /bin/bash
+                - -c
+              args:
+                - |
+                  set -euo pipefail
+
+                  APP="${APP}"
+                  FORGEJO_REPO="${FORGEJO_REPO}"
+                  FORGEJO_URL="${FORGEJO_URL:=http://forgejo.dev-system.svc.cluster.local:3000}"
+                  REGISTRY="${REGISTRY:=zot.dev-system.svc.cluster.local:5000}"
+                  TAG_PATTERN="${TAG_PATTERN:=^v[0-9]+\.[0-9]+\.[0-9]+$}"
+                  PIPELINE_NAME="${PIPELINE_NAME:=tag-release-build}"
+                  DOCKERFILE="${DOCKERFILE:=./Dockerfile}"
+                  CM_NAME="$APP-tag-build"
+                  NS="tekton-pipelines"
+
+                  echo "=== [$APP] Checking for new release tags in $FORGEJO_REPO ==="
+
+                  # 1. Trigger mirror sync so Forgejo is fresh with upstream
+                  echo "Triggering mirror sync for $FORGEJO_REPO..."
+                  curl -s -X POST "$FORGEJO_URL/api/v1/repos/$FORGEJO_REPO/mirror-sync" > /dev/null || true
+                  sleep 3
+
+                  # 2. Get last built tag from ConfigMap
+                  LAST_TAG=$(kubectl get cm "$CM_NAME" -n "$NS" -o jsonpath='{.data.last-tag}' 2>/dev/null || echo "")
+                  echo "Last built tag: ${LAST_TAG:-none}"
+
+                  # 3. Query Forgejo API for tags (page 1 has most recent in reverse chronological order)
+                  TAGS_JSON=$(curl -sf "$FORGEJO_URL/api/v1/repos/$FORGEJO_REPO/tags?limit=30&page=1" || echo "[]")
+
+                  LATEST_TAG=$(echo "$TAGS_JSON" | jq -r --arg pat "$TAG_PATTERN" '[.[] | select(.name | test($pat))][0].name // ""')
+                  echo "Latest release tag found: ${LATEST_TAG:-none}"
+
+                  if [ -z "$LATEST_TAG" ]; then
+                    echo "No matching tags found. Exiting."
+                    exit 0
+                  fi
+
+                  if [ "$LATEST_TAG" = "$LAST_TAG" ]; then
+                    echo "Tag $LATEST_TAG already built. Nothing to do."
+                    exit 0
+                  fi
+
+                  echo "New release tag detected: $LATEST_TAG (previous: ${LAST_TAG:-none})"
+
+                  # 4. Calculate semantic version alias tags if semver (e.g. v2.34, v2)
+                  EXTRA_ARGS_YAML=$(cat <<YAMLEOF
+                          - "--destination=$REGISTRY/$APP:latest"
+                  YAMLEOF
+                  )
+                  if [[ "$LATEST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.[0-9]+$ ]]; then
+                    MAJOR="v${BASH_REMATCH[1]}"
+                    MAJOR_MINOR="v${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+                    EXTRA_ARGS_YAML=$(cat <<YAMLEOF
+                          - "--destination=$REGISTRY/$APP:latest"
+                          - "--destination=$REGISTRY/$APP:$MAJOR_MINOR"
+                          - "--destination=$REGISTRY/$APP:$MAJOR"
+                  YAMLEOF
+                  )
+                  fi
+
+                  PRIMARY_IMAGE="$REGISTRY/$APP:$LATEST_TAG"
+
+                  # 5. Create Tekton PipelineRun
+                  echo "Creating PipelineRun for $APP:$LATEST_TAG..."
+                  cat <<EOF | kubectl create -f -
+                  apiVersion: tekton.dev/v1
+                  kind: PipelineRun
+                  metadata:
+                    generateName: $APP-build-
+                    namespace: $NS
+                    labels:
+                      app.kubernetes.io/name: $APP
+                      tekton.dev/pipeline: $PIPELINE_NAME
+                      build.home.arpa/tag: "$LATEST_TAG"
+                  spec:
+                    pipelineRef:
+                      name: $PIPELINE_NAME
+                    params:
+                      - name: repo-url
+                        value: "$FORGEJO_URL/$FORGEJO_REPO.git"
+                      - name: tag
+                        value: "$LATEST_TAG"
+                      - name: image
+                        value: "$PRIMARY_IMAGE"
+                      - name: dockerfile
+                        value: "$DOCKERFILE"
+                      - name: extra-args
+                        value:
+                  $EXTRA_ARGS_YAML
+                          - "--cache=true"
+                          - "--cache-repo=$REGISTRY/$APP-cache"
+                          - "--insecure"
+                          - "--skip-tls-verify"
+                    taskRunTemplate:
+                      podTemplate:
+                        nodeSelector:
+                          ci.home.arpa/runner: tekton
+                        tolerations:
+                          - key: dedicated
+                            operator: Equal
+                            value: tekton-runner
+                            effect: NoSchedule
+                    workspaces:
+                      - name: shared-workspace
+                        volumeClaimTemplate:
+                          spec:
+                            storageClassName: local-path
+                            accessModes: [ReadWriteOnce]
+                            resources:
+                              requests:
+                                storage: 2Gi
+                  EOF
+
+                  # 6. Record tag in ConfigMap
+                  echo "Updating ConfigMap $CM_NAME with last-tag: $LATEST_TAG..."
+                  kubectl create configmap "$CM_NAME" -n "$NS" \
+                    --from-literal="last-tag=$LATEST_TAG" \
+                    --dry-run=client -o yaml | kubectl apply -f -
+
+                  echo "Successfully dispatched build for $APP:$LATEST_TAG"

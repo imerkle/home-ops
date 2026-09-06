@@ -23,6 +23,7 @@ resources:
   - ./media/frigate/ks.yaml
   - ./media/yt2009/ks.yaml
   - ./media/nuviostreams/ks.yaml
+  - ./media/aiostreams/ks.yaml
   - ./media/jdownloader/ks.yaml
   - ./media/ps4-fpkgi/ks.yaml
   - ./media/qbittorrent/ks.yaml
