@@ -130,7 +130,6 @@ spec:
                 exec dnsmasq \
                   --no-daemon \
                   --address=/ghcr.io/172.17.0.1 \
-                  --listen-address=0.0.0.0 \
                   --port=53
             securityContext:
               capabilities:
@@ -201,6 +200,11 @@ spec:
                 memory: 64Mi
 
     defaultPodOptions:
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "tekton-runner"
+          effect: "NoSchedule"
       # ghcr.io → 127.0.0.1 for pod-level containers (DinD daemon itself,
       # runner). Docker daemon pushes/pulls go through nginx on 127.0.0.1:443.
       # Containers INSIDE DinD use dnsmasq (--dns=172.17.0.1) instead.
