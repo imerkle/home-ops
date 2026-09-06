@@ -44,13 +44,13 @@ spec:
 
                   # 2. Get last built tag from ConfigMap
                   LAST_TAG=$(kubectl get cm "$CM_NAME" -n "$NS" -o jsonpath='{.data.last-tag}' 2>/dev/null || echo "")
-                  echo "Last built tag: ${LAST_TAG:-none}"
+                  echo "Last built tag: $LAST_TAG"
 
                   # 3. Query Forgejo API for tags (page 1 has most recent in reverse chronological order)
                   TAGS_JSON=$(curl -sf "$FORGEJO_URL/api/v1/repos/$FORGEJO_REPO/tags?limit=30&page=1" || echo "[]")
 
                   LATEST_TAG=$(echo "$TAGS_JSON" | jq -r --arg pat "$TAG_PATTERN" '[.[] | select(.name | test($pat))][0].name // ""')
-                  echo "Latest release tag found: ${LATEST_TAG:-none}"
+                  echo "Latest release tag found: $LATEST_TAG"
 
                   if [ -z "$LATEST_TAG" ]; then
                     echo "No matching tags found. Exiting."
@@ -62,21 +62,21 @@ spec:
                     exit 0
                   fi
 
-                  echo "New release tag detected: $LATEST_TAG (previous: ${LAST_TAG:-none})"
+                  echo "New release tag detected: $LATEST_TAG (previous: $LAST_TAG)"
 
                   # 4. Calculate semantic version alias tags if semver (e.g. v2.34, v2)
                   EXTRA_ARGS_YAML=$(cat <<YAMLEOF
                           - "--destination=$REGISTRY/$APP:latest"
-                  YAMLEOF
+YAMLEOF
                   )
-                  if [[ "$LATEST_TAG" =~ ^v([0-9]+)\.([0-9]+)\.[0-9]+$ ]]; then
-                    MAJOR="v${BASH_REMATCH[1]}"
-                    MAJOR_MINOR="v${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+                  if [[ "$LATEST_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                    MAJOR=$(echo "$LATEST_TAG" | sed -E 's/v([0-9]+)\..*/v\1/')
+                    MAJOR_MINOR=$(echo "$LATEST_TAG" | sed -E 's/v([0-9]+\.[0-9]+)\..*/v\1/')
                     EXTRA_ARGS_YAML=$(cat <<YAMLEOF
                           - "--destination=$REGISTRY/$APP:latest"
                           - "--destination=$REGISTRY/$APP:$MAJOR_MINOR"
                           - "--destination=$REGISTRY/$APP:$MAJOR"
-                  YAMLEOF
+YAMLEOF
                   )
                   fi
 
