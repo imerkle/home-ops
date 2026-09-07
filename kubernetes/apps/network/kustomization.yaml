@@ -17,5 +17,5 @@ resources:
   # certificates
   - ./certs/certificates/ks.yaml
   # tunnel
-  # - ./tunnel/cloudflare-tunnel/ks.yaml
+  - ./tunnel/cloudflare-tunnel/ks.yaml
   # - ./tunnel/echo/ks.yaml

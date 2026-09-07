@@ -8,7 +8,7 @@ spec:
   description: "Network policy for Cloudflare Tunnel"
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/name: cloudflared
+      app.kubernetes.io/name: cloudflare-tunnel
   ingress:
     # Allow same namespace traffic
     - fromEndpoints:
@@ -26,6 +26,8 @@ spec:
         - ports:
             - port: "443"
               protocol: TCP
+            - port: "7844"
+              protocol: UDP
             - port: "7844"
               protocol: TCP
     # Allow reaching backend services in cluster

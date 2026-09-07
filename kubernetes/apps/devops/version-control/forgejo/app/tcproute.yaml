@@ -27,5 +27,7 @@ spec:
     targets:
     - 10.0.0.81  # Your Envoy VIP
     providerSpecific:
+    - name: external-dns.alpha.kubernetes.io/cloudflare-proxied
+      value: "false"
     - name: cloudflare-proxied
-      value: "false" # <--- CRITICAL: Must be false for SSH
+      value: "false"
