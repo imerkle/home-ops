@@ -4,6 +4,7 @@ kind: Terraform
 metadata:
   name: immich-zitadel-oidc
 spec:
+  disableDriftDetection: true
   interval: 1h
   retryInterval: 1h
   retryStrategy: StaticInterval
