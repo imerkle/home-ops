@@ -21,7 +21,7 @@ spec:
               tag: v1.9.0
             env:
               TZ: America/New_York
-              HOMEPAGE_ALLOWED_HOSTS: "{{ .Release.Name }}.${DOMAIN1}"
+              HOMEPAGE_ALLOWED_HOSTS: "{{ .Release.Name }}.${DOMAIN1},{{ .Release.Name }}.${DOMAIN1}:443,{{ .Release.Name }}.${DOMAIN1}:80"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -51,6 +51,8 @@ spec:
           - "{{ .Release.Name }}.${DOMAIN1}"
         parentRefs:
           - name: envoy-internal
+            namespace: network
+          - name: envoy-external
             namespace: network
     persistence:
       config:

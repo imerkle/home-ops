@@ -112,6 +112,7 @@ spec:
           gethomepage.dev/description: Home Automation Platform
           gethomepage.dev/group: Home Automation
           gethomepage.dev/icon: home-assistant.png
+          gethomepage.dev/pod-selector: "app.kubernetes.io/name=home-assistant"
           gatus.home-operations.com/endpoint: |-
             conditions: ["[STATUS] == 200"]
         hostnames:

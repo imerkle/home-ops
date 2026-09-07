@@ -8,11 +8,14 @@ metadata:
     gethomepage.dev/description: Identity Management
     gethomepage.dev/group: Security
     gethomepage.dev/icon: zitadel.png
+    gethomepage.dev/pod-selector: "app.kubernetes.io/name=zitadel"
 spec:
   hostnames:
   - "zitadel.${DOMAIN1}"
   parentRefs:
     - name: envoy-internal
+      namespace: network
+    - name: envoy-external
       namespace: network
   rules:
     - matches:
