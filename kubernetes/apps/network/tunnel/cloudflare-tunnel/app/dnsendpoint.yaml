@@ -9,4 +9,4 @@ spec:
     - dnsName: external.${DOMAIN1}
       recordType: CNAME
       targets:
-        - ${CLOUDFLARE_TUNNEL_ID}.cfargotunnel.com
+        - e87802eb-0c29-4f7b-819e-f26b972a9ecd.cfargotunnel.com
