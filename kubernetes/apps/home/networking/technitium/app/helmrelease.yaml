@@ -1,0 +1,165 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: technitium
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  interval: 1h
+  values:
+    controllers:
+      technitium:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: docker.io/technitium/dns-server
+              tag: 15.4.0
+            env:
+              DNS_SERVER_DOMAIN: "technitium.${DOMAIN1}"
+              DNS_SERVER_ADMIN_PASSWORD: &adminPass admin
+              DNS_SERVER_PREFER_IPV6: "false"
+              DNS_SERVER_WEB_SERVICE_HTTP_PORT: "5380"
+              DNS_SERVER_LOG_USING_LOCAL_TIME: "true"
+              DNS_SERVER_ENABLE_BLOCKING: "true"
+              DNS_SERVER_FORWARDERS: "1.1.1.1, 9.9.9.9"
+              DNS_SERVER_FORWARDER_PROTOCOL: "Tls"
+              DNS_SERVER_BLOCK_LIST_URLS: &blocklists >-
+                https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts,https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.txt,https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/tif.txt,https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/doh-vpn-proxy-bypass.txt,https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/nosafesearch.txt
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 5380
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 5380
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+            resources:
+              requests:
+                cpu: 20m
+                memory: 256Mi
+              limits:
+                memory: 3Gi
+          config-sync:
+            image:
+              repository: docker.io/curlimages/curl
+              tag: 8.10.1
+            env:
+              ADMIN_PASS: *adminPass
+              DOMAIN: "${DOMAIN1}"
+              BLOCK_LIST_URLS: *blocklists
+            command:
+              - /bin/sh
+              - -c
+              - |
+                echo "Waiting for Technitium API to become ready..."
+                ATTEMPTS=0
+                until curl -s -f "http://localhost:5380/api/user/login?user=admin&pass=$ADMIN_PASS" > /tmp/login.json; do
+                  ATTEMPTS=$((ATTEMPTS+1))
+                  if [ $ATTEMPTS -gt 30 ]; then
+                    echo "Warning: Unable to login to Technitium after 60s. Skipping declarative sync."
+                    exec sleep infinity
+                  fi
+                  sleep 2
+                done
+                TOKEN=$(grep -o '"token":"[^"]*"' /tmp/login.json | cut -d'"' -f4)
+                echo "1. Applying general settings, forwarders, and logging..."
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  --data-urlencode "enableBlocking=true" \
+                  --data-urlencode "blockingType=NxDomain" \
+                  --data-urlencode "blockListUrls=$BLOCK_LIST_URLS" \
+                  --data-urlencode "logQueries=true" \
+                  --data-urlencode "maxLogFileDays=7" \
+                  --data-urlencode "forwarders=1.1.1.1,9.9.9.9" \
+                  --data-urlencode "forwarderProtocol=Tls" \
+                  "http://localhost:5380/api/settings/set" > /dev/null
+
+                echo "2. Ensuring cluster.local conditional forwarder zone exists..."
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  "http://localhost:5380/api/zones/create?zone=cluster.local&type=Forwarder&forwarder=10.96.0.10&protocol=Udp" > /dev/null 2>&1 || true
+
+                echo "3. Ensuring 10.in-addr.arpa reverse conditional forwarder zone exists..."
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  "http://localhost:5380/api/zones/create?zone=10.in-addr.arpa&type=Forwarder&forwarder=10.0.0.97&protocol=Udp" > /dev/null 2>&1 || true
+
+                echo "4. Ensuring local unifi record exists..."
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  "http://localhost:5380/api/zones/create?zone=unifi&type=Primary" > /dev/null 2>&1 || true
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  "http://localhost:5380/api/zones/records/add?domain=unifi&zone=unifi&type=A&ipAddress=10.0.0.97&overwrite=true" > /dev/null 2>&1 || true
+
+                echo "5. Ensuring DNS Rebinding Protection app is installed..."
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  "http://localhost:5380/api/apps/downloadAndInstall?name=DNS+Rebinding+Protection&url=https://download.technitium.com/dns/apps/DnsRebindingProtectionApp-v5.zip" > /dev/null 2>&1 || true
+
+                REBIND_CONFIG=$(printf '{"enableProtection":true,"bypassNetworks":[],"privateNetworks":["10.0.0.0/8","127.0.0.0/8","172.16.0.0/12","192.168.0.0/16","169.254.0.0/16","fc00::/7","fe80::/10"],"privateDomains":["home.arpa","cluster.local","unifi","%s"]}' "$DOMAIN")
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  --data-urlencode "name=DNS Rebinding Protection" \
+                  --data-urlencode "config=$REBIND_CONFIG" \
+                  "http://localhost:5380/api/apps/config/set" > /dev/null 2>&1 || true
+
+                echo "Declarative configuration applied successfully."
+                exec sleep infinity
+            resources:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                memory: 64Mi
+    service:
+      main:
+        controller: technitium
+        type: LoadBalancer
+        annotations:
+          io.cilium/lb-ipam-ips: 10.0.0.53
+        ports:
+          http:
+            port: 5380
+            protocol: TCP
+          dns-tcp:
+            port: 53
+            protocol: TCP
+          dns-udp:
+            port: 53
+            protocol: UDP
+    route:
+      app:
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: Technitium DNS
+          gethomepage.dev/description: Authoritative and Recursive DNS Server
+          gethomepage.dev/group: Infrastructure
+          gethomepage.dev/icon: technitium.png
+        hostnames:
+          - "technitium.${DOMAIN1}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: technitium
+                port: 5380
+    persistence:
+      config:
+        storageClass: ${STORE1}
+        accessMode: ReadWriteOnce
+        size: 2Gi
+        globalMounts:
+          - path: /etc/dns

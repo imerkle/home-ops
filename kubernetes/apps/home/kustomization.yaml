@@ -42,6 +42,7 @@ resources:
   # networking
   - ./networking/unifi/ks.yaml
   - ./networking/blocky/ks.yaml
+  - ./networking/technitium/ks.yaml
   # remote-access
   - ./remote-access/rustdesk/ks.yaml
   # tools
