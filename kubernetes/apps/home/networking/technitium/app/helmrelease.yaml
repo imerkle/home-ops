@@ -115,6 +115,30 @@ spec:
                   --data-urlencode "config=$REBIND_CONFIG" \
                   "http://localhost:5380/api/apps/config/set" > /dev/null 2>&1 || true
 
+                echo "6. Ensuring split-horizon DNS zone for $DOMAIN exists..."
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  "http://localhost:5380/api/zones/create?zone=$DOMAIN&type=Primary" > /dev/null 2>&1 || true
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  "http://localhost:5380/api/zones/records/add?domain=$DOMAIN&zone=$DOMAIN&type=A&ipAddress=10.0.0.81&overwrite=true" > /dev/null 2>&1 || true
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  "http://localhost:5380/api/zones/records/add?domain=*.$DOMAIN&zone=$DOMAIN&type=A&ipAddress=10.0.0.81&overwrite=true" > /dev/null 2>&1 || true
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  "http://localhost:5380/api/zones/records/add?domain=external.$DOMAIN&zone=$DOMAIN&type=A&ipAddress=10.0.0.80&overwrite=true" > /dev/null 2>&1 || true
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  "http://localhost:5380/api/zones/records/add?domain=kromgo.$DOMAIN&zone=$DOMAIN&type=A&ipAddress=10.0.0.80&overwrite=true" > /dev/null 2>&1 || true
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  "http://localhost:5380/api/zones/records/add?domain=$DOMAIN&zone=$DOMAIN&type=MX&exchange=route1.mx.cloudflare.net&preference=9" > /dev/null 2>&1 || true
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  "http://localhost:5380/api/zones/records/add?domain=$DOMAIN&zone=$DOMAIN&type=MX&exchange=route2.mx.cloudflare.net&preference=17" > /dev/null 2>&1 || true
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  "http://localhost:5380/api/zones/records/add?domain=$DOMAIN&zone=$DOMAIN&type=MX&exchange=route3.mx.cloudflare.net&preference=49" > /dev/null 2>&1 || true
+                curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+                  --data-urlencode "domain=$DOMAIN" \
+                  --data-urlencode "zone=$DOMAIN" \
+                  --data-urlencode "type=TXT" \
+                  --data-urlencode "text=v=spf1 include:_spf.mx.cloudflare.net ~all" \
+                  "http://localhost:5380/api/zones/records/add" > /dev/null 2>&1 || true
+
                 echo "Declarative configuration applied successfully."
                 exec sleep infinity
             resources:
