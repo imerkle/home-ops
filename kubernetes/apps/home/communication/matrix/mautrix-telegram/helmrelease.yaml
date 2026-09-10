@@ -17,13 +17,14 @@ spec:
         pod:
           annotations:
             vault.security.banzaicloud.io/vault-env-daemon: "true"
-        initContainers:
-          copy-config:
+        containers:
+          app:
             image:
-              repository: public.ecr.aws/docker/library/python
-              tag: 3.11-alpine
-            command: ["python3", "-c"]
-            args:
+              repository: dock.mau.dev/mautrix/telegram
+              tag: v0.15.3
+            command:
+              - python3
+              - -c
               - |
                 import os, shutil
                 for f in os.listdir('/tmp/config'):
@@ -31,20 +32,11 @@ spec:
                         shutil.copy(os.path.join('/tmp/config', f), '/data')
                 with open('/data/config.yaml', 'r') as f:
                     content = f.read()
-                content = content.replace(f"{chr(36)}{chr(123)}DB_USER{chr(125)}", os.environ['DB_USER'])
-                content = content.replace(f"{chr(36)}{chr(123)}DB_PASS{chr(125)}", os.environ['DB_PASS'])
+                content = content.replace("${DB_USER}", os.environ['DB_USER'])
+                content = content.replace("${DB_PASS}", os.environ['DB_PASS'])
                 with open('/data/config.yaml', 'w') as f:
                     f.write(content)
-            env:
-              DB_USER: "$${vault:database/creds/mautrix-telegram-role#username}"
-              DB_PASS: "$${vault:database/creds/mautrix-telegram-role#password}"
-        containers:
-          app:
-            image:
-              repository: dock.mau.dev/mautrix/telegram
-              tag: v0.15.3
-            command: ["python3", "-m", "mautrix_telegram"]
-            args: [ "-c", "/data/config.yaml", "--no-update" ]
+                os.execvp("python3", ["python3", "-m", "mautrix_telegram", "-c", "/data/config.yaml", "--no-update"])
             workingDir: /data
             env:
               TZ: America/New_York
@@ -88,7 +80,7 @@ spec:
         name: mautrix-telegram-config
         advancedMounts:
           mautrix-telegram:
-            copy-config:
+            app:
               - path: /tmp/config
       data:
         existingClaim: mautrix-telegram

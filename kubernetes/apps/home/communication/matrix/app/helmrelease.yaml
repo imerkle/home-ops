@@ -35,19 +35,15 @@ spec:
       postgres:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
-        user: synapse_user
+        user: dummy
         database: synapse
         password:
           value: dummy
       extraEnv:
-        - name: POSTGRES_PASSWORD
-          value: "$${vault:secret/data/matrix#synapse_postgres_password}"
-        - name: POSTGRES_USER
-          value: synapse_user
         - name: SYNAPSE_POSTGRES_PASSWORD
-          value: "$${vault:secret/data/matrix#synapse_postgres_password}"
+          value: "$${vault:database/creds/synapse-role#password}"
         - name: SYNAPSE_POSTGRES_USER
-          value: synapse_user
+          value: "$${vault:database/creds/synapse-role#username}"
       ingress:
         host: matrix.${DOMAIN1}
         className: disabled
@@ -90,8 +86,8 @@ spec:
             database:
               name: psycopg2
               args:
-                user: "{{ env('SYNAPSE_POSTGRES_USER') }}"
-                password: "{{ env('SYNAPSE_POSTGRES_PASSWORD') }}"
+                user: dummy
+                password: dummy
                 database: synapse
                 host: pg-default-rw.db.svc.cluster.local
                 port: 5432
@@ -164,19 +160,13 @@ spec:
       postgres:
         host: pg-default-rw.db.svc.cluster.local
         port: 5432
-        user: matrix_authentication_service_user
+        user: dummy
         database: matrix_authentication_service
         password:
           value: dummy
       extraEnv:
-        - name: POSTGRES_USER
-          value: matrix_authentication_service_user
-        - name: POSTGRES_PASSWORD
-          value: "$${vault:secret/data/matrix#mas_postgres_password}"
-        - name: MAS_DATABASE__URI
-          value: "postgres://matrix_authentication_service_user:$${vault:secret/data/matrix#mas_postgres_password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
         - name: MAS_DATABASE_URI
-          value: "postgres://matrix_authentication_service_user:$${vault:secret/data/matrix#mas_postgres_password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
+          value: "postgres://$${vault:database/creds/matrix-authentication-service-role#username}:$${vault:database/creds/matrix-authentication-service-role#password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
       ingress:
         host: auth.${DOMAIN1}
         className: disabled
@@ -320,13 +310,80 @@ spec:
                 template:
                   spec:
                     automountServiceAccountToken: true
-                    initContainers:
-                      - name: render-config
-                        env:
-                          - name: SYNAPSE_POSTGRES_PASSWORD
-                            value: "$${vault:secret/data/matrix#synapse_postgres_password}"
-                          - name: SYNAPSE_POSTGRES_USER
-                            value: synapse_user
+                    containers:
+                      - name: synapse
+                        command:
+                          - /usr/bin/bash
+                          - -c
+                          - |
+                            python3 -c "
+                            import os, yaml
+                            data = {
+                                'database': {
+                                    'name': 'psycopg2',
+                                    'args': {
+                                        'user': os.environ['SYNAPSE_POSTGRES_USER'],
+                                        'password': os.environ['SYNAPSE_POSTGRES_PASSWORD'],
+                                        'database': 'synapse',
+                                        'host': 'pg-default-rw.db.svc.cluster.local',
+                                        'port': 5432,
+                                        'cp_min': 5,
+                                        'cp_max': 10,
+                                    },
+                                    'allow_unsafe_locale': True,
+                                }
+                            }
+                            with open('/tmp/db.yaml', 'w') as f:
+                                yaml.safe_dump(data, f)
+                            "
+                            exec python3 -m synapse.app.homeserver -c /conf/homeserver.yaml -c /tmp/db.yaml
+          - target:
+              kind: ConfigMap
+              name: matrix-matrix-authentication-service
+            patch: |-
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: matrix-matrix-authentication-service
+              data:
+                mas-config-overrides.yaml: |
+                  http:
+                    public_base: "https://auth.${DOMAIN1}"
+                    listeners:
+                    - name: web
+                      binds:
+                      - port: 8080
+                      resources:
+                      - name: human
+                      - name: discovery
+                      - name: oauth
+                      - name: compat
+                      - name: assets
+                      - name: graphql
+                        undocumented_oauth2_access: true
+                      - name: adminapi
+                    - name: internal
+                      binds:
+                      - port: 8081
+                      resources:
+                      - name: health
+                      - name: prometheus
+                      - name: connection-info
+                  telemetry:
+                    metrics:
+                      exporter: prometheus
+                  matrix:
+                    homeserver: "${DOMAIN1}"
+                    secret_file: /secrets/matrix-generated/MAS_SYNAPSE_SHARED_SECRET
+                    endpoint: "http://matrix-synapse-main.home-system.svc.cluster.local.:8008"
+                    kind: synapse_modern
+                  secrets:
+                    encryption_file: /secrets/matrix-generated/MAS_ENCRYPTION_SECRET
+                    keys:
+                    - kid: rsa
+                      key_file: /secrets/matrix-generated/MAS_RSA_PRIVATE_KEY
+                    - kid: prime256v1
+                      key_file: /secrets/matrix-generated/MAS_ECDSA_PRIME256V1_PRIVATE_KEY
           - target:
               kind: Deployment
               name: matrix-matrix-authentication-service
@@ -339,16 +396,5 @@ spec:
                 template:
                   spec:
                     automountServiceAccountToken: true
-                    initContainers:
-                      - name: render-config
-                        env:
-                          - name: POSTGRES_PASSWORD
-                            value: "$${vault:secret/data/matrix#mas_postgres_password}"
-                          - name: POSTGRES_USER
-                            value: matrix_authentication_service_user
-                      - name: database-migrate
-                        env:
-                          - name: MAS_DATABASE__URI
-                            value: "postgres://matrix_authentication_service_user:$${vault:secret/data/matrix#mas_postgres_password}@pg-default-rw.db.svc.cluster.local:5432/matrix_authentication_service"
 
 

@@ -18,46 +18,36 @@ spec:
         pod:
           annotations:
             vault.security.banzaicloud.io/vault-env-daemon: "true"
-        initContainers:
-          copy-config:
-            image:
-              repository: public.ecr.aws/docker/library/python
-              tag: 3.11-alpine
-            command: ["python3", "-c"]
-            args:
-              - |
-                import os
-                with open('/tmp/config/config.yaml', 'r') as f:
-                    content = f.read()
-                content = content.replace(f"{chr(36)}{chr(123)}DB_USER{chr(125)}", os.environ['DB_USER'])
-                content = content.replace(f"{chr(36)}{chr(123)}DB_PASS{chr(125)}", os.environ['DB_PASS'])
-                with open('/data/config.yaml', 'w') as f:
-                    f.write(content)
-            env:
-              DB_USER: "$${vault:database/creds/mautrix-whatsapp-role#username}"
-              DB_PASS: "$${vault:database/creds/mautrix-whatsapp-role#password}"
         containers:
           app:
-             image:
-               repository: dock.mau.dev/mautrix/whatsapp
-               tag: v0.2602.0
-             command: ["/usr/bin/mautrix-whatsapp"]
-             args: [ "-c", "/data/config.yaml", "--no-update" ]
-             workingDir: /data
-             env:
-               TZ: ${TIMEZONE}
-               DB_USER: "$${vault:database/creds/mautrix-whatsapp-role#username}"
-               DB_PASS: "$${vault:database/creds/mautrix-whatsapp-role#password}"
-             securityContext:
-               allowPrivilegeEscalation: false
-               readOnlyRootFilesystem: true
-               capabilities: {drop: ["ALL"]}
-             resources:
-               requests:
-                 cpu: 10m
-                 memory: 128Mi
-               limits:
-                 memory: 512Mi
+            image:
+              repository: dock.mau.dev/mautrix/whatsapp
+              tag: v0.2602.0
+            command:
+              - /bin/sh
+              - -c
+              - |
+                while IFS= read -r line || [ -n "$line" ]; do
+                  line="${line//\$\{DB_USER\}/$DB_USER}"
+                  line="${line//\$\{DB_PASS\}/$DB_PASS}"
+                  printf "%s\n" "$line"
+                done < /tmp/config/config.yaml > /data/config.yaml
+                exec /usr/bin/mautrix-whatsapp -c /data/config.yaml --no-update
+            workingDir: /data
+            env:
+              TZ: ${TIMEZONE}
+              DB_USER: "$${vault:database/creds/mautrix-whatsapp-role#username}"
+              DB_PASS: "$${vault:database/creds/mautrix-whatsapp-role#password}"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -86,7 +76,7 @@ spec:
         name: mautrix-whatsapp-config
         advancedMounts:
           mautrix-whatsapp:
-            copy-config:
+            app:
               - path: /tmp/config
       data:
         type: emptyDir
