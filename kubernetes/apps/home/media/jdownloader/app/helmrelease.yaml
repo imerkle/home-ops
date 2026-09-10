@@ -23,7 +23,7 @@ spec:
               TZ: America/New_York
             resources:
               requests:
-                cpu: 50m
+                cpu: 10m
                 memory: 500Mi
               limits:
                 memory: 4Gi
