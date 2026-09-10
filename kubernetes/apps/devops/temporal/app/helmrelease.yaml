@@ -51,12 +51,6 @@ spec:
                 memory: 64Mi
               limits:
                 memory: 512Mi
-    defaultPodOptions:
-      tolerations:
-        - key: "dedicated"
-          operator: "Equal"
-          value: "tekton-runner"
-          effect: "NoSchedule"
     service:
       app:
         controller: temporal
