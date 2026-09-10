@@ -21,11 +21,6 @@ spec:
         pod:
           annotations:
             vault.security.banzaicloud.io/vault-env-daemon: "true"
-          tolerations:
-            - key: "dedicated"
-              operator: "Equal"
-              value: "tekton-runner"
-              effect: "NoSchedule"
         containers:
           app:
             image:
@@ -56,6 +51,12 @@ spec:
                 memory: 64Mi
               limits:
                 memory: 512Mi
+    defaultPodOptions:
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "tekton-runner"
+          effect: "NoSchedule"
     service:
       app:
         controller: temporal
