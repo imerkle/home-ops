@@ -72,6 +72,7 @@ spec:
               MEILISEARCH_API_KEY: "super-secret-master-key"
               AUTH_SERVER_ADDR: auth-server.prod-system:50051
               SETTINGS_SERVER_ADDR: settings-server.prod-system:50051
+              THUMBNAIL_SERVER_ADDR: thumbnail-service.prod-system:50051
               PROWLARR_URL:  http://prowlarr.home-system.svc.cluster.local:9696
               PROWLARR_API_KEY: "vault:secret/data/prowlarr#API_KEY"
               DOWNLOAD_GAME_FOLDER: games
@@ -95,6 +96,40 @@ spec:
               capabilities:
                 drop:
                   - ALL
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /metrics
+                    port: *port
+                  initialDelaySeconds: 15
+                  periodSeconds: 15
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/version
+                    port: *port
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/version
+                    port: *port
+                  initialDelaySeconds: 5
+                  periodSeconds: 5
+                  timeoutSeconds: 3
+                  failureThreshold: 30
             resources:
               requests:
                 cpu: 10m

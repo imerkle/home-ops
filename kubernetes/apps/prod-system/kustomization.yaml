@@ -16,3 +16,4 @@ resources:
   - ./apps/auth-server/ks.yaml
   - ./apps/settings-server/ks.yaml
   - ./apps/sms-vault/ks.yaml
+  - ./apps/thumbnail-service/ks.yaml
