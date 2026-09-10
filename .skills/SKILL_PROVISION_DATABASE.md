@@ -90,57 +90,16 @@ Use the `vault:` prefix in your environment variables to dynamically resolve the
 3. **Vault Integration**: Crossplane creates a Vault `SecretBackendRole` using the Upbound Vault Provider (`provider-vault`). The `creationStatements` configured in Vault dynamically inject the correct hyphens and syntax: `CREATE ROLE "{{name}}" ... INHERIT; GRANT "<groupRole>" TO "{{name}}";`.
 4. **Credential Rotation**: When the Vault Webhook intercepts your app's Pod creation, it authenticates with Vault and requests credentials from `database/creds/<app-role>`. Vault generates a random user (with a TTL), applies the `creationStatements` in PostgreSQL, and returns the username/password to the webhook, which injects them directly into the Pod.
 
-> [!WARNING]
-> **Long-Lived Pods and Credential Expiration**
-> By default, the Banzai Cloud Mutating Webhook performs an inline mutation that hardcodes the evaluated secrets directly into the Pod definition at creation time. If the Vault credentials have a TTL (e.g. 1 hour or 7 days) and the pod lives longer than the TTL, the credentials will expire and the pod will crash with `password authentication failed`.
+> [!TIP]
+> **Dynamic Credential Renewal & Daemon Mode**
+> To enable automatic renewal of dynamic Vault credentials (such as database leases), simply add the daemon annotation to your Pod:
 > 
-> For long-lived applications that require continuous database connections, you **MUST** bypass the inline mutation and manually inject the `vault-env` daemon. This ensures the environment variables are re-evaluated dynamically on process restart.
-
-### Manual Injection Pattern (For Long-Lived Pods)
-
-If your app crashes due to expired keys or is expected to run indefinitely, apply the following manual injection pattern instead of relying on the default webhook:
-
-```yaml
-    podAnnotations:
-      vault.security.banzaicloud.io/mutate: "skip"
-      vault.security.banzaicloud.io/vault-env-daemon: "true"
-```
-
-And update your Deployment template to wrap your application's entrypoint with `vault-env`:
-
-```yaml
-    spec:
-      template:
-        spec:
-          volumes:
-            - name: vault-env
-              emptyDir: {}
-          initContainers:
-            - name: copy-vault-env
-              image: ghcr.io/bank-vaults/vault-env:v1.21.3
-              command: ["sh", "-c", "cp /usr/local/bin/vault-env /vault/"]
-              volumeMounts:
-                - name: vault-env
-                  mountPath: /vault/
-          containers:
-            - name: app
-              # Wrap the main process with vault-env
-              command: ["/vault/vault-env", "your", "app", "command"]
-              volumeMounts:
-                - name: vault-env
-                  mountPath: /vault/
-              env:
-                # You MUST provide these variables manually when bypassing the webhook
-                - name: VAULT_ADDR
-                  value: "http://vault.vault.svc.cluster.local:8200"
-                - name: VAULT_SKIP_VERIFY
-                  value: "false"
-                - name: VAULT_AUTH_METHOD
-                  value: "jwt"
-                - name: VAULT_PATH
-                  value: "kubernetes"
-                - name: VAULT_ROLE
-                  value: "default"
-                - name: VAULT_IGNORE_MISSING_SECRETS
-                  value: "false"
-```
+> ```yaml
+>     pod:
+>       annotations:
+>         vault.security.banzaicloud.io/vault-env-daemon: "true"
+> ```
+> 
+> The Banzai Cloud mutating webhook will automatically inject the `vault-env` daemon process to manage token and lease renewals in the background. You do **not** need to skip mutation, create initContainers, or manually mount `/vault/`.
+> 
+> For extreme edge cases (e.g. node CPU headroom < 50m or complex custom entrypoint wrapping), see [SKILL_VAULT_MANUAL_INJECTION.md](SKILL_VAULT_MANUAL_INJECTION.md).
