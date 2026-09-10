@@ -17,6 +17,15 @@ spec:
     labels:
       app.kubernetes.io/instance: matrix
 
+    initSecrets:
+      resources:
+        requests:
+          cpu: 5m
+    deploymentMarkers:
+      resources:
+        requests:
+          cpu: 5m
+
     synapse:
       enabled: true
       checkConfigHook:
@@ -144,6 +153,12 @@ spec:
           readOnly: true
     matrixAuthenticationService:
       enabled: true
+      resources:
+        requests:
+          cpu: 5m
+          memory: 64Mi
+        limits:
+          memory: 500Mi
       annotations:
         vault.security.banzaicloud.io/vault-env-daemon: "true"
       postgres:
