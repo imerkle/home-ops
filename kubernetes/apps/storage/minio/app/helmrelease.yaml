@@ -11,9 +11,11 @@ spec:
     name: app-template
     namespace: flux-system
   install:
+    disableWait: true
     remediation:
       retries: 3
   upgrade:
+    disableWait: true
     cleanupOnFail: true
     remediation:
       strategy: rollback
