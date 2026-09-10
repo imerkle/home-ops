@@ -72,6 +72,7 @@ spec:
               VAULT_ENV_DAEMON: "true"
               VAULT_ENV_SIG: "SIGTERM"
               VAULT_ENV_DELAY: "2"
+              VAULT_LOG_LEVEL: "info"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
