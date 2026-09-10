@@ -1,7 +1,7 @@
 ---
 # Tekton Task: cancel-previous
-# Ensures only the latest commit is built for a given repository and branch.
-# If an older PipelineRun is in-progress, it is cancelled so cluster resources aren't wasted.
+# Ensures only the latest commit is built for a given repository.
+# If an older PipelineRun for the repository is in-progress, it is cancelled so cluster resources aren't wasted.
 # If this PipelineRun is already superseded by a newer one, it cancels itself immediately.
 apiVersion: tekton.dev/v1
 kind: Task
@@ -11,15 +11,16 @@ metadata:
     app.kubernetes.io/part-of: tekton-tasks
 spec:
   description: >-
-    Cancels in-flight superseded PipelineRuns for the same repo and branch,
+    Cancels in-flight superseded PipelineRuns for the same repo,
     and cancels self if a newer PipelineRun already exists.
   params:
     - name: repo-name
-      description: Repository name (e.g. game-fetcher).
+      description: Repository name (e.g. game-fetcher, aiostreams).
       type: string
     - name: branch
       description: Sanitized branch name (e.g. main).
       type: string
+      default: ""
     - name: current-pipelinerun-name
       description: Name of the current PipelineRun.
       type: string
@@ -29,6 +30,7 @@ spec:
     - name: pipeline-name
       description: Name of the pipeline being run.
       type: string
+      default: ""
   steps:
     - name: cancel-superseded
       image: bitnami/kubectl:latest
@@ -43,13 +45,11 @@ spec:
         set -euo pipefail
 
         REPO="$(params.repo-name)"
-        BRANCH="$(params.branch)"
         MY_PR="$(params.current-pipelinerun-name)"
         NS="$(params.current-pipelinerun-namespace)"
-        PIPELINE="$(params.pipeline-name)"
 
-        echo "=== [Concurrency Check] Checking for superseded runs for $REPO (branch: $BRANCH) ==="
-        echo "Current PipelineRun: $MY_PR (namespace: $NS, pipeline: $PIPELINE)"
+        echo "=== [Concurrency Check] Checking for superseded runs for repo: $REPO ==="
+        echo "Current PipelineRun: $MY_PR (namespace: $NS)"
 
         if [ -z "$MY_PR" ] || [ -z "$REPO" ]; then
           echo "Missing PipelineRun name or repo name. Proceeding with build."
@@ -62,38 +62,34 @@ spec:
           exit 0
         fi
 
-        # Query all PipelineRuns for this pipeline and repo
+        # Query all active PipelineRuns for this repo
         ACTIVE_RUNS=$(kubectl get pipelinerun -n "$NS" \
-          -l "tekton.dev/pipeline=$PIPELINE,build.home.arpa/repo=$REPO" \
-          -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.creationTimestamp}{"\t"}{.status.conditions[0].status}{"\t"}{range .spec.params[?(@.name=="sanitized-branch")]}{.value}{end}{range .spec.params[?(@.name=="branch")]}{.value}{end}{"\n"}{end}' 2>/dev/null || echo "")
+          -l "build.home.arpa/repo=$REPO" \
+          -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.creationTimestamp}{"\t"}{.status.conditions[0].status}{"\n"}{end}' 2>/dev/null || echo "")
 
         NEWER_FOUND=""
-        while IFS=$'\t' read -r pr_name pr_created pr_status pr_branch; do
+        while IFS=$'\t' read -r pr_name pr_created pr_status; do
           [ -z "$pr_name" ] && continue
           # Only inspect runs that are still active (status Unknown)
           [ "$pr_status" != "Unknown" ] && continue
-          # If branch is specified in the run, only compare runs on the same branch
-          if [ -n "$BRANCH" ] && [ -n "$pr_branch" ] && [ "$pr_branch" != "$BRANCH" ]; then
-            continue
-          fi
           # Skip self
           [ "$pr_name" = "$MY_PR" ] && continue
 
           # Compare creation timestamps (ISO-8601 strings compare lexicographically)
           if [[ "$pr_created" > "$MY_CREATION" ]] || { [[ "$pr_created" == "$MY_CREATION" ]] && [[ "$pr_name" > "$MY_PR" ]]; }; then
-            echo "Found newer PipelineRun: $pr_name (created: $pr_created vs current: $MY_CREATION)"
+            echo "Found newer PipelineRun for $REPO: $pr_name (created: $pr_created vs current: $MY_CREATION)"
             NEWER_FOUND="$pr_name"
           elif [[ "$pr_created" < "$MY_CREATION" ]] || { [[ "$pr_created" == "$MY_CREATION" ]] && [[ "$pr_name" < "$MY_PR" ]]; }; then
-            echo "Cancelling older in-progress PipelineRun: $pr_name (created: $pr_created)..."
+            echo "Cancelling older in-progress PipelineRun for $REPO: $pr_name (created: $pr_created)..."
             kubectl patch pipelinerun "$pr_name" -n "$NS" --type=merge -p '{"spec":{"status":"Cancelled"}}' || true
           fi
         done <<< "$ACTIVE_RUNS"
 
         if [ -n "$NEWER_FOUND" ]; then
-          echo "=== Current PipelineRun ($MY_PR) is superseded by newer run ($NEWER_FOUND). Cancelling self ==="
+          echo "=== Current PipelineRun ($MY_PR) is superseded by newer run ($NEWER_FOUND) for repo $REPO. Cancelling self ==="
           kubectl patch pipelinerun "$MY_PR" -n "$NS" --type=merge -p '{"spec":{"status":"Cancelled"}}' || true
           sleep 2
           exit 1
         fi
 
-        echo "Current PipelineRun ($MY_PR) is the latest for $REPO ($BRANCH). Proceeding with build."
+        echo "Current PipelineRun ($MY_PR) is the latest for repo $REPO. Proceeding with build."
