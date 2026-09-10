@@ -21,4 +21,8 @@ spec:
       securityContext:
         runAsNonRoot: true
         runAsUser: 65534
+  tfstate:
+    forceUnlock: "yes"
+    lockIdentifier: d1655760-ddcf-1536-66f9-443f38be3bb5
+    lockTimeout: 0s
   approvePlan: auto
