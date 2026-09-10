@@ -27,11 +27,8 @@ spec:
               - /bin/sh
               - -c
               - |
-                while IFS= read -r line || [ -n "$line" ]; do
-                  line="${line//\$\{DB_USER\}/$DB_USER}"
-                  line="${line//\$\{DB_PASS\}/$DB_PASS}"
-                  printf "%s\n" "$line"
-                done < /tmp/config/config.yaml > /data/config.yaml
+                cp -f /tmp/config/* /data/ 2>/dev/null || true
+                sed -e "s|DB_USER_PLACEHOLDER|$DB_USER|g" -e "s|DB_PASS_PLACEHOLDER|$DB_PASS|g" /tmp/config/config.yaml > /data/config.yaml
                 exec /usr/bin/mautrix-whatsapp -c /data/config.yaml --no-update
             workingDir: /data
             env:

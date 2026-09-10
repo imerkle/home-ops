@@ -32,8 +32,8 @@ spec:
                         shutil.copy(os.path.join('/tmp/config', f), '/data')
                 with open('/data/config.yaml', 'r') as f:
                     content = f.read()
-                content = content.replace("${DB_USER}", os.environ['DB_USER'])
-                content = content.replace("${DB_PASS}", os.environ['DB_PASS'])
+                content = content.replace("DB_USER_PLACEHOLDER", os.environ['DB_USER'])
+                content = content.replace("DB_PASS_PLACEHOLDER", os.environ['DB_PASS'])
                 with open('/data/config.yaml', 'w') as f:
                     f.write(content)
                 os.execvp("python3", ["python3", "-m", "mautrix_telegram", "-c", "/data/config.yaml", "--no-update"])
