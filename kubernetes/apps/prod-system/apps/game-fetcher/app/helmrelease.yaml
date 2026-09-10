@@ -85,10 +85,10 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /metrics
+                    path: /readyz
                     port: 3000
                   initialDelaySeconds: 15
-                  periodSeconds: 15
+                  periodSeconds: 10
                   timeoutSeconds: 3
                   failureThreshold: 3
               readiness:
@@ -96,7 +96,7 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /api/version
+                    path: /readyz
                     port: 3000
                   initialDelaySeconds: 5
                   periodSeconds: 10
@@ -107,9 +107,9 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /api/version
+                    path: /healthz
                     port: 3000
-                  initialDelaySeconds: 5
+                  initialDelaySeconds: 2
                   periodSeconds: 5
                   timeoutSeconds: 3
                   failureThreshold: 30

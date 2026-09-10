@@ -63,10 +63,10 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /healthz
+                    path: /readyz
                     port: 8081
                   initialDelaySeconds: 15
-                  periodSeconds: 15
+                  periodSeconds: 10
                   timeoutSeconds: 3
                   failureThreshold: 3
               readiness:
