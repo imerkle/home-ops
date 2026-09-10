@@ -36,6 +36,7 @@ spec:
         labels:
           app.kubernetes.io/part-of: tekton-tasks
           tekton.dev/pipeline: build-and-push
+          build.home.arpa/repo: $(tt.params.git-repo-name)
       spec:
         pipelineRef:
           name: build-and-push
@@ -59,6 +60,7 @@ spec:
           - name: sanitized-branch
             value: $(tt.params.sanitized_branch)
         taskRunTemplate:
+          serviceAccountName: tekton-pipeline-runner
           podTemplate:
             nodeSelector:
               ci.home.arpa/runner: tekton

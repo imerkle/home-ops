@@ -17,9 +17,14 @@ spec:
             kind: ClusterInterceptor
           params:
             - name: "filter"
-              # Only trigger on push events to branches (not tags), and skip if all changed files in sms-vault are under flutterui/
+              # Only trigger on push events to regular branches (not tags, PR refs, or mirrors),
+              # skip aiostreams (built via tag watcher), and skip if all changed files in sms-vault are under flutterui/
               value: >-
                 body.ref.startsWith('refs/heads/') &&
+                !body.ref.startsWith('refs/heads/refs/') &&
+                !body.ref.contains('/pull/') &&
+                (!has(body.repository.mirror) || body.repository.mirror == false) &&
+                body.repository.name != 'aiostreams' &&
                 (
                   body.repository.name != 'sms-vault' ||
                   !has(body.commits) ||
@@ -37,11 +42,11 @@ spec:
                 # Sanitize branch: strip refs/heads/ prefix, replace '/' with '-'
                 - key: sanitized_branch
                   expression: >-
-                    body.ref.replace('refs/heads/', '').replace('/', '-')
+                    body.ref.replace('refs/heads/', '').replace('/', '-').truncate(60)
                 # Sanitize repo: convert to lowercase and replace '_' with '-'
                 - key: sanitized_repo_name
                   expression: >-
-                    body.repository.name.lowerAscii().replace('_', '-')
+                    body.repository.name.lowerAscii().replace('_', '-').truncate(60)
       bindings:
         - ref: forgejo-push
       template:
@@ -58,6 +63,9 @@ spec:
             - name: "filter"
               value: >-
                 body.ref.startsWith('refs/heads/') &&
+                !body.ref.startsWith('refs/heads/refs/') &&
+                !body.ref.contains('/pull/') &&
+                (!has(body.repository.mirror) || body.repository.mirror == false) &&
                 body.repository.name == 'sms-vault' &&
                 has(body.commits) &&
                 body.commits.exists(c,
@@ -69,11 +77,11 @@ spec:
               value:
                 - key: sanitized_branch
                   expression: >-
-                    body.ref.replace('refs/heads/', '').replace('/', '-')
+                    body.ref.replace('refs/heads/', '').replace('/', '-').truncate(60)
                 # Sanitize repo: convert to lowercase and replace '_' with '-'
                 - key: sanitized_repo_name
                   expression: >-
-                    body.repository.name.lowerAscii().replace('_', '-')
+                    body.repository.name.lowerAscii().replace('_', '-').truncate(60)
       bindings:
         - ref: forgejo-push
       template:
@@ -86,18 +94,21 @@ spec:
             kind: ClusterInterceptor
           params:
             - name: "filter"
-              # Only trigger on branch delete events (not tag deletes)
+              # Only trigger on branch delete events (not tag deletes, PRs, or mirrors)
               value: >-
-                header.match('X-Gitea-Event', 'delete') && body.ref_type == 'branch'
+                header.match('X-Gitea-Event', 'delete') &&
+                body.ref_type == 'branch' &&
+                !body.ref.contains('/pull/') &&
+                (!has(body.repository.mirror) || body.repository.mirror == false)
             - name: "overlays"
               value:
                 # Sanitize: replace all '/' with '-' to form a valid preview name
                 - key: sanitized_branch
-                  expression: "body.ref.replace('/', '-')"
+                  expression: "body.ref.replace('/', '-').truncate(60)"
                 # Sanitize repo: convert to lowercase and replace '_' with '-'
                 - key: sanitized_repo_name
                   expression: >-
-                    body.repository.name.lowerAscii().replace('_', '-')
+                    body.repository.name.lowerAscii().replace('_', '-').truncate(60)
       bindings:
         - ref: forgejo-delete
       template:

@@ -53,8 +53,26 @@ spec:
     - name: ssh-credentials
       description: SSH key for cloning private Forgejo repos.
   tasks:
+    # ── 0. Concurrency Check ──────────────────────────────────────────────────
+    - name: cancel-previous
+      taskRef:
+        name: cancel-previous
+      params:
+        - name: repo-name
+          value: sms-vault
+        - name: branch
+          value: $(params.sanitized-branch)
+        - name: current-pipelinerun-name
+          value: $(context.pipelineRun.name)
+        - name: current-pipelinerun-namespace
+          value: $(context.pipelineRun.namespace)
+        - name: pipeline-name
+          value: $(context.pipeline.name)
+
     # ── 1. Clone sms-vault ────────────────────────────────────────────────────
     - name: clone-sms-vault
+      runAfter:
+        - cancel-previous
       taskRef:
         name: git-clone
       workspaces:
@@ -73,6 +91,8 @@ spec:
           value: "false"
     # ── 2. Clone rocket_ui (Flutter path dependency) ──────────────────────────
     - name: clone-rocket-ui
+      runAfter:
+        - cancel-previous
       taskRef:
         name: git-clone
       workspaces:

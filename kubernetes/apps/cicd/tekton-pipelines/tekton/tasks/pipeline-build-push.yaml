@@ -75,7 +75,23 @@ spec:
     - name: ssh-credentials
       description: SSH key for pushing preview manifests to home-ops on GitHub.
   tasks:
+    - name: cancel-previous
+      taskRef:
+        name: cancel-previous
+      params:
+        - name: repo-name
+          value: $(params.repo-name)
+        - name: branch
+          value: $(params.sanitized-branch)
+        - name: current-pipelinerun-name
+          value: $(context.pipelineRun.name)
+        - name: current-pipelinerun-namespace
+          value: $(context.pipelineRun.namespace)
+        - name: pipeline-name
+          value: $(context.pipeline.name)
     - name: prepare
+      runAfter:
+        - cancel-previous
       taskSpec:
         results:
           - name: branch-image
@@ -98,6 +114,8 @@ spec:
         - name: base-image
           value: $(params.base-image)
     - name: fetch-source
+      runAfter:
+        - cancel-previous
       taskRef:
         name: git-clone
       workspaces:

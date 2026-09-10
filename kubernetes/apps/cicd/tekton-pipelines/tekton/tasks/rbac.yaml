@@ -96,3 +96,46 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: tekton-triggers-clusterrole
+---
+# ServiceAccount for running CI Pipeline tasks (concurrency cancellation, etc.)
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tekton-pipeline-runner
+  namespace: tekton-pipelines
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tekton-pipeline-runner-role
+  namespace: tekton-pipelines
+rules:
+  - apiGroups:
+      - tekton.dev
+    resources:
+      - pipelineruns
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tekton-pipeline-runner-binding
+  namespace: tekton-pipelines
+subjects:
+  - kind: ServiceAccount
+    name: tekton-pipeline-runner
+    namespace: tekton-pipelines
+  - kind: ServiceAccount
+    name: default
+    namespace: tekton-pipelines
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tekton-pipeline-runner-role

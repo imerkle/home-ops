@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - ./task-git-clone.yaml
   - ./task-kaniko.yaml
+  - ./task-cancel-previous.yaml
   - ./task-deploy-preview.yaml
   - ./task-cleanup-preview.yaml
   - ./pipeline-build-push.yaml
