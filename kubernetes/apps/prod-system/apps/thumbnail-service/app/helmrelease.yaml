@@ -47,7 +47,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/thumbnail-service
-              tag: f6a191021ef05c5aa954fc8da597e4b73d56252a
+              tag: 54db3db5514ba530ce5a760e1b469cf244dbc784
             command: ["/vault/vault-env", "/app/thumbnail-service"]
             env:
               PORT: &port "3000"
