@@ -12,6 +12,10 @@ spec:
         kind: HelmRepository
         name: zitadel
         namespace: zitadel
+  install:
+    disableSchemaValidation: true
+  upgrade:
+    disableSchemaValidation: true
   values:
     env:
       - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
