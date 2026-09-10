@@ -38,10 +38,11 @@ spec:
               PORT: &port "3000"
               GRPC_PORT: &grpcPort "50051"
               LOG_LEVEL: "INFO"
-              ACCESS_KEY_ID: "vault:secret/data/cloudflare#AWS_ACCESS_KEY_ID"
-              SECRET_ACCESS_KEY: "vault:secret/data/cloudflare#AWS_SECRET_ACCESS_KEY"
-              ENDPOINT: "https://d4ecb65c48cd4a627c11099c8d9c9fb7.r2.cloudflarestorage.com"
-              S3_PUBLIC_URL: "https://pub-d35100e1a2f040208680ad3f6e399d06.r2.dev"
+              ACCESS_KEY_ID: "vault:secret/data/minio#AWS_ACCESS_KEY_ID"
+              SECRET_ACCESS_KEY: "vault:secret/data/minio#AWS_SECRET_ACCESS_KEY"
+              ENDPOINT: "http://minio.storage.svc.cluster.local:9000"
+              FORCE_PATH_STYLE: "true"
+              S3_PUBLIC_URL: "https://s3.${DOMAIN1}/thumbnails"
               BUCKET: "thumbnails"
               URL: "dragonfly.db.svc.cluster.local:6379"
               TEMPORAL_HOST: "temporal.dev-system.svc.cluster.local:7233"
@@ -92,9 +93,9 @@ spec:
             resources:
               requests:
                 cpu: 10m
-                memory: 32Mi
+                memory: 64Mi
               limits:
-                memory: 256Mi
+                memory: 1Gi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true

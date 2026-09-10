@@ -67,7 +67,7 @@ spec:
                 memory: 100Mi
                 cpu: 100m
               limits:
-                memory: 750Mi
+                memory: 2Gi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -85,30 +85,36 @@ spec:
             port: 9001
           s3:
             port: 9000
-    ingress:
+    route:
       app:
-        className: internal
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: Storage
           gethomepage.dev/name: MinIO
           gethomepage.dev/icon: minio.svg
-        hosts:
-          - host: "minio.${DOMAIN1}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
+        hostnames:
+          - "minio.${DOMAIN1}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+          - name: envoy-external
+            namespace: network
+        rules:
+          - backendRefs:
+              - port: 9001
+                name: minio
       s3:
-        className: internal
-        hosts:
-          - host: "s3.${DOMAIN1}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: s3
+        hostnames:
+          - "s3.${DOMAIN1}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+          - name: envoy-external
+            namespace: network
+        rules:
+          - backendRefs:
+              - port: 9000
+                name: minio
     persistence:
       config:
         type: persistentVolumeClaim
