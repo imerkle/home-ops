@@ -10,13 +10,26 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  dependsOn:
+    - name: auth-server
+    - name: settings-server
+    - name: thumbnail-service
+    - name: temporal
+      namespace: dev-system
+    - name: pg-clusters-default
+      namespace: db
+    - name: dragonfly-cluster
+      namespace: db
+    - name: vault
+      namespace: vault
   path: ./kubernetes/apps/prod-system/apps/game-fetcher/app
   prune: true
   sourceRef:
     kind: GitRepository
-    name: home-kubernetes
+    name: flux-system
     namespace: flux-system
   wait: false
+
   interval: 30m
   retryInterval: 1m
   timeout: 5m
