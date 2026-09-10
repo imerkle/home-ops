@@ -20,8 +20,7 @@ spec:
     synapse:
       enabled: true
       checkConfigHook:
-        annotations:
-          vault.security.banzaicloud.io/mutate: skip
+        enabled: false
       annotations:
         vault.security.banzaicloud.io/vault-env-daemon: "true"
       postgres:
