@@ -28,6 +28,10 @@ spec:
 
     synapse:
       enabled: true
+      resources:
+        requests:
+          cpu: 10m
+          memory: 128Mi
       checkConfigHook:
         enabled: false
       annotations:
@@ -310,8 +314,23 @@ spec:
                 template:
                   spec:
                     automountServiceAccountToken: true
+                    initContainers:
+                      - name: render-config
+                        resources:
+                          requests:
+                            cpu: 5m
+                            memory: 64Mi
+                      - name: db-wait
+                        resources:
+                          requests:
+                            cpu: 5m
+                            memory: 64Mi
                     containers:
                       - name: synapse
+                        resources:
+                          requests:
+                            cpu: 10m
+                            memory: 128Mi
                         command:
                           - /usr/bin/bash
                           - -c
