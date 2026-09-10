@@ -32,7 +32,7 @@ spec:
   steps:
     - name: cancel-superseded
       image: bitnami/kubectl:latest
-      resources:
+      computeResources:
         requests:
           cpu: 10m
           memory: 32Mi
