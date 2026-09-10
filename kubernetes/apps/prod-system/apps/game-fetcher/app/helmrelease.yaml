@@ -72,6 +72,7 @@ spec:
               SCAN_MOVIE_PATH: /movies
               KETO_READ_URL: http://keto-read.keto.svc.cluster.local:80
               KETO_WRITE_URL: http://keto-write.keto.svc.cluster.local:80
+              PYLOAD_API_KEY: pl_11QjyHY-c2WpHMI7KAiKPmiI3cagS0m-VzOe6vU7Bw0lg
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
