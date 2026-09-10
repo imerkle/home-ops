@@ -43,11 +43,9 @@ spec:
               ENDPOINT: "http://minio.storage.svc.cluster.local:9000"
               FORCE_PATH_STYLE: "true"
               S3_PUBLIC_URL: "https://s3.${DOMAIN1}/thumbnails"
+              PROXY_PUBLIC_URL: "https://thumb.${DOMAIN1}"
               BUCKET: "thumbnails"
               URL: "dragonfly.db.svc.cluster.local:6379"
-              TEMPORAL_HOST: "temporal.dev-system.svc.cluster.local:7233"
-              TEMPORAL_NAMESPACE: "default"
-              TEMPORAL_TASK_QUEUE: "thumbnail-tasks"
               CLEAN_ON_LAUNCH: "false"
 
             securityContext:
@@ -113,3 +111,16 @@ spec:
             port: *port
           grpc:
             port: *grpcPort
+    route:
+      app:
+        hostnames:
+          - "thumb.${DOMAIN1}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+          - name: envoy-external
+            namespace: network
+        rules:
+          - backendRefs:
+              - port: *port
+                name: thumbnail-service
