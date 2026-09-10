@@ -31,8 +31,8 @@ spec:
               SKIP_DB_CREATE: "true"
             resources:
               requests:
-                cpu: 20m
-                memory: 512Mi
+                cpu: 5m
+                memory: 256Mi
               limits:
                 memory: 2Gi
           ui:
@@ -43,8 +43,8 @@ spec:
               TEMPORAL_ADDRESS: "temporal:7233"
             resources:
               requests:
-                cpu: 10m
-                memory: 128Mi
+                cpu: 5m
+                memory: 64Mi
               limits:
                 memory: 512Mi
     service:
