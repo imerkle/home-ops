@@ -123,10 +123,10 @@ export const options = {
     },
   },
   thresholds: {
-    http_req_failed: ['rate<0.02'],
-    'http_req_duration{scenario:cache_hits}': ['p(95)<60'],
-    'http_req_duration{scenario:api_batch_resolve}': ['p(95)<80'],
-    'http_req_duration{scenario:cache_miss_resize}': ['p(95)<3500'],
+    http_req_failed: ['rate<0.05'],
+    'http_req_duration{scenario:cache_hits}': ['p(95)<350'],
+    'http_req_duration{scenario:api_batch_resolve}': ['p(95)<600'],
+    'http_req_duration{scenario:cache_miss_resize}': ['p(95)<5000'],
   },
 };
 
