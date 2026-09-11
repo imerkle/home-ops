@@ -61,7 +61,7 @@ spec:
         APPS_BASE="$(params.apps-base-path)"
 
         PROD_FILE="$${APPS_BASE}/apps/$${REPO_NAME}/app/helmrelease.yaml"
-        DEPLOY_DIR="$${APPS_BASE}/apps/$${REPO_NAME}-$${BRANCH}"
+        DEPLOY_DIR="$${APPS_BASE}/apps/$${REPO_NAME}/previews/$${BRANCH}"
         KS_FILE="$${APPS_BASE}/kustomization.yaml"
 
         # ── SSH setup ──────────────────────────────────────────────────────────
@@ -185,7 +185,7 @@ spec:
           printf -- '---\n# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json\napiVersion: kustomize.toolkit.fluxcd.io/v1\nkind: Kustomization\nmetadata:\n  name: &app %s-%s\n  namespace: &namespace prod-system\nspec:\n  targetNamespace: *namespace\n  commonMetadata:\n    labels:\n      app.kubernetes.io/name: *app\n  path: ./%s/app\n  prune: true\n  sourceRef:\n    kind: GitRepository\n    name: home-kubernetes\n    namespace: flux-system\n  wait: true\n  interval: 30m\n  retryInterval: 1m\n  timeout: 5m\n  postBuild:\n    substitute:\n      APP: *app\n' "$${REPO_NAME}" "$${BRANCH}" "$${DEPLOY_DIR}" > "$${DEPLOY_DIR}/ks.yaml"
 
           # Patch prod-system/kustomization.yaml
-          KS_ENTRY="  - ./apps/$${REPO_NAME}-$${BRANCH}/ks.yaml"
+          KS_ENTRY="  - ./apps/$${REPO_NAME}/previews/$${BRANCH}/ks.yaml"
           if ! grep -qF "$${KS_ENTRY}" "$${KS_FILE}"; then
             echo "$${KS_ENTRY}" >> "$${KS_FILE}"
           fi

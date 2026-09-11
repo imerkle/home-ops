@@ -1,0 +1,79 @@
+---
+# Tekton Task: run-tests
+# Runs automated unit and integration tests against the source code repository
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: run-tests
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  description: >-
+    Executes automated unit and integration tests against the source code repository
+    prior to building container images.
+  params:
+    - name: repo-name
+      description: Name of the repository/service being tested.
+      type: string
+  workspaces:
+    - name: source
+      description: Workspace containing the cloned application repository.
+    - name: ssh-credentials
+      description: Optional SSH key for fetching private dependencies (e.g. from Forgejo).
+      optional: true
+  steps:
+    - name: run-unit-tests
+      image: golang:1.26.2-alpine
+      computeResources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          memory: 1Gi
+      script: |
+        #!/bin/sh
+        set -eu
+        SRC="$(workspaces.source.path)"
+        cd "$SRC"
+
+        echo "=========================================================="
+        echo "  Running Automated Tests: $(params.repo-name)"
+        echo "=========================================================="
+
+        # Setup SSH if credentials are provided (for private Go modules e.g. servicekit)
+        if [ "$(workspaces.ssh-credentials.bound)" = "true" ]; then
+          SSH_SECRET="$(workspaces.ssh-credentials.path)"
+          if [ -f "$SSH_SECRET/identity" ]; then
+            apk add --no-cache git openssh-client >/dev/null 2>&1
+            mkdir -p /root/.ssh
+            cp "$SSH_SECRET/identity" /root/.ssh/id_ed25519
+            chmod 600 /root/.ssh/id_ed25519
+            if [ -f "$SSH_SECRET/known_hosts" ]; then
+              cp "$SSH_SECRET/known_hosts" /root/.ssh/known_hosts
+            fi
+            ssh-keyscan -H ssh.forgejo.x3y.space >> /root/.ssh/known_hosts 2>/dev/null || true
+            chmod 600 /root/.ssh/known_hosts
+            git config --global url."git@ssh.forgejo.x3y.space:".insteadOf "https://forgejo.x3y.space/"
+          fi
+        fi
+
+        # Check for Go project
+        if [ -f "go.mod" ]; then
+          echo "[+] Detected Go project. Running go test -v ./... ..."
+          GOPRIVATE="forgejo.x3y.space/*" GONOSUMDB="forgejo.x3y.space/*" go test -v ./...
+          echo "[+] All Go unit tests passed successfully!"
+          exit 0
+        fi
+
+        # Check for Node.js project
+        if [ -f "package.json" ]; then
+          if grep -q '"test"' package.json; then
+            echo "[+] Detected Node.js project with test script. Running npm test..."
+            apk add --no-cache nodejs npm >/dev/null 2>&1
+            npm test
+            echo "[+] All Node.js tests passed successfully!"
+            exit 0
+          fi
+        fi
+
+        echo "[i] No recognized test suite found in $(params.repo-name). Skipping tests."

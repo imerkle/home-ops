@@ -10,7 +10,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/prod-system/apps/thumbnail-service-desloppify-code-health/app
+  path: ./kubernetes/apps/prod-system/apps/thumbnail-service/previews/desloppify-code-health/app
   prune: true
   sourceRef:
     kind: GitRepository

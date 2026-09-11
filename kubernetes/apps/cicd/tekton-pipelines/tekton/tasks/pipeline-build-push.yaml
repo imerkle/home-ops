@@ -128,9 +128,22 @@ spec:
           value: $(params.repo-url)
         - name: revision
           value: $(params.revision)
-    - name: build-push
+    - name: run-tests
+      taskRef:
+        name: run-tests
       runAfter:
         - fetch-source
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: ssh-credentials
+          workspace: ssh-credentials
+      params:
+        - name: repo-name
+          value: $(params.repo-name)
+    - name: build-push
+      runAfter:
+        - run-tests
         - prepare
       taskRef:
         name: kaniko-build
@@ -160,10 +173,6 @@ spec:
         name: deploy-staging
       runAfter:
         - build-push
-      when:
-        - input: $(params.sanitized-branch)
-          operator: in
-          values: ["main", "master"]
       params:
         - name: service-name
           value: $(params.repo-name)
@@ -201,10 +210,6 @@ spec:
         name: k6-performance-gate
       runAfter:
         - deploy-staging
-      when:
-        - input: $(params.sanitized-branch)
-          operator: in
-          values: ["main", "master"]
       workspaces:
         - name: source
           workspace: shared-workspace

@@ -12,6 +12,7 @@ resources:
   - ./task-cleanup-staging.yaml
   - ./task-promote-prod.yaml
   - ./task-k6-gate.yaml
+  - ./task-run-tests.yaml
   - ./pipeline-build-push.yaml
   - ./pipeline-tag-release-build.yaml
   - ./pipeline-cleanup-preview.yaml

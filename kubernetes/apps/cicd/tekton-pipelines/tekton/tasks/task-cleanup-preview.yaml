@@ -45,7 +45,7 @@ spec:
         HOME_OPS_URL="$(params.home-ops-url)"
         APPS_BASE="$(params.apps-base-path)"
 
-        DEPLOY_DIR="$${APPS_BASE}/apps/$${REPO_NAME}-$${BRANCH}"
+        DEPLOY_DIR="$${APPS_BASE}/apps/$${REPO_NAME}/previews/$${BRANCH}"
         KS_FILE="$${APPS_BASE}/kustomization.yaml"
 
         # ── SSH setup ──────────────────────────────────────────────────────────
@@ -71,9 +71,10 @@ spec:
 
         # ── Remove preview directory ───────────────────────────────────────────
         git rm -rf "$${DEPLOY_DIR}"
+        rmdir "$${APPS_BASE}/apps/$${REPO_NAME}/previews" 2>/dev/null || true
 
         # ── Remove the ks.yaml reference from prod-system/kustomization.yaml ───
-        KS_ENTRY="  - ./apps/$${REPO_NAME}-$${BRANCH}/ks.yaml"
+        KS_ENTRY="  - ./apps/$${REPO_NAME}/previews/$${BRANCH}/ks.yaml"
         # Use a temp file to avoid in-place sed portability issues
         grep -v "$${KS_ENTRY}" "$${KS_FILE}" > "$${KS_FILE}.tmp"
         mv "$${KS_FILE}.tmp" "$${KS_FILE}"
