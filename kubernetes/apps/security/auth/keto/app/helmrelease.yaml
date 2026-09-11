@@ -29,11 +29,44 @@ spec:
       automigration:
         extraEnv:
           - name: DSN
-            value: "postgres://$${vault:database/creds/keto-role#username}:$${vault:database/creds/keto-role#password}@pg-default-rw.db.svc.cluster.local:5432/keto?sslmode=disable"
+            value: "postgres://$${vault:database/creds/keto-role#username}:$${vault:database/creds/keto-role#password}@pg-default-rw.db.svc.cluster.local:5432/keto?sslmode=disable&max_conn_lifetime=3m&max_idle_conns=2"
       podMetadata:
         annotations:
           vault.security.banzaicloud.io/vault-role: "default"
           vault.security.banzaicloud.io/vault-env-daemon: "true"
       extraEnv:
         - name: DSN
-          value: "postgres://$${vault:database/creds/keto-role#username}:$${vault:database/creds/keto-role#password}@pg-default-rw.db.svc.cluster.local:5432/keto?sslmode=disable"
+          value: "postgres://$${vault:database/creds/keto-role#username}:$${vault:database/creds/keto-role#password}@pg-default-rw.db.svc.cluster.local:5432/keto?sslmode=disable&max_conn_lifetime=3m&max_idle_conns=2"
+      customLivenessProbe:
+        httpGet:
+          path: /health/ready
+          port: 4467
+          httpHeaders:
+            - name: Host
+              value: '127.0.0.1'
+        initialDelaySeconds: 15
+        periodSeconds: 10
+        timeoutSeconds: 3
+        failureThreshold: 3
+      customReadinessProbe:
+        httpGet:
+          path: /health/ready
+          port: 4467
+          httpHeaders:
+            - name: Host
+              value: '127.0.0.1'
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        timeoutSeconds: 3
+        failureThreshold: 3
+      customStartupProbe:
+        httpGet:
+          path: /health/alive
+          port: 4467
+          httpHeaders:
+            - name: Host
+              value: '127.0.0.1'
+        initialDelaySeconds: 2
+        periodSeconds: 5
+        timeoutSeconds: 3
+        failureThreshold: 30
