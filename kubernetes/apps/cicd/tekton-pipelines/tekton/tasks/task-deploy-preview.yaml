@@ -128,18 +128,18 @@ spec:
           " -i "$${DEPLOY_DIR}/app/helmrelease.yaml"
 
           # Update serviceMonitor serviceName if present
-          yq eval "
-            (select(.spec.values.serviceMonitor.app != null) | .spec.values.serviceMonitor.app.serviceName) = \"$${APP_NAME}\"
-          " -i "$${DEPLOY_DIR}/app/helmrelease.yaml" 2>/dev/null || true
+          if [ "$(yq eval '.spec.values.serviceMonitor.app != null' "$${DEPLOY_DIR}/app/helmrelease.yaml" 2>/dev/null)" = "true" ]; then
+            yq eval ".spec.values.serviceMonitor.app.serviceName = \"$${APP_NAME}\"" -i "$${DEPLOY_DIR}/app/helmrelease.yaml"
+          fi
 
           # Convert media persistence to emptyDir for preview pods to avoid node-locked CSI dependencies
-          yq eval "
-            (select(.spec.values.persistence.media != null) |
-              .spec.values.persistence.media.type = \"emptyDir\" |
+          if [ "$(yq eval '.spec.values.persistence.media != null' "$${DEPLOY_DIR}/app/helmrelease.yaml" 2>/dev/null)" = "true" ]; then
+            yq eval '
+              .spec.values.persistence.media.type = "emptyDir" |
               del(.spec.values.persistence.media.existingClaim) |
               del(.spec.values.persistence.media.globalMounts[].subPath)
-            )
-          " -i "$${DEPLOY_DIR}/app/helmrelease.yaml" 2>/dev/null || true
+            ' -i "$${DEPLOY_DIR}/app/helmrelease.yaml"
+          fi
 
           # Dynamically update public URL env vars matching application hostnames
           for host in $${RAW_HOSTS}; do
