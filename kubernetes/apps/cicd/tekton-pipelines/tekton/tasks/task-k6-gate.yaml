@@ -79,29 +79,41 @@ spec:
           exit 0
         fi
 
-        echo "[+] Waiting up to 60s for Flux to sync candidate commit $COMMIT..."
+        echo "[+] Triggering immediate Flux reconciliation..."
+        kubectl annotate --overwrite gitrepository flux-system -n flux-system reconcile.fluxcd.io/requestedAt="$(date +%s)" || true
+        kubectl annotate --overwrite kustomization "$SERVICE" -n "$NAMESPACE" reconcile.fluxcd.io/requestedAt="$(date +%s)" 2>/dev/null || true
+        kubectl annotate --overwrite helmrelease "$SERVICE" -n "$NAMESPACE" reconcile.fluxcd.io/requestedAt="$(date +%s)" 2>/dev/null || true
+
+        echo "[+] Waiting for Flux to apply candidate commit $COMMIT..."
         SYNCED=false
-        for i in $(seq 1 30); do
+        for i in $(seq 1 45); do
           CURRENT_IMAGE=$(kubectl get deployment "$SERVICE" -n "$NAMESPACE" -o jsonpath='{.spec.template.spec.containers[?(@.name=="app")].image}' 2>/dev/null || true)
           if [ -z "$CURRENT_IMAGE" ]; then
             CURRENT_IMAGE=$(kubectl get deployment "$SERVICE" -n "$NAMESPACE" -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || true)
           fi
           if echo "$CURRENT_IMAGE" | grep -q "$COMMIT"; then
-            echo "[+] Flux applied candidate image: $CURRENT_IMAGE"
+            echo "[+] Flux applied candidate image: $CURRENT_IMAGE (after ${i} iterations)"
             SYNCED=true
             break
+          fi
+          if [ $((i % 10)) -eq 0 ]; then
+            echo "[i] Re-triggering Flux reconciliation (attempt $i)..."
+            kubectl annotate --overwrite gitrepository flux-system -n flux-system reconcile.fluxcd.io/requestedAt="$(date +%s)" || true
+            kubectl annotate --overwrite kustomization "$SERVICE" -n "$NAMESPACE" reconcile.fluxcd.io/requestedAt="$(date +%s)" 2>/dev/null || true
           fi
           sleep 2
         done
 
         if [ "$SYNCED" = false ]; then
-          echo "[!] Flux sync wait concluded (current image: $CURRENT_IMAGE). Proceeding to rollout check."
+          echo "[-] Error: Flux failed to apply image tag for commit $COMMIT within timeout."
+          echo "[-] Current deployed image: $CURRENT_IMAGE"
+          exit 1
         fi
 
-        echo "[+] Waiting for deployment rollout to stabilize..."
+        echo "[+] Waiting for deployment rollout to complete..."
         kubectl rollout status deployment/"$SERVICE" -n "$NAMESPACE" --timeout=120s
 
-        echo "[+] Service is fully rolled out and ready for load testing!"
+        echo "[+] Service is fully rolled out with candidate build and ready for load testing!"
         sleep 5
     - name: run-k6-gate
       image: ghcr.io/grafana/k6:latest
