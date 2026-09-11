@@ -1,0 +1,191 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: k6-build-comparison
+  namespace: observability
+spec:
+  allowCrossNamespaceImport: true
+  instanceSelector:
+    matchLabels:
+      grafana.internal/instance: grafana
+  datasources:
+    - datasourceName: prometheus
+      inputName: DS_PROMETHEUS
+  json: >
+    {
+      "title": "k6 Build Performance Comparison",
+      "uid": "k6-build-comparison",
+      "tags": ["k6", "benchmark", "comparison"],
+      "schemaVersion": 39,
+      "refresh": "5s",
+      "time": {
+        "from": "now-30m",
+        "to": "now"
+      },
+      "templating": {
+        "list": [
+          {
+            "name": "DS_PROMETHEUS",
+            "type": "datasource",
+            "query": "prometheus",
+            "label": "Data Source",
+            "hide": 0,
+            "current": {
+              "text": "prometheus",
+              "value": "${DS_PROMETHEUS}"
+            }
+          },
+          {
+            "name": "testid",
+            "label": "Application",
+            "type": "query",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_PROMETHEUS}"
+            },
+            "definition": "label_values(testid)",
+            "query": "label_values(testid)",
+            "refresh": 1,
+            "multi": false,
+            "includeAll": false,
+            "sort": 1
+          },
+          {
+            "name": "build",
+            "label": "Builds to Compare",
+            "type": "query",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_PROMETHEUS}"
+            },
+            "definition": "label_values(k6_http_reqs_total{testid=~\"$testid\"}, build)",
+            "query": "label_values(k6_http_reqs_total{testid=~\"$testid\"}, build)",
+            "refresh": 1,
+            "multi": true,
+            "includeAll": true,
+            "allValue": ".*",
+            "sort": 1
+          },
+          {
+            "name": "scenario",
+            "label": "Scenario",
+            "type": "query",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_PROMETHEUS}"
+            },
+            "definition": "label_values(k6_http_reqs_total{testid=~\"$testid\", build=~\"$build\"}, scenario)",
+            "query": "label_values(k6_http_reqs_total{testid=~\"$testid\", build=~\"$build\"}, scenario)",
+            "refresh": 1,
+            "multi": true,
+            "includeAll": true,
+            "allValue": ".*",
+            "sort": 1
+          }
+        ]
+      },
+      "panels": [
+        {
+          "id": 1,
+          "type": "timeseries",
+          "title": "Throughput by Build (Requests / Sec)",
+          "gridPos": { "h": 9, "w": 12, "x": 0, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "lineWidth": 2 }
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum by (build) (irate(k6_http_reqs_total{testid=~\"$testid\", build=~\"$build\", scenario=~\"$scenario\"}[$__rate_interval]))",
+              "legendFormat": "Build: {{build}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "type": "timeseries",
+          "title": "P95 Latency by Build",
+          "gridPos": { "h": 9, "w": 12, "x": 12, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "lineWidth": 2 }
+            }
+          },
+          "targets": [
+            {
+              "expr": "avg by (build) (k6_http_req_duration_p95{testid=~\"$testid\", build=~\"$build\", scenario=~\"$scenario\"})",
+              "legendFormat": "P95 - {{build}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "type": "timeseries",
+          "title": "P99 Tail Latency by Build",
+          "gridPos": { "h": 9, "w": 12, "x": 0, "y": 9 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "lineWidth": 2 }
+            }
+          },
+          "targets": [
+            {
+              "expr": "avg by (build) (k6_http_req_duration_p99{testid=~\"$testid\", build=~\"$build\", scenario=~\"$scenario\"})",
+              "legendFormat": "P99 - {{build}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "type": "timeseries",
+          "title": "Error Rate (%) by Build",
+          "gridPos": { "h": 9, "w": 12, "x": 12, "y": 9 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "lineWidth": 2 }
+            }
+          },
+          "targets": [
+            {
+              "expr": "avg by (build) (round(k6_http_req_failed_rate{testid=~\"$testid\", build=~\"$build\", scenario=~\"$scenario\"}, 0.001) * 100)",
+              "legendFormat": "Error % - {{build}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "type": "timeseries",
+          "title": "Active Virtual Users (VUs) by Build",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 18 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "custom": { "drawStyle": "line", "lineInterpolation": "stepAfter", "fillOpacity": 15 }
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum by (build) (k6_vus{testid=~\"$testid\", build=~\"$build\"})",
+              "legendFormat": "VUs - {{build}}",
+              "refId": "A"
+            }
+          ]
+        }
+      ]
+    }

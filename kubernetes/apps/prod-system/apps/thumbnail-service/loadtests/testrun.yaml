@@ -1,0 +1,56 @@
+---
+apiVersion: k6.io/v1alpha1
+kind: TestRun
+metadata:
+  name: thumbnail-service-loadtest
+  namespace: prod-system
+spec:
+  parallelism: 3
+  cleanup: post
+  script:
+    configMap:
+      name: thumbnail-service-loadtest-script
+      file: test.js
+  arguments: -o experimental-prometheus-rw --tag testid=thumbnail-service --tag app=thumbnail-service
+  runner:
+    image: ghcr.io/grafana/k6:latest
+    tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "tekton-runner"
+        effect: "NoSchedule"
+    resources:
+      requests:
+        cpu: 75m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+    env:
+      - name: TARGET_URL
+        value: http://thumbnail-service:3000
+      - name: K6_PROMETHEUS_RW_SERVER_URL
+        value: http://prometheus-operated.observability.svc.cluster.local:9090/api/v1/write
+      - name: K6_PROMETHEUS_RW_TREND_STATS
+        value: "p(90),p(95),p(99),min,max,avg,med"
+      - name: BUILD_ID
+        value: "latest"
+  initializer:
+    tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "tekton-runner"
+        effect: "NoSchedule"
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+  starter:
+    tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "tekton-runner"
+        effect: "NoSchedule"
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi

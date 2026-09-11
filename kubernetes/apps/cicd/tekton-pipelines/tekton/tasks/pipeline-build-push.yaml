@@ -183,3 +183,17 @@ spec:
           value: $(params.revision)
         - name: home-ops-url
           value: $(params.home-ops-url)
+    - name: performance-gate
+      taskRef:
+        name: k6-performance-gate
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: service-name
+          value: $(params.repo-name)
+        - name: commit-sha
+          value: $(params.revision)
+        - name: target-url
+          value: "http://$(params.repo-name).prod-system.svc.cluster.local:3000"
+

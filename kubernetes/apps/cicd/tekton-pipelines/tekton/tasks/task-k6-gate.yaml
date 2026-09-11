@@ -1,0 +1,126 @@
+---
+# Tekton Task: k6-performance-gate
+# Executes automated performance regression tests against candidate builds,
+# enforcing strict SLA thresholds and streaming metrics to Prometheus.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: k6-performance-gate
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  description: >-
+    Runs an automated k6 performance regression gate against a deployed service,
+    enforcing strict SLA thresholds and streaming metrics to cluster Prometheus.
+  params:
+    - name: service-name
+      description: Name of the application (e.g. thumbnail-service).
+      type: string
+    - name: commit-sha
+      description: Git commit SHA of the candidate build.
+      type: string
+      default: "latest"
+    - name: target-url
+      description: Internal or external endpoint to test.
+      type: string
+    - name: script-path
+      description: Relative path to test.js inside workspace.
+      type: string
+      default: "loadtests/test.js"
+    - name: prometheus-remote-write-url
+      description: URL of Prometheus remote write endpoint.
+      type: string
+      default: "http://prometheus-operated.observability.svc.cluster.local:9090/api/v1/write"
+    - name: vus
+      description: Optional override for number of VUs.
+      type: string
+      default: ""
+    - name: duration
+      description: Optional override for duration (e.g. 30s, 1m).
+      type: string
+      default: ""
+  workspaces:
+    - name: source
+      description: Workspace containing the application repository and k6 test script.
+  steps:
+    - name: run-k6-gate
+      image: ghcr.io/grafana/k6:latest
+      computeResources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          memory: 512Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      env:
+        - name: TARGET_URL
+          value: $(params.target-url)
+        - name: BUILD_ID
+          value: $(params.commit-sha)
+        - name: K6_PROMETHEUS_RW_SERVER_URL
+          value: $(params.prometheus-remote-write-url)
+        - name: K6_PROMETHEUS_RW_TREND_STATS
+          value: "p(90),p(95),p(99),min,max,avg,med"
+      script: |
+        #!/bin/sh
+        set -e
+        echo "=========================================================="
+        echo "  k6 Automated Performance Regression Gate"
+        echo "=========================================================="
+        echo "  Service:    $(params.service-name)"
+        echo "  Build:      $(params.commit-sha)"
+        echo "  Target:     $(params.target-url)"
+        echo "  Script:     $(workspaces.source.path)/$(params.script-path)"
+        echo "=========================================================="
+
+        SCRIPT_FULL_PATH="$(workspaces.source.path)/$(params.script-path)"
+        if [ ! -f "$SCRIPT_FULL_PATH" ]; then
+          echo "[i] Notice: No k6 test script found at $SCRIPT_FULL_PATH. Skipping performance gate for this repository."
+          exit 0
+        fi
+
+        EXTRA_ARGS=""
+        if [ -n "$(params.vus)" ]; then
+          EXTRA_ARGS="$EXTRA_ARGS --vus $(params.vus)"
+        fi
+        if [ -n "$(params.duration)" ]; then
+          EXTRA_ARGS="$EXTRA_ARGS --duration $(params.duration)"
+        fi
+
+        echo "[+] Waiting 15s for deployment rollout to stabilize..."
+        sleep 15
+
+        echo "[+] Executing k6 with SLA thresholds..."
+        k6 run \
+          --tag testid=$(params.service-name) \
+          --tag app=$(params.service-name) \
+          --tag build=$(params.commit-sha) \
+          -o experimental-prometheus-rw \
+          $EXTRA_ARGS \
+          "$SCRIPT_FULL_PATH"
+
+        EXIT_CODE=$?
+        if [ $EXIT_CODE -eq 99 ]; then
+          echo ""
+          echo "[-] -------------------------------------------------------------"
+          echo "[-] CRITICAL: Performance regression detected! SLA thresholds failed."
+          echo "[-] -------------------------------------------------------------"
+          exit 99
+        elif [ $EXIT_CODE -ne 0 ]; then
+          echo "[-] k6 test execution failed with exit code $EXIT_CODE"
+          exit $EXIT_CODE
+        fi
+
+        echo ""
+        echo "[+] ============================================================="
+        echo "[+] SUCCESS: All performance SLAs and thresholds passed!"
+        echo "[+] View in Grafana: https://grafana.x3y.space/d/k6-build-comparison/k6-build-performance-comparison?var-testid=$(params.service-name)&var-build=$(params.commit-sha)"
+        echo "[+] ============================================================="
