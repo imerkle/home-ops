@@ -55,6 +55,9 @@ spec:
         PORT="$(params.port)"
         STAGING_NAME="${SERVICE}-staging"
 
+        # Translate internal cluster registry endpoint to externally resolvable host for kubelet
+        IMAGE="${IMAGE//zot.dev-system.svc.cluster.local:5000/zot.x3y.space}"
+
         echo "=========================================================="
         echo "  Deploying Ephemeral Staging: $STAGING_NAME ($NAMESPACE)"
         echo "  Candidate Image:             $IMAGE"
