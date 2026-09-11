@@ -1,0 +1,126 @@
+---
+# Tekton Task: deploy-staging
+# Deploys an isolated, ephemeral candidate staging deployment and service in Kubernetes
+# by cloning the existing production deployment configuration with the candidate image.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: deploy-staging
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  description: >-
+    Spawns an isolated, ephemeral staging deployment and service for a candidate build
+    by cloning the production configuration with the candidate container image.
+  params:
+    - name: service-name
+      description: Name of the application/service (e.g. thumbnail-service).
+      type: string
+    - name: candidate-image
+      description: Fully qualified container image for the candidate build.
+      type: string
+    - name: commit-sha
+      description: Git commit SHA of the candidate build.
+      type: string
+    - name: namespace
+      description: Namespace where the service runs.
+      type: string
+      default: "prod-system"
+    - name: port
+      description: HTTP port of the service.
+      type: string
+      default: "3000"
+  results:
+    - name: staging-url
+      description: Internal cluster URL of the staging deployment.
+    - name: staging-deployment
+      description: Name of the ephemeral staging deployment.
+  steps:
+    - name: deploy-ephemeral-staging
+      image: bitnami/kubectl:latest
+      computeResources:
+        requests:
+          cpu: 20m
+          memory: 64Mi
+        limits:
+          memory: 256Mi
+      script: |
+        #!/bin/bash
+        set -euo pipefail
+
+        SERVICE="$(params.service-name)"
+        IMAGE="$(params.candidate-image)"
+        COMMIT="$(params.commit-sha)"
+        NAMESPACE="$(params.namespace)"
+        PORT="$(params.port)"
+        STAGING_NAME="${SERVICE}-staging"
+
+        echo "=========================================================="
+        echo "  Deploying Ephemeral Staging: $STAGING_NAME ($NAMESPACE)"
+        echo "  Candidate Image:             $IMAGE"
+        echo "  Commit:                      $COMMIT"
+        echo "=========================================================="
+
+        if ! kubectl get deployment "$SERVICE" -n "$NAMESPACE" >/dev/null 2>&1; then
+          echo "[-] Error: Base production deployment '$SERVICE' not found in '$NAMESPACE'." >&2
+          exit 1
+        fi
+
+        echo "[+] Synthesizing ephemeral Deployment '$STAGING_NAME'..."
+        kubectl get deployment "$SERVICE" -n "$NAMESPACE" -o json | jq \
+          --arg name "$STAGING_NAME" \
+          --arg img "$IMAGE" \
+          --arg commit "$COMMIT" '
+          .metadata = {
+            name: $name,
+            namespace: .metadata.namespace,
+            labels: {
+              "app.kubernetes.io/name": $name,
+              "app.kubernetes.io/instance": $name,
+              "ci.home.arpa/environment": "staging",
+              "ci.home.arpa/commit": $commit
+            }
+          } |
+          .spec.replicas = 1 |
+          .spec.selector.matchLabels = {
+            "app.kubernetes.io/instance": $name
+          } |
+          .spec.template.metadata.labels = {
+            "app.kubernetes.io/name": $name,
+            "app.kubernetes.io/instance": $name,
+            "ci.home.arpa/environment": "staging",
+            "ci.home.arpa/commit": $commit
+          } |
+          .spec.template.spec.containers[0].image = $img |
+          del(.status)
+        ' | kubectl apply -f -
+
+        if kubectl get svc "$SERVICE" -n "$NAMESPACE" >/dev/null 2>&1; then
+          echo "[+] Synthesizing ephemeral Service '$STAGING_NAME'..."
+          kubectl get svc "$SERVICE" -n "$NAMESPACE" -o json | jq \
+            --arg name "$STAGING_NAME" \
+            --arg commit "$COMMIT" '
+            .metadata = {
+              name: $name,
+              namespace: .metadata.namespace,
+              labels: {
+                "app.kubernetes.io/name": $name,
+                "app.kubernetes.io/instance": $name,
+                "ci.home.arpa/environment": "staging",
+                "ci.home.arpa/commit": $commit
+              }
+            } |
+            .spec.selector = {
+              "app.kubernetes.io/instance": $name
+            } |
+            del(.spec.clusterIP, .spec.clusterIPs, .status)
+          ' | kubectl apply -f -
+        fi
+
+        echo "[+] Awaiting rollout of '$STAGING_NAME'..."
+        kubectl rollout status deployment/"$STAGING_NAME" -n "$NAMESPACE" --timeout=120s
+
+        STAGING_URL="http://${STAGING_NAME}.${NAMESPACE}.svc.cluster.local:${PORT}"
+        echo "[+] Staging deployment ready at: $STAGING_URL"
+        echo -n "$STAGING_URL" > "$(results.staging-url.path)"
+        echo -n "$STAGING_NAME" > "$(results.staging-deployment.path)"

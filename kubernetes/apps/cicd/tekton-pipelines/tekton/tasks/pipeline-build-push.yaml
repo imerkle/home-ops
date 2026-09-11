@@ -155,11 +155,31 @@ spec:
             - $(params.extra-args[*])
         - name: PROTOCOL
           value: $(params.protocol)
+    - name: deploy-staging
+      taskRef:
+        name: deploy-staging
+      runAfter:
+        - build-push
+      when:
+        - input: $(params.sanitized-branch)
+          operator: in
+          values: ["main", "master"]
+      params:
+        - name: service-name
+          value: $(params.repo-name)
+        - name: candidate-image
+          value: $(params.image)
+        - name: commit-sha
+          value: $(params.revision)
     - name: deploy-preview
       taskRef:
         name: deploy-preview
       runAfter:
         - build-push
+      when:
+        - input: $(params.sanitized-branch)
+          operator: notin
+          values: ["main", "master"]
       workspaces:
         - name: ssh-credentials
           workspace: ssh-credentials
@@ -178,7 +198,11 @@ spec:
       taskRef:
         name: k6-performance-gate
       runAfter:
-        - deploy-preview
+        - deploy-staging
+      when:
+        - input: $(params.sanitized-branch)
+          operator: in
+          values: ["main", "master"]
       workspaces:
         - name: source
           workspace: shared-workspace
@@ -188,7 +212,26 @@ spec:
         - name: commit-sha
           value: $(params.revision)
         - name: target-url
-          value: "http://$(params.repo-name).prod-system.svc.cluster.local:3000"
+          value: $(tasks.deploy-staging.results.staging-url)
+    - name: promote-to-prod
+      taskRef:
+        name: promote-to-prod
+      runAfter:
+        - performance-gate
+      when:
+        - input: $(params.sanitized-branch)
+          operator: in
+          values: ["main", "master"]
+      workspaces:
+        - name: ssh-credentials
+          workspace: ssh-credentials
+      params:
+        - name: repo-name
+          value: $(params.repo-name)
+        - name: commit-sha
+          value: $(params.revision)
+        - name: home-ops-url
+          value: $(params.home-ops-url)
   results:
     - name: image-digest
       description: The digest of the built image.
@@ -199,4 +242,11 @@ spec:
     - name: commit-sha
       description: The exact commit SHA that was built.
       value: $(tasks.fetch-source.results.commit)
+  finally:
+    - name: cleanup-staging
+      taskRef:
+        name: cleanup-staging
+      params:
+        - name: service-name
+          value: $(params.repo-name)
 

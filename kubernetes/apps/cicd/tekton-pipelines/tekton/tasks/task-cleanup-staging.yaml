@@ -1,0 +1,45 @@
+---
+# Tekton Task: cleanup-staging
+# Tears down ephemeral staging deployments and services to guarantee no resource leaks.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: cleanup-staging
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+spec:
+  description: >-
+    Cleans up ephemeral staging deployments and services created during the CI pipeline run.
+  params:
+    - name: service-name
+      description: Name of the application/service (e.g. thumbnail-service).
+      type: string
+    - name: namespace
+      description: Namespace where the staging deployment lives.
+      type: string
+      default: "prod-system"
+  steps:
+    - name: cleanup-ephemeral-staging
+      image: bitnami/kubectl:latest
+      computeResources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 128Mi
+      script: |
+        #!/bin/bash
+        set -euo pipefail
+
+        SERVICE="$(params.service-name)"
+        NAMESPACE="$(params.namespace)"
+        STAGING_NAME="${SERVICE}-staging"
+
+        echo "=========================================================="
+        echo "  Tearing Down Ephemeral Staging: $STAGING_NAME ($NAMESPACE)"
+        echo "=========================================================="
+
+        kubectl delete deployment "$STAGING_NAME" -n "$NAMESPACE" --ignore-not-found=true --wait=false
+        kubectl delete svc "$STAGING_NAME" -n "$NAMESPACE" --ignore-not-found=true --wait=false
+
+        echo "[+] Staging cleanup request issued for $STAGING_NAME."

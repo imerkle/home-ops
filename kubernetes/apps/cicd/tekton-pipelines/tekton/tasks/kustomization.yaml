@@ -8,6 +8,9 @@ resources:
   - ./task-cancel-previous.yaml
   - ./task-deploy-preview.yaml
   - ./task-cleanup-preview.yaml
+  - ./task-deploy-staging.yaml
+  - ./task-cleanup-staging.yaml
+  - ./task-promote-prod.yaml
   - ./task-k6-gate.yaml
   - ./pipeline-build-push.yaml
   - ./pipeline-tag-release-build.yaml
