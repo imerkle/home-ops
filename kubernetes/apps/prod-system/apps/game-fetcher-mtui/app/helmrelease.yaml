@@ -179,9 +179,7 @@ spec:
         globalMounts:
           - path: /tmp
       media:
-        existingClaim: copyparty-hdd
+        type: emptyDir
         globalMounts:
           - path: /games
-            subPath: downloads/games
           - path: /movies
-            subPath: downloads/movies
