@@ -60,7 +60,7 @@ spec:
     replicaCount: 1
     resources:
       requests:
-        cpu: 15m
+        cpu: 5m
         memory: 248Mi
     login:
       customConfigmapConfig: |-
@@ -149,6 +149,8 @@ spec:
               metadata:
                 name: zitadel
               spec:
+                strategy:
+                  type: Recreate
                 template:
                   metadata:
                     annotations:
