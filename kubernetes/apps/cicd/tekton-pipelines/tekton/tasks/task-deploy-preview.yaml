@@ -1,7 +1,6 @@
 ---
 # Tekton Task: deploy-preview
-# Clones home-ops, generates preview manifests for a branch, commits & pushes.
-# Apps opt in by having a preview/helmrelease.tmpl.yaml alongside their app/ dir.
+# Clones home-ops, dynamically derives preview manifests directly from the app's production HelmRelease, commits & pushes.
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
@@ -10,11 +9,11 @@ metadata:
     app.kubernetes.io/part-of: tekton-tasks
 spec:
   description: >-
-    Generates branch-preview Kubernetes manifests from a preview template
-    and commits them to the home-ops GitOps repo so Flux deploys them.
+    Dynamically generates branch-preview Kubernetes manifests directly from the production
+    HelmRelease and commits them to the home-ops GitOps repo so Flux deploys them.
   params:
     - name: repo-name
-      description: Repository/app name (e.g. game-fetcher).
+      description: Repository/app name (e.g. game-fetcher, thumbnail-service).
       type: string
     - name: branch
       description: Sanitized branch name (e.g. feature-cool).
@@ -61,8 +60,7 @@ spec:
         fi
         APPS_BASE="$(params.apps-base-path)"
 
-        PREVIEW_DIR="$${APPS_BASE}/apps/$${REPO_NAME}/preview"
-        TEMPLATE_FILE="$${PREVIEW_DIR}/helmrelease.tmpl.yaml"
+        PROD_FILE="$${APPS_BASE}/apps/$${REPO_NAME}/app/helmrelease.yaml"
         DEPLOY_DIR="$${APPS_BASE}/apps/$${REPO_NAME}-$${BRANCH}"
         KS_FILE="$${APPS_BASE}/kustomization.yaml"
 
@@ -83,76 +81,63 @@ spec:
         git clone --depth=1 "$${HOME_OPS_URL}" /workspace/home-ops
         cd /workspace/home-ops
 
+        # ── Check production manifest exists ───────────────────────────────────
+        if [ ! -f "$${PROD_FILE}" ]; then
+          echo "[-] Base production helmrelease not found at $${PROD_FILE} — skipping."
+          exit 0
+        fi
+
         # ── Branch-specific routing ───────────────────────────────────────────
         if [ "$${BRANCH}" = "main" ] || [ "$${BRANCH}" = "master" ]; then
           echo "Branch is $${BRANCH} — updating production deployment."
-          PROD_FILE="$${APPS_BASE}/apps/$${REPO_NAME}/app/helmrelease.yaml"
           TAG="$${COMMIT_SHA}"
-
-          if [ -f "$${TEMPLATE_FILE}" ]; then
-            echo "[+] Rendering production HelmRelease from master template: $${TEMPLATE_FILE}"
-            mkdir -p "$$(dirname "$${PROD_FILE}")"
-
-            sed -e "s/__APP_NAME__/$${REPO_NAME}/g" \
-                -e "s/__BRANCH_PREFIX__//g" \
-                -e "s/__COMMIT_SHA__/$${TAG}/g" \
-                -e "s/__BRANCH__/main/g" \
-                "$${TEMPLATE_FILE}" > "$${PROD_FILE}.tmp"
-
-            printf '%s\n' '          - name: envoy-internal' '            namespace: network' '          - name: envoy-external' '            namespace: network' > /tmp/parents-prod.yaml
-            sed -e '/__ROUTE_PARENTS__/r /tmp/parents-prod.yaml' -e '/__ROUTE_PARENTS__/d' "$${PROD_FILE}.tmp" > "$${PROD_FILE}"
-            rm -f "$${PROD_FILE}.tmp" /tmp/parents-prod.yaml
-          elif [ -f "$${PROD_FILE}" ]; then
-            if [ -n "$${TARGET_IMAGE}" ]; then
-              echo "Updating tag for image: $${TARGET_IMAGE} -> $${TAG}"
-              awk -v target="$${TARGET_IMAGE}" -v newtag="$${TAG}" '
-                $0 ~ "repository:.*" target "([^-a-zA-Z0-9]|$)" { in_target=1; print; next }
-                in_target && $1 == "tag:" { sub($2, newtag); in_target=0; print; next }
-                { print }
-              ' "$${PROD_FILE}" > "$${PROD_FILE}.tmp" && mv "$${PROD_FILE}.tmp" "$${PROD_FILE}"
-            else
-              sed -i "s/\(tag: \).*/\1$${TAG}/g" "$${PROD_FILE}"
-            fi
-          else
-            echo "Production helmrelease not found at $${PROD_FILE} — skipping."
-            exit 0
-          fi
+          echo "[+] Updating production image tag in $${PROD_FILE} to $${TAG}..."
+          yq eval ".spec.values.controllers.*.containers.app.image.tag = \"$${TAG}\"" -i "$${PROD_FILE}"
           git add "$${PROD_FILE}"
         else
-          echo "Branch is $${BRANCH} — updating preview deployment."
-          # ── Opt-in check ───────────────────────────────────────────────────────
-          if [ ! -f "$${TEMPLATE_FILE}" ]; then
-            echo "No preview template found at $${TEMPLATE_FILE} — skipping."
-            exit 0
-          fi
+          echo "Branch is $${BRANCH} — dynamically deriving preview deployment from $${PROD_FILE}..."
 
-          # ── Check directory status ─────────────────────────────────────────────
           if [ -d "$${DEPLOY_DIR}" ]; then
-            echo "Updating existing preview deployment at $${DEPLOY_DIR}"
+            echo "[i] Updating existing preview deployment at $${DEPLOY_DIR}"
           else
-            echo "Creating new preview deployment at $${DEPLOY_DIR}"
+            echo "[+] Creating new preview deployment at $${DEPLOY_DIR}"
           fi
 
-          # ── Generate preview manifests ─────────────────────────────────────────
           mkdir -p "$${DEPLOY_DIR}/app"
-
           TAG="$${COMMIT_SHA:-$${BRANCH}}"
           APP_NAME="$${REPO_NAME}-$${BRANCH}"
-          BRANCH_PREFIX="$${BRANCH}-"
 
-          # 1. Substitute standard placeholders
-          sed -e "s/__APP_NAME__/$${APP_NAME}/g" \
-              -e "s/__BRANCH_PREFIX__/$${BRANCH_PREFIX}/g" \
-              -e "s/__COMMIT_SHA__/$${TAG}/g" \
-              -e "s/__BRANCH__/$${BRANCH}/g" \
-              "$${TEMPLATE_FILE}" > "$${DEPLOY_DIR}/app/helmrelease.yaml.tmp"
+          # Copy production manifest as base
+          cp "$${PROD_FILE}" "$${DEPLOY_DIR}/app/helmrelease.yaml"
 
-          # 2. Replace __ROUTE_PARENTS__ with internal gateway
-          printf '%s\n' '          - name: envoy-internal' '            namespace: network' > /tmp/parents-preview.yaml
-          sed -e '/__ROUTE_PARENTS__/r /tmp/parents-preview.yaml' -e '/__ROUTE_PARENTS__/d' "$${DEPLOY_DIR}/app/helmrelease.yaml.tmp" > "$${DEPLOY_DIR}/app/helmrelease.yaml"
-          rm -f "$${DEPLOY_DIR}/app/helmrelease.yaml.tmp" /tmp/parents-preview.yaml
+          # Extract original route hostnames before mutating
+          RAW_HOSTS=$$(yq eval ".spec.values.route.app.hostnames[]" "$${DEPLOY_DIR}/app/helmrelease.yaml" 2>/dev/null || true)
 
-          # 3. In-repo environment variable overrides (if provided by feature branch)
+          # Dynamically transform base manifest into preview release
+          yq eval "
+            .metadata.name = \"$${APP_NAME}\" |
+            .spec.values.controllers.\"$${APP_NAME}\" = .spec.values.controllers.\"$${REPO_NAME}\" |
+            del(.spec.values.controllers.\"$${REPO_NAME}\") |
+            .spec.values.service.app.controller = \"$${APP_NAME}\" |
+            .spec.values.controllers.\"$${APP_NAME}\".containers.app.image.tag = \"$${TAG}\" |
+            .spec.values.route.app.hostnames[] |= (\"$${BRANCH}-\" + .) |
+            .spec.values.route.app.parentRefs = [{\"name\":\"envoy-internal\",\"namespace\":\"network\"}] |
+            .spec.values.route.app.rules[-1].backendRefs[0].name = \"$${APP_NAME}\"
+          " -i "$${DEPLOY_DIR}/app/helmrelease.yaml"
+
+          # Update serviceMonitor serviceName if present
+          yq eval "
+            (select(.spec.values.serviceMonitor.app != null) | .spec.values.serviceMonitor.app.serviceName) = \"$${APP_NAME}\"
+          " -i "$${DEPLOY_DIR}/app/helmrelease.yaml" 2>/dev/null || true
+
+          # Dynamically update public URL env vars matching application hostnames
+          for host in $${RAW_HOSTS}; do
+            if [ -n "$${host}" ]; then
+              sed -i "s|https://$${host}|https://$${BRANCH}-$${host}|g" "$${DEPLOY_DIR}/app/helmrelease.yaml"
+            fi
+          done
+
+          # In-repo environment variable overrides (.preview.env or preview.yaml)
           SOURCE_DIR=""
           if [ "$(workspaces.source.bound)" = "true" ]; then
             SOURCE_DIR="$(workspaces.source.path)"
@@ -172,54 +157,23 @@ spec:
                 case "$$key" in \#*|"") continue ;; esac
                 key=$$(echo "$$key" | tr -d '[:space:]')
                 value=$$(echo "$$value" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$$//' -e 's/^"//' -e 's/"$$//')
-                yq eval ".spec.values.controllers.*.containers.app.env.\"$${key}\" = \"$${value}\"" -i "$${DEPLOY_DIR}/app/helmrelease.yaml"
+                yq eval ".spec.values.controllers.\"$${APP_NAME}\".containers.app.env.\"$${key}\" = \"$${value}\"" -i "$${DEPLOY_DIR}/app/helmrelease.yaml"
               done < "$${ENV_OVERRIDE}"
             fi
 
             if [ -f "$${SOURCE_DIR}/preview.yaml" ]; then
               echo "[+] Merging in-repo preview.yaml overlay..."
-              yq eval-all '.spec.values.controllers.*.containers.app.env += load("'"$${SOURCE_DIR}"'/preview.yaml").env' -i "$${DEPLOY_DIR}/app/helmrelease.yaml"
+              yq eval-all ".spec.values.controllers.\"$${APP_NAME}\".containers.app.env += load(\"$${SOURCE_DIR}/preview.yaml\").env" -i "$${DEPLOY_DIR}/app/helmrelease.yaml"
             fi
           fi
 
-          cat > "$${DEPLOY_DIR}/app/kustomization.yaml" << EOF
-        ---
-        # yaml-language-server: \$schema=https://json.schemastore.org/kustomization
-        apiVersion: kustomize.config.k8s.io/v1beta1
-        kind: Kustomization
-        resources:
-          - ./helmrelease.yaml
-        EOF
+          # Generate kustomization.yaml
+          printf -- '---\n# yaml-language-server: $schema=https://json.schemastore.org/kustomization\napiVersion: kustomize.config.k8s.io/v1beta1\nkind: Kustomization\nresources:\n  - ./helmrelease.yaml\n' > "$${DEPLOY_DIR}/app/kustomization.yaml"
 
-          cat > "$${DEPLOY_DIR}/ks.yaml" << EOF
-        ---
-        # yaml-language-server: \$schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-        apiVersion: kustomize.toolkit.fluxcd.io/v1
-        kind: Kustomization
-        metadata:
-          name: &app $${REPO_NAME}-$${BRANCH}
-          namespace: &namespace prod-system
-        spec:
-          targetNamespace: *namespace
-          commonMetadata:
-            labels:
-              app.kubernetes.io/name: *app
-          path: ./$${DEPLOY_DIR}/app
-          prune: true
-          sourceRef:
-            kind: GitRepository
-            name: home-kubernetes
-            namespace: flux-system
-          wait: true
-          interval: 30m
-          retryInterval: 1m
-          timeout: 5m
-          postBuild:
-            substitute:
-              APP: *app
-        EOF
+          # Generate ks.yaml
+          printf -- '---\n# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json\napiVersion: kustomize.toolkit.fluxcd.io/v1\nkind: Kustomization\nmetadata:\n  name: &app %s-%s\n  namespace: &namespace prod-system\nspec:\n  targetNamespace: *namespace\n  commonMetadata:\n    labels:\n      app.kubernetes.io/name: *app\n  path: ./%s/app\n  prune: true\n  sourceRef:\n    kind: GitRepository\n    name: home-kubernetes\n    namespace: flux-system\n  wait: true\n  interval: 30m\n  retryInterval: 1m\n  timeout: 5m\n  postBuild:\n    substitute:\n      APP: *app\n' "$${REPO_NAME}" "$${BRANCH}" "$${DEPLOY_DIR}" > "$${DEPLOY_DIR}/ks.yaml"
 
-          # ── Patch prod-system/kustomization.yaml ───────────────────────────────
+          # Patch prod-system/kustomization.yaml
           KS_ENTRY="  - ./apps/$${REPO_NAME}-$${BRANCH}/ks.yaml"
           if ! grep -qF "$${KS_ENTRY}" "$${KS_FILE}"; then
             echo "$${KS_ENTRY}" >> "$${KS_FILE}"

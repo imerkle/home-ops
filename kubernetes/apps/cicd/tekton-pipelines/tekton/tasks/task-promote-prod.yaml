@@ -51,7 +51,6 @@ spec:
         fi
         APPS_BASE="$(params.apps-base-path)"
         PROD_FILE="$${APPS_BASE}/apps/$${REPO_NAME}/app/helmrelease.yaml"
-        TEMPLATE_FILE="$${APPS_BASE}/apps/$${REPO_NAME}/preview/helmrelease.tmpl.yaml"
 
         # ── SSH setup ──────────────────────────────────────────────────────────
         mkdir -p /root/.ssh
@@ -64,41 +63,21 @@ spec:
         git config --global user.email "tekton-preview@cluster.local"
         git config --global user.name  "Tekton Preview Bot"
 
+        apk add --no-cache yq
+
         # ── Clone home-ops ─────────────────────────────────────────────────────
         git clone --depth=1 "$${HOME_OPS_URL}" /workspace/home-ops
         cd /workspace/home-ops
 
         TAG="$${COMMIT_SHA}"
 
-        if [ -f "$${TEMPLATE_FILE}" ]; then
-          echo "[+] Rendering production HelmRelease from master template: $${TEMPLATE_FILE}"
-          mkdir -p "$$(dirname "$${PROD_FILE}")"
-
-          sed -e "s/__APP_NAME__/$${REPO_NAME}/g" \
-              -e "s/__BRANCH_PREFIX__//g" \
-              -e "s/__COMMIT_SHA__/$${TAG}/g" \
-              -e "s/__BRANCH__/main/g" \
-              "$${TEMPLATE_FILE}" > "$${PROD_FILE}.tmp"
-
-          printf '%s\n' '          - name: envoy-internal' '            namespace: network' '          - name: envoy-external' '            namespace: network' > /tmp/parents-prod.yaml
-          sed -e '/__ROUTE_PARENTS__/r /tmp/parents-prod.yaml' -e '/__ROUTE_PARENTS__/d' "$${PROD_FILE}.tmp" > "$${PROD_FILE}"
-          rm -f "$${PROD_FILE}.tmp" /tmp/parents-prod.yaml
-        elif [ -f "$${PROD_FILE}" ]; then
-          echo "[+] Updating tag in existing production helmrelease..."
-          if [ -n "$${TARGET_IMAGE}" ]; then
-            echo "[+] Updating tag for image: $${TARGET_IMAGE} -> $${TAG}"
-            awk -v target="$${TARGET_IMAGE}" -v newtag="$${TAG}" '
-              $0 ~ "repository:.*" target "([^-a-zA-Z0-9]|$)" { in_target=1; print; next }
-              in_target && $1 == "tag:" { sub($2, newtag); in_target=0; print; next }
-              { print }
-            ' "$${PROD_FILE}" > "$${PROD_FILE}.tmp" && mv "$${PROD_FILE}.tmp" "$${PROD_FILE}"
-          else
-            sed -i "s/\(tag: \).*/\1$${TAG}/g" "$${PROD_FILE}"
-          fi
-        else
-          echo "[-] Neither template nor production helmrelease found at $${PROD_FILE} — skipping promotion."
+        if [ ! -f "$${PROD_FILE}" ]; then
+          echo "[-] Production helmrelease not found at $${PROD_FILE} — skipping promotion."
           exit 0
         fi
+
+        echo "[+] Updating production image tag in $${PROD_FILE} to $${TAG}..."
+        yq eval ".spec.values.controllers.*.containers.app.image.tag = \"$${TAG}\"" -i "$${PROD_FILE}"
 
         git add "$${PROD_FILE}"
         if [ -n "$$(git status --porcelain)" ]; then
