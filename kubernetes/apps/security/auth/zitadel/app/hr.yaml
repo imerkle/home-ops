@@ -153,9 +153,3 @@ spec:
                   metadata:
                     annotations:
                       vault.security.banzaicloud.io/vault-env-daemon: "true"
-                  spec:
-                    containers:
-                      - name: zitadel
-                        livenessProbe:
-                          httpGet:
-                            path: /debug/ready
