@@ -173,6 +173,10 @@ spec:
         name: deploy-staging
       runAfter:
         - build-push
+      when:
+        - input: $(params.sanitized-branch)
+          operator: in
+          values: ["main", "master"]
       params:
         - name: service-name
           value: $(params.repo-name)
@@ -210,6 +214,10 @@ spec:
         name: k6-performance-gate
       runAfter:
         - deploy-staging
+      when:
+        - input: $(params.sanitized-branch)
+          operator: in
+          values: ["main", "master"]
       workspaces:
         - name: source
           workspace: shared-workspace
@@ -253,6 +261,10 @@ spec:
     - name: cleanup-staging
       taskRef:
         name: cleanup-staging
+      when:
+        - input: $(params.sanitized-branch)
+          operator: in
+          values: ["main", "master"]
       params:
         - name: service-name
           value: $(params.repo-name)
