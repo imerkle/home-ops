@@ -6,12 +6,6 @@ metadata:
   name: &app game-fetcher-mtui
 spec:
   interval: 1h
-  dependsOn:
-    - name: auth-server
-    - name: settings-server
-    - name: thumbnail-service
-    - name: temporal
-      namespace: dev-system
   chartRef:
     kind: OCIRepository
     name: app-template
