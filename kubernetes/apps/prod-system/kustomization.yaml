@@ -19,3 +19,4 @@ resources:
   - ./apps/thumbnail-service/ks.yaml
   - ./apps/thumbnail-service-feat-blue/ks.yaml
   - ./apps/game-fetcher-mtui/ks.yaml
+  - ./apps/thumbnail-service-desloppify-code-health/ks.yaml
