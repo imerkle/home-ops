@@ -35,8 +35,8 @@ spec:
               repository: zot.${DOMAIN1}/settings-server
               tag: main
             env:
-              PORT: &port "3000"
-              GRPC_PORT: &grpcPort "50051"
+              PORT: "3000"
+              GRPC_PORT: "50051"
               DATABASE_URL: "postgres://$${vault:database/creds/settings-server-role#username}:$${vault:database/creds/settings-server-role#password}@pg-default-rw.db.svc.cluster.local:5432/settings_server?sslmode=disable"
               AUTH_SERVER_ADDR: "auth-server.prod-system:50051"
             securityContext:
@@ -52,7 +52,7 @@ spec:
                 spec:
                   httpGet:
                     path: /readyz
-                    port: *port
+                    port: 3000
                   initialDelaySeconds: 15
                   periodSeconds: 10
                   timeoutSeconds: 3
@@ -63,7 +63,7 @@ spec:
                 spec:
                   httpGet:
                     path: /readyz
-                    port: *port
+                    port: 3000
                   initialDelaySeconds: 5
                   periodSeconds: 10
                   timeoutSeconds: 3
@@ -74,7 +74,7 @@ spec:
                 spec:
                   httpGet:
                     path: /healthz
-                    port: *port
+                    port: 3000
                   initialDelaySeconds: 2
                   periodSeconds: 5
                   timeoutSeconds: 3
@@ -98,6 +98,6 @@ spec:
         controller: settings-server
         ports:
           http:
-            port: *port
+            port: 3000
           grpc:
-            port: *grpcPort
+            port: 50051

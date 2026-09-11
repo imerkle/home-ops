@@ -27,12 +27,59 @@ spec:
               repository: temporalio/auto-setup
               tag: 1.24.2
             env:
+              BIND_ON_IP: "0.0.0.0"
+              TEMPORAL_ADDRESS: "127.0.0.1:7233"
               DB: postgres12
               DB_PORT: "5432"
               POSTGRES_USER: "$${vault:database/creds/temporal-role#username}"
               POSTGRES_PWD: "$${vault:database/creds/temporal-role#password}"
               POSTGRES_SEEDS: "pg-default-rw.db.svc.cluster.local"
+              SQL_MAX_CONN_TIME: "3m"
+              SQL_MAX_IDLE_CONNS: "5"
               SKIP_DB_CREATE: "true"
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - temporal
+                      - operator
+                      - cluster
+                      - health
+                  initialDelaySeconds: 30
+                  periodSeconds: 15
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - temporal
+                      - operator
+                      - cluster
+                      - health
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - temporal
+                      - operator
+                      - cluster
+                      - health
+                  initialDelaySeconds: 5
+                  periodSeconds: 5
+                  timeoutSeconds: 5
+                  failureThreshold: 30
             resources:
               requests:
                 cpu: 5m
@@ -45,6 +92,29 @@ spec:
               tag: 2.27.0
             env:
               TEMPORAL_ADDRESS: "temporal:7233"
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: 8080
+                  initialDelaySeconds: 10
+                  periodSeconds: 15
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: 8080
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
             resources:
               requests:
                 cpu: 5m
