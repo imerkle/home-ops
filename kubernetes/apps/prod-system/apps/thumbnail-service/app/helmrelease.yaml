@@ -33,7 +33,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/thumbnail-service
-              tag: b57fabd2e992f8d0b756635cfd1f46f82e637925
+              tag: 96fa06fdb90de4b58fa1f6f3ad9c0d19db4b8e21
             env:
               PORT: &port "3000"
               GRPC_PORT: &grpcPort "50051"
