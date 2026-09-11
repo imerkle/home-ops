@@ -1,22 +1,27 @@
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
-# Preview template for game-fetcher branch deployments.
-# Placeholders replaced by the deploy-preview Tekton task:
-#   __BRANCH__  → sanitized branch name (e.g. "feature-cool")
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: &app __APP_NAME__
 spec:
   interval: 1h
+  dependsOn:
+    - name: auth-server
+    - name: settings-server
+    - name: thumbnail-service
+    - name: temporal
+      namespace: dev-system
   chartRef:
     kind: OCIRepository
     name: app-template
   maxHistory: 2
   install:
+    disableWait: true
     remediation:
       retries: 3
   upgrade:
+    disableWait: true
     cleanupOnFail: true
     remediation:
       retries: 3
@@ -46,7 +51,7 @@ spec:
               OIDC_ISSUER: "https://zitadel.${DOMAIN1}"
               OIDC_REDIRECT_URL: "https://__BRANCH_PREFIX__game-fetcher.${DOMAIN1}/auth/callback"
               OIDC_SESSION_KEY: "super-secret-session-key-change-me"
-              DATABASE_URL: "postgres://$${vault:database/creds/app-role#username}:$${vault:database/creds/app-role#password}@pg-default-rw.db.svc.cluster.local:5432/gamefetcher?sslmode=disable"
+              DATABASE_URL: "postgres://$${vault:database/creds/game-fetcher-role#username}:$${vault:database/creds/game-fetcher-role#password}@pg-default-rw.db.svc.cluster.local:5432/gamefetcher?sslmode=disable"
               TEMPORAL_HOST: "temporal.dev-system.svc.cluster.local:7233"
               TEMPORAL_NAMESPACE: "default"
               TEMPORAL_TASK_QUEUE: "game-fetcher"
@@ -56,12 +61,58 @@ spec:
               JDOWNLOADER_URL: "http://jdownloader.home-system.svc.cluster.local:3128"
               MEILISEARCH_URL: "http://meilisearch.db.svc.cluster.local:7700"
               MEILISEARCH_API_KEY: "super-secret-master-key"
+              AUTH_SERVER_ADDR: auth-server.prod-system:50051
+              SETTINGS_SERVER_ADDR: settings-server.prod-system:50051
+              THUMBNAIL_SERVER_ADDR: thumbnail-service.prod-system:50051
+              PROWLARR_URL: http://prowlarr.home-system.svc.cluster.local:9696
+              PROWLARR_API_KEY: "vault:secret/data/prowlarr#API_KEY"
+              DOWNLOAD_GAME_FOLDER: games
+              DOWNLOAD_MOVIE_FOLDER: movies
+              SCAN_GAME_PATH: /games
+              SCAN_MOVIE_PATH: /movies
+              KETO_READ_URL: http://keto-read.keto.svc.cluster.local:80
+              KETO_WRITE_URL: http://keto-write.keto.svc.cluster.local:80
+              PYLOAD_API_KEY: pl_11QjyHY-c2WpHMI7KAiKPmiI3cagS0m-VzOe6vU7Bw0lg
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities:
                 drop:
                   - ALL
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /readyz
+                    port: 3000
+                  initialDelaySeconds: 15
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /readyz
+                    port: 3000
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: 3000
+                  initialDelaySeconds: 2
+                  periodSeconds: 5
+                  timeoutSeconds: 3
+                  failureThreshold: 30
             resources:
               requests:
                 cpu: 10m
@@ -82,6 +133,17 @@ spec:
         ports:
           http:
             port: *port
+            appProtocol: kubernetes.io/ws
+    serviceMonitor:
+      app:
+        enabled: true
+        endpoints:
+          - port: http
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 10s
+        serviceName: *app
     route:
       app:
         hostnames:
@@ -89,6 +151,25 @@ spec:
         parentRefs:
 __ROUTE_PARENTS__
         rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /v1/traces
+            backendRefs:
+              - name: otel-collector
+                namespace: observability
+                port: 4318
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /auth
+              - path:
+                  type: PathPrefix
+                  value: /api/auth
+            backendRefs:
+              - name: auth-server
+                namespace: prod-system
+                port: 3000
           - backendRefs:
               - port: *port
                 name: *app
@@ -97,3 +178,10 @@ __ROUTE_PARENTS__
         type: emptyDir
         globalMounts:
           - path: /tmp
+      media:
+        existingClaim: copyparty-hdd
+        globalMounts:
+          - path: /games
+            subPath: downloads/games
+          - path: /movies
+            subPath: downloads/movies
