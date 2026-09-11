@@ -80,14 +80,9 @@ spec:
               -e "s/__BRANCH__/main/g" \
               "$${TEMPLATE_FILE}" > "$${PROD_FILE}.tmp"
 
-          awk -v parents="          - name: envoy-internal
-            namespace: network
-          - name: envoy-external
-            namespace: network" '
-            /__ROUTE_PARENTS__/ { print parents; next }
-            { print }
-          ' "$${PROD_FILE}.tmp" > "$${PROD_FILE}"
-          rm -f "$${PROD_FILE}.tmp"
+          printf '%s\n' '          - name: envoy-internal' '            namespace: network' '          - name: envoy-external' '            namespace: network' > /tmp/parents-prod.yaml
+          sed -e '/__ROUTE_PARENTS__/r /tmp/parents-prod.yaml' -e '/__ROUTE_PARENTS__/d' "$${PROD_FILE}.tmp" > "$${PROD_FILE}"
+          rm -f "$${PROD_FILE}.tmp" /tmp/parents-prod.yaml
         elif [ -f "$${PROD_FILE}" ]; then
           echo "[+] Updating tag in existing production helmrelease..."
           if [ -n "$${TARGET_IMAGE}" ]; then

@@ -99,14 +99,9 @@ spec:
                 -e "s/__BRANCH__/main/g" \
                 "$${TEMPLATE_FILE}" > "$${PROD_FILE}.tmp"
 
-            awk -v parents="          - name: envoy-internal
-            namespace: network
-          - name: envoy-external
-            namespace: network" '
-              /__ROUTE_PARENTS__/ { print parents; next }
-              { print }
-            ' "$${PROD_FILE}.tmp" > "$${PROD_FILE}"
-            rm -f "$${PROD_FILE}.tmp"
+            printf '%s\n' '          - name: envoy-internal' '            namespace: network' '          - name: envoy-external' '            namespace: network' > /tmp/parents-prod.yaml
+            sed -e '/__ROUTE_PARENTS__/r /tmp/parents-prod.yaml' -e '/__ROUTE_PARENTS__/d' "$${PROD_FILE}.tmp" > "$${PROD_FILE}"
+            rm -f "$${PROD_FILE}.tmp" /tmp/parents-prod.yaml
           elif [ -f "$${PROD_FILE}" ]; then
             if [ -n "$${TARGET_IMAGE}" ]; then
               echo "Updating tag for image: $${TARGET_IMAGE} -> $${TAG}"
@@ -153,12 +148,9 @@ spec:
               "$${TEMPLATE_FILE}" > "$${DEPLOY_DIR}/app/helmrelease.yaml.tmp"
 
           # 2. Replace __ROUTE_PARENTS__ with internal gateway
-          awk -v parents="          - name: envoy-internal
-            namespace: network" '
-            /__ROUTE_PARENTS__/ { print parents; next }
-            { print }
-          ' "$${DEPLOY_DIR}/app/helmrelease.yaml.tmp" > "$${DEPLOY_DIR}/app/helmrelease.yaml"
-          rm -f "$${DEPLOY_DIR}/app/helmrelease.yaml.tmp"
+          printf '%s\n' '          - name: envoy-internal' '            namespace: network' > /tmp/parents-preview.yaml
+          sed -e '/__ROUTE_PARENTS__/r /tmp/parents-preview.yaml' -e '/__ROUTE_PARENTS__/d' "$${DEPLOY_DIR}/app/helmrelease.yaml.tmp" > "$${DEPLOY_DIR}/app/helmrelease.yaml"
+          rm -f "$${DEPLOY_DIR}/app/helmrelease.yaml.tmp" /tmp/parents-preview.yaml
 
           # 3. In-repo environment variable overrides (if provided by feature branch)
           SOURCE_DIR=""
