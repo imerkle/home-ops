@@ -17,4 +17,3 @@ resources:
   - ./apps/settings-server/ks.yaml
   - ./apps/sms-vault/ks.yaml
   - ./apps/thumbnail-service/ks.yaml
-  - ./apps/thumbnail-service-feat-blue/ks.yaml
