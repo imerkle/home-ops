@@ -20,6 +20,8 @@ spec:
               # Only trigger on push events to branches (not tags), and skip if all changed files in sms-vault are under flutterui/
               value: >-
                 body.ref.startsWith('refs/heads/') &&
+                (!has(body.deleted) || !body.deleted) &&
+                (!has(body.after) || body.after != '0000000000000000000000000000000000000000') &&
                 (
                   body.repository.name != 'sms-vault' ||
                   !has(body.commits) ||
@@ -86,14 +88,15 @@ spec:
             kind: ClusterInterceptor
           params:
             - name: "filter"
-              # Only trigger on branch delete events (not tag deletes)
+              # Trigger on branch delete events from UI or git CLI (push with deleted: true or after: 000...)
               value: >-
-                header.match('X-Gitea-Event', 'delete') && body.ref_type == 'branch'
+                (header.match('X-Gitea-Event', 'delete') && body.ref_type == 'branch') ||
+                (header.match('X-Gitea-Event', 'push') && body.ref.startsWith('refs/heads/') && ((has(body.deleted) && body.deleted) || (has(body.after) && body.after == '0000000000000000000000000000000000000000')))
             - name: "overlays"
               value:
-                # Sanitize: replace all '/' with '-' to form a valid preview name
+                # Sanitize: strip refs/heads/ if present, replace all '/' with '-' to form a valid preview name
                 - key: sanitized_branch
-                  expression: "body.ref.replace('/', '-')"
+                  expression: "body.ref.replace('refs/heads/', '').replace('/', '-')"
                 # Sanitize repo: convert to lowercase and replace '_' with '-'
                 - key: sanitized_repo_name
                   expression: >-
