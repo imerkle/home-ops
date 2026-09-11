@@ -139,3 +139,34 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: tekton-pipeline-runner-role
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tekton-pipeline-runner-deployments
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+rules:
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tekton-pipeline-runner-deployments
+  labels:
+    app.kubernetes.io/part-of: tekton-tasks
+subjects:
+  - kind: ServiceAccount
+    name: tekton-pipeline-runner
+    namespace: tekton-pipelines
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-pipeline-runner-deployments

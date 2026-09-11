@@ -27,6 +27,10 @@ spec:
       description: Relative path to test.js inside workspace.
       type: string
       default: "loadtests/test.js"
+    - name: target-namespace
+      description: Target Kubernetes namespace where the service is deployed.
+      type: string
+      default: "prod-system"
     - name: prometheus-remote-write-url
       description: URL of Prometheus remote write endpoint.
       type: string
@@ -43,6 +47,62 @@ spec:
     - name: source
       description: Workspace containing the application repository and k6 test script.
   steps:
+    - name: await-rollout
+      image: bitnami/kubectl:latest
+      computeResources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 256Mi
+      script: |
+        #!/bin/bash
+        set -euo pipefail
+
+        SCRIPT_FULL_PATH="$(workspaces.source.path)/$(params.script-path)"
+        if [ ! -f "$SCRIPT_FULL_PATH" ]; then
+          echo "[i] Notice: No k6 test script found at $SCRIPT_FULL_PATH. Skipping rollout wait."
+          exit 0
+        fi
+
+        SERVICE="$(params.service-name)"
+        COMMIT="$(params.commit-sha)"
+        NAMESPACE="$(params.target-namespace)"
+
+        echo "=========================================================="
+        echo "  Awaiting Deployment Rollout: $SERVICE ($NAMESPACE)"
+        echo "  Target Commit: $COMMIT"
+        echo "=========================================================="
+
+        if ! kubectl get deployment "$SERVICE" -n "$NAMESPACE" >/dev/null 2>&1; then
+          echo "[i] Deployment '$SERVICE' not currently found in '$NAMESPACE'. Skipping rollout wait."
+          exit 0
+        fi
+
+        echo "[+] Waiting up to 60s for Flux to sync candidate commit $COMMIT..."
+        SYNCED=false
+        for i in $(seq 1 30); do
+          CURRENT_IMAGE=$(kubectl get deployment "$SERVICE" -n "$NAMESPACE" -o jsonpath='{.spec.template.spec.containers[?(@.name=="app")].image}' 2>/dev/null || true)
+          if [ -z "$CURRENT_IMAGE" ]; then
+            CURRENT_IMAGE=$(kubectl get deployment "$SERVICE" -n "$NAMESPACE" -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || true)
+          fi
+          if echo "$CURRENT_IMAGE" | grep -q "$COMMIT"; then
+            echo "[+] Flux applied candidate image: $CURRENT_IMAGE"
+            SYNCED=true
+            break
+          fi
+          sleep 2
+        done
+
+        if [ "$SYNCED" = false ]; then
+          echo "[!] Flux sync wait concluded (current image: $CURRENT_IMAGE). Proceeding to rollout check."
+        fi
+
+        echo "[+] Waiting for deployment rollout to stabilize..."
+        kubectl rollout status deployment/"$SERVICE" -n "$NAMESPACE" --timeout=120s
+
+        echo "[+] Service is fully rolled out and ready for load testing!"
+        sleep 5
     - name: run-k6-gate
       image: ghcr.io/grafana/k6:latest
       computeResources:
@@ -94,9 +154,6 @@ spec:
         if [ -n "$(params.duration)" ]; then
           EXTRA_ARGS="$EXTRA_ARGS --duration $(params.duration)"
         fi
-
-        echo "[+] Waiting 15s for deployment rollout to stabilize..."
-        sleep 15
 
         echo "[+] Executing k6 with SLA thresholds..."
         k6 run \

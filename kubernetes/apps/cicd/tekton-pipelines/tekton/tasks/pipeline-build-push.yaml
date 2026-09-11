@@ -155,20 +155,11 @@ spec:
             - $(params.extra-args[*])
         - name: PROTOCOL
           value: $(params.protocol)
-  results:
-    - name: image-digest
-      description: The digest of the built image.
-      value: $(tasks.build-push.results.IMAGE_DIGEST)
-    - name: image-url
-      description: The URL of the built image.
-      value: $(tasks.build-push.results.IMAGE_URL)
-    - name: commit-sha
-      description: The exact commit SHA that was built.
-      value: $(tasks.fetch-source.results.commit)
-  finally:
     - name: deploy-preview
       taskRef:
         name: deploy-preview
+      runAfter:
+        - build-push
       workspaces:
         - name: ssh-credentials
           workspace: ssh-credentials
@@ -186,6 +177,8 @@ spec:
     - name: performance-gate
       taskRef:
         name: k6-performance-gate
+      runAfter:
+        - deploy-preview
       workspaces:
         - name: source
           workspace: shared-workspace
@@ -196,4 +189,14 @@ spec:
           value: $(params.revision)
         - name: target-url
           value: "http://$(params.repo-name).prod-system.svc.cluster.local:3000"
+  results:
+    - name: image-digest
+      description: The digest of the built image.
+      value: $(tasks.build-push.results.IMAGE_DIGEST)
+    - name: image-url
+      description: The URL of the built image.
+      value: $(tasks.build-push.results.IMAGE_URL)
+    - name: commit-sha
+      description: The exact commit SHA that was built.
+      value: $(tasks.fetch-source.results.commit)
 
