@@ -27,8 +27,6 @@ spec:
               repository: temporalio/auto-setup
               tag: 1.24.2
             env:
-              BIND_ON_IP: "0.0.0.0"
-              TEMPORAL_ADDRESS: "127.0.0.1:7233"
               DB: postgres12
               DB_PORT: "5432"
               POSTGRES_USER: "$${vault:database/creds/temporal-role#username}"
@@ -44,10 +42,9 @@ spec:
                 spec:
                   exec:
                     command:
-                      - temporal
-                      - operator
-                      - cluster
-                      - health
+                      - sh
+                      - -c
+                      - temporal operator cluster health --address $(getent hosts $(hostname) | awk '{print $1}'):7233
                   initialDelaySeconds: 30
                   periodSeconds: 15
                   timeoutSeconds: 5
@@ -58,10 +55,9 @@ spec:
                 spec:
                   exec:
                     command:
-                      - temporal
-                      - operator
-                      - cluster
-                      - health
+                      - sh
+                      - -c
+                      - temporal operator cluster health --address $(getent hosts $(hostname) | awk '{print $1}'):7233
                   initialDelaySeconds: 10
                   periodSeconds: 10
                   timeoutSeconds: 5
@@ -72,10 +68,9 @@ spec:
                 spec:
                   exec:
                     command:
-                      - temporal
-                      - operator
-                      - cluster
-                      - health
+                      - sh
+                      - -c
+                      - temporal operator cluster health --address $(getent hosts $(hostname) | awk '{print $1}'):7233
                   initialDelaySeconds: 5
                   periodSeconds: 5
                   timeoutSeconds: 5
