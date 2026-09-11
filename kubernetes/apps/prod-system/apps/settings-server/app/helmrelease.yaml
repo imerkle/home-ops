@@ -33,7 +33,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/settings-server
-              tag: main
+              tag: 77f2e1bff30f29a56f07148f2642d18c5e8f1dd4
             env:
               PORT: "3000"
               GRPC_PORT: "50051"
