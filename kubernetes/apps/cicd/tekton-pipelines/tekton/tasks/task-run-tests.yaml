@@ -26,10 +26,10 @@ spec:
       image: golang:1.26.2-alpine
       computeResources:
         requests:
-          cpu: 100m
-          memory: 128Mi
+          cpu: 500m
+          memory: 512Mi
         limits:
-          memory: 1Gi
+          memory: 4Gi
       script: |
         #!/bin/sh
         set -eu
