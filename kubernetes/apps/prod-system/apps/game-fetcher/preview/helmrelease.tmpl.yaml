@@ -6,7 +6,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app game-fetcher-__BRANCH__
+  name: &app __APP_NAME__
 spec:
   interval: 1h
   chartRef:
@@ -24,7 +24,7 @@ spec:
     keepHistory: false
   values:
     controllers:
-      game-fetcher-__BRANCH__:
+      __APP_NAME__:
         annotations:
           reloader.stakater.com/auto: "true"
         pod:
@@ -40,11 +40,11 @@ spec:
               RAWG: "vault:secret/data/ext_services#RAWG"
               OIDC_CLIENT_ID: "vault:secret/data/ext_services#OIDC_CLIENT_ID"
               OIDC_CLIENT_SECRET: "vault:secret/data/ext_services#OIDC_CLIENT_SECRET"
-              BASE_URL: "https://__BRANCH__-game-fetcher.${DOMAIN1}"
+              BASE_URL: "https://__BRANCH_PREFIX__game-fetcher.${DOMAIN1}"
               SOURCES: '[{"name":"FitGirl Local","url":"file://sources/fitgirl.json"}, {"name":"Dodi Local","url":"file://sources/dodi.json"}, {"name":"Kazumi Local","url":"file://sources/kazumi.json"}, {"name":"Xatab Local","url":"file://sources/xatab.json"}]'
               INDEX_INTERVAL: "1h"
               OIDC_ISSUER: "https://zitadel.${DOMAIN1}"
-              OIDC_REDIRECT_URL: "https://__BRANCH__-game-fetcher.${DOMAIN1}/auth/callback"
+              OIDC_REDIRECT_URL: "https://__BRANCH_PREFIX__game-fetcher.${DOMAIN1}/auth/callback"
               OIDC_SESSION_KEY: "super-secret-session-key-change-me"
               DATABASE_URL: "postgres://$${vault:database/creds/app-role#username}:$${vault:database/creds/app-role#password}@pg-default-rw.db.svc.cluster.local:5432/gamefetcher?sslmode=disable"
               TEMPORAL_HOST: "temporal.dev-system.svc.cluster.local:7233"
@@ -78,17 +78,16 @@ spec:
           type: RuntimeDefault
     service:
       app:
-        controller: game-fetcher-__BRANCH__
+        controller: __APP_NAME__
         ports:
           http:
             port: *port
     route:
       app:
         hostnames:
-          - "__BRANCH__-game-fetcher.${DOMAIN1}"
+          - "__BRANCH_PREFIX__game-fetcher.${DOMAIN1}"
         parentRefs:
-          - name: envoy-internal
-            namespace: network
+__ROUTE_PARENTS__
         rules:
           - backendRefs:
               - port: *port

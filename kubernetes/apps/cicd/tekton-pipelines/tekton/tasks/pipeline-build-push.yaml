@@ -183,6 +183,8 @@ spec:
       workspaces:
         - name: ssh-credentials
           workspace: ssh-credentials
+        - name: source
+          workspace: shared-workspace
       params:
         - name: repo-name
           value: $(params.repo-name)

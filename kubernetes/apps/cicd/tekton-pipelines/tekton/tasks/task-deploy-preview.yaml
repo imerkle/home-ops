@@ -41,6 +41,9 @@ spec:
         Secret volume containing identity (private key), identity.pub,
         and known_hosts for SSH push access to home-ops.
       mountPath: /root/.ssh-secret
+    - name: source
+      description: Workspace containing the cloned application repository.
+      optional: true
   steps:
     - name: clone-and-deploy
       image: alpine/git:2.43.0
@@ -74,6 +77,8 @@ spec:
         git config --global user.email "tekton-preview@cluster.local"
         git config --global user.name  "Tekton Preview Bot"
 
+        apk add --no-cache yq
+
         # ── Clone home-ops ─────────────────────────────────────────────────────
         git clone --depth=1 "$${HOME_OPS_URL}" /workspace/home-ops
         cd /workspace/home-ops
@@ -82,21 +87,40 @@ spec:
         if [ "$${BRANCH}" = "main" ] || [ "$${BRANCH}" = "master" ]; then
           echo "Branch is $${BRANCH} — updating production deployment."
           PROD_FILE="$${APPS_BASE}/apps/$${REPO_NAME}/app/helmrelease.yaml"
-          if [ ! -f "$${PROD_FILE}" ]; then
+          TAG="$${COMMIT_SHA}"
+
+          if [ -f "$${TEMPLATE_FILE}" ]; then
+            echo "[+] Rendering production HelmRelease from master template: $${TEMPLATE_FILE}"
+            mkdir -p "$$(dirname "$${PROD_FILE}")"
+
+            sed -e "s/__APP_NAME__/$${REPO_NAME}/g" \
+                -e "s/__BRANCH_PREFIX__//g" \
+                -e "s/__COMMIT_SHA__/$${TAG}/g" \
+                -e "s/__BRANCH__/main/g" \
+                "$${TEMPLATE_FILE}" > "$${PROD_FILE}.tmp"
+
+            awk -v parents="          - name: envoy-internal
+            namespace: network
+          - name: envoy-external
+            namespace: network" '
+              /__ROUTE_PARENTS__/ { print parents; next }
+              { print }
+            ' "$${PROD_FILE}.tmp" > "$${PROD_FILE}"
+            rm -f "$${PROD_FILE}.tmp"
+          elif [ -f "$${PROD_FILE}" ]; then
+            if [ -n "$${TARGET_IMAGE}" ]; then
+              echo "Updating tag for image: $${TARGET_IMAGE} -> $${TAG}"
+              awk -v target="$${TARGET_IMAGE}" -v newtag="$${TAG}" '
+                $0 ~ "repository:.*" target "([^-a-zA-Z0-9]|$)" { in_target=1; print; next }
+                in_target && $1 == "tag:" { sub($2, newtag); in_target=0; print; next }
+                { print }
+              ' "$${PROD_FILE}" > "$${PROD_FILE}.tmp" && mv "$${PROD_FILE}.tmp" "$${PROD_FILE}"
+            else
+              sed -i "s/\(tag: \).*/\1$${TAG}/g" "$${PROD_FILE}"
+            fi
+          else
             echo "Production helmrelease not found at $${PROD_FILE} — skipping."
             exit 0
-          fi
-          # Replace tag in production helmrelease
-          TAG="$${COMMIT_SHA}"
-          if [ -n "$${TARGET_IMAGE}" ]; then
-            echo "Updating tag for image: $${TARGET_IMAGE} -> $${TAG}"
-            awk -v target="$${TARGET_IMAGE}" -v newtag="$${TAG}" '
-              $0 ~ "repository:.*" target "([^-a-zA-Z0-9]|$)" { in_target=1; print; next }
-              in_target && $1 == "tag:" { sub($2, newtag); in_target=0; print; next }
-              { print }
-            ' "$${PROD_FILE}" > "$${PROD_FILE}.tmp" && mv "$${PROD_FILE}.tmp" "$${PROD_FILE}"
-          else
-            sed -i "s/\(tag: \).*/\1$${TAG}/g" "$${PROD_FILE}"
           fi
           git add "$${PROD_FILE}"
         else
@@ -118,8 +142,53 @@ spec:
           mkdir -p "$${DEPLOY_DIR}/app"
 
           TAG="$${COMMIT_SHA:-$${BRANCH}}"
-          sed -e "s/__BRANCH__/$${BRANCH}/g" -e "s/__COMMIT_SHA__/$${TAG}/g" "$${TEMPLATE_FILE}" \
-            > "$${DEPLOY_DIR}/app/helmrelease.yaml"
+          APP_NAME="$${REPO_NAME}-$${BRANCH}"
+          BRANCH_PREFIX="$${BRANCH}-"
+
+          # 1. Substitute standard placeholders
+          sed -e "s/__APP_NAME__/$${APP_NAME}/g" \
+              -e "s/__BRANCH_PREFIX__/$${BRANCH_PREFIX}/g" \
+              -e "s/__COMMIT_SHA__/$${TAG}/g" \
+              -e "s/__BRANCH__/$${BRANCH}/g" \
+              "$${TEMPLATE_FILE}" > "$${DEPLOY_DIR}/app/helmrelease.yaml.tmp"
+
+          # 2. Replace __ROUTE_PARENTS__ with internal gateway
+          awk -v parents="          - name: envoy-internal
+            namespace: network" '
+            /__ROUTE_PARENTS__/ { print parents; next }
+            { print }
+          ' "$${DEPLOY_DIR}/app/helmrelease.yaml.tmp" > "$${DEPLOY_DIR}/app/helmrelease.yaml"
+          rm -f "$${DEPLOY_DIR}/app/helmrelease.yaml.tmp"
+
+          # 3. In-repo environment variable overrides (if provided by feature branch)
+          SOURCE_DIR=""
+          if [ "$(workspaces.source.bound)" = "true" ]; then
+            SOURCE_DIR="$(workspaces.source.path)"
+          fi
+
+          if [ -n "$${SOURCE_DIR}" ] && [ -d "$${SOURCE_DIR}" ]; then
+            ENV_OVERRIDE=""
+            if [ -f "$${SOURCE_DIR}/.preview.env" ]; then
+              ENV_OVERRIDE="$${SOURCE_DIR}/.preview.env"
+            elif [ -f "$${SOURCE_DIR}/preview.env" ]; then
+              ENV_OVERRIDE="$${SOURCE_DIR}/preview.env"
+            fi
+
+            if [ -n "$${ENV_OVERRIDE}" ]; then
+              echo "[+] Applying in-repo environment overrides from $${ENV_OVERRIDE}..."
+              while IFS='=' read -r key value || [ -n "$$key" ]; do
+                case "$$key" in \#*|"") continue ;; esac
+                key=$$(echo "$$key" | tr -d '[:space:]')
+                value=$$(echo "$$value" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$$//' -e 's/^"//' -e 's/"$$//')
+                yq eval ".spec.values.controllers.*.containers.app.env.\"$${key}\" = \"$${value}\"" -i "$${DEPLOY_DIR}/app/helmrelease.yaml"
+              done < "$${ENV_OVERRIDE}"
+            fi
+
+            if [ -f "$${SOURCE_DIR}/preview.yaml" ]; then
+              echo "[+] Merging in-repo preview.yaml overlay..."
+              yq eval-all '.spec.values.controllers.*.containers.app.env += load("'"$${SOURCE_DIR}"'/preview.yaml").env' -i "$${DEPLOY_DIR}/app/helmrelease.yaml"
+            fi
+          fi
 
           cat > "$${DEPLOY_DIR}/app/kustomization.yaml" << EOF
         ---
