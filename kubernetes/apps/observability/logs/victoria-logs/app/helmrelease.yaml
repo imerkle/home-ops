@@ -14,7 +14,7 @@ spec:
     server:
       resources:
         requests:
-          cpu: 35m
+          cpu: 10m
           memory: 2162Mi
       persistentVolume:
         enabled: true

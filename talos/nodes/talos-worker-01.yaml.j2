@@ -12,3 +12,10 @@ machine:
       register-with-taints: "dedicated=tekton-runner:NoSchedule"
   network:
     hostname: talos-worker-01
+    interfaces:
+      - interface: enp1s0
+        addresses:
+          - 10.0.0.22/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.0.4

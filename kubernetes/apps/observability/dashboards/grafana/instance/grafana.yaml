@@ -70,6 +70,12 @@ spec:
                       key: client_secret
                 - name: GF_INSTALL_PLUGINS
                   value: "victoriametrics-logs-datasource,grafana-piechart-panel"
+              resources:
+                requests:
+                  cpu: 25m
+                  memory: 128Mi
+                limits:
+                  memory: 1Gi
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
