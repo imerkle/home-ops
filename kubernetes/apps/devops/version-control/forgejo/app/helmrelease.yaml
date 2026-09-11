@@ -71,6 +71,8 @@ spec:
               FORGEJO__database__NAME: forgejo
               FORGEJO__database__USER: "$${vault:database/creds/forgejo-role#username}"
               FORGEJO__database__PASSWD: "$${vault:database/creds/forgejo-role#password}"
+              FORGEJO__database__CONN_MAX_LIFETIME: "3m"
+              FORGEJO__database__MAX_IDLE_CONNS: "2"
               FORGEJO__metrics__ENABLED: "true"
               FORGEJO__repository__ENABLE_PUSH_CREATE_USER: "true"
               FORGEJO__repository__ENABLE_PUSH_CREATE_ORG: "true"
@@ -129,7 +131,7 @@ spec:
                   httpGet:
                     path: /api/healthz
                     port: 3000
-                  initialDelaySeconds: 5
+                  initialDelaySeconds: 2
                   periodSeconds: 5
                   timeoutSeconds: 3
                   failureThreshold: 30
