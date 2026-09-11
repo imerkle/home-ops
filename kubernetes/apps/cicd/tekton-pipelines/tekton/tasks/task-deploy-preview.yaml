@@ -122,7 +122,8 @@ spec:
             .spec.values.controllers.\"$${APP_NAME}\".containers.app.image.tag = \"$${TAG}\" |
             .spec.values.route.app.hostnames[] |= (\"$${BRANCH}-\" + .) |
             .spec.values.route.app.parentRefs = [{\"name\":\"envoy-internal\",\"namespace\":\"network\"}] |
-            .spec.values.route.app.rules[-1].backendRefs[0].name = \"$${APP_NAME}\"
+            .spec.values.route.app.rules[-1].backendRefs[0].name = \"$${APP_NAME}\" |
+            .spec.values.defaultPodOptions.tolerations += [{\"key\":\"dedicated\",\"operator\":\"Equal\",\"value\":\"tekton-runner\",\"effect\":\"NoSchedule\"}]
           " -i "$${DEPLOY_DIR}/app/helmrelease.yaml"
 
           # Update serviceMonitor serviceName if present

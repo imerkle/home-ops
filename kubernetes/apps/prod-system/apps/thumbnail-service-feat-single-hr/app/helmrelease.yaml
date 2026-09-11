@@ -101,6 +101,11 @@ spec:
         fsGroup: 65534
         seccompProfile:
           type: RuntimeDefault
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          value: tekton-runner
+          effect: NoSchedule
     service:
       app:
         controller: thumbnail-service-feat-single-hr
