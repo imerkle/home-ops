@@ -30,6 +30,7 @@ spec:
   values:
     controllers:
       game-fetcher:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         pod:
@@ -64,7 +65,7 @@ spec:
               AUTH_SERVER_ADDR: auth-server.prod-system:50051
               SETTINGS_SERVER_ADDR: settings-server.prod-system:50051
               THUMBNAIL_SERVER_ADDR: thumbnail-service.prod-system:50051
-              PROWLARR_URL:  http://prowlarr.home-system.svc.cluster.local:9696
+              PROWLARR_URL: http://prowlarr.home-system.svc.cluster.local:9696
               PROWLARR_API_KEY: "vault:secret/data/prowlarr#API_KEY"
               DOWNLOAD_GAME_FOLDER: games
               DOWNLOAD_MOVIE_FOLDER: movies
@@ -79,43 +80,9 @@ spec:
               capabilities:
                 drop:
                   - ALL
-            probes:
-              liveness:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /readyz
-                    port: 3000
-                  initialDelaySeconds: 15
-                  periodSeconds: 10
-                  timeoutSeconds: 3
-                  failureThreshold: 3
-              readiness:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /readyz
-                    port: 3000
-                  initialDelaySeconds: 5
-                  periodSeconds: 10
-                  timeoutSeconds: 3
-                  failureThreshold: 3
-              startup:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /healthz
-                    port: 3000
-                  initialDelaySeconds: 2
-                  periodSeconds: 5
-                  timeoutSeconds: 3
-                  failureThreshold: 30
             resources:
               requests:
-                cpu: 10m
+                cpu: 5m
                 memory: 16Mi
               limits:
                 memory: 300Mi

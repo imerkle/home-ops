@@ -24,6 +24,7 @@ spec:
   values:
     controllers:
       settings-server:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         pod:
@@ -45,43 +46,9 @@ spec:
               capabilities:
                 drop:
                   - ALL
-            probes:
-              liveness:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /readyz
-                    port: 3000
-                  initialDelaySeconds: 15
-                  periodSeconds: 10
-                  timeoutSeconds: 3
-                  failureThreshold: 3
-              readiness:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /readyz
-                    port: 3000
-                  initialDelaySeconds: 5
-                  periodSeconds: 10
-                  timeoutSeconds: 3
-                  failureThreshold: 3
-              startup:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /healthz
-                    port: 3000
-                  initialDelaySeconds: 2
-                  periodSeconds: 5
-                  timeoutSeconds: 3
-                  failureThreshold: 30
             resources:
               requests:
-                cpu: 10m
+                cpu: 5m
                 memory: 16Mi
               limits:
                 memory: 128Mi
