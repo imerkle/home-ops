@@ -33,7 +33,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/game-fetcher
-              tag: d21dd757f9e637d11ebaad85d4c265b46f210020
+              tag: 24bb66efc4bf21c7c38c76cb9e2f48615cf5619e
             env:
               PORT: &port "3000"
               RAWG: "vault:secret/data/ext_services#RAWG"
@@ -179,7 +179,7 @@ spec:
         globalMounts:
           - path: /tmp
       media:
-        type: emptyDir
         globalMounts:
           - path: /games
           - path: /movies
+        type: emptyDir
