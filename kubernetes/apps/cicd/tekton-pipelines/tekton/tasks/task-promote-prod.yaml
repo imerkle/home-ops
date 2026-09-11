@@ -46,11 +46,11 @@ spec:
         COMMIT_SHA="$(params.commit-sha)"
         TARGET_IMAGE="$(params.target-image-name)"
         HOME_OPS_URL="$(params.home-ops-url)"
-        if [ -z "${HOME_OPS_URL}" ]; then
+        if [ -z "$${HOME_OPS_URL}" ]; then
           HOME_OPS_URL="git@github.com:imerkle/home-ops.git"
         fi
         APPS_BASE="$(params.apps-base-path)"
-        PROD_FILE="${APPS_BASE}/apps/${REPO_NAME}/app/helmrelease.yaml"
+        PROD_FILE="$${APPS_BASE}/apps/$${REPO_NAME}/app/helmrelease.yaml"
 
         # ── SSH setup ──────────────────────────────────────────────────────────
         mkdir -p /root/.ssh
@@ -64,33 +64,33 @@ spec:
         git config --global user.name  "Tekton Preview Bot"
 
         # ── Clone home-ops ─────────────────────────────────────────────────────
-        git clone --depth=1 "${HOME_OPS_URL}" /workspace/home-ops
+        git clone --depth=1 "$${HOME_OPS_URL}" /workspace/home-ops
         cd /workspace/home-ops
 
-        if [ ! -f "${PROD_FILE}" ]; then
-          echo "[-] Production helmrelease not found at ${PROD_FILE} — skipping promotion."
+        if [ ! -f "$${PROD_FILE}" ]; then
+          echo "[-] Production helmrelease not found at $${PROD_FILE} — skipping promotion."
           exit 0
         fi
 
-        TAG="${COMMIT_SHA}"
-        if [ -n "${TARGET_IMAGE}" ]; then
-          echo "[+] Updating tag for image: ${TARGET_IMAGE} -> ${TAG}"
-          awk -v target="${TARGET_IMAGE}" -v newtag="${TAG}" '
+        TAG="$${COMMIT_SHA}"
+        if [ -n "$${TARGET_IMAGE}" ]; then
+          echo "[+] Updating tag for image: $${TARGET_IMAGE} -> $${TAG}"
+          awk -v target="$${TARGET_IMAGE}" -v newtag="$${TAG}" '
             $0 ~ "repository:.*" target "([^-a-zA-Z0-9]|$)" { in_target=1; print; next }
             in_target && $1 == "tag:" { sub($2, newtag); in_target=0; print; next }
             { print }
-          ' "${PROD_FILE}" > "${PROD_FILE}.tmp" && mv "${PROD_FILE}.tmp" "${PROD_FILE}"
+          ' "$${PROD_FILE}" > "$${PROD_FILE}.tmp" && mv "$${PROD_FILE}.tmp" "$${PROD_FILE}"
         else
-          sed -i "s/\(tag: \).*/\1${TAG}/g" "${PROD_FILE}"
+          sed -i "s/\(tag: \).*/\1$${TAG}/g" "$${PROD_FILE}"
         fi
 
-        git add "${PROD_FILE}"
-        if [ -n "$(git status --porcelain)" ]; then
-          git commit -m "flux(prod): promote ${REPO_NAME} to ${TAG} (passed SLA performance gate)"
+        git add "$${PROD_FILE}"
+        if [ -n "$$(git status --porcelain)" ]; then
+          git commit -m "flux(prod): promote $${REPO_NAME} to $${TAG} (passed SLA performance gate)"
           git push origin HEAD
-          echo "[+] Promoted ${REPO_NAME} to ${TAG} in home-ops GitOps repo."
+          echo "[+] Promoted $${REPO_NAME} to $${TAG} in home-ops GitOps repo."
         else
-          echo "[i] No changes detected in ${PROD_FILE} (already at ${TAG})."
+          echo "[i] No changes detected in $${PROD_FILE} (already at $${TAG})."
         fi
 
     - name: sync-flux-and-await-rollout
@@ -110,41 +110,41 @@ spec:
         NAMESPACE="prod-system"
 
         echo "=========================================================="
-        echo "  Triggering Production Deployment: $SERVICE"
-        echo "  Verified Commit: $COMMIT"
+        echo "  Triggering Production Deployment: $$SERVICE"
+        echo "  Verified Commit: $$COMMIT"
         echo "=========================================================="
 
         echo "[+] Triggering immediate Flux reconciliation..."
-        kubectl annotate --overwrite gitrepository flux-system -n flux-system reconcile.fluxcd.io/requestedAt="$(date +%s)" || true
-        kubectl annotate --overwrite kustomization "$SERVICE" -n "$NAMESPACE" reconcile.fluxcd.io/requestedAt="$(date +%s)" 2>/dev/null || true
-        kubectl annotate --overwrite helmrelease "$SERVICE" -n "$NAMESPACE" reconcile.fluxcd.io/requestedAt="$(date +%s)" 2>/dev/null || true
+        kubectl annotate --overwrite gitrepository flux-system -n flux-system reconcile.fluxcd.io/requestedAt="$$(date +%s)" || true
+        kubectl annotate --overwrite kustomization "$$SERVICE" -n "$$NAMESPACE" reconcile.fluxcd.io/requestedAt="$$(date +%s)" 2>/dev/null || true
+        kubectl annotate --overwrite helmrelease "$$SERVICE" -n "$$NAMESPACE" reconcile.fluxcd.io/requestedAt="$$(date +%s)" 2>/dev/null || true
 
-        echo "[+] Waiting for Flux to apply verified commit $COMMIT..."
+        echo "[+] Waiting for Flux to apply verified commit $$COMMIT..."
         SYNCED=false
-        for i in $(seq 1 45); do
-          CURRENT_IMAGE=$(kubectl get deployment "$SERVICE" -n "$NAMESPACE" -o jsonpath='{.spec.template.spec.containers[?(@.name=="app")].image}' 2>/dev/null || true)
-          if [ -z "$CURRENT_IMAGE" ]; then
-            CURRENT_IMAGE=$(kubectl get deployment "$SERVICE" -n "$NAMESPACE" -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || true)
+        for i in $$(seq 1 45); do
+          CURRENT_IMAGE=$$(kubectl get deployment "$$SERVICE" -n "$$NAMESPACE" -o jsonpath='{.spec.template.spec.containers[?(@.name=="app")].image}' 2>/dev/null || true)
+          if [ -z "$$CURRENT_IMAGE" ]; then
+            CURRENT_IMAGE=$$(kubectl get deployment "$$SERVICE" -n "$$NAMESPACE" -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null || true)
           fi
-          if echo "$CURRENT_IMAGE" | grep -q "$COMMIT"; then
-            echo "[+] Flux applied verified image: $CURRENT_IMAGE (after ${i} iterations)"
+          if echo "$$CURRENT_IMAGE" | grep -q "$$COMMIT"; then
+            echo "[+] Flux applied verified image: $$CURRENT_IMAGE (after $${i} iterations)"
             SYNCED=true
             break
           fi
-          if [ $((i % 10)) -eq 0 ]; then
-            echo "[i] Re-triggering Flux reconciliation (attempt $i)..."
-            kubectl annotate --overwrite gitrepository flux-system -n flux-system reconcile.fluxcd.io/requestedAt="$(date +%s)" || true
-            kubectl annotate --overwrite helmrelease "$SERVICE" -n "$NAMESPACE" reconcile.fluxcd.io/requestedAt="$(date +%s)" 2>/dev/null || true
+          if [ $$((i % 10)) -eq 0 ]; then
+            echo "[i] Re-triggering Flux reconciliation (attempt $$i)..."
+            kubectl annotate --overwrite gitrepository flux-system -n flux-system reconcile.fluxcd.io/requestedAt="$$(date +%s)" || true
+            kubectl annotate --overwrite helmrelease "$$SERVICE" -n "$$NAMESPACE" reconcile.fluxcd.io/requestedAt="$$(date +%s)" 2>/dev/null || true
           fi
           sleep 2
         done
 
-        if [ "$SYNCED" = false ]; then
-          echo "[-] Warning: Flux did not update deployment image to $COMMIT within timeout."
-          echo "[-] Current deployed image: $CURRENT_IMAGE"
+        if [ "$$SYNCED" = false ]; then
+          echo "[-] Warning: Flux did not update deployment image to $$COMMIT within timeout."
+          echo "[-] Current deployed image: $$CURRENT_IMAGE"
         fi
 
         echo "[+] Awaiting production rollout..."
-        kubectl rollout status deployment/"$SERVICE" -n "$NAMESPACE" --timeout=180s
+        kubectl rollout status deployment/"$$SERVICE" -n "$$NAMESPACE" --timeout=180s
 
-        echo "[+] Production deployment of $SERVICE ($COMMIT) successfully rolled out!"
+        echo "[+] Production deployment of $$SERVICE ($$COMMIT) successfully rolled out!"

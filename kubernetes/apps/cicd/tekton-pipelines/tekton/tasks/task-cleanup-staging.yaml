@@ -33,7 +33,7 @@ spec:
 
         SERVICE="$(params.service-name)"
         NAMESPACE="$(params.namespace)"
-        STAGING_NAME="${SERVICE}-staging"
+        STAGING_NAME="$(params.service-name)-staging"
 
         echo "=========================================================="
         echo "  Tearing Down Ephemeral Staging: $STAGING_NAME ($NAMESPACE)"
