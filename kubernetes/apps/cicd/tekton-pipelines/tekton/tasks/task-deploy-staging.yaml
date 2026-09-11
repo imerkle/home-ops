@@ -53,10 +53,10 @@ spec:
         COMMIT="$(params.commit-sha)"
         NAMESPACE="$(params.namespace)"
         PORT="$(params.port)"
-        STAGING_NAME="${SERVICE}-staging"
+        STAGING_NAME="$(params.service-name)-staging"
 
         # Translate internal cluster registry endpoint to externally resolvable host for kubelet
-        IMAGE="${IMAGE//zot.dev-system.svc.cluster.local:5000/zot.x3y.space}"
+        IMAGE="$${IMAGE//zot.dev-system.svc.cluster.local:5000/zot.x3y.space}"
 
         echo "=========================================================="
         echo "  Deploying Ephemeral Staging: $STAGING_NAME ($NAMESPACE)"
@@ -123,7 +123,7 @@ spec:
         echo "[+] Awaiting rollout of '$STAGING_NAME'..."
         kubectl rollout status deployment/"$STAGING_NAME" -n "$NAMESPACE" --timeout=120s
 
-        STAGING_URL="http://${STAGING_NAME}.${NAMESPACE}.svc.cluster.local:${PORT}"
+        STAGING_URL="http://$${STAGING_NAME}.$${NAMESPACE}.svc.cluster.local:$${PORT}"
         echo "[+] Staging deployment ready at: $STAGING_URL"
         echo -n "$STAGING_URL" > "$(results.staging-url.path)"
         echo -n "$STAGING_NAME" > "$(results.staging-deployment.path)"
