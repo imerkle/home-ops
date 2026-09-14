@@ -29,7 +29,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/reactor
-              tag: latest
+              tag: 8545c6eae49bf860becc19968eb3fbade7a6dcde
             env:
               PORT: "3000"
               TERM: "xterm-256color"
