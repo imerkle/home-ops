@@ -11,9 +11,11 @@ spec:
     name: app-template
   maxHistory: 2
   install:
+    disableWait: true
     remediation:
       retries: 3
   upgrade:
+    disableWait: true
     cleanupOnFail: true
     remediation:
       retries: 3
@@ -77,6 +79,11 @@ spec:
         fsGroup: 65534
         seccompProfile:
           type: RuntimeDefault
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          value: tekton-runner
+          effect: NoSchedule
     service:
       app:
         controller: reactor
