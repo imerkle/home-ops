@@ -67,6 +67,7 @@ for (let i = 0; i < CATALOG_SIZE; i++) {
 const BUILD_ID = __ENV.BUILD_ID || 'latest';
 
 export const options = {
+  setupTimeout: '120s',
   tags: {
     testid: 'thumbnail-service',
     app: 'thumbnail-service',
@@ -138,7 +139,7 @@ export function setup() {
     headers: { 'Content-Type': 'application/json' },
   });
 
-  for (let i = 0; i < Math.min(CATALOG.length, 30); i++) {
+  for (let i = 0; i < Math.min(CATALOG.length, 5); i++) {
     const item = CATALOG[i];
     const thumbUrl = `${TARGET_URL}/thumb/${item.hash}_${item.size}.jpg`;
     http.get(thumbUrl, { timeout: '15s' });

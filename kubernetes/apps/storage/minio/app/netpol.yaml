@@ -42,6 +42,8 @@ spec:
             io.kubernetes.pod.namespace: home-system
         - matchLabels:
             io.kubernetes.pod.namespace: volsync-system
+        - matchLabels:
+            io.kubernetes.pod.namespace: tekton-pipelines
       toPorts:
         - ports:
             - port: "9000"

@@ -40,7 +40,7 @@ hubble:
   enabled: false
 ipam:
  mode: kubernetes
-ipv4NativeRoutingCIDR: 10.42.0.0/16
+ipv4NativeRoutingCIDR: 10.244.0.0/16
 devices: ${CILIUM_DEVICE}
 k8sServiceHost: ${IP_CLUSTER_VIP}
 k8sServicePort: 6443
