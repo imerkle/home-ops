@@ -63,6 +63,8 @@ spec:
             io.kubernetes.pod.namespace: prod-system
         - matchLabels:
             io.kubernetes.pod.namespace: keto
+        - matchLabels:
+            io.kubernetes.pod.namespace: vault
       toPorts:
         - ports:
             - port: "5432"
