@@ -33,7 +33,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/thumbnail-service
-              tag: e2ada3b44b35bc0ac189e0ca1ba8c9d486ef7869
+              tag: 1968b7a3b542a82068a2cde5d1458161f656407a
             env:
               PORT: &port "3000"
               GRPC_PORT: &grpcPort "50051"
@@ -47,7 +47,6 @@ spec:
               BUCKET: "thumbnails"
               URL: "dragonfly.db.svc.cluster.local:6379"
               CLEAN_ON_LAUNCH: "false"
-
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -103,7 +102,6 @@ spec:
         seccompProfile:
           type: RuntimeDefault
     service:
-
       app:
         controller: thumbnail-service
         ports:
