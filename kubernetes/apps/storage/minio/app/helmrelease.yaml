@@ -32,7 +32,7 @@ spec:
               tag: RELEASE.2024-05-10T01-41-38Z
             env:
               MINIO_UPDATE: "off"
-              MINIO_PROMETHEUS_AUTH_TYPE: public
+              MINIO_PROMETHEUS_AUTH_TYPE: "off"
               MINIO_BROWSER_REDIRECT_URL: "https://minio.${DOMAIN1}"
               MINIO_SERVER_URL: "https://s3.${DOMAIN1}"
             envFrom:
@@ -98,8 +98,6 @@ spec:
           - "minio.${DOMAIN1}"
         parentRefs:
           - name: envoy-internal
-            namespace: network
-          - name: envoy-external
             namespace: network
         rules:
           - backendRefs:

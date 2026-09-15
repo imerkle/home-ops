@@ -13,7 +13,15 @@ spec:
     # Allow ingress from Synapse
     - fromEndpoints:
         - matchLabels:
-            app.kubernetes.io/name: matrix-synapse
+            app.kubernetes.io/part-of: matrix-stack
+    # Allow ingress from envoy gateway
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+      toPorts:
+        - ports:
+            - port: "8000"
+              protocol: TCP
   egress:
     # Allow access to Vault
     - toEndpoints:
@@ -26,7 +34,7 @@ spec:
     # Allow traffic to Synapse
     - toEndpoints:
         - matchLabels:
-            app.kubernetes.io/name: matrix-synapse
+            app.kubernetes.io/part-of: matrix-stack
     # Allow traffic to PostgreSQL
     - toEndpoints:
         - matchLabels:
@@ -46,4 +54,5 @@ spec:
       toPorts:
         - ports:
             - port: "53"
-              protocol: UDP
+              protocol: ANY
+

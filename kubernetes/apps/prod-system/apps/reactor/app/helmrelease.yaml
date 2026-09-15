@@ -28,6 +28,7 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         pod:
+          automountServiceAccountToken: false
           securityContext:
             runAsNonRoot: true
             runAsUser: 65534

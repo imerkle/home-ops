@@ -18,6 +18,10 @@ spec:
     - fromEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: network
+    # Allow ingress from prod-system (game-fetcher, etc.)
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: prod-system
   egress:
     # Allow same namespace traffic
     - toEndpoints:
@@ -50,4 +54,5 @@ spec:
       toPorts:
         - ports:
             - port: "53"
-              protocol: UDP
+              protocol: ANY
+

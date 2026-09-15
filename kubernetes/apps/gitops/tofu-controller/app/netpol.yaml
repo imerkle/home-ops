@@ -8,7 +8,7 @@ spec:
   description: "Network policy for Tofu Controller"
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/name: tf-controller
+      app.kubernetes.io/name: tofu-controller
   ingress:
     # Allow same namespace traffic
     - fromEndpoints:
@@ -42,7 +42,8 @@ spec:
       toPorts:
         - ports:
             - port: "53"
-              protocol: UDP
+              protocol: ANY
+
     # Allow access to Vault for secrets retrieval
     - toEndpoints:
         - matchLabels:

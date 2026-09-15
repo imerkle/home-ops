@@ -18,6 +18,19 @@ spec:
     - fromEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: network
+    # Allow ingress from internal OIDC clients
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: flux-system
+        - matchLabels:
+            io.kubernetes.pod.namespace: home-system
+        - matchLabels:
+            io.kubernetes.pod.namespace: prod-system
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+
   egress:
     # Allow access to Vault
     - toEndpoints:
@@ -66,4 +79,5 @@ spec:
       toPorts:
         - ports:
             - port: "53"
-              protocol: UDP
+              protocol: ANY
+

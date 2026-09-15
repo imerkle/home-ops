@@ -26,6 +26,14 @@ spec:
     - toEndpoints:
         - matchLabels:
             io.kubernetes.pod.namespace: volsync-system
+    # Allow access to Vault for password injection
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: vault
+      toPorts:
+        - ports:
+            - port: "8200"
+              protocol: TCP
     # Allow access to S3 storage
     - toEntities:
         - world
@@ -41,4 +49,5 @@ spec:
       toPorts:
         - ports:
             - port: "53"
-              protocol: UDP
+              protocol: ANY
+

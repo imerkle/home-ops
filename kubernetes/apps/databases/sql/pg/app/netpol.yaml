@@ -59,6 +59,10 @@ spec:
             io.kubernetes.pod.namespace: zitadel
         - matchLabels:
             io.kubernetes.pod.namespace: observability
+        - matchLabels:
+            io.kubernetes.pod.namespace: prod-system
+        - matchLabels:
+            io.kubernetes.pod.namespace: keto
       toPorts:
         - ports:
             - port: "5432"
@@ -94,7 +98,8 @@ spec:
       toPorts:
         - ports:
             - port: "53"
-              protocol: UDP
+              protocol: ANY
+
     # Allow Vault access for secrets
     - toEndpoints:
         - matchLabels:

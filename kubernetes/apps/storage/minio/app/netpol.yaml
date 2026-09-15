@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cilium.io/ciliumnetworkpolicy_v2.json
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: minio
+spec:
+  description: "Network policy for MinIO storage service"
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: minio
+  ingress:
+    # Allow same namespace traffic (minio-bucket-job)
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: storage
+    # Allow ingress from envoy gateway (internal/external ingress proxies)
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+      toPorts:
+        - ports:
+            - port: "9000"
+              protocol: TCP
+            - port: "9001"
+              protocol: TCP
+    # Allow Prometheus scraping from observability namespace
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: observability
+      toPorts:
+        - ports:
+            - port: "9000"
+              protocol: TCP
+    # Allow S3 clients from application namespaces
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: prod-system
+        - matchLabels:
+            io.kubernetes.pod.namespace: db
+        - matchLabels:
+            io.kubernetes.pod.namespace: home-system
+        - matchLabels:
+            io.kubernetes.pod.namespace: volsync-system
+      toPorts:
+        - ports:
+            - port: "9000"
+              protocol: TCP
+  egress:
+    # Allow DNS resolution
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+            - port: "1053"
+              protocol: ANY

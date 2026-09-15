@@ -8,7 +8,7 @@ spec:
   description: "Network policy for Telepresence traffic manager"
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/name: traffic-manager
+      app: traffic-manager
   ingress:
     # Allow same namespace traffic
     - fromEndpoints:
@@ -39,4 +39,5 @@ spec:
       toPorts:
         - ports:
             - port: "53"
-              protocol: UDP
+              protocol: ANY
+

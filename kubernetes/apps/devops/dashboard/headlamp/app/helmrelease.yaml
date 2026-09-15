@@ -57,7 +57,7 @@ spec:
 
     # Permissions
     clusterRoleBinding:
-      create: true
+      create: false
     serviceAccount:
       create: true
       name: headlamp
