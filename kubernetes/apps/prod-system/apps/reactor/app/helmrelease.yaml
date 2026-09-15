@@ -44,7 +44,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/reactor
-              tag: 7b92a6500e63938145fed6bfd20b1c564ec30501
+              tag: 6d6b0ec796233717a8a0ce8baa630d7c12be69d6
             env:
               PORT: "3000"
               TERM: "xterm-256color"
