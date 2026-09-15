@@ -94,6 +94,15 @@ spec:
             "ci.home.arpa/environment": "staging",
             "ci.home.arpa/commit": $commit
           } |
+          .spec.template.spec.tolerations = [
+            {
+              "key": "dedicated",
+              "operator": "Equal",
+              "value": "tekton-runner",
+              "effect": "NoSchedule"
+            }
+          ] |
+          .spec.template.spec.containers[0].resources.requests.cpu = "0" |
           .spec.template.spec.containers[0].image = $img |
           del(.status)
         ' | kubectl apply -f -
