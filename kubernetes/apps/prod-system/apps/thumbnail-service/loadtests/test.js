@@ -132,9 +132,15 @@ export const options = {
 
 // Setup: Pre-warm a portion of the catalog into S3/MinIO
 export function setup() {
+  // Register catalog items via batch API before warming cache
+  const imageUrls = CATALOG.map((item) => item.url);
+  http.post(`${TARGET_URL}/api/thumbnail/batch`, JSON.stringify({ image_urls: imageUrls }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
+
   for (let i = 0; i < Math.min(CATALOG.length, 30); i++) {
     const item = CATALOG[i];
-    const thumbUrl = `${TARGET_URL}/thumb/${item.hash}_${item.size}.jpg?url=${encodeURIComponent(item.url)}`;
+    const thumbUrl = `${TARGET_URL}/thumb/${item.hash}_${item.size}.jpg`;
     http.get(thumbUrl, { timeout: '15s' });
   }
 }
@@ -184,7 +190,7 @@ export function testBatchApi() {
 // 2. Test GET /thumb/{hash}_{size}.jpg (High-throughput Cache HIT Fast Path)
 export function testCacheHits() {
   const item = CATALOG[Math.floor(Math.random() * CATALOG.length)];
-  const thumbUrl = `${TARGET_URL}/thumb/${item.hash}_${item.size}.jpg?url=${encodeURIComponent(item.url)}`;
+  const thumbUrl = `${TARGET_URL}/thumb/${item.hash}_${item.size}.jpg`;
 
   const params = {
     tags: { name: 'GET /thumb/{hash}_{size}.jpg [HIT]' },
@@ -208,7 +214,12 @@ export function testCacheHits() {
 // 3. Test GET /thumb/{hash}_{size}.jpg (Programmatic Uncached Image Resize)
 export function testCacheMiss() {
   const item = generateDynamicItem(__VU, __ITER, Math.floor(Math.random() * 10000));
-  const thumbUrl = `${TARGET_URL}/thumb/${item.hash}_${item.size}.jpg?url=${encodeURIComponent(item.url)}`;
+  // Register dynamic item first via /api/thumbnail (as internal services do)
+  http.post(`${TARGET_URL}/api/thumbnail`, JSON.stringify({ image_url: item.url }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  const thumbUrl = `${TARGET_URL}/thumb/${item.hash}_${item.size}.jpg`;
 
   const params = {
     timeout: '15s',
@@ -234,7 +245,13 @@ export function testThunderingHerd() {
   const windowBucket = Math.floor(Date.now() / 15000);
   const stampedeUrl = `https://placehold.co/450x450.jpg?text=stampede_${windowBucket}`;
   const hash = hashUrl(stampedeUrl);
-  const thumbUrl = `${TARGET_URL}/thumb/${hash}_small.jpg?url=${encodeURIComponent(stampedeUrl)}`;
+
+  // Register stampede item once per bucket via /api/thumbnail
+  http.post(`${TARGET_URL}/api/thumbnail`, JSON.stringify({ image_url: stampedeUrl }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  const thumbUrl = `${TARGET_URL}/thumb/${hash}_small.jpg`;
 
   const params = {
     timeout: '15s',

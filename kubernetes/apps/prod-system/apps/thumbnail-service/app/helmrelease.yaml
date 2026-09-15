@@ -118,9 +118,21 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
+        rules:
+          - backendRefs:
+              - port: *port
+                name: thumbnail-service
+      external:
+        hostnames:
+          - "thumb.${DOMAIN1}"
+        parentRefs:
           - name: envoy-external
             namespace: network
         rules:
-          - backendRefs:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /thumb/
+            backendRefs:
               - port: *port
                 name: thumbnail-service
