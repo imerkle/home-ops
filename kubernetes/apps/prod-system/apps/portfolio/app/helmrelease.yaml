@@ -29,7 +29,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/portfolio
-              tag: 6eb659f
+              tag: bca38a5
             probes:
               liveness: &probe
                 enabled: true
