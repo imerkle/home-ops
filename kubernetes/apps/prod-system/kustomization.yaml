@@ -19,5 +19,6 @@ resources:
   - ./apps/thumbnail-service/ks.yaml
   - ./apps/reactor/ks.yaml
   - ./apps/portfolio/ks.yaml
+  - ./apps/browser-automations/ks.yaml
   - ./apps/game-fetcher/previews/mtui/ks.yaml
   - ./apps/thumbnail-service/previews/desloppify-code-health/ks.yaml
