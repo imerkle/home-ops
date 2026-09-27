@@ -33,7 +33,7 @@ spec:
               repository: zot.${DOMAIN1}/browser-automations
               tag: latest
             env:
-              PORT: &port "8000"
+              PORT: "8000"
               HOST: "0.0.0.0"
               DB_PATH: "/data/automations.db"
               REPO_DIR: "/app"
@@ -53,7 +53,7 @@ spec:
                 spec:
                   httpGet:
                     path: /health
-                    port: *port
+                    port: 8000
                   initialDelaySeconds: 15
                   periodSeconds: 15
                   timeoutSeconds: 3
@@ -64,7 +64,7 @@ spec:
                 spec:
                   httpGet:
                     path: /health
-                    port: *port
+                    port: 8000
                   initialDelaySeconds: 5
                   periodSeconds: 10
                   timeoutSeconds: 3
@@ -75,7 +75,7 @@ spec:
                 spec:
                   httpGet:
                     path: /health
-                    port: *port
+                    port: 8000
                   initialDelaySeconds: 3
                   periodSeconds: 3
                   timeoutSeconds: 3
@@ -99,7 +99,7 @@ spec:
         controller: browser-automations
         ports:
           http:
-            port: *port
+            port: 8000
     route:
       app:
         labels:
@@ -117,7 +117,7 @@ spec:
             namespace: network
         rules:
           - backendRefs:
-              - port: *port
+              - port: 8000
                 name: *app
     persistence:
       data:
