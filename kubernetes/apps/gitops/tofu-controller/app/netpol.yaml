@@ -62,3 +62,10 @@ spec:
         - ports:
             - port: "8080"
               protocol: TCP
+    # Allow gRPC to terraform runner pods across the cluster
+    - toEntities:
+        - cluster
+      toPorts:
+        - ports:
+            - port: "30000"
+              protocol: TCP
