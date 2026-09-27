@@ -31,9 +31,10 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/browser-automations
-              tag: a6e262196a6e1132e344810ff5cd7c7567f04cc0
+              tag: e3dd0dcf27d7ab5e12348d233be1335a9218b102
             env:
               PORT: "8000"
+              GRPC_PORT: "50051"
               HOST: "0.0.0.0"
               DB_PATH: "/data/automations.db"
               REPO_DIR: "/app"
@@ -103,6 +104,8 @@ spec:
         ports:
           http:
             port: 8000
+          grpc:
+            port: 50051
     route:
       app:
         labels:
