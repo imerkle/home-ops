@@ -104,6 +104,7 @@ spec:
           ] |
           .spec.template.spec.containers[0].resources.requests.cpu = "0" |
           .spec.template.spec.containers[0].image = $img |
+          (if .spec.template.spec.volumes then .spec.template.spec.volumes |= map(if .persistentVolumeClaim then {name: .name, emptyDir: {}} else . end) else . end) |
           del(.status)
         ' | kubectl apply -f -
 
