@@ -31,7 +31,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/browser-automations
-              tag: 765e90681286d037d89332ec98cab38a826e608b
+              tag: a6e262196a6e1132e344810ff5cd7c7567f04cc0
             env:
               PORT: "8000"
               HOST: "0.0.0.0"
