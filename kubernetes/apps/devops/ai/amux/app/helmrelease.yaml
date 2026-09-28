@@ -24,6 +24,23 @@ spec:
               AMUX_RS_PORT: &port 8822
               IS_SANDBOX: "1"
               AMUX_OPS_HEALTH_CARDS: "0"
+            lifecycle:
+              postStart:
+                exec:
+                  command:
+                    - /bin/sh
+                    - -c
+                    - |
+                      if ! command -v lsof >/dev/null 2>&1; then
+                        if ls /root/.amux/pkg/lsof_*.deb >/dev/null 2>&1; then
+                          dpkg -i /root/.amux/pkg/lsof_*.deb || true
+                        fi
+                        if ! command -v lsof >/dev/null 2>&1; then
+                          apt-get update && apt-get install -y --no-install-recommends lsof && \
+                          mkdir -p /root/.amux/pkg && cp -n /var/cache/apt/archives/lsof_*.deb /root/.amux/pkg/ 2>/dev/null || true && \
+                          rm -rf /var/lib/apt/lists/*
+                        fi
+                      fi
             probes:
               liveness: &probes
                 enabled: true
