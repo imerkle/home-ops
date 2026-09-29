@@ -45,6 +45,10 @@ spec:
               MOZ_DISABLE_CONTENT_SANDBOX: "1"
               MOZ_DISABLE_GMP_SANDBOX: "1"
               MOZ_DISABLE_RDD_SANDBOX: "1"
+              TEMPORAL_HOST: "temporal.dev-system.svc.cluster.local:7233"
+              TEMPORAL_NAMESPACE: "default"
+              TEMPORAL_TASK_QUEUE: "browser-automations-queue"
+              TEMPORAL_ENABLED: "true"
             securityContext:
               allowPrivilegeEscalation: false
               capabilities:
