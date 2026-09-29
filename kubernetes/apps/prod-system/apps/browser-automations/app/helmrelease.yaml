@@ -31,7 +31,7 @@ spec:
           app:
             image:
               repository: zot.${DOMAIN1}/browser-automations
-              tag: 10561aa93d103ac6dd27e7f70e8818ea6339f9c8
+              tag: d6334adfddf4a35dfdd3263324d9fc87e6d0488f
             env:
               PORT: "8000"
               GRPC_PORT: "50051"
