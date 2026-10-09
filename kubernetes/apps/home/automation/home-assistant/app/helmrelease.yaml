@@ -78,9 +78,7 @@ spec:
               HOMEASSISTANT_URL: http://localhost:8123
               HOMEASSISTANT_TOKEN: vault:secret/data/ai#HA_TOKEN
             args:
-              - fastmcp
-              - run
-              - fastmcp-http.json
+              - ha-mcp-web
     defaultPodOptions:
       # annotations:
         # k8s.v1.cni.cncf.io/networks: |-
