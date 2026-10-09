@@ -7,3 +7,4 @@ resources:
   - ./open-webui/
   - ./mcp/
   - ./omniroute/
+  - ./open-design/
