@@ -14,6 +14,14 @@ spec:
       open-design:
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          init-permissions:
+            image:
+              repository: busybox
+              tag: latest
+            command: ["/bin/sh", "-c", "chown -R 1001:1001 /app/.od && chmod -R 775 /app/.od"]
+            securityContext:
+              runAsUser: 0
         containers:
           app:
             image:
@@ -25,9 +33,13 @@ spec:
               OD_BIND_HOST: "0.0.0.0"
               OD_PORT: &port "7456"
               OD_WEB_PORT: *port
+              OD_DISABLE_API_AUTH: "1"
+              OD_API_TOKEN: "f3c83e100e4e5e4d293cb2929482103f572a1e09c95d73b50c1844bdf989212c"
               OPEN_DESIGN_DISABLE_API_AUTH: "1"
               OPEN_DESIGN_ALLOWED_ORIGINS: "https://open-design.x3y.space"
             securityContext:
+              runAsUser: 1001
+              runAsGroup: 1001
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
               capabilities: { drop: ["ALL"] }
@@ -37,6 +49,12 @@ spec:
                 memory: 128Mi
               limits:
                 memory: 1Gi
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        fsGroupChangePolicy: "OnRootMismatch"
     service:
       app:
         controller: open-design
